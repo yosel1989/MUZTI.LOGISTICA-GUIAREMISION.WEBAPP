@@ -1,1 +1,29 @@
+@use "./tailwind";
+
+
 /* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  //background: linear-gradient(#F1F3FF, #CBD4FF);
+  font-family: "Poppins", sans-serif;
+}
+
+/* Forzar que los íconos usen su propia fuente */
+.material-symbols-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  direction: ltr;
+}

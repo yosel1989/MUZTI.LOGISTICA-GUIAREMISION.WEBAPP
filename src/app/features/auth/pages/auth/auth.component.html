@@ -1,0 +1,51 @@
+<div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
+   <div class="kt-card max-w-[370px] w-full">
+    <form [formGroup]="frmAuth" (ngSubmit)="evtOnSubmit()" action="#" class="kt-card-content flex flex-col gap-5 p-10" id="sign_in_form" method="get" autocomplete="off">
+     <div class="text-center mb-2.5">
+
+      <img class="block" src="https://loteriatiorico.com/assets/images/LOGO-TIO-RICO-LOTERIA.webp" alt="" class="h-[150px] mx-auto"/>
+
+      <h3 class="text-lg font-medium text-mono leading-none mb-2.5">
+       Ingresar
+      </h3>
+      <div class="flex items-center justify-center font-medium">
+       <span class="text-sm text-secondary-foreground me-1.5">
+        Bienvenido a lotería TioRico
+       </span>
+      </div>
+     </div>
+     <div class="flex flex-col gap-1">
+      <label class="kt-form-label font-normal text-mono">Usuario</label>
+      <input type="text" pInputText 
+      pSize="small" 
+      formControlName="usuario" 
+      autocomplete="off" 
+      [invalid]="f['usuario'].invalid && isSubmitted"
+      />
+      @if (f.usuario.invalid && isSubmitted) {
+          <p-message severity="error" size="small" variant="simple">El usuario es requerido.</p-message>
+      }
+     </div>
+     <div class="flex flex-col gap-1">
+      <label class="kt-form-label font-normal text-mono">
+      Contraseña
+      </label>
+      <div class="card">
+        <p-password formControlName="clave" [toggleMask]="true" 
+        [feedback]="false" 
+        size="small" 
+        class="flex! flex-col basis-full" 
+        [invalid]="f['clave'].invalid && isSubmitted"
+        />
+      </div>
+      @if (f.clave.invalid && isSubmitted) {
+          <p-message severity="error" size="small" variant="simple">La contraseña es requerida.</p-message>
+      }
+     </div>
+     <button type="submit" [disabled]="loadingSubmit" class="kt-btn bg-amber-400 text-gray-900 font-semibold flex justify-center grow">
+      @if (loadingSubmit){<ng-icon class="animate-spin" size="18px" weight="bold"  name="tablerLoader2" />}
+      <span class="indicator-label">@if(loadingSubmit){Cargando...}@else{Ingresar}</span>
+     </button>
+    </form>
+   </div>
+  </div>

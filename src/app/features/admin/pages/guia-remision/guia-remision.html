@@ -1,0 +1,145 @@
+<div class="p-4">
+    <form [formGroup]="fromGroup" (ngSubmit)="evtOnSubmit()">
+
+        <div class="grid grid-cols-3 gap-4">
+            <div class="col-span-2 flex flex-col gap-4">
+
+                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista){
+                    <p-tabs value="0">
+                        <p-tablist>
+                            <p-tab value="0">Remitente</p-tab>
+                            <p-tab value="1">Destinatario</p-tab>
+                        </p-tablist>
+                    </p-tabs>
+                }
+
+                <div class="grid grid-cols-2">
+                    <div>
+                        <app-select-tipo-guia #selectTipoGuia classLabel="text-xs text-gray-500 font-semibold"></app-select-tipo-guia>
+                    </div>
+                </div>
+
+                <!-- Tipo de Traslado -->
+                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
+                <div>
+                    <app-select-motivo-traslado [control]="f.tipo_traslado" classLabel="text-xs text-gray-500 font-semibold"></app-select-motivo-traslado>
+                </div>
+                }
+
+                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
+                <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <app-select-tipo-documento [control]="f.tipo_documento" classLabel="text-xs text-gray-500 font-semibold"></app-select-tipo-documento>
+                        </div>
+                        <div>
+                            <label  class="text-xs">Nro. de Documento *</label>
+                            <input onlyNumber placeholder="Nro. de Documento *" pSize="small" fluid pInputText />
+                        </div>
+                    </div>
+                    <div>
+                        <label  class="text-xs">Nombres y Apellidos *</label>
+                        <input placeholder="Nombres y Apellidos *" pSize="small" fluid pInputText />
+                    </div>
+
+                    <div>
+                        <label  class="text-xs">Dirección</label>
+                        <input placeholder="Dirección" pSize="small" fluid pInputText />
+                    </div>
+                </div>
+                }
+                
+
+
+                <div>
+                    <label class="text-xs">Tipo de Guía de Remisión</label>
+                    <p-select size="small" fluid  optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label  class="text-xs">Tipo de Documento</label>
+                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                    </div>
+                    <div>
+                        <label  class="text-xs">Nro. de Documento *</label>
+                        <input placeholder="Nro. de Documento *" pSize="small" fluid pInputText />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label  class="text-xs">Departamento</label>
+                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                    </div>
+                    <div>
+                        <label  class="text-xs">Provincia</label>
+                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                    </div>
+                    <div>
+                        <label  class="text-xs">Distrito</label>
+                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label  class="text-xs">Email *</label>
+                        <input placeholder="Email *" pSize="small" fluid pInputText />
+                    </div>
+
+                    <div>
+                        <label  class="text-xs">Email *</label>
+                        <input placeholder="Email *" pSize="small" fluid pInputText />
+                    </div>
+
+                    <div>
+                        <!--<div>
+                            <label  class="text-xs">Email *</label>
+                            <input placeholder="Email *" pSize="small" fluid pInputText />
+                        </div>-->
+                        <p-button label="Añadir contacto" link />
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <label class="text-xs">Nombres y Apellidos *</label>
+                        <input placeholder="Nombres y Apellidos *" pSize="small" fluid pInputText />
+                    </div>
+                </div>
+                
+                <div>
+                    <div>
+                        <label class="text-xs">Dirección *</label>
+                        <input placeholder="Dirección *" pSize="small" fluid pInputText />
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="city" class="text-xs">Tipo de Guía de Remisión</label>
+                    <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                </div>
+                
+                <div>
+                    <label for="city" class="text-xs">Tipo de Guía de Remisión</label>
+                    <p-select size="small" [fluid]="" optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                </div>
+                
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div class="">
+                    <label  class="block text-xs">Fecha de emisión</label>
+                    <p-datepicker size="small" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                </div>
+
+                <div>
+                    <label  class="text-xs">N° de registro MTC</label>
+                    <input placeholder="N° de registro MTC" pSize="small" fluid pInputText />
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
