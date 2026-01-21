@@ -33,7 +33,7 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
     constructor() {}
 
     ngOnInit(): void {
-        
+        this.control = this.control || new FormControl(this.data[0].value);
     }
 
     ngAfterViewInit(): void {

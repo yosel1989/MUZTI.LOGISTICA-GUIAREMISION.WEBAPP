@@ -1,0 +1,2 @@
+<label [attr.class]="classLabel">{{ label }}</label>
+<p-select size="small" [loading]="loading | async" fluid [options]="collection" [formControl]="control"  optionLabel="distrito" optionValue="id" class="p-inputwrapper-filled" [placeholder]="(loading | async) ? placeholderLoading : placeholder" [filter]="true" appendTo="body"></p-select>

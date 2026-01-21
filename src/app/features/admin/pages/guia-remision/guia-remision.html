@@ -49,8 +49,6 @@
                 </div>
                 }
                 
-
-
                 <div>
                     <label class="text-xs">Tipo de Guía de Remisión</label>
                     <p-select size="small" fluid  optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
@@ -69,16 +67,13 @@
 
                 <div class="grid grid-cols-3 gap-4">
                     <div>
-                        <label  class="text-xs">Departamento</label>
-                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                        <app-select-departamento [control]="f.departamento" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
                     </div>
                     <div>
-                        <label  class="text-xs">Provincia</label>
-                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                        <app-select-provincia [control]="f.provincia" [idUbigeoDepartamento]="f.departamento.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
                     </div>
                     <div>
-                        <label  class="text-xs">Distrito</label>
-                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                        <app-select-distrito [control]="f.distrito" [idUbigeoProvincia]="f.provincia.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
                     </div>
                 </div>
 
@@ -125,6 +120,9 @@
                     <label for="city" class="text-xs">Tipo de Guía de Remisión</label>
                     <p-select size="small" [fluid]="" optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
                 </div>
+
+
+                <app-tab-origen-destino></app-tab-origen-destino>
                 
             </div>
 

@@ -13,6 +13,10 @@ import { TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remi
 import { SelectTipoDocumentoComponent } from 'app/features/guia-remision/components/selects/select-tipo-documento/select-tipo-documento';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { DatePickerModule } from 'primeng/datepicker';
+import { SelectDepartamentoComponent } from 'app/features/guia-remision/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from 'app/features/guia-remision/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from 'app/features/guia-remision/components/selects/select-distrito/select-distrito';
+import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
 
 interface Type {
     name: string;
@@ -36,7 +40,11 @@ interface Type {
     SelectMotivoTrasladoComponent,
     SelectTipoDocumentoComponent,
     OnlyNumberDirective,
-    DatePickerModule
+    DatePickerModule,
+    SelectDepartamentoComponent,
+    SelectProvinciaComponent,
+    SelectDistritoComponent,
+    TabOrigenDestinoComponent
   ],
 })
 
@@ -54,6 +62,9 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
         this.fromGroup = this.formBuilder.group({
             tipo_traslado: new FormControl('VENTA'),
             tipo_documento: new FormControl({value: 'DNI', disabled: true}),
+            departamento: new FormControl(null),
+            provincia: new FormControl(null),
+            distrito: new FormControl(null),
         });
     }
 
@@ -64,7 +75,6 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     ngOnDestroy(): void{
-
     }
 
     // Getters

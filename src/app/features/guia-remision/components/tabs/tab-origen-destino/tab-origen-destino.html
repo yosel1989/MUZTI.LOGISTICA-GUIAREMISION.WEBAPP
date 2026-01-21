@@ -1,0 +1,69 @@
+<div class="border border-gray-200 rounded-xl overflow-hidden"> 
+    <p-tabs value="0" lazy="true">
+        <p-tablist>
+            <p-tab value="0" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+                <div class="flex items-center gap-2">
+                    <label for="" class="text-xs font-semibold">Punto de partida</label>
+                    @if(submitted && formGroupOrigen.invalid) {
+                        <ng-icon name="tablerAlertCircle" />
+                    }
+                </div>
+            </p-tab>
+            <p-tab value="1" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+                <div class="flex items-center gap-2">
+                    <label for="" class="text-xs font-semibold">Punto de llegada</label>
+                    @if(submitted && formGroupDestino.invalid) {
+                        <ng-icon name="tablerAlertCircle" />
+                    }
+                </div>
+                
+            </p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+                <div [formGroup]="formGroupOrigen" class="flex flex-col gap-4">
+                    <div>
+                        <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
+                        <input placeholder="Dirección *" pSize="small" fluid pInputText />
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <app-select-departamento [control]="f_origen.idDepartamento" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                        </div>
+                        <div>
+                            <app-select-provincia [control]="f_origen.idProvincia" [idUbigeoDepartamento]="f_origen.idDepartamento.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                        </div>
+                        <div>
+                            <app-select-distrito [control]="f_origen.idDistrito" [idUbigeoProvincia]="f_origen.idProvincia.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                        </div>
+                    </div>
+                </div>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+                <div [formGroup]="formGroupDestino" class="flex flex-col gap-4">
+                    <div>
+                        <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
+                        <input placeholder="Dirección *" pSize="small" fluid pInputText />
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <app-select-departamento [control]="f_destino.idDepartamento" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                        </div>
+                        <div>
+                            <app-select-provincia [control]="f_destino.idProvincia" [idUbigeoDepartamento]="f_destino.idDepartamento.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                        </div>
+                        <div>
+                            <app-select-distrito [control]="f_destino.idDistrito" [idUbigeoProvincia]="f_destino.idProvincia.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                        </div>
+                    </div>
+                </div>
+            </p-tabpanel>
+            <p-tabpanel value="2">
+                <p class="m-0">
+                    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in
+                    culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
+                </p>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>
