@@ -16,7 +16,6 @@
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
-                
             </p-tab>
         </p-tablist>
         <p-tabpanels>
@@ -24,7 +23,10 @@
                 <div [formGroup]="formGroupOrigen" class="flex flex-col gap-4">
                     <div>
                         <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
-                        <input placeholder="Dirección *" pSize="small" fluid pInputText />
+                        <input placeholder="Dirección *" pSize="small" fluid pInputText formControlName="direccion" />
+                        @if (submitted && f_origen.direccion.hasError()) {
+                            <p-message severity="error" size="small" variant="simple">Debe ingresar la dirección de origen.</p-message>
+                        }
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -43,7 +45,7 @@
                 <div [formGroup]="formGroupDestino" class="flex flex-col gap-4">
                     <div>
                         <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
-                        <input placeholder="Dirección *" pSize="small" fluid pInputText />
+                        <input placeholder="Dirección *" formControlName="direccion" pSize="small" fluid pInputText />
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -57,12 +59,6 @@
                         </div>
                     </div>
                 </div>
-            </p-tabpanel>
-            <p-tabpanel value="2">
-                <p class="m-0">
-                    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in
-                    culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-                </p>
             </p-tabpanel>
         </p-tabpanels>
     </p-tabs>

@@ -121,8 +121,7 @@
                     <p-select size="small" [fluid]="" optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
                 </div>
 
-
-                <app-tab-origen-destino></app-tab-origen-destino>
+                <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
                 
             </div>
 
@@ -138,6 +137,9 @@
                 </div>
             </div>
         </div>
+
+
+        <p-button type="submit" label="Generar" severity="primary"></p-button>
 
     </form>
 </div>

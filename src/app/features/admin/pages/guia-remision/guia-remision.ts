@@ -50,6 +50,7 @@ interface Type {
 
 export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    @ViewChild('tabOrigenDestino') tabOrigenDestino: TabOrigenDestinoComponent | undefined;
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
     tipoGuia = TipoGuiaRemisionEnum;
 
@@ -85,6 +86,7 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     // Events
     evtOnSubmit(): void{
         console.log('Formulario enviado');
+        this.tabOrigenDestino?.evtOnSubmit();
     }
 
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
@@ -10,6 +10,8 @@ import { SelectDistritoComponent } from "../../selects/select-distrito/select-di
 import { NgIcon, provideIcons } from "@ng-icons/core";
 
 import { tablerAlertCircle } from "@ng-icons/tabler-icons";
+import { MessageService } from 'primeng/api';
+import { MessageModule } from "primeng/message";
 
 @Component({
   selector: 'app-tab-origen-destino',
@@ -24,13 +26,15 @@ import { tablerAlertCircle } from "@ng-icons/tabler-icons";
     SelectProvinciaComponent,
     SelectDistritoComponent,
     CardModule,
-    NgIcon
+    NgIcon,
+    MessageModule
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })]
 })
 
 export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestroy{
-
+    messageService = inject(MessageService);
+    
     formGroupOrigen: FormGroup = new FormGroup({});
     formGroupDestino: FormGroup = new FormGroup({});
     submitted = false;
@@ -74,6 +78,7 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
 
     evtOnSubmit(): void {
         this.submitted = true;
+        console.log(this.formGroupOrigen);
     }
 
     evtOnReset(): void {
