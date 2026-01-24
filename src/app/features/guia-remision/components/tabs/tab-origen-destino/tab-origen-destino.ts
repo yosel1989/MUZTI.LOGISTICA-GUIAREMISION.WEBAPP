@@ -29,7 +29,8 @@ import { MessageModule } from "primeng/message";
     NgIcon,
     MessageModule
   ],
-  viewProviders: [provideIcons({ tablerAlertCircle })]
+  viewProviders: [provideIcons({ tablerAlertCircle })],
+  providers: [MessageService]
 })
 
 export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestroy{

@@ -32,6 +32,7 @@
     "@angular/router": "^21.1.0",
     "@microsoft/signalr": "^9.0.6",
     "@ng-icons/core": "^32.1.0",
+    "@ng-icons/heroicons": "^33.0.0",
     "@ng-icons/tabler-icons": "^32.1.0",
     "@primeng/themes": "^20.1.2",
     "@primeuix/themes": "^2.0.2",

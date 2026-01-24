@@ -1,2 +1,2 @@
 <label [attr.class]="classLabel">{{ label }}</label>
-<p-select size="small" [loading]="loading | async" fluid [options]="ubigeoDepartamentos" [formControl]="control"  optionLabel="departamento" optionValue="id" class="p-inputwrapper-filled" [placeholder]="(loading | async) ? placeholderLoading : placeholder" [filter]="true" appendTo="body"></p-select>
+<p-select panelStyleClass="text-xs!" size="small" [loading]="loading | async" fluid [options]="ubigeoDepartamentos" [formControl]="control"  optionLabel="departamento" optionValue="id" class="p-inputwrapper-filled" [placeholder]="(loading | async) ? placeholderLoading : placeholder" [filter]="true" appendTo="body"></p-select>

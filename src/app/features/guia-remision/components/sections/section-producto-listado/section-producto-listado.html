@@ -1,0 +1,69 @@
+<div class="border border-gray-200 rounded-xl overflow-hidden p-4"> 
+
+    <p class="text-primary text-xs! font-semibold mb-4">Agregar bienes o productos a transportar</p>
+
+    <form [formGroup]="form" (ngSubmit)="evtOnSubmit()">
+    <div formArrayName="items">
+        <p-table [value]="items.controls" size="small">
+        
+        <!-- 👇 Cabecera -->
+        <ng-template pTemplate="header">
+            <tr>
+            <th class="text-xs text-gray-500! font-semibold">#</th>
+            <th class="text-xs text-gray-500! font-semibold w-20">Cant. *</th>
+            <th class="text-xs text-gray-500! font-semibold align-middle!">
+                <span class="inline-flex items-center gap-2"><span class="text-nowrap!">Unidad *</span> <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Elije alguna de las opciones de tipo de unidad del desplegable o escribe el código en caso de conocerlo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
+            </th>
+            <th class="text-xs text-gray-500! font-semibold">Código</th>
+            <th class="text-xs text-gray-500! font-semibold min-w-70">Descripción *</th>
+            <th class="text-xs text-gray-500! font-semibold">
+                <span class="inline-flex items-center gap-2">Cod. SUNAT <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Si conoces el código de producto SUNAT puedes ingresarlo en este campo, el dato no es mandatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
+            </th>
+            <th class="text-xs text-gray-500! font-semibold">
+                <span class="inline-flex items-center gap-2">GTIN <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Este campo puede ser usado para ingresar el código de barras de tu producto, el dato no es mandatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
+            </th>
+            <th class="text-xs text-gray-500! font-semibold">
+                <span class="inline-flex items-center gap-2">Cod. Subnacional <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí podrás ingresar el código de la clasificación arancelaria de mercancías asignada a tu producto, el dato no es mandatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
+            </th>
+            <th class="text-xs text-gray-500! font-semibold">
+                <span class="inline-flex items-center gap-2 text-center">Bien normalizado <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Se consideran bienes normalizados a los bienes detallados en el catálogo N° 62 del anexo N°8 (Anexo III RS 123-2022-SUNAT), cuando se encuentran sujetos al SPOT o IVAP." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
+            </th>
+            <th class="text-xs text-gray-500! font-semibold">Acciones</th>
+            </tr>
+        </ng-template>
+
+        <!-- 👇 Cuerpo -->
+        <ng-template pTemplate="body" let-row let-i="rowIndex">
+            <tr [formGroupName]="i">
+            <td class="text-xs!">{{ i + 1 }}</td>
+            <td>
+                <p-inputnumber size="small" inputStyleClass="text-xs!" class="text-xs!" fluid formControlName="cantidad" mode="decimal" inputId="withoutgrouping" [useGrouping]="false" />
+            </td>
+            <td><input class="text-xs!" pSize="small" fluid formControlName="unidad" pInputText (click)="evtShowMenuUnidad($event)"/></td>
+            <td><input class="text-xs!" pSize="small" fluid formControlName="codigo" pInputText /></td>
+            <td><input class="text-xs!" pSize="small" fluid formControlName="descripcion" pInputText /></td>
+            <td><input class="text-xs!" pSize="small" fluid formControlName="codigo_sunat" pInputText /></td>
+            <td><input class="text-xs!" pSize="small" fluid formControlName="gtin" pInputText /></td>
+            <td><input class="text-xs!" pSize="small" fluid formControlName="codigo_subnacional" pInputText /></td>
+            <td class="text-center">
+                <div class="text-center flex items-center">
+                    <p-toggleswitch formControlName="bien_normalizado" class="mx-auto"></p-toggleswitch>
+                </div>
+            </td>
+            <td>
+                <div class="flex flex-row gap-1 justify-between">
+                    @if(i == items.length -1){<p-button pTooltip="Agregar producto" tooltipStyleClass="text-xs!" class="text-xs!" size="small" icon="pi pi-plus text-xs!" (onClick)="evtAddItems()" rounded="true" />}@else{<div></div>}
+                    @if(items.length > 1){<p-button pTooltip="Quitar producto" tooltipStyleClass="text-xs!" class="text-xs!" size="small" icon="pi pi-trash text-xs!" (onClick)="evtRemoveItems(i)" rounded="true" severity="secondary"/>}
+                </div>
+                
+            </td>
+            </tr>
+        </ng-template>
+
+        </p-table>
+    </div>
+    </form>
+
+</div>
+
+<p-menu #menuUnidadMedida [model]="itemss" [popup]="true" appendTo="body"></p-menu>

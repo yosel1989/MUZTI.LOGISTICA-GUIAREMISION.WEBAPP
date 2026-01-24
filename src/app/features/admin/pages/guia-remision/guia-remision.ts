@@ -17,6 +17,7 @@ import { SelectDepartamentoComponent } from 'app/features/guia-remision/componen
 import { SelectProvinciaComponent } from 'app/features/guia-remision/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from 'app/features/guia-remision/components/selects/select-distrito/select-distrito';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
+import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
 
 interface Type {
     name: string;
@@ -44,7 +45,8 @@ interface Type {
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
     SelectDistritoComponent,
-    TabOrigenDestinoComponent
+    TabOrigenDestinoComponent,
+    SectionProductoListadoComponent
   ],
 })
 
