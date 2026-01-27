@@ -7,41 +7,45 @@ import { providePrimeNG } from 'primeng/config';
 
 import { es } from 'primelocale/es.json';
 import { definePreset } from '@primeng/themes';
+import { registerLocaleData } from '@angular/common';
+import localeEsPe from '@angular/common/locales/es-PE';
+
+registerLocaleData(localeEsPe, 'es-PE');
 
 export const MyPreset = definePreset(Aura, {
   semantic: {
     primary: {
-      50: '{amber.50}',
-      100: '{amber.100}',
-      200: '{amber.200}',
-      300: '{amber.300}',
-      400: '{amber.400}',
-      500: '{amber.500}',
-      600: '{amber.600}',
-      700: '{amber.700}',
-      800: '{amber.800}',
-      900: '{amber.900}',
-      950: '{amber.950}'
+      50:  '#fdf2f2',
+      100: '#fce8e8',
+      200: '#f8cfcf',
+      300: '#f3a9a9',
+      400: '#e97d7d',
+      500: '#ab4141', // tu color base
+      600: '#933636',
+      700: '#7a2c2c',
+      800: '#622222',
+      900: '#4a1818',
+      950: '#2e0f0f'
     },
     colorScheme: {
       light: {
         primary: {
           color: '#ab4141',
-          hoverColor: '{amber.600}',
-          activeColor: '{amber.500}'
+          hoverColor: '{primary.600}',
+          activeColor: '{primary.500}'
         },
         highlight: {
-          background: '{amber.100}',
-          focusBackground: '{amber.300}',
+          background: '{primary.100}',
+          focusBackground: '{primary.300}',
           color: '#000000',
           focusColor: '#000000'
         }
       },
       dark: {
         primary: {
-          color: '{amber.500}',
-          hoverColor: '{amber.100}',
-          activeColor: '{amber.50}'
+          color: '{primary.500}',
+          hoverColor: '{primary.100}',
+          activeColor: '{primary.50}'
         },
 
       }

@@ -120,11 +120,6 @@
                     <label for="city" class="text-xs">Tipo de Guía de Remisión</label>
                     <p-select size="small" [fluid]="" optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
                 </div>
-
-                <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
-
-                <app-section-producto-listado></app-section-producto-listado>
-                
             </div>
 
             <div class="flex flex-col gap-4">
@@ -140,6 +135,11 @@
             </div>
         </div>
 
+        <div class="flex flex-col gap-4">
+            <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
+
+            <app-section-producto-listado></app-section-producto-listado>
+        </div>
 
         <p-button type="submit" label="Generar" severity="primary"></p-button>
 

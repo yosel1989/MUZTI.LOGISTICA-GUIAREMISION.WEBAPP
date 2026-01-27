@@ -1,4 +1,4 @@
-<div class="border border-gray-200 rounded-xl overflow-hidden"> 
+<div class="border-2 border-primary rounded-xl overflow-hidden"> 
     <p-tabs value="0" lazy="true">
         <p-tablist>
             <p-tab value="0" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
@@ -23,7 +23,7 @@
                 <div [formGroup]="formGroupOrigen" class="flex flex-col gap-4">
                     <div>
                         <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
-                        <input class="text-xs!" placeholder="Dirección *" pSize="small" fluid pInputText formControlName="direccion" />
+                        <input placeholder="Dirección *" pSize="small" fluid pInputText formControlName="direccion" />
                         @if (submitted && f_origen.direccion.hasError()) {
                             <p-message severity="error" size="small" variant="simple">Debe ingresar la dirección de origen.</p-message>
                         }
@@ -33,10 +33,10 @@
                             <app-select-departamento [control]="f_origen.idDepartamento" classLabel="text-xs! text-gray-500 font-semibold"></app-select-departamento>
                         </div>
                         <div>
-                            <app-select-provincia [control]="f_origen.idProvincia" [idUbigeoDepartamento]="f_origen.idDepartamento.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                            <app-select-provincia [control]="f_origen.idProvincia" [idUbigeoDepartamento]="f_origen.idDepartamento.value" classLabel="text-xs! text-gray-500 font-semibold"></app-select-provincia>
                         </div>
                         <div>
-                            <app-select-distrito [control]="f_origen.idDistrito" [idUbigeoProvincia]="f_origen.idProvincia.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                            <app-select-distrito [control]="f_origen.idDistrito" [idUbigeoProvincia]="f_origen.idProvincia.value" classLabel="text-xs! text-gray-500 font-semibold"></app-select-distrito>
                         </div>
                     </div>
                 </div>

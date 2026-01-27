@@ -27,3 +27,7 @@ body {
   white-space: nowrap;
   direction: ltr;
 }
+
+#text-xs{
+  @apply text-xs;
+}
