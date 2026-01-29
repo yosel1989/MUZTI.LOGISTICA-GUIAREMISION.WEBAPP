@@ -9,6 +9,7 @@ import { es } from 'primelocale/es.json';
 import { definePreset } from '@primeng/themes';
 import { registerLocaleData } from '@angular/common';
 import localeEsPe from '@angular/common/locales/es-PE';
+import { provideToastr } from 'ngx-toastr';
 
 registerLocaleData(localeEsPe, 'es-PE');
 
@@ -38,7 +39,7 @@ export const MyPreset = definePreset(Aura, {
           background: '{primary.100}',
           focusBackground: '{primary.300}',
           color: '#000000',
-          focusColor: '#000000'
+          focusColor: '#000000',
         }
       },
       dark: {
@@ -68,6 +69,8 @@ export const appConfig: ApplicationConfig = {
                 lightModeSelector: '.light'
             }
         }
-    })
+    }),
+
+    provideToastr()
   ]
 };

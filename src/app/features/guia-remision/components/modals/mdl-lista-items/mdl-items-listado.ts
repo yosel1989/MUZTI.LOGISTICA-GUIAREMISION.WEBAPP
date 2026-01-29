@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
-import { fakeItemsToGuia } from 'app/fake/items/models/fakeItemsToGuia';
-import { ItemsToGuiaDto } from 'app/features/items/models/item-to-guia';
+import { fakeItemsToAddGuia } from 'app/fake/items/data/fakeItemsToGuia';
+import { ItemsToAddGuiaDto } from 'app/features/items/models/item-to-guia';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
@@ -37,10 +37,10 @@ import { InputIconModule } from 'primeng/inputicon';
 export class MdlListadoItemsComponent implements OnInit, AfterViewInit, OnDestroy{
 
   @ViewChild('footer') footer: any;
-  @Output() OnSelect: EventEmitter<ItemsToGuiaDto[]> = new EventEmitter<ItemsToGuiaDto[]>();
+  @Output() OnSelect: EventEmitter<ItemsToAddGuiaDto[]> = new EventEmitter<ItemsToAddGuiaDto[]>();
 
-  data: ItemsToGuiaDto[] = [];
-  selectedItems: ItemsToGuiaDto[] = [];
+  data: ItemsToAddGuiaDto[] = [];
+  selectedItems: ItemsToAddGuiaDto[] = [];
   cols: TableColumn[] = []
   ldData: boolean = false;
 
@@ -49,7 +49,7 @@ export class MdlListadoItemsComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.data = fakeItemsToGuia.map(item => ({ ...item }));
+    this.data = fakeItemsToAddGuia.map(item => ({ ...item }));
     this.cols = [
       { field: 'code', header: 'Código', sort: true },
       { field: 'description', header: 'Descripción', sort: true},
@@ -69,13 +69,13 @@ export class MdlListadoItemsComponent implements OnInit, AfterViewInit, OnDestro
 
   // functions
 
-  isSelected(item: ItemsToGuiaDto): boolean{
+  isSelected(item: ItemsToAddGuiaDto): boolean{
     return !!this.selectedItems.find(x => x.code === item.code);
   }
 
   // events
 
-  evtToggleSelected(item: ItemsToGuiaDto, selected: boolean): void {
+  evtToggleSelected(item: ItemsToAddGuiaDto, selected: boolean): void {
     item.selected = selected;
 
     if (selected) {

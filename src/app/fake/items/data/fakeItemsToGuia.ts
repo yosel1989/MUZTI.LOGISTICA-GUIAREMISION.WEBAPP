@@ -1,6 +1,6 @@
-import { ItemsToGuiaDto } from "app/features/items/models/item-to-guia";
+import { ItemsToAddGuiaDto } from "app/features/items/models/item-to-guia";
 
-export const fakeItemsToGuia: ItemsToGuiaDto[] = [
+export const fakeItemsToAddGuia: ItemsToAddGuiaDto[] = [
   {
     code: "ITM-001",
     description: "Laptop Dell Inspiron 15",

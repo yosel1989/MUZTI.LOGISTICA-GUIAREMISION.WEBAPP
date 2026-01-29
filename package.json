@@ -36,6 +36,7 @@
     "@ng-icons/tabler-icons": "^32.1.0",
     "@primeng/themes": "^20.1.2",
     "@primeuix/themes": "^2.0.2",
+    "ngx-toastr": "^20.0.4",
     "primeicons": "^7.0.0",
     "primelocale": "^2.1.7",
     "primeng": "^21.0.3",

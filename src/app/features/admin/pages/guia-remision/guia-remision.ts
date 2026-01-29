@@ -18,6 +18,8 @@ import { SelectProvinciaComponent } from 'app/features/guia-remision/components/
 import { SelectDistritoComponent } from 'app/features/guia-remision/components/selects/select-distrito/select-distrito';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
 import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
+import { GuiaRemisionRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { TabDatosEnvioProveedorComponent } from 'app/features/guia-remision/components/tabs/tab-datos-envio-proveedor/tab-datos-envio-proveedor';
 
 interface Type {
     name: string;
@@ -46,7 +48,8 @@ interface Type {
     SelectProvinciaComponent,
     SelectDistritoComponent,
     TabOrigenDestinoComponent,
-    SectionProductoListadoComponent
+    SectionProductoListadoComponent,
+    TabDatosEnvioProveedorComponent
   ],
 })
 
@@ -54,11 +57,13 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('tabOrigenDestino') tabOrigenDestino: TabOrigenDestinoComponent | undefined;
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
+    @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
+
     tipoGuia = TipoGuiaRemisionEnum;
 
     // Datos formulario
     fromGroup: FormGroup = new FormGroup({});
-    
+
     constructor(
         private formBuilder: FormBuilder
     ){
@@ -70,6 +75,7 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
             distrito: new FormControl(null),
         });
     }
+
 
     ngOnInit(): void{
     }
@@ -85,10 +91,26 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
         return this.fromGroup.controls;
     }
 
+    /*get request(): GuiaRemisionRequestDto{
+        return {
+            productos: this.sectionProductoListadoComponent?.getFormData.items ?? [],
+            origen: this.tabOrigenDestino!.getFormData.origen,
+            destino: [this.tabOrigenDestino!.getFormData.destino]
+        }
+    }*/
+
     // Events
     evtOnSubmit(): void{
-        console.log('Formulario enviado');
+        
         this.tabOrigenDestino?.evtOnSubmit();
+        this.sectionProductoListadoComponent?.evtOnSubmit();
+
+
+        if(this.sectionProductoListadoComponent?.invalid){
+            
+        }
+
+        console.log('lista de items', this.sectionProductoListadoComponent?.getFormData);
     }
 
 }

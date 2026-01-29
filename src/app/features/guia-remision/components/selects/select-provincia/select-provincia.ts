@@ -24,6 +24,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Input() label: string = 'Provincia';
     @Input() placeholder: string = '--SELECCIONAR--';
     @Input() placeholderLoading: string = 'CARGANDO...';
+    @Input() invalid: boolean = false;
     @Input() control!: FormControl;
 
     collection: UbigeoProvinciaDto[] = [];
@@ -50,6 +51,8 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['idUbigeoDepartamento']) {
             this.getData();
+            this.control.patchValue(null);
+            this.control.updateValueAndValidity();
         }
     }
 

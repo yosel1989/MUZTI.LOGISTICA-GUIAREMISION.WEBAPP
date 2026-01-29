@@ -23,6 +23,7 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     @Input() label: string = 'Departamento';
     @Input() placeholder: string = '--SELECCIONAR--';
     @Input() placeholderLoading: string = 'CARGANDO...';
+    @Input() invalid: boolean = false;
     @Input() control!: FormControl;
 
     ubigeoDepartamentos: UbigeoDepartamentoDto[] = [];

@@ -25,6 +25,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() placeholder: string = '--SELECCIONAR--';
     @Input() placeholderLoading: string = 'CARGANDO...';
     @Input() control!: FormControl;
+    @Input() invalid: boolean = false;
 
     collection: UbigeoDistritoDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

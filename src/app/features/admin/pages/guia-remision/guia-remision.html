@@ -1,5 +1,5 @@
-<div class="p-4">
-    <form [formGroup]="fromGroup" (ngSubmit)="evtOnSubmit()">
+<div class="p-4 relative">
+    <form [formGroup]="fromGroup" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
 
         <div class="grid grid-cols-3 gap-4">
             <div class="col-span-2 flex flex-col gap-4">
@@ -136,12 +136,15 @@
         </div>
 
         <div class="flex flex-col gap-4">
+            <app-tab-datos-envio-proveedor [tipoGuia]="selectTipoGuiaComponent?.tipoGuiaSelected!" #tabDatosEnvioProveedor></app-tab-datos-envio-proveedor>
+
             <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
 
-            <app-section-producto-listado></app-section-producto-listado>
+            <app-section-producto-listado #sectionProductoListado></app-section-producto-listado>
         </div>
-
-        <p-button type="submit" label="Generar" severity="primary"></p-button>
-
     </form>
+</div>
+
+<div class="sticky bottom-0 p-4 bg-white text-end border-t shadow-lg! border-gray-300 z-20">
+    <p-button class="ml-auto" styleClass="px-8!" icon="pi pi-file" type="submit" label="Emitir Guía" severity="primary" (onClick)="evtOnSubmit()"></p-button>
 </div>

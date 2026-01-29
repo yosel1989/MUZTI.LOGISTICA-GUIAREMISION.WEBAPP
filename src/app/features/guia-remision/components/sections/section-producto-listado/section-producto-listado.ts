@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RatingModule } from 'primeng/rating';
 import { TableModule } from 'primeng/table';
@@ -19,10 +19,15 @@ import { TextareaModule } from 'primeng/textarea';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MdlListadoItemsComponent } from '../../modals/mdl-lista-items/mdl-items-listado';
 import { Subscription } from 'rxjs';
-import { ItemsToGuiaDto } from 'app/features/items/models/item-to-guia';
-import { unitofMeasures } from 'app/fake/items/models/unitOfMeasure';
+import { ItemsToAddGuiaDto, ItemsToGuiaRequestDto } from 'app/features/items/models/item-to-guia';
+import { unitofMeasures } from 'app/fake/items/data/unitOfMeasure';
 import { SelectModule } from 'primeng/select';
 import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
+import { SubNationalCode } from 'app/features/items/models/sub-national-code';
+import { CODIGO_SUBNACIONAL_FAKE } from 'app/fake/items/data/subNationalCode';
+import { AlertService } from 'app/core/services/alert.service';
+import { tablerAlertCircle } from '@ng-icons/tabler-icons';
+import { GR_ProductoRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -48,7 +53,7 @@ import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
     TextareaModule,
     SelectModule
   ],
-  viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
+  viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService]
 })
 
@@ -62,7 +67,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   cols!: any[];
 
   form: FormGroup = new FormGroup({});
-
+  
   itemss = [
             {
                 label: 'Options',
@@ -80,16 +85,21 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
         ];
 
   unitOfMeasures: UnitOfMeasure[] = [];
+  subNationalCodes: SubNationalCode[] = [];
   
   private subs = new Subscription();
+
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
     public dialogService: DialogService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertService: AlertService
   ){
     this.form = this.fb.group({ 
-      items: this.fb.array([this.newItem()])
+      items: this.fb.array([]),
+      description: new FormControl(null)
     });
   }
 
@@ -98,27 +108,51 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     return this.form.get('items') as FormArray; 
   }
 
+  private get f(): any{
+    return this.form.controls;
+  }
+
+  get getFormData(): {description: string, items: GR_ProductoRequestDto[]} {
+    return {
+      description: this.f.description.value,
+      items: (this.items as FormArray).controls.map((element: any) => {
+        return {
+          codigo: element.get('codigo')?.value,
+          descripcion: element.get('descripcion')?.value,
+          cantidad: element.get('cantidad')?.value,
+          codigo_um: element.get('unidad')?.value
+          //codigo_sunat: element.get('codigo_sunat')?.value,
+          //codigo_subnacional: element.get('codigo_subnacional')?.value,
+          //bien_normalizado: element.get('bien_normalizado')?.value,
+        };
+      })
+    };
+  }
+
+
+  get valid(): boolean{
+    return this.form.valid;
+  }
+
+  get invalid(): boolean{
+    return this.form.invalid;
+  }
+
   ngOnInit(): void {
     this.unitOfMeasures = unitofMeasures;
+    this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
+    this.evtAddItem();
   }
+
   ngAfterViewInit(): void {
+
   }
+
   ngOnDestroy(): void {
     
   }
 
-  getSeverity(status: string): "success" | "info" | "warn" | "danger" | "contrast" | null | undefined {
-      switch (status) {
-          case 'INSTOCK':
-              return 'success';
-          case 'LOWSTOCK':
-              return 'warn';
-          case 'OUTOFSTOCK':
-              return 'danger';
-          default:
-              return undefined;
-      }
-  }
+  getCantidadControl(index: number): AbstractControl { return this.items.at(index).get('cantidad')!; }
 
   // functions
   newItem(): FormGroup { 
@@ -134,7 +168,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     }); 
   }
 
-  addItems(items: ItemsToGuiaDto[]): void {
+  addItems(items: ItemsToAddGuiaDto[]): void {
     for (let item of items) {
       const row = this.fb.group({
         cantidad: [1, Validators.required],
@@ -148,13 +182,23 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       });
 
       row.get('bien_normalizado')?.valueChanges.subscribe((value: any) => { 
-        console.log('dd');
+        row.get('codigo_subnacional')?.setValue(null);
+        row.get('codigo_sunat')?.setValue(null);
+
         if (value) { 
-          row.get('codigo_sunat')?.disable(); 
+          //row.get('codigo_sunat')?.disable(); 
+          row.get('codigo_subnacional')?.addValidators(Validators.required);
+          row.get('codigo_sunat')?.addValidators(Validators.required);
         } 
         else { 
-          row.get('codigo_sunat')?.enable(); 
+          //row.get('codigo_sunat')?.enable(); 
+          row.get('codigo_subnacional')?.clearValidators();
+          row.get('codigo_sunat')?.clearValidators();
         } 
+
+        row.get('codigo_subnacional')?.updateValueAndValidity();
+        row.get('codigo_sunat')?.updateValueAndValidity();
+
         this.cdr.markForCheck(); 
       });
 
@@ -165,60 +209,51 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
 
   // events
-  evtAddItem(): void{
+  evtAddItem(submitted: boolean = false): void{
+    this.submitted = submitted;
     if(this.items.valid){
       const row = this.newItem();
 
       row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => { 
+        row.get('codigo_subnacional')?.setValue(null);
+        row.get('codigo_sunat')?.setValue(null);
 
-        console.log(value);
         if (value) { 
-          row.get('codigo_sunat')?.disable(); 
+          //row.get('codigo_sunat')?.disable(); 
+          row.get('codigo_subnacional')?.addValidators(Validators.required);
+          row.get('codigo_sunat')?.addValidators(Validators.required);
         } 
         else { 
-          row.get('codigo_sunat')?.enable(); 
-        } 
+          //row.get('codigo_sunat')?.enable();
+          row.get('codigo_subnacional')?.clearValidators();
+          row.get('codigo_sunat')?.clearValidators();
+        }
+
+        row.get('codigo_subnacional')?.updateValueAndValidity();
+        row.get('codigo_sunat')?.updateValueAndValidity();
+
         this.cdr.markForCheck(); 
       });
 
       this.items.push(row);
     }
   }
-  
+
   evtRemoveItems(index: number): void{
     this.items.removeAt(index);
   }
 
   evtOnSubmit(): void{
-
-  }
-
-  evtShowMenuUnidad(event: Event): void {
-    const target = event.currentTarget as HTMLElement;
-    const rect = target.getBoundingClientRect();
-
-    // Altura disponible debajo del input
-    const espacioAbajo = window.innerHeight - rect.bottom;
-    // Altura disponible arriba del input
-    const espacioArriba = rect.top;
-
-    // Altura aproximada del menú (ajusta según tu diseño)
-    const alturaMenu = 200;
-
-    if (espacioAbajo < alturaMenu && espacioArriba > alturaMenu) {
-      // 👆 Mostrar arriba
-      this.menuUnidadMedida?.toggle(event);
-      // Forzar clase CSS para abrir hacia arriba
-      setTimeout(() => {
-        const overlay = document.querySelector('.p-menu-overlay') as HTMLElement;
-        if (overlay) {
-          overlay.style.top = `${rect.top - alturaMenu}px`;
-          overlay.style.left = `${rect.left}px`;
-        }
+    this.submitted = true;
+    if(this.form.invalid){
+      this.alertService.showToast({
+        position: 'top-end',
+        icon: "warning",
+        title: "Se tiene que completar los datos obligatorios en la sección de productos.",
+        showCloseButton: true,
+        timerProgressBar: true,
+        timer: 4000
       });
-    } else {
-      // 👇 Mostrar abajo (comportamiento normal)
-      this.menuUnidadMedida?.toggle(event);
     }
   }
 
@@ -241,24 +276,21 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     });
 
     const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlListadoItemsComponent) => {
-      const sub2 = cmp?.OnSelect.subscribe(( s: ItemsToGuiaDto[]) => {
+      const sub2 = cmp?.OnSelect.subscribe(( s: ItemsToAddGuiaDto[]) => {
 
-        console.log(s);
         this.addItems(s);
         this.ref?.close();
-        /*this.alertService.showToast({
-          position: 'bottom-end',
-          icon: "success",
-          title: "Se cambio el estado con éxito",
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000
-        });*/
+
       });
       this.subs.add(sub2);
     });
 
     this.subs.add(sub);
+  }
+
+  evtSelectSubNationalCode(event: any, form: any ): void{
+    const fg = form as FormGroup;
+    fg.get('codigo_sunat')?.setValue(event.value);
   }
 
 }

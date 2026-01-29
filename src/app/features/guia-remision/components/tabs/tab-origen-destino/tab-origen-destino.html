@@ -1,4 +1,4 @@
-<div class="border-2 border-primary rounded-xl overflow-hidden"> 
+<div class="border-2 border-gray-300 rounded-xl overflow-hidden"> 
     <p-tabs value="0" lazy="true">
         <p-tablist>
             <p-tab value="0" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
@@ -23,20 +23,29 @@
                 <div [formGroup]="formGroupOrigen" class="flex flex-col gap-4">
                     <div>
                         <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
-                        <input placeholder="Dirección *" pSize="small" fluid pInputText formControlName="direccion" />
-                        @if (submitted && f_origen.direccion.hasError()) {
-                            <p-message severity="error" size="small" variant="simple">Debe ingresar la dirección de origen.</p-message>
+                        <input placeholder="Dirección *" pSize="small" fluid pInputText formControlName="direccion" [class]="f_origen.direccion.invalid && submitted ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " [invalid]="f_origen.direccion.invalid && submitted" />
+                        @if (f_origen.direccion.invalid && submitted) {
+                            <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe ingresar la dirección de origen.</span></p-message>
                         }
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <app-select-departamento [control]="f_origen.idDepartamento" classLabel="text-xs! text-gray-500 font-semibold"></app-select-departamento>
+                            <app-select-departamento [control]="f_origen.idDepartamento" classLabel="text-xs! text-gray-500 font-semibold" [invalid]="f_origen.idDepartamento.invalid && submitted"></app-select-departamento>
+                            @if (f_origen.idDepartamento.invalid && submitted) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe seleccionar el departamento de origen.</span></p-message>
+                            }
                         </div>
                         <div>
-                            <app-select-provincia [control]="f_origen.idProvincia" [idUbigeoDepartamento]="f_origen.idDepartamento.value" classLabel="text-xs! text-gray-500 font-semibold"></app-select-provincia>
+                            <app-select-provincia [control]="f_origen.idProvincia" [idUbigeoDepartamento]="f_origen.idDepartamento.value" [invalid]="f_origen.idProvincia.invalid && submitted" classLabel="text-xs! text-gray-500 font-semibold"></app-select-provincia>
+                            @if (f_origen.idProvincia.invalid && submitted) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe seleccionar la provincia de origen.</span></p-message>
+                            }
                         </div>
                         <div>
-                            <app-select-distrito [control]="f_origen.idDistrito" [idUbigeoProvincia]="f_origen.idProvincia.value" classLabel="text-xs! text-gray-500 font-semibold"></app-select-distrito>
+                            <app-select-distrito [control]="f_origen.idDistrito" [idUbigeoProvincia]="f_origen.idProvincia.value" [invalid]="f_origen.idDistrito.invalid && submitted" classLabel="text-xs! text-gray-500 font-semibold"></app-select-distrito>
+                            @if (f_origen.idDistrito.invalid && submitted) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe seleccionar el distrito de origen.</span></p-message>
+                            }
                         </div>
                     </div>
                 </div>
@@ -45,17 +54,29 @@
                 <div [formGroup]="formGroupDestino" class="flex flex-col gap-4">
                     <div>
                         <label class="text-xs text-gray-500 font-semibold">Dirección *</label>
-                        <input placeholder="Dirección *" formControlName="direccion" pSize="small" fluid pInputText />
+                        <input placeholder="Dirección *" formControlName="direccion" pSize="small" fluid pInputText [class]="f_destino.direccion.invalid && submitted ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " [invalid]="f_destino.direccion.invalid && submitted" />
+                        @if (f_destino.direccion.invalid && submitted) {
+                            <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe ingresar la dirección de destino.</span></p-message>
+                        }
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <app-select-departamento [control]="f_destino.idDepartamento" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                            <app-select-departamento [control]="f_destino.idDepartamento" classLabel="text-xs text-gray-500 font-semibold" [invalid]="f_destino.idDepartamento.invalid && submitted"></app-select-departamento>
+                            @if (f_destino.idDepartamento.invalid && submitted) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe seleccionar el departamento de destino.</span></p-message>
+                            }
                         </div>
                         <div>
-                            <app-select-provincia [control]="f_destino.idProvincia" [idUbigeoDepartamento]="f_destino.idDepartamento.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                            <app-select-provincia [control]="f_destino.idProvincia" [idUbigeoDepartamento]="f_destino.idDepartamento.value" [invalid]="f_destino.idProvincia.invalid && submitted" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                            @if (f_destino.idProvincia.invalid && submitted) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe seleccionar la provincia de destino.</span></p-message>
+                            }
                         </div>
                         <div>
-                            <app-select-distrito [control]="f_destino.idDistrito" [idUbigeoProvincia]="f_destino.idProvincia.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                            <app-select-distrito [control]="f_destino.idDistrito" [idUbigeoProvincia]="f_destino.idProvincia.value" [invalid]="f_destino.idDistrito.invalid && submitted" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                            @if (f_destino.idDistrito.invalid && submitted) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs!">Debe seleccionar el distrito de destino.</span></p-message>
+                            }
                         </div>
                     </div>
                 </div>
