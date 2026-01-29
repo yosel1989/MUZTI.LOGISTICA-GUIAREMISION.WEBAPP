@@ -21,8 +21,9 @@ import { BehaviorSubject } from 'rxjs';
 export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDestroy{
     @Input() classLabel: string = '';
     @Input() label: string = 'Departamento';
-    @Input() placeholder: string = '--SELECCIONAR--';
-    @Input() placeholderLoading: string = 'CARGANDO...';
+    @Input() placeholder: string = 'Seleccionar...';
+    @Input() placeholderLoading: string = 'Cargando...';
+    @Input() inputId: string = '';
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
 

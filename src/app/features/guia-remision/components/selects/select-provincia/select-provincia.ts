@@ -22,8 +22,9 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Input() idUbigeoDepartamento: string | null = null;
     @Input() classLabel: string = '';
     @Input() label: string = 'Provincia';
-    @Input() placeholder: string = '--SELECCIONAR--';
-    @Input() placeholderLoading: string = 'CARGANDO...';
+    @Input() inputId: string = '';
+    @Input() placeholder: string = 'Seleccionar...';
+    @Input() placeholderLoading: string = 'Cargando...';
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
 

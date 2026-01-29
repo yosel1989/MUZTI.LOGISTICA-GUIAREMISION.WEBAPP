@@ -38,8 +38,7 @@ export const MyPreset = definePreset(Aura, {
         highlight: {
           background: '{primary.100}',
           focusBackground: '{primary.300}',
-          color: '#000000',
-          focusColor: '#000000',
+   
         }
       },
       dark: {

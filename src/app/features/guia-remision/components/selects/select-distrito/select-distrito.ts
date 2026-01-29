@@ -22,10 +22,11 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() idUbigeoProvincia: string | null = null;
     @Input() classLabel: string = '';
     @Input() label: string = 'Distrito';
-    @Input() placeholder: string = '--SELECCIONAR--';
-    @Input() placeholderLoading: string = 'CARGANDO...';
+    @Input() placeholder: string = 'Seleccionar...';
+    @Input() placeholderLoading: string = 'Cargando...';
     @Input() control!: FormControl;
     @Input() invalid: boolean = false;
+    @Input() inputId: string = '';
 
     collection: UbigeoDistritoDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -56,6 +57,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Data
     getData(): void {
+        this.control.patchValue(null);
         this.collection = [];
         this.loading.next(false);
         if (!this.idUbigeoProvincia) {
