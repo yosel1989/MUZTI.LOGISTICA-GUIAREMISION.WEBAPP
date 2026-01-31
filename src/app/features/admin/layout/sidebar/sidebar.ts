@@ -136,11 +136,11 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy{
         document.querySelectorAll(".sidebar-toggler, .sidebar-menu-button").forEach((button) => {
             button.addEventListener("click", () => {
                 closeAllDropdowns(); // Close all open dropdowns
-                document.querySelector(".sidebar")?.classList.toggle("collapsed"); // Toggle collapsed class on sidebar
+                document.querySelector("body")?.classList.toggle("collapsed"); // Toggle collapsed class on sidebar
             });
         });
         // Collapse sidebar by default on small screens
-        if (window.innerWidth <= 1024) document.querySelector(".sidebar")?.classList.add("collapsed");
+        if (window.innerWidth <= 1024) document.querySelector("body")?.classList.add("collapsed");
     }
 
 }

@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { InputTextModule } from 'primeng/inputtext';
@@ -24,6 +24,7 @@ import { FAKE_DOCUMENT_TYPE_PERSON } from 'app/fake/items/data/fakeDocumenType';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -44,16 +45,17 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     DividerModule,
     FieldsetModule,
     MessageModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    CheckboxModule
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [ConfirmationService]
 })
 
 
-export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, OnDestroy{
+export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
 
-  @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
+    @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
 
     formDatosEnvio: FormGroup = new FormGroup({}); 
     formDatosProveedor: FormGroup = new FormGroup({}); 
@@ -71,6 +73,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ){
         this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
+          fecha_inicio_traslado: new FormControl(null, Validators.required),
+          fecha_entrega_transportista: new FormControl(null),
           descripcion_traslado: new FormControl(null),
           unidad_peso_bruto: new FormControl('KGM', Validators.required),
           peso_bruto_total: new FormControl(null, Validators.required),
@@ -80,8 +84,25 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           tipo_documento_tercero: new FormControl(null, Validators.required),
           numero_documento_tercero: new FormControl(null, Validators.required),
           nombre_rsocial_tercero: new FormControl(null, Validators.required),
+
+          ruc_transportista: new FormControl(null),
+          rsocial_transportista: new FormControl(null),
+          num_mtc_transportista: new FormControl(null),
+          email_transportista: new FormControl(null),
+
+          traslado_vehiculo_categoria: new FormControl(false),
+          traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
+
+          registrar_vehiculos_conductores: new FormControl(false),
+
           vehiculos: this.fb.array([]),
-          conductores: this.fb.array([])
+          conductores: this.fb.array([]),
+
+          num_autoriza_especial_adicional: new FormControl(null),
+          ent_emisora_especial_adicional: new FormControl(null),
+          indic_retorno_vehiculo_envase_adicional: new FormControl(false),
+          transbordo_programado_adicional: new FormControl(false),
+          indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
     }
 
@@ -103,11 +124,26 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     ngOnInit(): void {
-
+      this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
+      this.formDatosEnvio.get('tipo_transporte')?.valueChanges.subscribe((res: any) => {
+        this.evtChangeValueTipoTransporte(res);
+      });
+      this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((res) => {
+        this.f_datosEnvio.registrar_vehiculos_conductores.patchValue(false);
+      });
     }
     ngAfterViewInit(): void {
         this.evtAddVehiculo();
         this.evtAddConductor();
+    }
+    ngOnChanges(changes: SimpleChanges): void {
+      if(changes['tipoGuia']){
+        if(this.tipoGuia === 'TRANSPORTISTA'){
+          this.f_datosEnvio.tipo_transporte.setValue('PRIVADO');
+        }
+
+        this.cdr.markForCheck();
+      }
     }
     ngOnDestroy(): void {
 
@@ -124,6 +160,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }); 
     }
 
+    
+
     // events
     evtAddConductor(): void{
       const row = this.newConductor();
@@ -134,12 +172,14 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     evtRemoveCoductor(index: number): void{
       this.handlerConfirmDialog(() => {
         this.conductores.removeAt(index);
+        this.cdr.markForCheck();
       }, '¿Desea remover el conductor seleccionado?', 'Confirmar la operación.');
     }
 
     newVehiculo(): FormGroup { 
       return this.fb.group({ 
         placa_vehiculo: [ null, Validators.required], 
+        cert_habilitacion_vehiculo: [null, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
         entidad_emisora_autoriza_vehiculo: [null], 
         numero_autoriza_vehicular_vehiculo: [null]
       }); 
@@ -155,7 +195,41 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     evtRemoveVehiculo(index: number): void{
       this.handlerConfirmDialog(() => {
         this.vehiculos.removeAt(index);
+        this.cdr.markForCheck(); 
       }, '¿Desea remover el vehículo seleccionado?', 'Confirmar la operación.');
+    }
+
+    evtChangeValueTipoTransporte = (tipo: 'PRIVADO' | 'PUBLICO') => {
+      this.vehiculos.clear();
+      this.conductores.clear();
+      this.f_datosEnvio.traslado_vehiculo_categoria.setValue(false);
+      this.f_datosEnvio.num_autoriza_especial_adicional.setValue(null);
+      this.f_datosEnvio.ent_emisora_especial_adicional.setValue(null);
+
+      if(tipo === 'PRIVADO'){
+        this.evtAddVehiculo();
+        this.evtAddConductor();
+
+        this.f_datosEnvio.ruc_transportista.clearValidators();
+        this.f_datosEnvio.rsocial_transportista.clearValidators();
+      }else{
+        this.f_datosEnvio.ruc_transportista.addValidators(Validators.required);
+        this.f_datosEnvio.rsocial_transportista.addValidators(Validators.required);
+      }
+
+      this.cdr.markForCheck();
+    }
+
+    evtChaneValueRegistrarVehiculosConductores = (value: boolean): void => {
+      this.vehiculos.clear();
+      this.conductores.clear();
+
+      if(value && this.f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+        this.evtAddVehiculo();
+        this.evtAddConductor();
+      }
+
+      this.cdr.markForCheck();
     }
 
     // handlers
