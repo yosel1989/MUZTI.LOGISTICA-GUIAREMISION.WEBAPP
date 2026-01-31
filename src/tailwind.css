@@ -1,9 +1,14 @@
 @import "tailwindcss";
-@plugin "tailwindcss-primeui";
+@import "tailwindcss-primeui";
 
 @import "primeicons/primeicons.css";
-
+@custom-variant light (&:where(.light, .light *)); 
 
 ::ng-deep .p-select-filter{
   @apply text-xs!;
+}
+
+
+@layer utilities { 
+
 }

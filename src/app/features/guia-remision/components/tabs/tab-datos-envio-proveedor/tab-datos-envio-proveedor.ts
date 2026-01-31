@@ -200,21 +200,67 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     evtChangeValueTipoTransporte = (tipo: 'PRIVADO' | 'PUBLICO') => {
+      /*this.formDatosEnvio.markAsUntouched();
+      Object.values(this.formDatosEnvio.controls).forEach(control => {
+        control.markAsUntouched();
+      });
+
       this.vehiculos.clear();
       this.conductores.clear();
       this.f_datosEnvio.traslado_vehiculo_categoria.setValue(false);
       this.f_datosEnvio.num_autoriza_especial_adicional.setValue(null);
-      this.f_datosEnvio.ent_emisora_especial_adicional.setValue(null);
+      this.f_datosEnvio.ent_emisora_especial_adicional.setValue(null);*/
 
       if(tipo === 'PRIVADO'){
+
+        this.formDatosEnvio = this.fb.group({
+          tipo_transporte: new FormControl('PRIVADO', Validators.required),
+          fecha_inicio_traslado: new FormControl(null, Validators.required),
+          fecha_entrega_transportista: new FormControl(null),
+          descripcion_traslado: new FormControl(null),
+          unidad_peso_bruto: new FormControl('KGM', Validators.required),
+          peso_bruto_total: new FormControl(null, Validators.required),
+          pagador_flete: this.tipoGuia === 'TRANSPORTISTA' ? new FormControl(EnumPagadorFlete.remitente,Validators.required) : new FormControl(null),
+
+          traslado_vehiculo_categoria: new FormControl(false),
+          traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
+
+          registrar_vehiculos_conductores: new FormControl(false),
+          vehiculos: this.fb.array([]),
+          conductores: this.fb.array([]),
+
+          ruc_subcontratador: new FormControl(null),
+          nombre_rsocial_subcontratador: new FormControl(null),
+          tipo_documento_tercero: new FormControl(null),
+          numero_documento_tercero: new FormControl(null),
+          nombre_rsocial_tercero: new FormControl(null),
+
+          ruc_transportista: new FormControl(null),
+          rsocial_transportista: new FormControl(null),
+          num_mtc_transportista: new FormControl(null),
+          email_transportista: new FormControl(null),
+
+          num_autoriza_especial_adicional: new FormControl(null),
+          ent_emisora_especial_adicional: new FormControl(null),
+          indic_retorno_vehiculo_envase_adicional: new FormControl(false),
+          transbordo_programado_adicional: new FormControl(false),
+          indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
+        });
+
         this.evtAddVehiculo();
         this.evtAddConductor();
+        
+        /*this.f_datosEnvio.fecha_inicio_traslado.addValidators(Validators.required);
+        this.f_datosEnvio.fecha_entrega_transportista.clearValidators();
 
         this.f_datosEnvio.ruc_transportista.clearValidators();
-        this.f_datosEnvio.rsocial_transportista.clearValidators();
+        this.f_datosEnvio.rsocial_transportista.clearValidators();*/
       }else{
+        /*this.f_datosEnvio.fecha_inicio_traslado.clearValidators();
+        this.f_datosEnvio.fecha_entrega_transportista.addValidators(Validators.required);
+
         this.f_datosEnvio.ruc_transportista.addValidators(Validators.required);
-        this.f_datosEnvio.rsocial_transportista.addValidators(Validators.required);
+        this.f_datosEnvio.rsocial_transportista.addValidators(Validators.required);*/
       }
 
       this.cdr.markForCheck();

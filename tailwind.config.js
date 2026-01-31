@@ -3,7 +3,7 @@ import PrimeUI from 'tailwindcss-primeui';
 
 module.exports = {
   content: [
-    "./src/**/*.{html,ts}",
+    "./src/**/*.{html,ts,scss}",
   ],
   theme: {
     extend: {},
