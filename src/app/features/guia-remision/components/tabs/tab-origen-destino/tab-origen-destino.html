@@ -31,7 +31,7 @@
                                 fluid 
                                 pInputText 
                                 formControlName="direccion" 
-                                [class]="f_origen.direccion.invalid && submitted ? 'text-xs! min-h-7.5 shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-7.5 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [class]="f_origen.direccion.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
                                 [invalid]="f_origen.direccion?.invalid && (f_origen.direccion?.touched || submitted)" />
                                 @if (f_origen.direccion?.invalid && (f_origen.direccion?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Dirección es requerido.</span></p-message>
@@ -46,7 +46,7 @@
                             classLabel="text-[11px]! text-gray-500 font-semibold" 
                             [invalid]="f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)"
                             label="Departamento *"
-                            inputId="text-xs"></app-select-departamento>
+                            ></app-select-departamento>
                             @if (f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
                             }
@@ -57,7 +57,7 @@
                             [idUbigeoDepartamento]="f_origen.idDepartamento.value" 
                             [invalid]="f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold"
                             label="Provincia *"
-                            inputId="text-xs"></app-select-provincia>
+                            ></app-select-provincia>
                             @if (f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
                             }
@@ -68,7 +68,7 @@
                             [control]="f_origen.idDistrito" 
                             [idUbigeoProvincia]="f_origen.idProvincia.value" 
                             [invalid]="f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold" 
-                            [inputId]="'text-xs'"
+                            
                             ></app-select-distrito>
                             @if (f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
@@ -88,7 +88,7 @@
                             pSize="small" 
                             fluid 
                             pInputText 
-                            [class]="f_destino.direccion.invalid && submitted ? 'text-xs! min-h-7.5! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-7.5! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                            [class]="f_destino.direccion.invalid && submitted ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
                             [invalid]="f_destino.direccion.invalid && (f_destino.direccion.touched || submitted)" />
                             @if (f_destino.direccion.invalid && (f_destino.direccion.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Dirección es requerido.</span></p-message>
@@ -103,7 +103,7 @@
                             classLabel="text-[11px]! text-gray-500 font-semibold" 
                             [invalid]="f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)"
                             label="Departamento *"
-                            inputId="text-xs"></app-select-departamento>
+                            ></app-select-departamento>
                             @if (f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
                             }
@@ -114,7 +114,7 @@
                             [idUbigeoDepartamento]="f_destino.idDepartamento.value" 
                             [invalid]="f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold"
                             label="Provincia *"
-                            inputId="text-xs"></app-select-provincia>
+                            ></app-select-provincia>
                             @if (f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
                             }
@@ -125,7 +125,7 @@
                             [idUbigeoProvincia]="f_destino.idProvincia.value" 
                             [invalid]="f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold"
                             label="Distrito *"
-                            inputId="text-xs"></app-select-distrito>
+                            ></app-select-distrito>
                             @if (f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
                             }

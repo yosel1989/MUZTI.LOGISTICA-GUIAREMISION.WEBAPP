@@ -22,6 +22,7 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
 
     @Input() classLabel: string = 'text-xs';
     @Input() label: string = 'Tipo de Guía de Remisión';
+    @Input() inputId: string = '';
 
     tipoGuiaSelected: TipoGuiaRemisionEnum = TipoGuiaRemisionEnum.remitente;
 

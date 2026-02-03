@@ -95,8 +95,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
           registrar_vehiculos_conductores: new FormControl(false),
 
-          vehiculos: this.fb.array([]),
-          conductores: this.fb.array([]),
+          vehiculos: this.fb.array([], Validators.minLength(1)),
+          conductores: this.fb.array([], Validators.minLength(1)),
 
           num_autoriza_especial_adicional: new FormControl(null),
           ent_emisora_especial_adicional: new FormControl(null),
@@ -125,17 +125,34 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     ngOnInit(): void {
       this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
+
       this.formDatosEnvio.get('tipo_transporte')?.valueChanges.subscribe((res: any) => {
         this.evtChangeValueTipoTransporte(res);
       });
-      this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((res) => {
-        this.f_datosEnvio.registrar_vehiculos_conductores.patchValue(false);
+
+      this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((res: boolean) => {
+        this.f_datosEnvio.registrar_vehiculos_conductores.setValue(false);
+        if(this.f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+          this.f_datosEnvio.fecha_inicio_traslado.setValue(null);
+          this.f_datosEnvio.fecha_entrega_transportista.setValue(null);
+
+          if(res){
+            this.f_datosEnvio.fecha_inicio_traslado.setValidators(Validators.required);
+            this.f_datosEnvio.fecha_entrega_transportista.clearValidators();
+          }else{
+            this.f_datosEnvio.fecha_inicio_traslado.clearValidators();
+            this.f_datosEnvio.fecha_entrega_transportista.setValidators(Validators.required);
+          }
+          this.cdr.markForCheck();
+        }
       });
     }
+
     ngAfterViewInit(): void {
         this.evtAddVehiculo();
         this.evtAddConductor();
     }
+
     ngOnChanges(changes: SimpleChanges): void {
       if(changes['tipoGuia']){
         if(this.tipoGuia === 'TRANSPORTISTA'){
@@ -145,6 +162,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.cdr.markForCheck();
       }
     }
+
     ngOnDestroy(): void {
 
     }
@@ -211,23 +229,29 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.f_datosEnvio.num_autoriza_especial_adicional.setValue(null);
       this.f_datosEnvio.ent_emisora_especial_adicional.setValue(null);*/
 
+      const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
+      const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
+
       if(tipo === 'PRIVADO'){
+
+        const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
+        const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
 
         this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
           fecha_inicio_traslado: new FormControl(null, Validators.required),
           fecha_entrega_transportista: new FormControl(null),
           descripcion_traslado: new FormControl(null),
-          unidad_peso_bruto: new FormControl('KGM', Validators.required),
-          peso_bruto_total: new FormControl(null, Validators.required),
+          unidad_peso_bruto: new FormControl(upbrutoTotal, Validators.required),
+          peso_bruto_total: new FormControl(pbrutoTotal, Validators.required),
           pagador_flete: this.tipoGuia === 'TRANSPORTISTA' ? new FormControl(EnumPagadorFlete.remitente,Validators.required) : new FormControl(null),
 
           traslado_vehiculo_categoria: new FormControl(false),
           traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
 
           registrar_vehiculos_conductores: new FormControl(false),
-          vehiculos: this.fb.array([]),
-          conductores: this.fb.array([]),
+          vehiculos: this.fb.array([], Validators.minLength(1)),
+          conductores: this.fb.array([], Validators.minLength(1)),
 
           ruc_subcontratador: new FormControl(null),
           nombre_rsocial_subcontratador: new FormControl(null),
@@ -256,11 +280,39 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.f_datosEnvio.ruc_transportista.clearValidators();
         this.f_datosEnvio.rsocial_transportista.clearValidators();*/
       }else{
-        /*this.f_datosEnvio.fecha_inicio_traslado.clearValidators();
-        this.f_datosEnvio.fecha_entrega_transportista.addValidators(Validators.required);
+        this.formDatosEnvio = this.fb.group({
+          tipo_transporte: new FormControl('PUBLICO', Validators.required),
+          fecha_inicio_traslado: new FormControl(null),
+          fecha_entrega_transportista: new FormControl(null, Validators.required),
+          descripcion_traslado: new FormControl(null),
+          unidad_peso_bruto: new FormControl(upbrutoTotal, Validators.required),
+          peso_bruto_total: new FormControl(pbrutoTotal, Validators.required),
+          pagador_flete: new FormControl(null),
 
-        this.f_datosEnvio.ruc_transportista.addValidators(Validators.required);
-        this.f_datosEnvio.rsocial_transportista.addValidators(Validators.required);*/
+          traslado_vehiculo_categoria: new FormControl(false),
+          traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
+
+          registrar_vehiculos_conductores: new FormControl(false),
+          vehiculos: this.fb.array([]),
+          conductores: this.fb.array([]),
+
+          ruc_subcontratador: new FormControl(null),
+          nombre_rsocial_subcontratador: new FormControl(null),
+          tipo_documento_tercero: new FormControl(null),
+          numero_documento_tercero: new FormControl(null),
+          nombre_rsocial_tercero: new FormControl(null),
+
+          ruc_transportista: new FormControl(null),
+          rsocial_transportista: new FormControl(null),
+          num_mtc_transportista: new FormControl(null),
+          email_transportista: new FormControl(null),
+
+          num_autoriza_especial_adicional: new FormControl(null),
+          ent_emisora_especial_adicional: new FormControl(null),
+          indic_retorno_vehiculo_envase_adicional: new FormControl(false),
+          transbordo_programado_adicional: new FormControl(false),
+          indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
+        });
       }
 
       this.cdr.markForCheck();
@@ -276,6 +328,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }
 
       this.cdr.markForCheck();
+    }
+
+    evtOnChangeTipoTransporte(tipoTrasnporte: 'PRIVADO' | 'PUBLICO'): void{
+      this.f_datosEnvio.tipo_transporte.setValue(tipoTrasnporte);
+      this.evtChangeValueTipoTransporte(tipoTrasnporte);
     }
 
     // handlers

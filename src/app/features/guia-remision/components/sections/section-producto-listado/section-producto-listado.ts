@@ -157,8 +157,8 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   // functions
   newItem(): FormGroup { 
     return this.fb.group({ 
-      cantidad: [ null, Validators.required], 
-      unidad: [null, Validators.required], 
+      cantidad: [ 1, Validators.required], 
+      unidad: ['NIU', Validators.required], 
       codigo: [null],
       descripcion: [null, Validators.required],
       codigo_sunat: [null], 

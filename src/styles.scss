@@ -36,3 +36,9 @@ body {
 #text-xs{
   @apply text-xs;
 }
+
+p-select{
+  .p-select-label{
+    align-self: center !important;
+  }
+} 
