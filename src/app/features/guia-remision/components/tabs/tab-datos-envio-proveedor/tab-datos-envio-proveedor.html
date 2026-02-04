@@ -2,17 +2,17 @@
 
     <p-tabs value="0" lazy="true">
         <p-tablist>
-            <p-tab value="0" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+            <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
-                    <label for="" class="text-xs  font-semibold pointer-events-none">Datos de envio</label>
+                    <label for="" class="text-[12px] pointer-events-none">Datos de envio</label>
                     @if(submitted && formDatosEnvio.invalid) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
             </p-tab>
-            <p-tab value="1" class="py-3! data-[p-active=false]:bg-secondary! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+            <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
-                    <label for="" class="text-xs font-semibold pointer-events-none">Datos del proveedor</label>
+                    <label for="" class="text-[12px] pointer-events-none">Datos del proveedor</label>
                     @if(submitted && formDatosProveedor.invalid) {
                         <ng-icon name="tablerAlertCircle" />
                     }

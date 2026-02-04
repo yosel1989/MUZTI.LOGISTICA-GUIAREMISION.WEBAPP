@@ -125,13 +125,15 @@
             <div class="flex flex-col gap-4">
                 <div class="">
                     <label  class="block text-xs">Fecha de emisión</label>
-                    <p-datepicker size="small" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                    <p-datepicker [maxDate]="today" [minDate]="last" formControlName="fecha_emision" size="small" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
                 </div>
 
-                <div>
-                    <label  class="text-xs">N° de registro MTC</label>
-                    <input placeholder="N° de registro MTC" pSize="small" fluid pInputText />
-                </div>
+                @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.remitente){
+                    <div>
+                        <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">N° de registro MTC <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
+                        <input  placeholder="N° de registro MTC" pSize="small" fluid pInputText />
+                    </div>
+                }
             </div>
         </div>
 

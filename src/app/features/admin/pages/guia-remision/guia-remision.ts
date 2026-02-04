@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -18,8 +18,9 @@ import { SelectProvinciaComponent } from 'app/features/guia-remision/components/
 import { SelectDistritoComponent } from 'app/features/guia-remision/components/selects/select-distrito/select-distrito';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
 import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
-import { GuiaRemisionRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { TabDatosEnvioProveedorComponent } from 'app/features/guia-remision/components/tabs/tab-datos-envio-proveedor/tab-datos-envio-proveedor';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 
 interface Type {
     name: string;
@@ -49,8 +50,10 @@ interface Type {
     SelectDistritoComponent,
     TabOrigenDestinoComponent,
     SectionProductoListadoComponent,
-    TabDatosEnvioProveedorComponent
+    TabDatosEnvioProveedorComponent,
+    NgIcon
   ],
+  viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
 })
 
 export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
@@ -64,6 +67,9 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     // Datos formulario
     fromGroup: FormGroup = new FormGroup({});
 
+    today: Date = new Date();
+    last: Date = new Date(this.today.getFullYear(), this.today.getMonth(), (this.today.getDate()-1));
+
     constructor(
         private formBuilder: FormBuilder
     ){
@@ -73,7 +79,11 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
             departamento: new FormControl(null),
             provincia: new FormControl(null),
             distrito: new FormControl(null),
+
+            fecha_emision: new FormControl(new Date(), Validators.required),
         });
+        
+        console.log(this.fromGroup.get('fecha_emision')?.value, this.today);
     }
 
 

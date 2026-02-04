@@ -1,17 +1,17 @@
 <div class="border-2 border-gray-300 rounded-xl overflow-hidden"> 
     <p-tabs value="0" lazy="true">
         <p-tablist>
-            <p-tab value="0" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+            <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
-                    <label for="" class="text-xs font-semibold pointer-events-none">Punto de partida</label>
+                    <label for="" class="text-[12px] pointer-events-none">Punto de partida</label>
                     @if(submitted && formGroupOrigen.invalid) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
             </p-tab>
-            <p-tab value="1" class="py-3! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+            <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
-                    <label for="" class="text-xs font-semibold pointer-events-none">Punto de llegada</label>
+                    <label for="" class="text-[12px] pointer-events-none">Punto de llegada</label>
                     @if(submitted && formGroupDestino.invalid) {
                         <ng-icon name="tablerAlertCircle" />
                     }
