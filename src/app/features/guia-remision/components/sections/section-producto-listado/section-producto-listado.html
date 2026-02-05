@@ -31,10 +31,13 @@
                         <th class="text-xs text-gray-500! font-semibold px-1!">
                             <span class="inline-flex items-center gap-2">GTIN <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Este campo puede ser usado para ingresar el código de barras de tu producto, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
-                        <th class="text-xs text-gray-500! font-semibold px-1! w-25">
-                            <span class="inline-flex items-center gap-2">Cod. Subnacional <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí podrás ingresar el código de la clasificación arancelaria de mercancías asignada a tu producto, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
+                            <span class="flex items-center gap-2">
+                                <span>Cod. Subnacional </span>
+                                <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí podrás ingresar el código de la clasificación arancelaria de mercancías asignada a tu producto, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
+                            </span>
                         </th>
-                        <th class="text-xs text-gray-500! font-semibold px-1!">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
                             <span class="inline-flex items-center gap-2 text-center">Bien normalizado <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Se consideran bienes normalizados a los bienes detallados en el catálogo N° 62 del anexo N°8 (Anexo III RS 123-2022-SUNAT), cuando se encuentran sujetos al SPOT o IVAP." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
                         <th class="text-xs text-gray-500! font-semibold px-1!"></th>
@@ -48,7 +51,7 @@
                         <td class="px-1!">
                             <p-inputnumber
                             size="small" 
-                            [inputStyleClass]=" row.get('cantidad')?.invalid && submitted ? 'text-xs! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                            [inputStyleClass]=" row.get('cantidad')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
                             class="text-xs!" 
                             fluid 
                             formControlName="cantidad" 
@@ -58,14 +61,14 @@
                             [min]="1"
                             [showButtons]="true" />
                         </td>
-                        <td class="px-1! w-25!">
+                        <td class="px-1! w-30!">
                             <p-select 
                             fluid
                             size="small" 
-                            inputId="text-xs" 
+                            
                             [inputSize]="2" 
                             panelStyleClass="text-xs!"
-                            [class]=" row.get('unidad')?.invalid && submitted ? 'text-xs! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                            [class]=" row.get('unidad')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
                             [options]="unitOfMeasures" 
                             formControlName="unidad" 
                             placeholder="" 
@@ -81,29 +84,28 @@
                                 </ng-template>
                             </p-select>
                         </td>
-                        <td class="px-1! w-25!">
-                            <input class="text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo" pInputText />
+                        <td class="px-1! w-30!">
+                            <input class="min-h-9 shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo" pInputText />
                         </td>
                         <td class="px-1!">
-                            <input [class]=" row.get('descripcion')?.invalid && submitted ? 'text-xs! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="descripcion" pInputText />
+                            <input [class]=" row.get('descripcion')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="descripcion" pInputText />
+                        </td>
+                        <td class="px-1! w-35!">
+                            <input [class]=" row.get('codigo_sunat')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="codigo_sunat" pInputText [readOnly]="row.get('bien_normalizado')?.value"/>
                         </td>
                         <td class="px-1!">
-                            <input [class]=" row.get('codigo_sunat')?.invalid && submitted ? 'text-xs! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="codigo_sunat" pInputText [readOnly]="row.get('bien_normalizado')?.value"/>
-                        </td>
-                        <td class="px-1!">
-                            <input class="text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="gtin" pInputText />
+                            <input class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="gtin" pInputText />
                         </td>
                         <td class="px-1! max-w-25">
                             @if(!row.get('bien_normalizado')?.value){
-                                <input class="text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo_subnacional" pInputText />
+                                <input class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo_subnacional" pInputText />
                             }@else {
                                 <p-select 
                                 fluid
                                 size="small" 
-                                inputId="text-xs" 
                                 [inputSize]="2" 
                                 panelStyleClass="text-xs!" 
-                                [class]=" row.get('codigo_subnacional')?.invalid && submitted ? 'text-xs! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [class]=" row.get('codigo_subnacional')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
                                 [options]="subNationalCodes" 
                                 formControlName="codigo_subnacional" 
                                 placeholder="Seleccionar..." 

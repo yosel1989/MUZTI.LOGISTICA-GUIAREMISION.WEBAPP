@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { TabsModule } from 'primeng/tabs';
 import { SelectMotivoTrasladoComponent } from 'app/features/guia-remision/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
-import { TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
+import { TipoGuiaRemisionEnum, GuiaRemisionTipoTrasladoEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { SelectTipoDocumentoComponent } from 'app/features/guia-remision/components/selects/select-tipo-documento/select-tipo-documento';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -21,6 +21,7 @@ import { SectionProductoListadoComponent } from 'app/features/guia-remision/comp
 import { TabDatosEnvioProveedorComponent } from 'app/features/guia-remision/components/tabs/tab-datos-envio-proveedor/tab-datos-envio-proveedor';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
+import { GuiaRemisionRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 
 interface Type {
     name: string;
@@ -58,6 +59,7 @@ interface Type {
 
 export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
     @ViewChild('tabOrigenDestino') tabOrigenDestino: TabOrigenDestinoComponent | undefined;
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
     @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
@@ -66,6 +68,7 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
     // Datos formulario
     fromGroup: FormGroup = new FormGroup({});
+    submitted: boolean = false;
 
     today: Date = new Date();
     last: Date = new Date(this.today.getFullYear(), this.today.getMonth(), (this.today.getDate()-1));
@@ -74,7 +77,7 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
         private formBuilder: FormBuilder
     ){
         this.fromGroup = this.formBuilder.group({
-            tipo_traslado: new FormControl('VENTA'),
+            tipo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
             tipo_documento: new FormControl({value: 'DNI', disabled: true}),
             departamento: new FormControl(null),
             provincia: new FormControl(null),
@@ -82,8 +85,12 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
             fecha_emision: new FormControl(new Date(), Validators.required),
         });
+
+        this.f.fecha_emision.setValue(new Date());
         
-        console.log(this.fromGroup.get('fecha_emision')?.value, this.today);
+        this.fromGroup.get('tipo_traslado')?.valueChanges.subscribe(value => {
+            console.log('tipo traslado', value); 
+        });
     }
 
 
@@ -103,6 +110,26 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
     /*get request(): GuiaRemisionRequestDto{
         return {
+            tipo_transporte: this.tabDatosEnvioProveedor?.data.tipo_transporte ?? 'PRIVADO',
+            tipo_traslado: this.f.tipo_traslado.value,
+            fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
+            hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
+            observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
+
+            motivo: this.f.tipo_documento.value,
+            departamento: this.f.departamento.value,
+            provincia: this.f.provincia.value,
+            distrito: this.f.distrito.value,
+            fecha_emision: this.f.fecha_emision.value,
+
+            origen: this.tabOrigenDestino!.getFormData.origen,
+            destino: [this.tabOrigenDestino!.getFormData.destino],
+            productos: this.sectionProductoListadoComponent?.getFormData.items ?? [],
+        }
+    }*/
+
+    /*get request(): GuiaRemisionRequestDto{
+        return {
             productos: this.sectionProductoListadoComponent?.getFormData.items ?? [],
             origen: this.tabOrigenDestino!.getFormData.origen,
             destino: [this.tabOrigenDestino!.getFormData.destino]
@@ -112,6 +139,7 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     // Events
     evtOnSubmit(): void{
         
+        this.tabDatosEnvioProveedor?.evtOnSubmit();
         this.tabOrigenDestino?.evtOnSubmit();
         this.sectionProductoListadoComponent?.evtOnSubmit();
 

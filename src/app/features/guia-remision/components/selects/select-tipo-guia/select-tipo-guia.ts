@@ -24,7 +24,7 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() label: string = 'Tipo de Guía de Remisión';
     @Input() inputId: string = '';
 
-    tipoGuiaSelected: TipoGuiaRemisionEnum = TipoGuiaRemisionEnum.remitente;
+    tipoGuiaSelected: 'REMITENTE' | 'TRANSPORTISTA' = TipoGuiaRemisionEnum.remitente;
 
     frmCtrlTipoGuia = new FormControl(this.tipoGuiaSelected, Validators.required);
 

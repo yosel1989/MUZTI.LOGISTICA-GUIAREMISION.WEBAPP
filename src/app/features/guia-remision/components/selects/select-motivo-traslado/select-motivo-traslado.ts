@@ -26,8 +26,8 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
 
     data: SelectTipoTraslado[] = [ 
         { label: 'Venta', value: GuiaRemisionTipoTrasladoEnum.venta }, 
-        { label: 'Traslado', value: GuiaRemisionTipoTrasladoEnum.traslado }, 
-        { label: 'Compra', value: GuiaRemisionTipoTrasladoEnum.compra } 
+        { label: 'Compra', value: GuiaRemisionTipoTrasladoEnum.compra },
+        { label: 'Traslado entre establecimientos de la misma empresa', value: GuiaRemisionTipoTrasladoEnum.traslado }, 
     ];
 
     constructor() {}

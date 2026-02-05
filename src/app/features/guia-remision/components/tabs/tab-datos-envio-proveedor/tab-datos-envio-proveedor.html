@@ -5,19 +5,21 @@
             <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
                     <label for="" class="text-[12px] pointer-events-none">Datos de envio</label>
-                    @if(submitted && formDatosEnvio.invalid) {
+                    @if(formDatosEnvio.invalid && (formDatosEnvio.touched || submitted) ) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
             </p-tab>
-            <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
-                <div class="flex items-center gap-2">
-                    <label for="" class="text-[12px] pointer-events-none">Datos del proveedor</label>
-                    @if(submitted && formDatosProveedor.invalid) {
-                        <ng-icon name="tablerAlertCircle" />
-                    }
-                </div>
-            </p-tab>
+            @if(motivoTraslado === 'COMPRA' && tipoGuia === 'REMITENTE'){
+                <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
+                    <div class="flex items-center gap-2">
+                        <label for="" class="text-[12px] pointer-events-none">Datos del proveedor</label>
+                        @if(formDatosProveedor.invalid && (formDatosProveedor.touched || submitted)) {
+                            <ng-icon name="tablerAlertCircle" />
+                        }
+                    </div>
+                </p-tab>
+            }
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel value="0">
@@ -582,11 +584,101 @@
 
                 </div>
             </p-tabpanel>
-            <p-tabpanel value="1">
-                <div [formGroup]="formDatosProveedor" class="flex flex-col gap-4">
+            @if(motivoTraslado === 'COMPRA' && tipoGuia === 'REMITENTE'){
+                <p-tabpanel value="1">
+                    <div [formGroup]="formDatosProveedor" class="flex flex-col gap-4">
+                        <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
+                                <p-select 
+                                fluid
+                                size="small"
+                                [inputSize]="2"
+                                panelStyleClass="text-xs!"
+                                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
+                                
+                                [options]="documentEntityProviderTypes" 
+                                placeholder="Seleccionar..." 
+                                optionValue="value" 
+                                optionLabel="description" 
+                                appendTo="body"
+                                formControlName="tipo_documento_proveedor"
+                                [invalid]="f_datosProveedor.tipo_documento_proveedor.invalid && ( f_datosProveedor.tipo_documento_proveedor.touched || submitted)"
+                                />
+                                @if (f_datosProveedor.tipo_documento_proveedor.invalid && (f_datosProveedor.tipo_documento_proveedor.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                }
+                            </div>
 
-                </div>
-            </p-tabpanel>
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
+                                <input 
+                                placeholder="N° Doc. de identidad *" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                                formControlName="numero_documento_proveedor"
+                                [invalid]="f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted)"/>
+                                @if (f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                }
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre o Razón Social *</label>
+                                <input 
+                                placeholder="Nombre o Razón Social *" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                formControlName="nombre_rsocial_proveedor" 
+                                [class]="f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted) ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted)" />
+                                @if (f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                }
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500 ">Dirección</label>
+                                <input 
+                                placeholder="Dirección" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                formControlName="direccion_proveedor" 
+                                class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                                />
+                            </div>
+
+                            <div class="flex flex-col">
+                                <app-select-departamento 
+                                [control]="f_datosProveedor.idDepartamento" 
+                                classLabel="text-[11px]! h-4.5! text-gray-500 " 
+                                label="Departamento"
+                                ></app-select-departamento>
+                            </div>
+                            <div>
+                                <app-select-provincia 
+                                [control]="f_datosProveedor.idProvincia" 
+                                [idUbigeoDepartamento]="f_datosProveedor.idDepartamento.value" 
+                                classLabel="text-[11px]! h-4.5! text-gray-500"
+                                label="Provincia"
+                                ></app-select-provincia>
+                            </div>
+                            <div>
+                                <app-select-distrito 
+                                label="Distrito"
+                                [control]="f_datosProveedor.idDistrito" 
+                                [idUbigeoProvincia]="f_datosProveedor.idProvincia.value" 
+                                classLabel="text-[11px]! h-4.5! text-gray-500" 
+                                ></app-select-distrito>
+                            </div>
+                        </div>
+                    </div>
+                </p-tabpanel>
+            }
         </p-tabpanels>
     </p-tabs>
 </div>

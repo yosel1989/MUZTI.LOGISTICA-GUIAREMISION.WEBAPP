@@ -134,11 +134,21 @@
                         <input  placeholder="N° de registro MTC" pSize="small" fluid pInputText />
                     </div>
                 }
+
+                <div class="border border-gray-400 p-4">
+                    <div class="flex items-center gap-1">
+                        <label for="" class="text-[14px] font-semibold text-primary">Documentos Relacionados:</label>
+                        <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-3.25!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="flex flex-col gap-4">
-            <app-tab-datos-envio-proveedor [tipoGuia]="selectTipoGuiaComponent?.tipoGuiaSelected!" #tabDatosEnvioProveedor></app-tab-datos-envio-proveedor>
+            <app-tab-datos-envio-proveedor 
+            [tipoGuia]="selectTipoGuiaComponent?.tipoGuiaSelected!" 
+            [motivoTraslado]="f.tipo_traslado.value" 
+            #tabDatosEnvioProveedor></app-tab-datos-envio-proveedor>
 
             <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
 
