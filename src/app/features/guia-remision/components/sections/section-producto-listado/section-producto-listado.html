@@ -134,7 +134,15 @@
         </div>
 
         <div>
-            <p-button (click)="evtShowList()" size="small" styleClass="text-xs!" class="text-xs!" icon="pi pi-plus text-xs!" severity="primary" label="Agregar lista de items"></p-button>
+            <p-button 
+            [raised]="true"
+            (onClick)="evtShowList()" 
+            size="small" 
+            styleClass="text-xs!" 
+            class="text-xs!" 
+            icon="pi pi-plus text-xs!" 
+            severity="primary" 
+            label="Agregar lista de items"></p-button>
         </div>
 
         <p-divider />

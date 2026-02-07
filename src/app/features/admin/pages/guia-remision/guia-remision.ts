@@ -1,6 +1,6 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -21,7 +21,12 @@ import { SectionProductoListadoComponent } from 'app/features/guia-remision/comp
 import { TabDatosEnvioProveedorComponent } from 'app/features/guia-remision/components/tabs/tab-datos-envio-proveedor/tab-datos-envio-proveedor';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
-import { GuiaRemisionRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { TooltipModule } from 'primeng/tooltip';
+import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
+import { DialogService } from 'primeng/dynamicdialog';
+import { Subscription } from 'rxjs';
+import { ConfirmationService } from 'primeng/api';
+import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
 
 interface Type {
     name: string;
@@ -52,9 +57,11 @@ interface Type {
     TabOrigenDestinoComponent,
     SectionProductoListadoComponent,
     TabDatosEnvioProveedorComponent,
-    NgIcon
+    NgIcon,
+    TooltipModule
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
+  providers: [DialogService, ConfirmationService]
 })
 
 export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
@@ -67,16 +74,22 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     tipoGuia = TipoGuiaRemisionEnum;
 
     // Datos formulario
-    fromGroup: FormGroup = new FormGroup({});
+    formGroup: FormGroup = new FormGroup({});
     submitted: boolean = false;
 
     today: Date = new Date();
     last: Date = new Date(this.today.getFullYear(), this.today.getMonth(), (this.today.getDate()-1));
 
+    modalRef: any | undefined;
+    private subs = new Subscription();
+
     constructor(
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        public dialogService: DialogService,
+        private cdr: ChangeDetectorRef,
+        private confirmationService: ConfirmationService,
     ){
-        this.fromGroup = this.formBuilder.group({
+        this.formGroup = this.formBuilder.group({
             tipo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
             tipo_documento: new FormControl({value: 'DNI', disabled: true}),
             departamento: new FormControl(null),
@@ -84,11 +97,12 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
             distrito: new FormControl(null),
 
             fecha_emision: new FormControl(new Date(), Validators.required),
+            docs_ref: new FormArray([]),
         });
 
-        this.f.fecha_emision.setValue(new Date());
+        this.formGroup.get('fecha_emision')?.setValue(new Date());
         
-        this.fromGroup.get('tipo_traslado')?.valueChanges.subscribe(value => {
+        this.formGroup.get('tipo_traslado')?.valueChanges.subscribe(value => {
             console.log('tipo traslado', value); 
         });
     }
@@ -101,11 +115,16 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     ngOnDestroy(): void{
+        this.subs.unsubscribe();
     }
 
     // Getters
     get f(): any{
-        return this.fromGroup.controls;
+        return this.formGroup.controls;
+    }
+
+    get docs_ref(): FormArray { 
+      return this.formGroup.get('docs_ref') as FormArray; 
     }
 
     /*get request(): GuiaRemisionRequestDto{
@@ -115,6 +134,8 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
             observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
+
+            tipo_doc_ref: this.f.
 
             motivo: this.f.tipo_documento.value,
             departamento: this.f.departamento.value,
@@ -138,17 +159,124 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
     // Events
     evtOnSubmit(): void{
-        
+
         this.tabDatosEnvioProveedor?.evtOnSubmit();
         this.tabOrigenDestino?.evtOnSubmit();
         this.sectionProductoListadoComponent?.evtOnSubmit();
 
+        if(this.sectionProductoListadoComponent?.invalid){}
 
-        if(this.sectionProductoListadoComponent?.invalid){
-            
-        }
+    }
 
-        console.log('lista de items', this.sectionProductoListadoComponent?.getFormData);
+    evtShowAddDocRef(): void{
+        this.modalRef = this.dialogService.open(MdlComprobanteReferenciaComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Agregar comprobante de referencia`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+            'padding': "0 !important"
+            },
+            appendTo: 'body'
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlComprobanteReferenciaComponent) => {
+            const sub2 = cmp?.OnAdded.subscribe(( s: any) => {
+                this.evtAddDocRef(s);
+                this.modalRef?.close();
+            });
+            const sub3 = cmp?.OnCanceled.subscribe(() => {
+                this.modalRef?.close();
+            });
+
+            this.subs.add(sub2);
+            this.subs.add(sub3);
+        });
+
+        this.subs.add(sub);
+    }
+
+    evtShowEditDocRef(fg: FormGroup): void{
+        const body = { 
+            tipo_comprobante: fg.value.tipo_comprobante, 
+            ruc_documento: fg.value.ruc_documento, 
+            serie_correlativo: fg.value.serie_correlativo 
+        };
+
+        this.modalRef = this.dialogService.open(MdlEditarComprobanteReferenciaComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Editar comprobante de referencia`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+            'padding': "0 !important"
+            },
+            appendTo: 'body',
+            data: {
+                row: body
+            }
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlEditarComprobanteReferenciaComponent) => {
+            const sub2 = cmp?.OnAdded.subscribe(( s: any) => {
+                this.evtAddDocRef(s);
+                this.modalRef?.close();
+            });
+            const sub3 = cmp?.OnCanceled.subscribe(() => {
+                this.modalRef?.close();
+            });
+
+            this.subs.add(sub2);
+            this.subs.add(sub3);
+        });
+
+        this.subs.add(sub);
+    }
+
+    evtAddDocRef(data: any): void{
+      const row = this.newDocRef(data);
+      this.docs_ref.push(row);
+      this.cdr.markForCheck(); 
+    }
+
+    evtRemoveDocRef(index: number): void{
+      this.handlerConfirmDialog(() => {
+        this.docs_ref.removeAt(index);
+        this.cdr.markForCheck();
+      }, '¿Desea remover el comprobante de referencia seleccionado?', 'Confirmar la operación.');
+    }
+
+    // handlers
+    handlerConfirmDialog(callback: () => void, header: string, message: string): void{
+      this.confirmationService.confirm({
+          header: header,
+          message: message,
+          accept: () => {
+            callback();
+          },
+          reject: () => {
+              
+          },
+      });
+    }
+
+    // functions
+    newDocRef(data: any): FormGroup { 
+      return this.formBuilder.group({ 
+        tipo_comprobante: new FormControl(data.tipo_comprobante, Validators.required),
+        ruc_documento: new FormControl(data.ruc_documento, Validators.required),
+        serie_correlativo: new FormControl(data.serie_correlativo, Validators.required)
+      });
     }
 
 }

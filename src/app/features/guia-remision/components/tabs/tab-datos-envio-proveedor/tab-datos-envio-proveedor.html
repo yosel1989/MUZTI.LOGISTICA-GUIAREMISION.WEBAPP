@@ -32,8 +32,22 @@
                             <div class="flex flex-row gap-1">
                                 <input #privado type="radio" name="tipo_transporte" formControlName="tipo_transporte" value="PUBLICO" class="hidden">
                                 <input #publico type="radio" name="tipo_transporte" formControlName="tipo_transporte" value="PRIVADO" class="hidden">
-                                <p-button size="small"  styleClass="text-md! py-1! font-normal!" class="text-xs! font-normal!" (click)="evtOnChangeTipoTransporte('PRIVADO')" label="Privado" [severity]="f_datosEnvio.tipo_transporte.value == 'PRIVADO' ? 'primary' : 'secondary'"></p-button>
-                                <p-button size="small"  styleClass="text-md! py-1! font-normal!" class="text-xs!" (click)="evtOnChangeTipoTransporte('PUBLICO')" label="Público" [severity]="f_datosEnvio.tipo_transporte.value == 'PUBLICO' ? 'primary' : 'secondary'"></p-button>
+                                <p-button 
+                                size="small" 
+                                styleClass="text-md! py-1! font-normal!" 
+                                class="text-xs! font-normal!" 
+                                (onClick)="evtOnChangeTipoTransporte('PRIVADO')" 
+                                label="Privado" 
+                                [raised]="f_datosEnvio.tipo_transporte.value === 'PRIVADO'"
+                                [severity]="f_datosEnvio.tipo_transporte.value == 'PRIVADO' ? 'primary' : 'secondary'"></p-button>
+                                <p-button 
+                                size="small" 
+                                styleClass="text-md! py-1! font-normal!" 
+                                class="text-xs!" 
+                                (onClick)="evtOnChangeTipoTransporte('PUBLICO')" 
+                                label="Público" 
+                                [raised]="f_datosEnvio.tipo_transporte.value === 'PUBLICO'"
+                                [severity]="f_datosEnvio.tipo_transporte.value == 'PUBLICO' ? 'primary' : 'secondary'"></p-button>
                             </div>
                         </div>
                     }
@@ -384,7 +398,14 @@
                                 }
                             </div>
                             @if(vehiculos.length < 3){
-                                <p-button (onClick)="evtAddVehiculo()" size="small" styleClass="text-xs!" class="text-xs!" severity="primary" label="Agregar vehículo"></p-button>
+                                <p-button 
+                                [raised]="true"
+                                (onClick)="evtAddVehiculo()" 
+                                size="small" 
+                                styleClass="text-xs!" 
+                                class="text-xs!" 
+                                severity="primary" 
+                                label="Agregar vehículo"></p-button>
                             }
                         </div>
                         <p-divider class="my-0!"></p-divider>
@@ -492,7 +513,14 @@
                                 }
                             </div>
                             @if(conductores.length < 3){
-                                <p-button (onClick)="evtAddConductor()" size="small" styleClass="text-xs!" class="text-xs!" severity="primary" label="Agregar conductor"></p-button>
+                                <p-button 
+                                [raised]="true"
+                                (onClick)="evtAddConductor()" 
+                                size="small" 
+                                styleClass="text-xs!" 
+                                class="text-xs!" 
+                                severity="primary" 
+                                label="Agregar conductor"></p-button>
                             }
                         </div>
                     }

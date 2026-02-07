@@ -1,5 +1,5 @@
 <div class="p-4 relative">
-    <form [formGroup]="fromGroup" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
+    <form [formGroup]="formGroup" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
 
         <div class="grid grid-cols-3 gap-4">
             <div class="col-span-2 flex flex-col gap-4">
@@ -138,8 +138,60 @@
                 <div class="border border-gray-400 p-4">
                     <div class="flex items-center gap-1">
                         <label for="" class="text-[14px] font-semibold text-primary">Documentos Relacionados:</label>
-                        <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-3.25!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
+                        <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-4.25! text-md!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
                     </div>
+
+                    @if(docs_ref.length === 0){
+                        <p class="text-xs text-gray-500 my-2">No hay documentos relacionados agregados.</p>
+                    }@else {
+                        <div class="flex flex-col gap-y-2 my-3">
+                            @for(doc of docs_ref.controls; track doc){
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex justify-between w-full text-[.875rem]">
+                                        <span>{{doc.value.serie_correlativo}}</span>
+                                        <span>{{doc.value.tipo_comprobante}}</span>
+                                    </div>
+                                    <div class="flex gap-x-1">
+                                        <p-button
+                                        raised=""
+                                        pTooltip="Eliminar documento" 
+                                        tooltipPosition="left" 
+                                        tooltipStyleClass="text-[10px]!"
+                                        class="text-xs! w-6! h-6!"
+                                        size="small" 
+                                        rounded 
+                                        icon="pi pi-trash text-xs! font-semibold!" 
+                                        severity="danger" 
+                                        styleClass="w-6! h-6!"
+                                        (onClick)="evtRemoveDocRef(doc.value)"></p-button>
+                                        <p-button 
+                                        raised
+                                        pTooltip="Editar documento" 
+                                        tooltipPosition="left" 
+                                        tooltipStyleClass="text-[10px]!"
+                                        class="text-xs! w-6! h-6!" 
+                                        size="small" 
+                                        rounded 
+                                        styleClass="w-6! h-6!"
+                                        icon="pi pi-pencil text-xs! font-semibold!" 
+                                        severity="warn" 
+                                        (onClick)="evtShowEditDocRef(doc.value)"></p-button>
+                                    </div>
+                                    
+                                </div>
+                            }
+                        </div>
+                    }
+                    
+                    
+                    <p-button 
+                        [raised]="true"
+                        (onClick)="evtShowAddDocRef()" 
+                        size="small" 
+                        styleClass="text-xs!" 
+                        class="text-xs!" 
+                        severity="primary" 
+                        label="Agregar"></p-button>
                 </div>
             </div>
         </div>
@@ -158,5 +210,13 @@
 </div>
 
 <div class="sticky bottom-0 p-4 bg-white text-end border-t shadow-lg! border-gray-300 z-20">
-    <p-button class="ml-auto" styleClass="px-8!" icon="pi pi-file" type="submit" label="Emitir Guía" severity="primary" (onClick)="evtOnSubmit()"></p-button>
+    <p-button 
+    [raised]="true"
+    class="ml-auto" 
+    styleClass="px-8!" 
+    icon="pi pi-file" 
+    type="submit" 
+    label="Emitir Guía" 
+    severity="primary" 
+    (onClick)="evtOnSubmit()"></p-button>
 </div>
