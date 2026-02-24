@@ -6,19 +6,28 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { NgIcon, provideIcons } from '@ng-icons/core';
 import { tablerLoader2 } from '@ng-icons/tabler-icons';
 import { AuthApiService } from '../../services/auth-api.service';
 import { AlertService } from '../../../../shared/services/alert.service';
 import { StorageService } from '../../../../core/services/storage.service';
 import { AuthRequest, User } from '../../services/auth.interface';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-auth',
-  imports: [NgIcon, FormsModule, ReactiveFormsModule, PasswordModule, InputTextModule, MessageModule, ToastModule],
+  imports: [ 
+    FormsModule, 
+    ReactiveFormsModule, 
+    PasswordModule, 
+    InputTextModule, 
+    MessageModule, 
+    ToastModule,
+    ButtonModule,
+    CardModule
+  ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
-  viewProviders: [provideIcons({ tablerLoader2 })],
   providers: [ MessageService]
 })
 export class AuthComponent implements AfterViewInit, OnDestroy{
@@ -103,7 +112,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
     this.storageService.setUser(JSON.stringify(res));
     this.alertService.showSwalAlert({
       icon: 'success',
-      title: `<span class="font-bold">Bienvenid@ <br> ${res.firstName} ${res.lastName}</span>`,
+      title: `<span class="font-semibold">Bienvenid@ <br> ${res.firstName} ${res.lastName}</span>`,
       timer: 3000,
       timerProgressBar: true,
       showConfirmButton: false,
@@ -114,7 +123,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
         {
           this.router.navigate(['/admin/report/orders']);
         }else{
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/admin/guia-remision']);
         }
       },
     });

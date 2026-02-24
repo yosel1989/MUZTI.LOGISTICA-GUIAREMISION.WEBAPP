@@ -89,12 +89,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           descripcion_traslado: new FormControl(null),
           unidad_peso_bruto: new FormControl('KGM', Validators.required),
           peso_bruto_total: new FormControl(null, Validators.required),
-          pagador_flete: new FormControl(EnumPagadorFlete.remitente,Validators.required),
-          ruc_subcontratador: new FormControl(null, Validators.required),
-          nombre_rsocial_subcontratador: new FormControl(null, Validators.required),
-          tipo_documento_tercero: new FormControl(null, Validators.required),
-          numero_documento_tercero: new FormControl(null, Validators.required),
-          nombre_rsocial_tercero: new FormControl(null, Validators.required),
+          pagador_flete: new FormControl(EnumPagadorFlete.remitente),
+          ruc_subcontratador: new FormControl(null),
+          nombre_rsocial_subcontratador: new FormControl(null),
+          tipo_documento_tercero: new FormControl(null),
+          numero_documento_tercero: new FormControl(null),
+          nombre_rsocial_tercero: new FormControl(null),
 
           ruc_transportista: new FormControl(null),
           rsocial_transportista: new FormControl(null),
@@ -176,11 +176,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             entidad_emisora_autoriza_vehiculo: group.get('entidad_emisora_autoriza_vehiculo')?.value, 
             numero_autoriza_vehicular_vehiculo: group.get('numero_autoriza_vehicular_vehiculo')?.value
           })),
+
           conductores: (this.conductores.controls as FormGroup[]).map(group => ({ 
-            placa_vehiculo: group.get('placa_vehiculo')?.value, 
-            cert_habilitacion_vehiculo: group.get('cert_habilitacion_vehiculo')?.value, 
-            entidad_emisora_autoriza_vehiculo: group.get('entidad_emisora_autoriza_vehiculo')?.value, 
-            numero_autoriza_vehicular_vehiculo: group.get('numero_autoriza_vehicular_vehiculo')?.value
+            tipo_documento_conductor : group.get('tipo_documento_conductor')?.value, 
+            numero_documento_conductor: group.get('numero_documento_conductor')?.value, 
+            numero_licencia_brevete_conductor: group.get('numero_licencia_brevete_conductor')?.value, 
+            nombre_conductor: group.get('nombre_conductor')?.value, 
+            apellido_conductor: group.get('apellido_conductor')?.value, 
           })),
 
           num_autoriza_especial_adicional: this.f_datosEnvio.num_autoriza_especial_adicional.value,
@@ -452,6 +454,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 timerProgressBar: true,
                 timer: 4000
             });
+            console.log('invalid form', this.formDatosEnvio);
             return;
         }
 
@@ -464,6 +467,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 timerProgressBar: true,
                 timer: 4000
             });
+            console.log('invalid form', this.formDatosProveedor);
+            return;
         }
     }
 

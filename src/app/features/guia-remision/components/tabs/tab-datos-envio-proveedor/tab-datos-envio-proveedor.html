@@ -1,4 +1,4 @@
-<div class="border-2 border-gray-300 rounded-xl overflow-hidden">
+<div class="p-card rounded-xl overflow-hidden">
 
     <p-tabs value="0" lazy="true">
         <p-tablist>
@@ -122,7 +122,7 @@
                             fluid
                             size="small" 
                             [inputSize]="2" 
-                            panelStyleClass="text-xs!"
+                            panelStyleClass="text-[.875rem]!"
                             [class]=" f_datosEnvio.unidad_peso_bruto.invalid && submitted ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : ' shadow-none! min-h-9!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
                             [options]="grossWeightUnits" 
                             formControlName="unidad_peso_bruto" 
@@ -156,7 +156,7 @@
                                 fluid
                                 size="small" 
                                 [inputSize]="2" 
-                              
+                                panelStyleClass="text-[.875rem]!"
                                 [class]=" f_datosEnvio.pagador_flete.invalid && submitted ? 'shadow-none! border-primary-400! focus:border-primary-400!' : ' shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
                                 [options]="freightPayers" 
                                 formControlName="pagador_flete" 
@@ -361,7 +361,7 @@
                                                     size="small" 
                                                     [inputSize]="2" 
                                                     
-                                                    panelStyleClass="text-xs!"
+                                                    panelStyleClass="text-[.875rem]!"
                                                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                                                     [options]="ussuingEntities" 
                                                     placeholder="Seleccionar..." 
@@ -429,7 +429,7 @@
                                                         fluid
                                                         size="small"
                                                         [inputSize]="2"
-                                                        panelStyleClass="text-xs!"
+                                                        panelStyleClass="text-[.875rem]!"
                                                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
                                                         
                                                         [options]="documentEntityTypes" 
@@ -563,7 +563,7 @@
                                         size="small" 
                                         [inputSize]="2" 
                                         inputId="text-xs"
-                                        panelStyleClass="text-xs!"
+                                        panelStyleClass="text-[.875rem]!"
                                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                                         [options]="ussuingEntities" 
                                         placeholder="Seleccionar..." 
@@ -622,7 +622,7 @@
                                 fluid
                                 size="small"
                                 [inputSize]="2"
-                                panelStyleClass="text-xs!"
+                                panelStyleClass="text-[.875rem]!"
                                 class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
                                 
                                 [options]="documentEntityProviderTypes" 

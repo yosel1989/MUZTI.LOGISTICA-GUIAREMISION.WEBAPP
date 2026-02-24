@@ -1,200 +1,402 @@
-<div class="p-4 relative">
+<div class="md:container-fluid lg:container p-4 relative mx-auto">
     <form [formGroup]="formGroup" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
 
-        <div class="grid grid-cols-3 gap-4">
-            <div class="col-span-2 flex flex-col gap-4">
-
-                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista){
-                    <p-tabs value="0">
-                        <p-tablist>
-                            <p-tab value="0">Remitente</p-tab>
-                            <p-tab value="1">Destinatario</p-tab>
-                        </p-tablist>
-                    </p-tabs>
-                }
-
-                <div class="grid grid-cols-2">
-                    <div>
-                        <app-select-tipo-guia #selectTipoGuia classLabel="text-xs text-gray-500 font-semibold"></app-select-tipo-guia>
-                    </div>
+        <p-card>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-y-4 lg:gap-4">
+                <div class="col-span-2">
+                    <app-select-empresa-remitente #selectEmpresaRemitente [control]="f.remitente_id"></app-select-empresa-remitente>
                 </div>
-
-                <!-- Tipo de Traslado -->
-                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
-                <div>
-                    <app-select-motivo-traslado [control]="f.tipo_traslado" classLabel="text-xs text-gray-500 font-semibold"></app-select-motivo-traslado>
-                </div>
-                }
-
-                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
-                <div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <app-select-tipo-documento [control]="f.tipo_documento" classLabel="text-xs text-gray-500 font-semibold"></app-select-tipo-documento>
-                        </div>
-                        <div>
-                            <label  class="text-xs">Nro. de Documento *</label>
-                            <input onlyNumber placeholder="Nro. de Documento *" pSize="small" fluid pInputText />
-                        </div>
-                    </div>
-                    <div>
-                        <label  class="text-xs">Nombres y Apellidos *</label>
-                        <input placeholder="Nombres y Apellidos *" pSize="small" fluid pInputText />
-                    </div>
-
-                    <div>
-                        <label  class="text-xs">Dirección</label>
-                        <input placeholder="Dirección" pSize="small" fluid pInputText />
-                    </div>
-                </div>
-                }
-                
-                <div>
-                    <label class="text-xs">Tipo de Guía de Remisión</label>
-                    <p-select size="small" fluid  optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label  class="text-xs">Tipo de Documento</label>
-                        <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
-                    </div>
-                    <div>
-                        <label  class="text-xs">Nro. de Documento *</label>
-                        <input placeholder="Nro. de Documento *" pSize="small" fluid pInputText />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <app-select-departamento [control]="f.departamento" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
-                    </div>
-                    <div>
-                        <app-select-provincia [control]="f.provincia" [idUbigeoDepartamento]="f.departamento.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
-                    </div>
-                    <div>
-                        <app-select-distrito [control]="f.distrito" [idUbigeoProvincia]="f.provincia.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label  class="text-xs">Email *</label>
-                        <input placeholder="Email *" pSize="small" fluid pInputText />
-                    </div>
-
-                    <div>
-                        <label  class="text-xs">Email *</label>
-                        <input placeholder="Email *" pSize="small" fluid pInputText />
-                    </div>
-
-                    <div>
-                        <!--<div>
-                            <label  class="text-xs">Email *</label>
-                            <input placeholder="Email *" pSize="small" fluid pInputText />
-                        </div>-->
-                        <p-button label="Añadir contacto" link />
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label class="text-xs">Nombres y Apellidos *</label>
-                        <input placeholder="Nombres y Apellidos *" pSize="small" fluid pInputText />
-                    </div>
-                </div>
-                
-                <div>
-                    <div>
-                        <label class="text-xs">Dirección *</label>
-                        <input placeholder="Dirección *" pSize="small" fluid pInputText />
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="city" class="text-xs">Tipo de Guía de Remisión</label>
-                    <p-select size="small" fluid optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
-                </div>
-                
-                <div>
-                    <label for="city" class="text-xs">Tipo de Guía de Remisión</label>
-                    <p-select size="small" [fluid]="" optionLabel="name" class="p-inputwrapper-filled" placeholder="--SELECCIONAR--"></p-select>
+                <div class="col">
+                   <app-guia-section-cabecera [idRemitente]="f.remitente_id.value" [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"></app-guia-section-cabecera>   
                 </div>
             </div>
+        </p-card>
 
-            <div class="flex flex-col gap-4">
-                <div class="">
-                    <label  class="block text-xs">Fecha de emisión</label>
-                    <p-datepicker [maxDate]="today" [minDate]="last" formControlName="fecha_emision" size="small" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
-                </div>
+        <p-card>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="col-span-2 flex flex-col gap-2">
 
-                @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.remitente){
-                    <div>
-                        <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">N° de registro MTC <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
-                        <input  placeholder="N° de registro MTC" pSize="small" fluid pInputText />
+                    @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista){
+                        <p-tabs value="0">
+                            <p-tablist>
+                                <p-tab value="0">Remitente</p-tab>
+                                <p-tab value="1">Destinatario</p-tab>
+                            </p-tablist>
+                        </p-tabs>
+                    }
+
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <app-select-tipo-guia #selectTipoGuia classLabel="text-xs text-gray-500 font-semibold"></app-select-tipo-guia>
+                        </div>
                     </div>
-                }
 
-                <div class="border border-gray-400 p-4">
-                    <div class="flex items-center gap-1">
-                        <label for="" class="text-[14px] font-semibold text-primary">Documentos Relacionados:</label>
-                        <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-4.25! text-md!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
-                    </div>
+                    @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
+                        <div>
+                            <app-select-motivo-traslado [control]="f.tipo_traslado" classLabel="text-xs text-gray-500 font-semibold"></app-select-motivo-traslado>
+                        </div>
+                    }
 
-                    @if(docs_ref.length === 0){
-                        <p class="text-xs text-gray-500 my-2">No hay documentos relacionados agregados.</p>
-                    }@else {
-                        <div class="flex flex-col gap-y-2 my-3">
-                            @for(doc of docs_ref.controls; track doc){
-                                <div class="flex items-center justify-between gap-2">
-                                    <div class="flex justify-between w-full text-[.875rem]">
-                                        <span>{{doc.value.serie_correlativo}}</span>
-                                        <span>{{doc.value.tipo_comprobante}}</span>
+                    @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
+                        <div>
+                            <div class="grid grid-cols-2 gap-y-2 gap-x-3">
+                                <div class="flex flex-col">
+                                    <app-select-tipo-documento 
+                                    class="flex flex-col" 
+                                    [control]="f.tipo_documento_remitente" 
+                                    classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
+                                    </app-select-tipo-documento>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nro. de Documento *</label>
+                                    <input 
+                                    formControlName="numero_documento_remitente" 
+                                    onlyNumber 
+                                    placeholder="Nro. de Documento *" 
+                                    pSize="small" 
+                                    [invalid]="f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted)"
+                                    [minlength]="f.tipo_documento_remitente.value === 'RUC' ? 11 : f.tipo_documento_remitente.value === 'DNI' ? 8 : null"
+                                    [maxlength]="f.tipo_documento_remitente.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_remitente.value === 'PASAPORTE' ? 12 : f.tipo_documento_remitente.value === 'DNI' ? 8 : f.tipo_documento_remitente.value === 'RUC' ? 11 : null"
+                                    fluid 
+                                    pInputText />
+                                    @if (f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                            @if(f.numero_documento_remitente.errors?.['required']){
+                                                Este campo es requerido.
+                                            }@else if(f.numero_documento_remitente.errors?.['minlength']){
+                                                El documento debe tener mínimo 
+                                                @switch(f.tipo_documento_remitente.value){
+                                                    @case('DNI'){ 8 }
+                                                    @case('RUC'){ 11 }    
+                                                    @default { 11 }
+                                                }
+                                                caracteres.
+                                            }@else{
+                                                El documento debe tener máximo
+                                                @switch(f.tipo_documento_remitente.value){
+                                                    @case('DNI'){ 8 }
+                                                    @case('CARNET DE EXTRANJERIA'){ 12 }
+                                                    @case('PASAPORTE'){ 12 }    
+                                                    @default { 11 }
+                                                } 
+                                                caracteres.
+                                            }
+                                        </span></p-message>
+                                    }
+                                </div>
+                                @if(f.tipo_documento_remitente.value === 'RUC'){
+                                    <div class="flex flex-col">
+                                        <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Razón Social *</label>
+                                        <input 
+                                        formControlName="razon_social_remitente" 
+                                        placeholder="Razón Social *" 
+                                        pSize="small" 
+                                        fluid 
+                                        [invalid]="f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted)"
+                                        pInputText />
+                                        @if (f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted)) {
+                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                                @if(f.razon_social_remitente.errors?.['required']){
+                                                    Este campo es requerido.
+                                                }
+                                            </span></p-message>
+                                        }
                                     </div>
-                                    <div class="flex gap-x-1">
-                                        <p-button
-                                        raised=""
-                                        pTooltip="Eliminar documento" 
-                                        tooltipPosition="left" 
-                                        tooltipStyleClass="text-[10px]!"
-                                        class="text-xs! w-6! h-6!"
-                                        size="small" 
-                                        rounded 
-                                        icon="pi pi-trash text-xs! font-semibold!" 
-                                        severity="danger" 
-                                        styleClass="w-6! h-6!"
-                                        (onClick)="evtRemoveDocRef(doc.value)"></p-button>
-                                        <p-button 
-                                        raised
-                                        pTooltip="Editar documento" 
-                                        tooltipPosition="left" 
-                                        tooltipStyleClass="text-[10px]!"
-                                        class="text-xs! w-6! h-6!" 
-                                        size="small" 
-                                        rounded 
-                                        styleClass="w-6! h-6!"
-                                        icon="pi pi-pencil text-xs! font-semibold!" 
-                                        severity="warn" 
-                                        (onClick)="evtShowEditDocRef(doc.value)"></p-button>
+                                }
+                                @else{
+                                    <div class="flex flex-col">
+                                        <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombres y Apellidos *</label>
+                                        <input 
+                                        formControlName="nombres_apellidos_remitente" 
+                                        placeholder="Nombres y Apellidos *" 
+                                        pSize="small" 
+                                        fluid 
+                                        [invalid]="f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted)"
+                                        pInputText />
+                                        @if (f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted)) {
+                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                                @if(f.nombres_apellidos_remitente.errors?.['required']){
+                                                    Este campo es requerido.
+                                                }
+                                            </span></p-message>
+                                        }
                                     </div>
-                                    
+                                }
+
+                                <div class="flex flex-col md:col-span-2">
+                                    <label class="text-[11px]! h-4.5! text-gray-500">Dirección</label>
+                                    <input 
+                                    formControlName="direccion_remitente"
+                                    placeholder="Dirección" 
+                                    pSize="small" 
+                                    fluid 
+                                    pInputText />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-x-3 gap-y-4">
+                            <div>
+                                <app-select-departamento [control]="f.departamento_remitente" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                            </div>
+                            <div>
+                                <app-select-provincia [control]="f.provincia_remitente" [idUbigeoDepartamento]="f.departamento_remitente.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                            </div>
+                            <div>
+                                <app-select-distrito [control]="f.distrito_remitente" [idUbigeoProvincia]="f.provincia_remitente.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-x-3 gap-y-4" formArrayName="contactos_remitente">
+                            @for(contact of remitenteContactos.controls; track contact; let i = $index){
+                                <div class="flex flex-col" [formGroupName]="$index">
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Email</label>
+                                    <p-iconfield>
+                                        <input 
+                                        formControlName="email"
+                                        placeholder="Email" 
+                                        pSize="small" 
+                                        fluid 
+                                        clearInput
+                                        pInputText />
+                                        @if(contact.get('email')?.value && remitenteContactos.length > 1){<p-inputicon (click)="evtRemoveContactRemitente(i)" class="pi pi-times cursor-pointer" />}
+                                    </p-iconfield>
+                                    @if (contact.get('email')?.invalid && (contact.get('email')?.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">El formato del email no es válido.</span></p-message>
+                                    }
+                                </div>
+                            }
+                            @if(remitenteContactos.length < 3){
+                                <div class="flex items-center">
+                                    <p-button (click)="evtAddContactRemitente()" class="mt-auto" styleClass="underline" label="Añadir contacto" size="small" link />
                                 </div>
                             }
                         </div>
                     }
+
+                    @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista){
+                        <div>
+                            <div class="grid grid-cols-2 gap-y-2 gap-x-3">
+                                <div class="flex flex-col">
+                                    <app-select-tipo-documento 
+                                    class="flex flex-col" 
+                                    [control]="f.tipo_documento_destinatario" 
+                                    classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
+                                    </app-select-tipo-documento>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nro. de Documento *</label>
+                                    <input 
+                                    formControlName="numero_documento_destinatario" 
+                                    onlyNumber 
+                                    placeholder="Nro. de Documento *" 
+                                    pSize="small" 
+                                    [invalid]="f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)"
+                                    [minlength]="f.tipo_documento_destinatario.value === 'RUC' ? 11 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : null"
+                                    [maxlength]="f.tipo_documento_destinatario.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_destinatario.value === 'PASAPORTE' ? 12 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : f.tipo_documento_destinatario.value === 'RUC' ? 11 : null"
+                                    fluid 
+                                    pInputText />
+                                    @if (f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                            @if(f.numero_documento_destinatario.errors?.['required']){
+                                                Este campo es requerido.
+                                            }@else if(f.numero_documento_destinatario.errors?.['minlength']){
+                                                El documento debe tener mínimo 
+                                                @switch(f.tipo_documento_destinatario.value){
+                                                    @case('DNI'){ 8 }
+                                                    @case('RUC'){ 11 }    
+                                                    @default { 11 }
+                                                }
+                                                caracteres.
+                                            }@else{
+                                                El documento debe tener máximo
+                                                @switch(f.tipo_documento_destinatario.value){
+                                                    @case('DNI'){ 8 }
+                                                    @case('CARNET DE EXTRANJERIA'){ 12 }
+                                                    @case('PASAPORTE'){ 12 }    
+                                                    @default { 11 }
+                                                } 
+                                                caracteres.
+                                            }
+                                        </span></p-message>
+                                    }
+                                </div>
+                                @if(f.tipo_documento_destinatario.value === 'RUC'){
+                                    <div class="flex flex-col">
+                                        <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Razón Social *</label>
+                                        <input 
+                                        formControlName="razon_social_destinatario" 
+                                        placeholder="Razón Social *" 
+                                        pSize="small" 
+                                        fluid 
+                                        [invalid]="f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)"
+                                        pInputText />
+                                        @if (f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)) {
+                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                                @if(f.razon_social_destinatario.errors?.['required']){
+                                                    Este campo es requerido.
+                                                }
+                                            </span></p-message>
+                                        }
+                                    </div>
+                                }
+                                @else{
+                                    <div class="flex flex-col">
+                                        <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombres y Apellidos *</label>
+                                        <input 
+                                        formControlName="nombres_apellidos_destinatario" 
+                                        placeholder="Nombres y Apellidos *" 
+                                        pSize="small" 
+                                        fluid 
+                                        [invalid]="f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted)"
+                                        pInputText />
+                                        @if (f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted)) {
+                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                                @if(f.nombres_apellidos_destinatario.errors?.['required']){
+                                                    Este campo es requerido.
+                                                }
+                                            </span></p-message>
+                                        }
+                                    </div>
+                                }
+
+                                <div class="flex flex-col md:col-span-2">
+                                    <label class="text-[11px]! h-4.5! text-gray-500">Dirección</label>
+                                    <input 
+                                    formControlName="direccion_destinatario"
+                                    placeholder="Dirección" 
+                                    pSize="small" 
+                                    fluid 
+                                    pInputText />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-x-3 gap-y-4">
+                            <div>
+                                <app-select-departamento [control]="f.departamento_destinatario" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                            </div>
+                            <div>
+                                <app-select-provincia [control]="f.provincia_destinatario" [idUbigeoDepartamento]="f.departamento_destinatario.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                            </div>
+                            <div>
+                                <app-select-distrito [control]="f.distrito_destinatario" [idUbigeoProvincia]="f.provincia_destinatario.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-x-3 gap-y-4" formArrayName="contactos_destinatario">
+                            @for(contact of destinatarioContactos.controls; track contact; let i = $index){
+                                <div class="flex flex-col" [formGroupName]="$index">
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Email</label>
+                                    <p-iconfield>
+                                        <input 
+                                        formControlName="email"
+                                        placeholder="Email" 
+                                        pSize="small" 
+                                        fluid 
+                                        clearInput
+                                        pInputText />
+                                        @if(contact.get('email')?.value && destinatarioContactos.length > 1){<p-inputicon (click)="evtRemoveContactDestinatario(i)" class="pi pi-times cursor-pointer" />}
+                                    </p-iconfield>
+                                    @if (contact.get('email')?.invalid && (contact.get('email')?.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">El formato del email no es válido.</span></p-message>
+                                    }
+                                </div>
+                            }
+                            @if(destinatarioContactos.length < 3){
+                                <div class="flex items-center">
+                                    <p-button (click)="evtAddContactDestinatario()" class="mt-auto" styleClass="underline" label="Añadir contacto" size="small" link />
+                                </div>
+                            }
+                        </div>
+                    }
+
                     
-                    
-                    <p-button 
-                        [raised]="true"
-                        (onClick)="evtShowAddDocRef()" 
-                        size="small" 
-                        styleClass="text-xs!" 
-                        class="text-xs!" 
-                        severity="primary" 
-                        label="Agregar"></p-button>
+
+                </div>
+
+                <div class="flex flex-col gap-4 gap-x-3">
+                    <div class="">
+                        <label  class="block text-xs">Fecha de emisión</label>
+                        <p-datepicker 
+                        readonlyInput="true" 
+                        formControlName="fecha_emision" 
+                        size="small" 2
+                        [iconDisplay]="'input'" 
+                        [showIcon]="true" 
+                        showButtonBar="true"
+                        inputId="icondisplay" />
+                    </div>
+
+                    @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.remitente){
+                        <div>
+                            <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">N° de registro MTC <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
+                            <input  placeholder="N° de registro MTC" pSize="small" fluid pInputText />
+                        </div>
+                    }
+
+                    <div class="border border-gray-400 p-4">
+                        <div class="flex items-center gap-1">
+                            <label for="" class="text-[14px] font-semibold text-primary">Documentos Relacionados:</label>
+                            <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-4.25! text-md!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
+                        </div>
+
+                        @if(docs_ref.length === 0){
+                            <p class="text-xs text-gray-500 my-2">No hay documentos relacionados agregados.</p>
+                        }@else {
+                            <div class="flex flex-col gap-y-2 my-3">
+                                @for(doc of docs_ref.controls; track doc){
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex justify-between w-full text-[.875rem]">
+                                            <span>{{doc.value.serie_correlativo}}</span>
+                                            <span>{{doc.value.tipo_comprobante}}</span>
+                                        </div>
+                                        <div class="flex gap-x-1">
+                                            <p-button
+                                            raised=""
+                                            pTooltip="Eliminar" 
+                                            tooltipPosition="left" 
+                                            tooltipStyleClass="text-[10px]!"
+                                            class="text-xs! w-6! h-6!"
+                                            size="small" 
+                                            rounded 
+                                            icon="pi pi-trash text-xs! font-semibold!" 
+                                            severity="danger" 
+                                            styleClass="w-6! h-6!"
+                                            (onClick)="evtRemoveDocRef(doc.value)"></p-button>
+                                            <p-button 
+                                            raised
+                                            pTooltip="Editar" 
+                                            tooltipPosition="left" 
+                                            tooltipStyleClass="text-[10px]!"
+                                            class="text-xs! w-6! h-6!" 
+                                            size="small" 
+                                            rounded 
+                                            styleClass="w-6! h-6!"
+                                            icon="pi pi-pencil text-xs! font-semibold!" 
+                                            severity="warn" 
+                                            (onClick)="evtShowEditDocRef(doc.value)"></p-button>
+                                        </div>
+                                        
+                                    </div>
+                                }
+                            </div>
+                        }
+                        
+                        <p-button 
+                            [raised]="true"
+                            (onClick)="evtShowAddDocRef()" 
+                            size="small" 
+                            styleClass="text-xs!" 
+                            class="text-xs!" 
+                            severity="primary" 
+                            label="Agregar"></p-button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </p-card>
+
+        
 
         <div class="flex flex-col gap-4">
             <app-tab-datos-envio-proveedor 
@@ -210,13 +412,16 @@
 </div>
 
 <div class="sticky bottom-0 p-4 bg-white text-end border-t shadow-lg! border-gray-300 z-20">
-    <p-button 
-    [raised]="true"
-    class="ml-auto" 
-    styleClass="px-8!" 
-    icon="pi pi-file" 
-    type="submit" 
-    label="Emitir Guía" 
-    severity="primary" 
-    (onClick)="evtOnSubmit()"></p-button>
+    <div class="container mx-auto">
+        <p-button 
+        [raised]="true"
+        class="ml-auto" 
+        styleClass="px-8!" 
+        icon="pi pi-file" 
+        type="submit" 
+        label="Emitir Guía" 
+        [loading]="$loadingSubmit | async"
+        severity="primary" 
+        (onClick)="evtOnSubmit()"></p-button>
+    </div>
 </div>

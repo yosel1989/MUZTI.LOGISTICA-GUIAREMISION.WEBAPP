@@ -28,6 +28,7 @@ import { CODIGO_SUBNACIONAL_FAKE } from 'app/fake/items/data/subNationalCode';
 import { AlertService } from 'app/core/services/alert.service';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { GR_ProductoRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -51,7 +52,8 @@ import { GR_ProductoRequestDto } from 'app/features/guia-remision/models/guia-re
     OverlayModule,
     DividerModule,
     TextareaModule,
-    SelectModule
+    SelectModule,
+    CardModule
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService]

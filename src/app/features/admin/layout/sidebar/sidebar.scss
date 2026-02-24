@@ -21,11 +21,11 @@ body {
   justify-content: space-between;
 }
 .sidebar-header .header-logo img {
-  width: 46px;
-  height: 46px;
+  width: 100%;
+  //height: 46px;
   display: block;
-  object-fit: contain;
-  border-radius: 50%;
+  //object-fit: contain;
+  //border-radius: 50%;
 }
 .sidebar-header .sidebar-toggler,
 .sidebar-menu-button {
@@ -214,4 +214,8 @@ body.collapsed :host ::ng-deep{
   .nav-link{
     pointer-events: all;
   }
+}
+
+:host{
+  z-index: 11;
 }

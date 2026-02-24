@@ -10,13 +10,14 @@ export class AlertService {
   showSwalAlert(options: SweetAlertOptions): any {
     return Swal.fire({
         ...options,
-      background: 'var(--card)',
       customClass: {
-        popup: ['bg-[--card]!', 'text-gray-900', 'dark:text-white', 'rounded-xl!', 'p-6', 'border-1!'],
+        popup: ['text-gray-900', 'dark:text-white', 'p-6', 'p-card'],
         title: ['text-gray-900', 'dark:text-white', 'text-lg'],
-        confirmButton: ['bg-blue-600', 'text-gray-900', 'dark:text-white', 'px-4', 'py-2', 'rounded'],
-        timerProgressBar: ['bg-gray-400!']
+        confirmButton: ['p-button', 'bg-primary'],
+        cancelButton: ['p-button', 'p-button-secondary', 'ml-2'],
+        timerProgressBar: ['bg-primary!'],
       },
+      backdrop: ` rgba(0,0,0,0.4) left top no-repeat `
     });
   }
 

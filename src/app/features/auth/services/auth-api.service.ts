@@ -17,15 +17,13 @@ export class AuthApiService {
   }
   
   logout() {
-    console.log('logout');
-
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.storageService.getToken()}` });
 
     return this.http.post(`${this.baseUrl}/logout`, {}, { responseType: 'text', headers }).pipe(
       finalize(() => {
         this.storageService.removeToken();
         this.storageService.removeRefreshToken();
-        this.router.navigate(['/auth']);
+        this.router.navigate(['/login']);
       })
     )
   }

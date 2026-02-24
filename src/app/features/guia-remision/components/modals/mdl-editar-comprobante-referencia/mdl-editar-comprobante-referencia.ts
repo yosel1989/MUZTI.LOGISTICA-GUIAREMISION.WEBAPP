@@ -8,6 +8,7 @@ import { DocumentInvoiceType } from 'app/shared/models/document-invoice-type';
 import { FAKE_DOCUMENT_INVOICE_TYPE_TO_DOCREF } from 'app/fake/items/data/fakeDocumenType';
 import { MessageModule } from 'primeng/message';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-mdl-editar-comprobante-referencia',
@@ -21,7 +22,8 @@ import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive'
     ButtonModule,
     SelectModule,
     MessageModule,
-    OnlyNumberDirective
+    OnlyNumberDirective,
+    ToggleSwitchModule
   ],
 })
 

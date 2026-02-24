@@ -8,6 +8,7 @@ import { DocumentInvoiceType } from 'app/shared/models/document-invoice-type';
 import { FAKE_DOCUMENT_INVOICE_TYPE_TO_DOCREF } from 'app/fake/items/data/fakeDocumenType';
 import { MessageModule } from 'primeng/message';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-mdl-comprobante-referencia',
@@ -21,7 +22,8 @@ import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive'
     ButtonModule,
     SelectModule,
     MessageModule,
-    OnlyNumberDirective
+    OnlyNumberDirective,
+    ToggleSwitchModule
   ],
 })
 
@@ -38,6 +40,7 @@ export class MdlComprobanteReferenciaComponent implements OnInit, AfterViewInit,
     private formBuilder: FormBuilder
   ) {
     this.formGroup = this.formBuilder.group({
+      checked: new FormControl(true, Validators.required),
       tipo_comprobante: new FormControl('FACTURA', Validators.required),
       ruc_documento: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       serie_correlativo: new FormControl(null, [Validators.required, this.serieCorrelativoValidator('tipo_comprobante'), Validators.pattern('^[A-Z0-9]{4}-\\d{8}$')]),
@@ -46,6 +49,8 @@ export class MdlComprobanteReferenciaComponent implements OnInit, AfterViewInit,
     this.formGroup.get('tipo_comprobante')?.valueChanges.subscribe(() => { 
       this.formGroup.get('serie_correlativo')?.updateValueAndValidity(); 
     });
+    
+    
   }
 
   ngOnInit(): void {

@@ -1,0 +1,9 @@
+@if($loading | async){
+    <p-skeleton class="w-full" height="105px"></p-skeleton>
+}@else{
+    <div class="flex flex-col items-center p-4 border border-gray-300 rounded-lg text-center h-full">
+        <p class="text-lg font-semibold text-gray-400">RUC: {{ rucEmpresa }}</p>
+        <p class="font-semibold">GUIA DE REMISIÓN ELECTRÓNICA</p>
+        <p>N° {{ serieNumero }} (<p-button class="mt-auto px-0" styleClass="px-0" label="Editar" size="small" link />)</p>   
+    </div>
+}

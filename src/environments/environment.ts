@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://localhost:44369',
-    apiAuthUrl: 'https://auth.example.com',
+    apiUrl: 'https/neziyapma9.us-east-1.awsapprunner.com',
+    apiAuthUrl: 'https://www.genexs.pe/api/seguridad/api/authentication',
     socket: 'https://socket.example.com'
 };
