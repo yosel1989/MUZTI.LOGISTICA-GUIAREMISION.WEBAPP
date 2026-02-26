@@ -231,10 +231,10 @@ console.log(this.tabDatosEnvioProveedor?.data.datosEnvio.conductores);
             }) : null,
 
             remitente: {
-                ruc: this.f.numero_documento_remitente.value,
-                descripcion: this.f.razon_social_remitente.value,
-                ubigeo_id: this.f.distrito_remitente.value,
-                direccion: this.f.direccion_remitente.value,
+                ruc: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ruc : this.f.numero_documento_remitente.value,
+                descripcion: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.nombre_empresa : this.f.razon_social_remitente.value,
+                ubigeo_id: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ubigeo_id : this.f.distrito_remitente.value,
+                direccion:  (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.direccion : this.f.direccion_remitente.value,
                 email: "yosel1989@gmail.com",
                 pais: "PE",
                 empleado_id_creacion: 1,
@@ -292,7 +292,6 @@ console.log(this.tabDatosEnvioProveedor?.data.datosEnvio.conductores);
                     };
                 }) : null,
 
-
                 unidad_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.map((d: any) => {
                     return {
                         descripcion: null,
@@ -300,7 +299,7 @@ console.log(this.tabDatosEnvioProveedor?.data.datosEnvio.conductores);
                         modelo: null,
                         placa: d.placa_vehiculo,
                         numero_registro_mtc: null,
-                        tarjeta: null,
+                        tarjeta: "TARJETA",
                         empleado_id_creacion: 1,
                         empleado_nombre_creacion: "SA"
                     };
