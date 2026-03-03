@@ -211,7 +211,7 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
-console.log(this.tabDatosEnvioProveedor?.data.datosEnvio.conductores);
+
 
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.tipo_transporte ?? 'PRIVADO',
@@ -232,7 +232,8 @@ console.log(this.tabDatosEnvioProveedor?.data.datosEnvio.conductores);
 
             remitente: {
                 ruc: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ruc : this.f.numero_documento_remitente.value,
-                descripcion: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.nombre_empresa : this.f.razon_social_remitente.value,
+                /*descripcion: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.descripcion : this.f.razon_social_remitente.value,*/
+                descripcion: this.selectEmpresaRemitente!.selected!.descripcion,
                 ubigeo_id: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ubigeo_id : this.f.distrito_remitente.value,
                 direccion:  (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.direccion : this.f.direccion_remitente.value,
                 email: "yosel1989@gmail.com",

@@ -446,13 +446,25 @@
                                                     </div>
                                                     <div>
                                                         <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
-                                                        <input 
-                                                        placeholder="N° Doc. de identidad *" 
-                                                        pSize="small" 
-                                                        fluid 
-                                                        pInputText 
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento_conductor"
-                                                        [invalid]="conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)"/>
+                                                        <div class="relative">
+                                                           <input 
+                                                            placeholder="N° Doc. de identidad *" 
+                                                            pSize="small" 
+                                                            fluid 
+                                                            pInputText 
+                                                            (keydown.enter)="evtOnSearchConductor(conductor, $event)"
+                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento_conductor"
+                                                            [invalid]="conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)"/>
+                                                            <span class="absolute w-[20px]! h-[20px]! text-[14px] rounded-md bg-gray-200 right-[5px] top-0 bottom-0 my-auto text-center flex items-center">
+                                                                @if(conductor.get('loading')?.value === false){
+                                                                    <ng-icon class="m-auto stroke-gray-300" name="heroArrowTurnDownLeftMini" />
+                                                                }@else{
+                                                                    <i class="pi pi-spin pi-spinner-dotted m-auto animate-duration-1000 text-primary"></i>
+                                                                }
+                                                                
+                                                            </span>
+                                                        </div>
+                                                        
                                                         @if (conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)) {
                                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                         }

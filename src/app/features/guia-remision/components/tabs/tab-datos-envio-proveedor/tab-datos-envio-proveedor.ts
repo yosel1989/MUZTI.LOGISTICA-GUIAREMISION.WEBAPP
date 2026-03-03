@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
+import { heroArrowTurnDownLeftMini } from '@ng-icons/heroicons/mini';
 import { InputTextModule } from 'primeng/inputtext';
 import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
@@ -30,6 +31,7 @@ import { SelectProvinciaComponent } from '../../selects/select-provincia/select-
 import { SelectDistritoComponent } from '../../selects/select-distrito/select-distrito';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { AlertService } from 'app/core/services/alert.service';
+import { ConductorApiService } from 'app/features/conductor/services/conductor-api.service';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -56,7 +58,7 @@ import { AlertService } from 'app/core/services/alert.service';
     SelectProvinciaComponent,
     SelectDistritoComponent
 ],
-  viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
+  viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle, heroArrowTurnDownLeftMini })],
   providers: [ConfirmationService, MessageService]
 })
 
@@ -80,7 +82,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       private fb: FormBuilder,
       private cdr: ChangeDetectorRef,
       private confirmationService: ConfirmationService,
-      private alertService: AlertService
+      private alertService: AlertService,
+      private conductorService: ConductorApiService
     ){
         this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
@@ -254,7 +257,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         numero_documento_conductor: [null, Validators.required], 
         numero_licencia_brevete_conductor: [null, Validators.required],
         nombre_conductor: [null, Validators.required],
-        apellido_conductor: [null, Validators.required]
+        apellido_conductor: [null, Validators.required],
+        loading: [false]
       }); 
     }
 
@@ -476,6 +480,20 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.submitted = false;
         this.formDatosEnvio.reset();
         this.formDatosProveedor.reset();
+    }
+
+    evtOnSearchConductor(fg: AbstractControl, evt: any): void{
+      evt.stopPropagation();
+      evt.preventDefault();
+      
+      fg.get('loading')?.setValue(true);
+      this.conductorService.getByNumeroDocumento(evt.target.value).subscribe((res) => {
+        fg.get('tipo_documento_conductor')?.setValue(res.tipo_documento);
+        fg.get('numero_licencia_brevete_conductor')?.setValue(res.licencia);
+        fg.get('nombre_conductor')?.setValue(res.nombres);
+        fg.get('apellido_conductor')?.setValue(res.apellidos);
+        fg.get('loading')?.setValue(false);
+      });
     }
 
     // handlers
