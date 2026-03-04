@@ -119,12 +119,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
       allowOutsideClick: false,
       allowEscapeKey: false,
       didClose: () => {
-        if(this.hasProfile(1255, res)) // Charity
-        {
-          this.router.navigate(['/admin/report/orders']);
-        }else{
-          this.router.navigate(['/admin/guia-remision']);
-        }
+        this.router.navigate(['/admin/guia-remision']);
       },
     });
   }
