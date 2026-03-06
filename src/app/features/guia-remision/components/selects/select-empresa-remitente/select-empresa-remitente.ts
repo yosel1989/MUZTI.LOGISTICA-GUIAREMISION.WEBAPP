@@ -40,8 +40,8 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
 
     ngOnInit(): void {
         this.getData();
-        this.control.valueChanges.subscribe(res => {
-            console.log('dd');
+        this.control.valueChanges.subscribe((res: number | null) => {
+            this.selected = res ? this.data.find(x => x.remitente_id === res) : undefined;
         });
     }
 
@@ -70,6 +70,7 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
 
     // Events
     onSelectItem(evt: any): void{
+        console.log('onSelectItem');
         this.selected = this.data.find(x => x.remitente_id === evt.value);
     }
 }

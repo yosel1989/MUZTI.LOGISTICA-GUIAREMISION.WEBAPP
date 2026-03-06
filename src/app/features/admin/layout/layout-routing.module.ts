@@ -9,7 +9,11 @@ const routes: Routes = [
     children: [
       {
         path: 'guia-remision',
-        loadComponent: () => import('../pages/guia-remision/guia-remision').then(m => m.GuiaRemisionComponent)
+        loadComponent: () => import('@features/guia-remision/pages/guia-remision-principal/guia-remision-principal').then(m => m.GuiaRemisionPrincipalComponent)
+      },
+      {
+        path: 'guia-remision/nuevo',
+        loadComponent: () => import('@features/guia-remision/pages/guia-remision-crear/guia-remision-crear').then(m => m.GuiaRemisionCrearComponent)
       }
     ]
   }

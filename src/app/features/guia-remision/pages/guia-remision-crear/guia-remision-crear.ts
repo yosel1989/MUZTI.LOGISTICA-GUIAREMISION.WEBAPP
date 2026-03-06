@@ -47,9 +47,9 @@ interface Type {
 }
 
 @Component({
-  selector: 'page-guia-remision',
-  templateUrl: './guia-remision.html',
-  styleUrl: './guia-remision.scss',
+  selector: 'page-guia-remision-crear',
+  templateUrl: './guia-remision-crear.html',
+  styleUrl: './guia-remision-crear.scss',
   imports: [
     CommonModule,
     SelectModule,
@@ -84,7 +84,7 @@ interface Type {
   providers: [DialogService, ConfirmationService]
 })
 
-export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
+export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
@@ -130,7 +130,6 @@ export class GuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
             provincia_remitente: new FormControl(null),
             distrito_remitente: new FormControl(null),
             contactos_remitente: new FormArray([]),
-
 
             tipo_documento_destinatario: new FormControl('RUC'),
             numero_documento_destinatario: new FormControl(null),

@@ -120,3 +120,13 @@ export interface GR_ProductoRequestDto {
   cantidad: string; 
   codigo_um: string; 
 }
+
+
+export interface GR_EnviarGuiaRemisionResponseDto {
+  success: boolean;
+
+  respuesta_facturador: {
+    codigo: string;
+    descripcion: string;
+  };
+}
