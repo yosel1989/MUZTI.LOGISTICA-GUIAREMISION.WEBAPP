@@ -1,0 +1,253 @@
+<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-[.5px] dark:border-b-gray-700">
+    <ng-template #start>
+    <div class="flex items-center gap-1">
+        <p-button 
+        size="small"
+        icon="pi pi-angle-left text-[13px]!" 
+        size="small" 
+        [disabled]="isFirstPage()"
+        [outlined]="true"
+        severity="secondary"
+        pTooltip="Anterior"
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="evtPrev()"
+        />
+        <p-button icon="pi pi-refresh text-[13px]!" 
+        size="small"  
+        severity="secondary" 
+        [outlined]="true"
+        pTooltip="Actualizar" 
+        tooltipPosition="top" 
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="reload()"
+        />
+        <p-button 
+        icon="pi pi-angle-right text-[13px]!" 
+        size="small" 
+        [disabled]="isLastPage()"
+        [outlined]="true"
+        severity="secondary"
+        pTooltip="Siguiente"
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="evtNext()"
+        />
+        <p-divider layout="vertical" size="small" class="h-[20px]! mx-1!" align="center"/>
+        
+        <p-button 
+            icon="pi pi-plus text-[13px]!"  
+            size="small" 
+            severity="info" 
+            [outlined]="true"
+            pTooltip="Nuevo proveedor" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-center"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            />
+
+        <p-button 
+            icon="pi pi-eye text-[13px]!"  
+            size="small" 
+            severity="warn" 
+            [outlined]="true"
+            pTooltip="Ver detalle" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            />
+            <p-button 
+            icon="pi pi-history text-[13px]!" 
+            size="small"
+            [outlined]="true"
+            severity="warn" 
+            pTooltip="Historial" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            placeholder="Top" 
+            />
+            <p-button 
+            icon="pi pi-print text-[13px]!" 
+            size="small"
+            [outlined]="true"
+            severity="warn" 
+            pTooltip="Imprimir Voucher" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            placeholder="Top" 
+            />
+
+            <p-button 
+            icon="pi pi-send text-[13px]!" 
+            size="small"
+            [outlined]="true"
+            severity="warn" 
+            pTooltip="Notificar" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            placeholder="Top" 
+            />
+            
+            <p-divider layout="vertical" size="small" class="h-[20px]! mx-1!" align="center"/>
+
+        <p-button 
+        icon="pi pi-cloud-download text-[13px]!" 
+        size="small"
+        [outlined]="true"
+        severity="secondary"
+        pTooltip="Descargar"
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        placeholder="Top"
+        
+        />
+
+            <p-button 
+            icon="pi pi-ticket text-[13px]!" 
+            size="small"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Registrar venta con promoción"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-center"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            placeholder="Top"
+            />
+       
+    </div>
+    </ng-template>
+    <ng-template #end>
+        <p-iconfield iconPosition="left">
+            <p-inputicon class="pi pi-search text-[13px]!" />
+            <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[.875rem]! ps-[30px]! min-h-9!"
+            (input)="evtOnFilter(inputFilter.value)"/>
+        </p-iconfield>
+    </ng-template>
+</p-toolbar>
+
+<p-table 
+#datatable
+[columns]="cols"
+[value]="data"
+size="small" 
+currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+[showCurrentPageReport]="true"
+[columns]="cols"
+[value]="data"
+[(selection)]="selected"
+[tableStyle]="{ 'min-width': '100px' }"
+[scrollable]="true"
+[showLoader]="false"
+[resizableColumns]="true"
+columnResizeMode="expand"
+
+stripedRows
+[lazy]="true"
+[rowHover]="true"
+[paginator]="true"
+
+[totalRecords]="data.length"
+[rowsPerPageOptions]="[10, 25, 50, 100]"
+
+[scrollable]="true"
+scrollHeight="400px"
+
+class="border-0! text-mono! max-w-full!"
+paginatorDropdownAppendTo="body"
+paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px] dark:border-t-gray-700 rounded-none"
+>
+    <ng-template pTemplate="header" let-columns>
+        <tr class="text-nowrap">
+            @for (col of columns; track col) {
+                 @switch (col.field) {
+                    @case('select'){
+                        <th pFrozenColumn class="px-2"></th>
+                    }
+                    @default{
+                        <th 
+                        pFrozenColumn 
+                        [frozen]="col.sticky ?? false"
+                        pResizableColumn 
+                        [pSortableColumn]="col.sort ? col.field : undefined" 
+                        class="text-nowrap py-2! text-[11px]! text-gray-500! font-semibold px-4!">
+                            <div class="flex items-center gap-2">
+                                {{ col.header }}
+                                @if(col.sort){<p-sortIcon [field]="col.field" />}
+                            </div>
+                        </th>
+                    }
+                 }
+            }
+        </tr>
+    </ng-template>
+
+
+    <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
+            
+        <ng-container *ngIf="ldData">
+        <tr>
+            <td *ngFor="let col of columns; let ii = index">
+                <p-skeleton [width]="ii == 0 ? '20px' : '100%'" height="10px"></p-skeleton>
+            </td>
+        </tr>
+        </ng-container>
+
+        <ng-container *ngIf="!ldData">
+            <tr [pSelectableRow]="rowData">
+                <ng-container *ngFor="let col of columns;">
+                    @switch(col.field){
+                        @case('select'){
+                            <td
+                            pFrozenColumn
+                            class="cursor-pointer py-2! px-2!" >
+                            <p-tableRadioButton
+                            [value]="rowData" 
+                            (click)="evtToggleSelection(rowData)"
+                            class="flex text-center justify-center"/>
+                            </td>
+                        }
+                        @case('id'){
+                            <td 
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            class="cursor-pointer py-2! px-2!" >
+                            {{ (rowIndex + 1) }}
+                            </td>
+                        }
+                        @case('fechaCreacion'){
+                            <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                        }
+                        @case('estado'){
+                            <td class="text-nowrap py-1! font-light! text-center!">
+                            <i class="pi text-green-400" [ngClass]="{ 'pi-check-circle': rowData[col.field], 'pi-times-circle': !rowData[col.field] }"></i>
+                            </td>
+                        }
+                        @default {
+                            <td
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            class="text-nowrap py-1! font-light!">{{rowData[col.field]}}</td>
+                        }
+                    }
+                </ng-container>
+            </tr>
+        </ng-container>
+    </ng-template>
+</p-table>

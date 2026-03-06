@@ -8,6 +8,10 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       {
+        path: 'proveedor',
+        loadComponent: () => import('@features/proveedor/pages/page-proveedor-principal/page-proveedor-principal').then(m => m.PageProveedorPrincipalComponent)
+      },
+      {
         path: 'guia-remision',
         loadComponent: () => import('@features/guia-remision/pages/guia-remision-principal/guia-remision-principal').then(m => m.GuiaRemisionPrincipalComponent)
       },

@@ -1,0 +1,258 @@
+<form [formGroup]="frmNuevoSorteo" (ngSubmit)="evtOnSubmit()">
+    <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+                <label class="kt-form-label font-normal">
+                Nombre del Sorteo <span class="text-red-300">*</span>
+                </label>
+                <input pInputText type="text" pSize="small" formControlName="nombre" maxlength="500" autofocus="true" class="text-xs!" />
+                @if (f.nombre.invalid && isSubmitted) {
+                    <p-message severity="error" size="small" variant="simple" >
+                    @if (f.nombre.hasError('required')) {
+                        El nombre es requerido.
+                    }
+                    @if (f.nombre.hasError('maxLength')) {
+                        El nombre no debe exceder los 500 caracteres.
+                    }
+                    </p-message>
+                }
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="kt-form-label font-normal">
+                Descripción
+                </label>
+                <p-editor 
+                [style]="{ height: '320px' }" 
+                formControlName="descripcion" 
+                fluid 
+                class="text-xs!"/>
+                @if (f.descripcion.invalid && isSubmitted) {
+                    <p-message severity="error" size="small" variant="simple">
+                    @if (f.descripcion.hasError('maxLength')) {
+                        La descripción no debe exceder los 500 caracteres.
+                    }
+                    </p-message>
+                }
+            </div>
+        </div>
+        <div class="flex flex-col gap-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="kt-form-label font-normal">
+                    Fecha de Venta Inicio <span class="text-red-300">*</span>
+                    </label>
+                    <p-datepicker size="small" 
+                    formControlName="fechaVentaInicio" 
+                    appendTo="body" 
+                    [iconDisplay]="'input'" 
+                    [showIcon]="true" 
+                    [readonlyInput]="true" 
+                    [showButtonBar]="true" 
+                    [showTime]="true"
+                    hourFormat="12"
+                    [showSeconds]="false"
+                    inputStyleClass="text-xs!"/>
+                    @if (f.fechaVentaInicio.invalid && isSubmitted) {
+                        <p-message severity="error" size="small" variant="simple">
+                            La fecha de inicio de venta es requerida.
+                        </p-message>
+                    }
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="kt-form-label font-normal">
+                    Fecha de Venta Fin <span class="text-red-300">*</span>
+                    </label>
+                    <p-datepicker size="small" 
+                    appendTo="body" 
+                    formControlName="fechaVentaFin" 
+                    [iconDisplay]="'input'" 
+                    [showIcon]="true" 
+                    [readonlyInput]="true" 
+                    [showButtonBar]="true" 
+                    [showTime]="true"
+                    hourFormat="12"
+                    [showSeconds]="false"
+                    inputStyleClass="text-xs!"/>
+                    @if (f.fechaVentaFin.invalid && isSubmitted) {
+                        <p-message severity="error" size="small" variant="simple">
+                            @if (f.fechaVentaFin.hasError('required')) {
+                                La fecha de fin de venta es requerida.
+                            }
+                            @if (f.fechaVentaFin.hasError('fechaVentaInicio')) {
+                                La fecha de fin de venta debe ser mayor a la fecha de inicio de venta.
+                            }
+                        </p-message>
+                    }
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="kt-form-label font-normal">
+                    Fecha del Sorteo <span class="text-red-300">*</span>
+                    </label>
+                    <p-datepicker size="small" 
+                    appendTo="body" 
+                    formControlName="fechaSorteo" 
+                    [iconDisplay]="'input'" 
+                    [showIcon]="true" 
+                    [readonlyInput]="true" 
+                    [showButtonBar]="true" 
+                    [showTime]="true"
+                    hourFormat="12"
+                    [showSeconds]="false"
+                    inputStyleClass="text-xs!"/>
+                    @if (f.fechaSorteo.invalid && isSubmitted) {
+                        <p-message severity="error" size="small" variant="simple">
+                            La fecha del sorteo es requerida.
+                        </p-message>
+                    }
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="kt-form-label font-normal">
+                    Fecha de Extensión del Sorteo
+                    </label>
+                    <p-datepicker size="small" 
+                    appendTo="body" 
+                    formControlName="fechaExtSorteo" 
+                    [iconDisplay]="'input'" 
+                    [showIcon]="true" 
+                    [readonlyInput]="true" 
+                    [showButtonBar]="true" 
+                    [showTime]="true"
+                    hourFormat="12"
+                    [showSeconds]="false"
+                    inputStyleClass="text-xs!"/>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="kt-form-label font-normal">
+                Precio Rifa <span class="text-red-300">*</span>
+                </label>
+                <p-inputnumber 
+                size="small" 
+                mode="currency" 
+                formControlName="precioRifa" 
+                currency="PEN" 
+                locale="es-PE" 
+                inputStyleClass="text-xs!"/>
+                @if (f.precioRifa.invalid && isSubmitted) {
+                    <p-message severity="error" size="small" variant="simple">
+                        @if (f.precioRifa.hasError('required')) {
+                            El precio de la rifa es requerida.
+                        }
+                        @if (f.precioRifa.hasError('min')) {
+                            El precio de la rifa debe ser mayor a 0.
+                        }
+                    </p-message>
+                }
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="kt-form-label font-normal">
+                    Número Inicial <span class="text-red-300">*</span>
+                    </label>
+                    <div class="flex">
+                        <p-inputnumber 
+                        fluid
+                        [showButtons]="true" 
+                        formControlName="numeroInicial" 
+                        buttonLayout="horizontal" 
+                        spinnerMode="horizontal" 
+                        [step]="1" 
+                        size="small" 
+                        [useGrouping]="false" 
+                        [min]="1"
+                        inputStyleClass="text-xs! text-center">
+                            <ng-template #incrementbuttonicon>
+                                <span class="pi pi-plus"></span>
+                            </ng-template>
+                            <ng-template #decrementbuttonicon>
+                                <span class="pi pi-minus"></span>
+                            </ng-template>
+                        </p-inputnumber>
+                    </div>
+                    @if (f.numeroInicial.invalid && isSubmitted) {
+                        <p-message severity="error" size="small" variant="simple">
+                            @if (f.numeroInicial.hasError('required')) {
+                                El número inicial para las rifas es requerida.
+                            }
+                            @if (f.numeroInicial.hasError('maxLength')) {
+                                El número inicial para las rifas debe ser mayor a 0.
+                            }
+                        </p-message>
+                    }
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="kt-form-label font-normal">
+                    Número Final <span class="text-red-300">*</span>
+                    </label>
+                    <div class="flex">
+                        <p-inputnumber 
+                        fluid
+                        [showButtons]="true" 
+                        formControlName="numeroFinal" 
+                        buttonLayout="horizontal" 
+                        spinnerMode="horizontal" 
+                        [step]="1" 
+                        size="small" 
+                        [useGrouping]="false" 
+                        [min]="1"
+                        inputStyleClass="text-xs! text-center">
+                            <ng-template #incrementbuttonicon>
+                                <span class="pi pi-plus"></span>
+                            </ng-template>
+                            <ng-template #decrementbuttonicon>
+                                <span class="pi pi-minus"></span>
+                            </ng-template>
+                        </p-inputnumber>
+                    </div>
+                    @if (f.numeroFinal.invalid && isSubmitted) {
+                        <p-message severity="error" size="small" variant="simple">
+                            @if (f.numeroFinal.hasError('required')) {
+                                El número final para las rifas es requerida.
+                            }
+                            @if (f.numeroFinal.hasError('numeroMayorQue')) {
+                                El número final de las rifas debe ser mayor al número inicial.
+                            }
+                            @if (f.numeroFinal.hasError('max')) {
+                                El número final de las rifas no deber ser mayor a 99999.
+                            }
+                        </p-message>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end gap-2">
+        <p-button type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
+        <p-button type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? 'Cargando...' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
+    </div>
+
+</form>
+
+
+
+
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog #cd>
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 bg-surface-900 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question !text-5xl"></i>
+                </div>
+                <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>
