@@ -23,7 +23,7 @@ export interface RegistrarProveedorRequestDto{
   direccion: string;
   email: string;
   pais: string;
-  codigoSunat: string | null;
+  codigo_sunat: string | null;
   empleado_id_creacion: number | null;
   empleado_nombre_creacion: string | null;
 }

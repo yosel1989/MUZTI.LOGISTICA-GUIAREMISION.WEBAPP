@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { DatePicker } from 'primeng/datepicker';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -8,19 +7,23 @@ import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
-import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { formatDate } from '@angular/common';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
-import { RegistrarProveedorRequestDto } from '@features/proveedor/models/proveedor';
+import { RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from '@features/proveedor/models/proveedor';
+import { SelectModule } from 'primeng/select';
+import { DocumentEntityType } from '@features/items/models/document-entity-type';
+import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
+import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 
 @Component({
   selector: 'app-mdl-registrar-proveedor',
   imports: [
     FormsModule, 
-    DatePicker, 
     InputNumberModule,
     InputTextModule, 
     TextareaModule, 
@@ -28,10 +31,14 @@ import { RegistrarProveedorRequestDto } from '@features/proveedor/models/proveed
     EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
-    ConfirmDialog
+    ConfirmDialog,
+    SelectModule,
+    SelectDepartamentoComponent,
+    SelectProvinciaComponent,
+    SelectDistritoComponent
   ],
-  templateUrl: './mdl-create-sorteo.component.html',
-  styleUrl: './mdl-create-sorteo.component.scss',
+  templateUrl: './mdl-registrar-proveedor.component.html',
+  styleUrl: './mdl-registrar-proveedor.component.scss',
   providers: [ConfirmationService]
 })
 export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -39,20 +46,26 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  frmNuevoProveedor: FormGroup = new FormGroup({});
+  frm: FormGroup = new FormGroup({});
   isSubmitted: boolean = false;
   ldSubmit: boolean = false;
 
   private subs = new Subscription();
   
+  documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
+  submitted: boolean = false;
+
+
+  headerValue: string = '';
 
   constructor(
     private fb: FormBuilder,
     private ref: DynamicDialogRef,
+    public config: DynamicDialogConfig,
     private api: ProveedorApiService,
     private confirmationService: ConfirmationService
 	) {
-    this.frmNuevoProveedor = this.fb.group({
+    this.frm = this.fb.group({
       tipo_documento: new FormControl('DNI', Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
@@ -66,6 +79,8 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
       empleado_id_creacion: new FormControl(null),
       empleado_nombre_creacion: new FormControl(null)
     });
+
+    this.headerValue = this.config.header ?? '';
   }
 
   ngOnInit(): void {
@@ -82,49 +97,49 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
 
   // Getters
   get f(): any {
-    return this.frmNuevoProveedor.controls;
+    return this.frm.controls;
   }
 
-  get payload(): RegistrarProveedorRequestDto {
-    const form = this.frmNuevoProveedor.value;
+  get request(): RegistrarProveedorRequestDto {
+    const form = this.frm.value;
 
     return {
       tipo_documento: form.tipo_documento,
       numero_documento: form.numero_documento,
-      razon_social: formatDate(form.fechaVentaInicio, 'yyyy-MM-ddTHH:mm:00', 'en-US'),
-      f_fin_venta: formatDate(form.fechaVentaFin, 'yyyy-MM-ddTHH:mm:00', 'en-US'),
-      f_sorteo: formatDate(form.fechaSorteo, 'yyyy-MM-ddTHH:mm:00', 'en-US'),
-      f_ext_sorteo: form.fechaExtSorteo ? formatDate(form.fechaExtSorteo, 'yyyy-MM-ddTHH:mm:00', 'en-US') : null,
-      precio_rifa: form.precioRifa,
-      numero_min: form.numeroInicial,
-      numero_max: form.numeroFinal,
-      flag_rifas: true
+      razon_social: form.razon_social,
+      ubigeo_id: form.distrito,
+      direccion: form.direccion,
+      email: form.email,
+      pais: form.pais,
+      codigo_sunat: form.codigo_sunat,
+      empleado_id_creacion: 1,
+      empleado_nombre_creacion: 'SA'
     };
   }
 
   // Events
   evtOnSubmit(): void{
     this.isSubmitted = true;
-    if(this.frmNuevoSorteo.invalid){
+    if(this.frm.invalid){
       return;
     }
 
     this.confirmationService.confirm({
-        header: '¿Guardar cambios?',
+        header: '¿Registrar proveedor?',
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.frmNuevoSorteo.disable();
+            this.frm.disable();
             this.ldSubmit = true;
             
-            const subs = this.apiService.createSorteo(this.payload).subscribe({
-              next: (res: SorteoCreateResponseDto) => {
-                this.frmNuevoSorteo.enable();
+            const subs = this.api.registrar(this.request).subscribe({
+              next: (res: RegistrarProveedorResponseDto) => {
+                this.frm.enable();
                 this.ldSubmit = false;
-                this.OnCreated.emit(res);
+                this.OnCreated.emit(true);
               },
               error: (err: any) => {
-                this.frmNuevoSorteo.enable();
+                this.frm.enable();
                 this.ldSubmit = false;
               }
             });
@@ -141,48 +156,5 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     this.OnCanceled.emit(true);
   }
 
-
-  // Validators
-
-  numeroMayorQue(controlComparado: string): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.parent) return null; // Evita errores si el control aún no está en el grupo
-
-      const comparado = control.parent.get(controlComparado);
-      if (!comparado) return null;
-
-      const valorActual = control.value;
-      const valorComparado = comparado.value;
-
-      if (valorActual != null && valorComparado != null && valorActual <= valorComparado) {
-        return { numeroMayorQue: { requeridoMayorQue: controlComparado } };
-      }
-
-      return null;
-    };
-  };
-
-  fechaMayorQue(controlComparado: string): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.parent) return null;
-
-      const comparado = control.parent.get(controlComparado);
-      if (!comparado) return null;
-
-      const fechaActual = control.value;
-      const fechaComparada = comparado.value;
-
-      if (fechaActual && fechaComparada) {
-        const fechaA = new Date(fechaActual);
-        const fechaB = new Date(fechaComparada);
-
-        if (fechaA <= fechaB) {
-          return { fechaMayorQue: { requeridoMayorQue: controlComparado } };
-        }
-      }
-
-      return null;
-    };
-  }
 
 }

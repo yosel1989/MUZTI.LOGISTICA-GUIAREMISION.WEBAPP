@@ -12,7 +12,10 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { MdlRegistrarProveedorComponent } from '../../modals/mdl-registrar-proveedor/mdl-registrar-proveedor.component';
+import { DialogService } from 'primeng/dynamicdialog';
+import { AlertService } from 'app/core/services/alert.service';
 
 @Component({
   selector: 'app-tbl-proveedor-principal',
@@ -31,7 +34,7 @@ import { BehaviorSubject } from 'rxjs';
         TooltipModule,
         InputTextModule
   ],
-  providers: []
+  providers: [DialogService]
 })
 
 export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
@@ -49,7 +52,12 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     recordsFiltered: number = 0;
     first: number = 0;
 
+    ref: any | undefined;
+    private subs = new Subscription();
+
     constructor(
+      public dialogService: DialogService,
+      private alertService: AlertService,
       private api: ProveedorApiService
     ){
         
@@ -128,6 +136,42 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnFilter(value: string){
       this.evtOnReload();
+    }
+
+    evtOnCreate(): void{
+      this.ref = this.dialogService.open(MdlRegistrarProveedorComponent,  {
+        width: '1000px',
+        closable: true,
+        modal: true,
+        draggable: true,
+        position: 'top',
+        header: 'Registrar Proveedor',
+        styleClass: 'max-h-none! slide-down-dialog',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body'
+      });
+
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarProveedorComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarProveedorComponent) => {
+          this.evtOnReload();
+          this.ref?.close();
+          this.alertService.showToast({
+            position: 'bottom-end',
+            icon: "success",
+            title: "Se registro el sorteo con éxito",
+            showCloseButton: true,
+            timerProgressBar: true,
+            timer: 4000
+          });
+        });
+        const sub3 = cmp?.OnCanceled.subscribe(_ => {
+          this.ref?.close();
+        });
+        this.subs.add(sub2);
+        this.subs.add(sub3);
+      });
+
+      this.subs.add(sub);
     }
 
     //functions
