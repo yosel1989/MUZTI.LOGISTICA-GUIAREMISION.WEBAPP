@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbigeoProvinciaDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
@@ -19,8 +19,6 @@ import { BehaviorSubject, Subscriber } from 'rxjs';
 })
 
 export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
-    private _valueEdit: number | null = null;
-
     @Input() idUbigeoDepartamento: string | null = null;
     @Input() classLabel: string = '';
     @Input() label: string = 'Provincia';
@@ -30,10 +28,8 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
 
-    @Input()
-    set valueEdit(val: number | null) {
-        this._valueEdit = val;
-    }
+    @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
+
 
     collection: UbigeoProvinciaDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -43,11 +39,6 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     constructor(
         private ubigeoService: UbigeoApiService
     ) {}
-
-    get valueEdit(): number | null {
-        return this._valueEdit;
-    }
-    
 
     ngOnInit(): void {
         this.getData();
@@ -78,13 +69,11 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
         }
 
         this.loading.next(true);
+            this.isLoaded.emit(true);
             this.sub?.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
                 next: (response) => {
                     this.collection = response;
-                    console.log('val', this._valueEdit);
-                    if(this._valueEdit){
-                        this.control.setValue(this._valueEdit);
-                    }
+                    this.isLoaded.emit(true);
                     this.loading.next(false);
                 },
                 error: (error) => {

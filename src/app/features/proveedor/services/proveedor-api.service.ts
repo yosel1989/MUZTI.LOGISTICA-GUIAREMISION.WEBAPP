@@ -1,8 +1,9 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { map, Observable } from "rxjs";
-import { ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { catchError, map, Observable, throwError } from "rxjs";
+import { EditarProveedorRequestDto, EditarProveedorResponseDto, ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { TableData } from "app/core/models/table";
 
 @Injectable({
   providedIn: 'root'
@@ -12,15 +13,39 @@ export class ProveedorApiService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodo(): Observable<ProveedorDto[]> {
-    return this.http.get<any>(`${this.baseUrl}/listar`).pipe(
-      map(response =>{ return response as ProveedorDto[] })
+  obtenerTodo(pageNumber: number, pageSize: number): Observable<TableData<ProveedorDto[]>> {
+    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`).pipe(
+      map(response =>{ return response as TableData<ProveedorDto[]> }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
     );
   }
 
   registrar(request: RegistrarProveedorRequestDto): Observable<RegistrarProveedorResponseDto> {
     return this.http.post<any>(`${this.baseUrl}`, request).pipe(
-      map(response =>{ return response as RegistrarProveedorResponseDto })
+      map(response =>{ return response as RegistrarProveedorResponseDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  obtener(id: number): Observable<ProveedorDto> {
+    return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+      map(response =>{ return response as ProveedorDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  editar(request: EditarProveedorRequestDto): Observable<EditarProveedorResponseDto> {
+    return this.http.put<any>(`${this.baseUrl}?id=${request.id}`, request).pipe(
+      map(response =>{ return response as EditarProveedorResponseDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
     );
   }
 

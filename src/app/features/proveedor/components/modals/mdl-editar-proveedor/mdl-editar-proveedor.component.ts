@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,20 +10,22 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
-import { RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from '@features/proveedor/models/proveedor';
+import { RegistrarProveedorRequestDto, RegistrarProveedorResponseDto, ProveedorDto, EditarProveedorRequestDto, EditarProveedorResponseDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
-import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { SkeletonModule } from 'primeng/skeleton';
+import { AsyncPipe } from '@angular/common';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 
 @Component({
-  selector: 'app-mdl-registrar-proveedor',
+  selector: 'app-mdl-editar-proveedor',
   imports: [
     FormsModule, 
     InputNumberModule,
@@ -37,16 +39,23 @@ import { AlertService } from 'app/core/services/alert.service';
     SelectModule,
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
-    SelectDistritoComponent
+    SelectDistritoComponent,
+    SkeletonModule,
+    AsyncPipe
   ],
-  templateUrl: './mdl-registrar-proveedor.component.html',
-  styleUrl: './mdl-registrar-proveedor.component.scss',
+  templateUrl: './mdl-editar-proveedor.component.html',
+  styleUrl: './mdl-editar-proveedor.component.scss',
   providers: [ConfirmationService]
 })
-export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
+  @Input() id!: number;
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
+  @ViewChild('provincia') ctrlProvincia: SelectProvinciaComponent | undefined;
+  @ViewChild('distrito') ctrlDistrito: SelectDistritoComponent | undefined;
 
   frm: FormGroup = new FormGroup({});
   isSubmitted: boolean = false;
@@ -63,6 +72,10 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     {id: 0, label: 'Inactivo'},
     {id: 1, label: 'Activo'}
   ];
+
+  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  $ldData = this.ldData.asObservable();
+  data: ProveedorDto | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -82,20 +95,23 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
       direccion: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
       email: new FormControl(null, [Validators.required, Validators.email, Validators.maxLength(50)]),
       pais: new FormControl('PE', [Validators.minLength(1), Validators.maxLength(3), Validators.required]),
-      codigo_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)]),
-      empleado_id_creacion: new FormControl(null),
-      empleado_nombre_creacion: new FormControl(null)
+      codigo_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)])
     });
 
     this.headerValue = this.config.header ?? '';
   }
 
   ngOnInit(): void {
-
+    this.loadData();
   }
 
   ngAfterViewInit(): void {
+  }
+
+  ngAfterViewChecked(): void{
     
+    this.ctrlProvincia?.isLoaded.subscribe(val => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4));});
+    this.ctrlDistrito?.isLoaded.subscribe(val => { this.f.distrito.setValue(this.data?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -107,10 +123,11 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     return this.frm.controls;
   }
 
-  get request(): RegistrarProveedorRequestDto {
+  get request(): EditarProveedorRequestDto {
     const form = this.frm.value;
 
     return {
+      id: this.data!.id,
       tipo_documento: form.tipo_documento,
       numero_documento: form.numero_documento,
       razon_social: form.razon_social,
@@ -119,8 +136,8 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
       email: form.email,
       pais: form.pais,
       codigo_sunat: form.codigo_sunat,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      empleado_id_edicion: 1,
+      empleado_nombre_edicion: 'SA'
     };
   }
 
@@ -133,22 +150,22 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     }
 
     this.confirmationService.confirm({
-        header: '¿Registrar proveedor?',
+        header: 'Editar proveedor?',
         message: 'Confirmar la operación.',
         accept: () => {
 
             this.frm.disable();
             this.ldSubmit = true;
             
-            const subs = this.api.registrar(this.request).subscribe({
-              next: (res: RegistrarProveedorResponseDto) => {
+            const subs = this.api.editar(this.request).subscribe({
+              next: (res: EditarProveedorResponseDto) => {
                 this.frm.enable();
                 this.ldSubmit = false;
 
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "success",
-                  title: "Se registro el proveedor con éxito",
+                  title: "Se edito el proveedor con éxito",
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
@@ -184,6 +201,52 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
 
   evtOnClose(): void{
     this.OnCanceled.emit(true);
+  }
+
+
+  // data
+  loadData(): void{
+    this.ldData.next(true);
+    this.frm.disable();
+    this.api.obtener(this.id).subscribe({
+      next: (res: ProveedorDto) => {
+        this.handlerLoadData(res);
+        this.ldData.next(false);
+        this.frm.enable();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.frm.enable();
+        this.ldData.next(false);
+        this.alertService.showToast({
+          position: 'bottom-end',
+          icon: "error",
+          title: err.error.error,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
+      }
+    })
+  }
+
+
+  // handlers
+  handlerLoadData(res: ProveedorDto): void{
+    this.data = res;
+    this.frm.patchValue({
+      tipo_documento: res.tipo_documento,
+      numero_documento: res.numero_documento,
+      razon_social: res.razon_social,
+      departamento: res.ubigeo_id.substring(0,2),
+      direccion: res.direccion,
+      email: res.email,
+      pais: res.pais,
+      codigo_sunat: res.codigo_sunat
+    });
   }
 
 

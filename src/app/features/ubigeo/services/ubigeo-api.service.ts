@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { map, Observable } from "rxjs";
+import { catchError, map, Observable, throwError } from "rxjs";
 import { UbigeoDepartamentoDto, UbigeoDistritoDto, UbigeoDto, UbigeoProvinciaDto } from "../models/ubigeo.model";
 
 @Injectable({
@@ -14,25 +14,37 @@ export class UbigeoApiService {
 
   getDepartamentos(): Observable<UbigeoDepartamentoDto[]> {
     return this.http.get<any>(`${this.baseUrl}/departamentos`).pipe(
-      map(response =>{ return response as UbigeoDepartamentoDto[]})
+      map(response =>{ return response as UbigeoDepartamentoDto[]}),
+      catchError(error => {
+        return throwError(() => error);
+      })
     );
   }
 
   getProvinciasByDepartamento(ubigeoDepartamento: string): Observable<UbigeoProvinciaDto[]> {
     return this.http.get<any>(`${this.baseUrl}/provincias-by-departamento/${ubigeoDepartamento}`).pipe(
-      map(response =>{ return response as UbigeoProvinciaDto[]})
+      map(response =>{ return response as UbigeoProvinciaDto[]}),
+      catchError(error => {
+        return throwError(() => error);
+      })
     );
   }
 
   getDistritosByProvincia(ubigeoProvincia: string): Observable<UbigeoDistritoDto[]> {
     return this.http.get<any>(`${this.baseUrl}/distritos-by-provincia/${ubigeoProvincia}`).pipe(
-      map(response =>{ return response as UbigeoDistritoDto[]})
+      map(response =>{ return response as UbigeoDistritoDto[]}),
+      catchError(error => {
+        return throwError(() => error);
+      })
     );
   }
 
   findUbigeoById(ubigeoId: string): Observable<UbigeoDto> {
     return this.http.get<any>(`${this.baseUrl}/${ubigeoId}`).pipe(
-      map(response =>{ return response as UbigeoDto})
+      map(response =>{ return response as UbigeoDto}),
+      catchError(error => {
+        return throwError(() => error);
+      })
     );  
   }
   

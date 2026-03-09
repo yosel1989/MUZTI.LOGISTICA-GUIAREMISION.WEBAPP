@@ -6,17 +6,16 @@
         </div>
         <div class="col-span-2">
 
-
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
+                    @if(!($ldData | async)){
                     <p-select 
                     fluid
                     size="small"
                     [inputSize]="2"
                     panelStyleClass="text-[.875rem]!"
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
-                    
                     [options]="documentTypes" 
                     placeholder="Seleccionar..." 
                     optionValue="value" 
@@ -25,12 +24,16 @@
                     formControlName="tipo_documento"
                     [invalid]="frm.get('tipo_documento')?.invalid && ( frm.get('tipo_documento')?.touched || submitted)"
                     />
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('tipo_documento')?.invalid && (frm.get('tipo_documento')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° documento *</label>
+                    @if(!($ldData | async)){
                     <input 
                         placeholder="N° Doc. de identidad *" 
                         pSize="small" 
@@ -38,13 +41,16 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento"
                         [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)"/>
-                    
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
                 <div class="col-span-2">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre / Razón Social *</label>
+                    @if(!($ldData | async)){
                     <input 
                     fluid 
                     pInputText 
@@ -54,7 +60,10 @@
                     formControlName="razon_social" 
                     maxlength="200" 
                     autofocus="true"
-                    [invalid]="frm.get('razon_social')?.invalid && (frm.get('razon_social')?.touched || submitted)"/>
+                    [invalid]="frm.get('razon_social')?.invalid && ( frm.get('razon_social')?.touched || submitted)"/>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('razon_social')?.invalid && (frm.get('razon_social')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.razon_social.hasError('required')) {
@@ -68,11 +77,16 @@
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
+                    @if(!($ldData | async)){
                     <app-select-departamento 
+                    #departamento
                     [control]="f.departamento" 
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     label="Departamento *"
                     ></app-select-departamento>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('departamento')?.invalid && (frm.get('departamento')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -81,12 +95,17 @@
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
+                    @if(!($ldData | async)){
                     <app-select-provincia 
+                    #provincia
                     [control]="f.provincia" 
                     [idUbigeoDepartamento]="f.departamento.value" 
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
                     label="Provincia *"
                     ></app-select-provincia>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('provincia')?.invalid && (frm.get('provincia')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -95,12 +114,17 @@
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
+                    @if(!($ldData | async)){
                     <app-select-distrito 
+                    #distrito
                     label="Distrito *"
                     [control]="f.distrito" 
                     [idUbigeoProvincia]="f.provincia.value" 
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     ></app-select-distrito>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('distrito')?.invalid && (frm.get('distrito')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -109,6 +133,7 @@
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">Código Sunat</label>
+                    @if(!($ldData | async)){
                     <input 
                     fluid 
                     pInputText 
@@ -119,7 +144,10 @@
                     maxlength="4" 
                     minlength="4" 
                     autofocus="true"
-                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)"/>
+                    [invalid]="frm.get('codigo_sunat')?.invalid && ( frm.get('codigo_sunat')?.touched || submitted)"/>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.codigo_sunat.hasError('maxLength')) {
@@ -130,6 +158,7 @@
                 </div>
                 <div class="col-span-2">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección *</label>
+                    @if(!($ldData | async)){
                     <input 
                     fluid 
                     pInputText 
@@ -139,7 +168,10 @@
                     formControlName="direccion" 
                     maxlength="250" 
                     autofocus="true"
-                    [invalid]="frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted)"/>
+                    [invalid]="frm.get('direccion')?.invalid && ( frm.get('direccion')?.touched || submitted)"/>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.direccion.hasError('required')) {
@@ -153,6 +185,7 @@
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Correo *</label>
+                    @if(!($ldData | async)){
                     <input 
                     fluid 
                     pInputText 
@@ -162,7 +195,10 @@
                     formControlName="email" 
                     maxlength="250" 
                     autofocus="true"
-                    [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)"/>
+                    [invalid]="frm.get('email')?.invalid && ( frm.get('email')?.touched || submitted)"/>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.email.hasError('required')) {
@@ -198,7 +234,7 @@
                 <div
                     class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
                 >
-                    <i class="pi pi-question text-5xl!"></i>
+                    <i class="pi pi-question !text-5xl"></i>
                 </div>
                 <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
                 <p class="mb-0">{{ message.message }}</p>

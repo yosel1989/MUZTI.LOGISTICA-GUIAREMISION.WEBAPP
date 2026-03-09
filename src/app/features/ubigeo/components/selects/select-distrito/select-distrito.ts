@@ -1,15 +1,15 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { UbigeoProvinciaDto } from 'app/features/ubigeo/models/ubigeo.model';
+import { UbigeoDistritoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
 import { BehaviorSubject, Subscriber } from 'rxjs';
 
 @Component({
-  selector: 'app-select-provincia',
-  templateUrl: './select-provincia.html',
-  styleUrl: './select-provincia.scss',
+  selector: 'app-select-distrito',
+  templateUrl: './select-distrito.html',
+  styleUrl: './select-distrito.scss',
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
@@ -18,24 +18,19 @@ import { BehaviorSubject, Subscriber } from 'rxjs';
   ]
 })
 
-export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
-    private _valueEdit: number | null = null;
-
-    @Input() idUbigeoDepartamento: string | null = null;
+export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
+    @Input() idUbigeoProvincia: string | null = null;
     @Input() classLabel: string = '';
-    @Input() label: string = 'Provincia';
-    @Input() inputId: string = '';
+    @Input() label: string = 'Distrito';
     @Input() placeholder: string = 'Seleccionar...';
     @Input() placeholderLoading: string = 'Cargando...';
-    @Input() invalid: boolean = false;
     @Input() control!: FormControl;
+    @Input() invalid: boolean = false;
+    @Input() inputId: string = '';
 
-    @Input()
-    set valueEdit(val: number | null) {
-        this._valueEdit = val;
-    }
+    @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    collection: UbigeoProvinciaDto[] = [];
+    collection: UbigeoDistritoDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
     sub: Subscriber<any> = new Subscriber();
@@ -43,11 +38,6 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     constructor(
         private ubigeoService: UbigeoApiService
     ) {}
-
-    get valueEdit(): number | null {
-        return this._valueEdit;
-    }
-    
 
     ngOnInit(): void {
         this.getData();
@@ -62,30 +52,26 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['idUbigeoDepartamento']) {
+        if (changes['idUbigeoProvincia']) {
             this.getData();
-            this.control.patchValue(null);
-            this.control.updateValueAndValidity();
         }
     }
 
     // Data
     getData(): void {
+        this.control.patchValue(null);
         this.collection = [];
         this.loading.next(false);
-        if (!this.idUbigeoDepartamento) {
+        if (!this.idUbigeoProvincia) {
             return;
         }
 
         this.loading.next(true);
-            this.sub?.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
+            this.sub?.add(this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia).subscribe({
                 next: (response) => {
                     this.collection = response;
-                    console.log('val', this._valueEdit);
-                    if(this._valueEdit){
-                        this.control.setValue(this._valueEdit);
-                    }
                     this.loading.next(false);
+                    this.isLoaded.emit(true);
                 },
                 error: (error) => {
                     this.loading.next(false);

@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbigeoDepartamentoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
@@ -30,6 +30,8 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     @Input() control!: FormControl;
     @Input() skeleton: boolean = false;
 
+    @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
+
     ubigeoDepartamentos: UbigeoDepartamentoDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
@@ -57,6 +59,7 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
             next: (response) => {
                 this.ubigeoDepartamentos = response;
                 this.loading.next(false);
+                this.isLoaded.emit(true);
             },
             error: (error) => {
                 this.loading.next(false);
