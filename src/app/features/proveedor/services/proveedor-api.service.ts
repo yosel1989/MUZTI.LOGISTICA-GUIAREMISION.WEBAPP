@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EditarProveedorRequestDto, EditarProveedorResponseDto, ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { EditarProveedorRequestDto, EditarProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
 
 @Injectable({
@@ -43,6 +43,15 @@ export class ProveedorApiService {
   editar(request: EditarProveedorRequestDto): Observable<EditarProveedorResponseDto> {
     return this.http.put<any>(`${this.baseUrl}?id=${request.id}`, request).pipe(
       map(response =>{ return response as EditarProveedorResponseDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  eliminar(id: number): Observable<EliminarProveedorResponseDto> {
+    return this.http.delete<any>(`${this.baseUrl}?id=${id}`).pipe(
+      map(response =>{ return response as EliminarProveedorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

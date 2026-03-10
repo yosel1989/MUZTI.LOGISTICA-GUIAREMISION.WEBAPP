@@ -1,7 +1,5 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
-import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -13,21 +11,20 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { MdlRegistrarProveedorComponent } from '../../modals/mdl-registrar-proveedor/mdl-registrar-proveedor.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
-import { MdlEditarProveedorComponent } from '../../modals/mdl-editar-proveedor/mdl-editar-proveedor.component';
 import { UtilService } from 'app/core/services/util.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
-import { ConfirmationService, MenuItem } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AlertService } from 'app/core/services/alert.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { MenuItem } from 'primeng/api';
+import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
+import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
+import { MdlEditarConductorComponent } from '../../modals/mdl-editar-conductor/mdl-editar-conductor';
+import { ConductorDto } from '@features/conductor/models/conductor.model';
 
 @Component({
-  selector: 'app-tbl-proveedor-principal',
-  templateUrl: './tbl-proveedor-principal.html',
-  styleUrl: './tbl-proveedor-principal.scss',
+  selector: 'app-tbl-conductor-principal',
+  templateUrl: './tbl-conductor-principal.html',
+  styleUrl: './tbl-conductor-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -41,20 +38,19 @@ import { HttpErrorResponse } from '@angular/common/http';
         InputTextModule,
         AsyncPipe,
         DatePipe,
-        ContextMenuModule,
-        ConfirmDialogModule
+        ContextMenuModule 
   ],
-  providers: [DialogService, ConfirmationService]
+  providers: [DialogService]
 })
 
-export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     cols: Column[] = [];
 
-    data: ProveedorDto[] = [];
+    data: ConductorDto[] = [];
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
-    selected: ProveedorDto | undefined;
+    selected: ConductorDto | undefined;
     loading: boolean = false;
 
     recordsTotalTable: number = 0;
@@ -73,25 +69,19 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     constructor(
       public dialogService: DialogService,
-      private api: ProveedorApiService,
+      private api: ConductorApiService,
       private cd: ChangeDetectorRef,
-      public util: UtilService,
-      private confirmationService: ConfirmationService,
-      private alertService: AlertService
+      public util: UtilService
     ){
         this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'id', header: '#', sort: false, sticky: false },
           { field: 'tipo_documento', header: 'T. Documento', sort: true, sticky: false },
           { field: 'numero_documento', header: 'N° Documento', sort: true, sticky: false },
-          { field: 'razon_social', header: 'R. Social', sort: true, sticky: false },
-          { field: 'departamento', header: 'Departamento', sort: true, sticky: false },
-          { field: 'provincia', header: 'Provincia', sort: true, sticky: false },
-          { field: 'distrito', header: 'Distrito', sort: true, sticky: false },
-          { field: 'direccion', header: 'Dirección', sort: true, sticky: false },
-          { field: 'email', header: 'Correo', sort: true, sticky: false },
-          { field: 'pais', header: 'País', sort: true, sticky: false },
-          { field: 'codigo_sunat', header: 'Cod. Sunat', sort: true, sticky: false },
+          { field: 'nombres', header: 'Nombres', sort: true, sticky: false },
+          { field: 'apellidos', header: 'Apellidos', sort: true, sticky: false },
+          { field: 'cargo', header: 'Cargo', sort: true, sticky: false },
+          { field: 'licencia', header: 'Distrito', sort: true, sticky: false },
           { field: 'fecha_creacion', header: 'F. Registro', sort: true, sticky: false },
           { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: true, sticky: false },
           { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: true, sticky: false },
@@ -102,8 +92,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     ngOnInit(): void{
       this.items = [
-          { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-          { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }}
+          { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }}
       ];
     }
 
@@ -128,7 +117,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       this.loading = true;
       this.ldData.next(true);
       this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
-        next: (res: TableData<ProveedorDto[]>) => {
+        next: (res: TableData<ConductorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
             return x;
@@ -151,7 +140,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     //events
-    evtToggleSelection(row: ProveedorDto): void{
+    evtToggleSelection(row: ConductorDto): void{
       if (this.selected === row) {
         this.selected = undefined; // deselecciona si ya estaba seleccionado
       } else {
@@ -183,19 +172,19 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlRegistrarProveedorComponent,  {
+      this.ref = this.dialogService.open(MdlRegistrarConductorComponent,  {
         width: '1000px',
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Registrar Proveedor',
+        header: 'Registrar Conductor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body'
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarProveedorComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarConductorComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarConductorComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
@@ -210,12 +199,12 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnEdit(): void{
-      this.ref = this.dialogService.open(MdlEditarProveedorComponent,  {
+      this.ref = this.dialogService.open(MdlEditarConductorComponent,  {
         width: '1000px',
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Editar Proveedor',
+        header: 'Editar Conductor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -224,8 +213,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarProveedorComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarConductorComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarConductorComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
@@ -237,51 +226,6 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       });
 
       this.subs.add(sub);
-    }
-
-    evtOnDelete(): void{
-      this.confirmationService.confirm({
-          header: '¿Eliminar proveedor?',
-          message: 'Confirmar la operación.',
-          accept: () => {
-
-              const subs = this.api.eliminar(this.selected!.id).subscribe({
-                next: (res: EliminarProveedorResponseDto) => {
-                  
-                  this.alertService.showToast({
-                    position: 'bottom-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
-
-                  this.loadData();
-                },
-                error: (err: HttpErrorResponse) => {
-
-                  this.alertService.showToast({
-                    position: 'bottom-end',
-                    icon: "error",
-                    title: err.error.error,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
-                }
-              });
-              this.subs.add(subs);
-            
-          },
-          reject: () => {
-              
-          },
-      });
     }
 
     evtRowsChange(rows: number): void{

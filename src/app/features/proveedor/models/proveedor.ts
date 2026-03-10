@@ -51,6 +51,7 @@ export interface RegistrarProveedorResponseDto {
 }
 
 export interface EditarProveedorResponseDto{
+  id: number;
   tipo_documento: 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
   numero_documento: string;
   razon_social: string;
@@ -61,4 +62,10 @@ export interface EditarProveedorResponseDto{
   codigo_sunat: string | null;
   empleado_id_edicion: number | null;
   empleado_nombre_edicion: string | null;
+}
+
+export interface EliminarProveedorResponseDto {
+  id: number;
+  eliminado: boolean;
+  detalle: string;
 }
