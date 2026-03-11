@@ -71,7 +71,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
       numero_documento: new FormControl(null, Validators.required),
       nombres: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       apellidos: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      cargo: new FormControl(null),
+      cargo: new FormControl(null, [Validators.maxLength(100)]),
       licencia: new FormControl(null, [Validators.required, Validators.maxLength(10)]),
       empleado_id_creacion: new FormControl(null),
       empleado_nombre_creacion: new FormControl(null)

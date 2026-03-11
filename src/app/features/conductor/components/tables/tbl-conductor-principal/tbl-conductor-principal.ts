@@ -10,16 +10,19 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
-import { MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
 import { MdlEditarConductorComponent } from '../../modals/mdl-editar-conductor/mdl-editar-conductor';
-import { ConductorDto } from '@features/conductor/models/conductor.model';
+import { ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { AlertService } from 'app/core/services/alert.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-tbl-conductor-principal',
@@ -38,9 +41,10 @@ import { ConductorDto } from '@features/conductor/models/conductor.model';
         InputTextModule,
         AsyncPipe,
         DatePipe,
-        ContextMenuModule 
+        ContextMenuModule,
+        ConfirmDialogModule
   ],
-  providers: [DialogService]
+  providers: [DialogService, ConfirmationService]
 })
 
 export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
@@ -51,6 +55,10 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
     selected: ConductorDto | undefined;
+    private selectedSubject = new BehaviorSubject<ConductorDto | undefined>(undefined);
+    items$ = this.selectedSubject.pipe(
+      map(selected => this.buildMenuItems(selected))
+    );
     loading: boolean = false;
 
     recordsTotalTable: number = 0;
@@ -61,7 +69,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 0;
+    pageNumber: number = 1;
     pageSize: number = 5;
     totalRecords: number = 0;
 
@@ -71,29 +79,28 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       public dialogService: DialogService,
       private api: ConductorApiService,
       private cd: ChangeDetectorRef,
-      public util: UtilService
+      public util: UtilService,
+      private confirmationService: ConfirmationService,
+      private alertService: AlertService
     ){
         this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'id', header: '#', sort: false, sticky: false },
-          { field: 'tipo_documento', header: 'T. Documento', sort: true, sticky: false },
-          { field: 'numero_documento', header: 'N° Documento', sort: true, sticky: false },
-          { field: 'nombres', header: 'Nombres', sort: true, sticky: false },
-          { field: 'apellidos', header: 'Apellidos', sort: true, sticky: false },
-          { field: 'cargo', header: 'Cargo', sort: true, sticky: false },
-          { field: 'licencia', header: 'Distrito', sort: true, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: true, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: true, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: true, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: true, sticky: false },
-          { field: 'estado', header: 'Estado', sort: true, sticky: false },
+          { field: 'tipo_documento', header: 'T. Documento', sort: false, sticky: false },
+          { field: 'numero_documento', header: 'N° Documento', sort: false, sticky: false },
+          { field: 'nombres', header: 'Nombres', sort: false, sticky: false },
+          { field: 'apellidos', header: 'Apellidos', sort: false, sticky: false },
+          { field: 'cargo', header: 'Cargo', sort: false, sticky: false },
+          { field: 'licencia', header: 'Distrito', sort: false, sticky: false },
+          { field: 'estado', header: 'Estado', sort: false, sticky: false },
+          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
     ngOnInit(): void{
-      this.items = [
-          { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }}
-      ];
     }
 
     ngAfterViewInit(): void{
@@ -112,29 +119,70 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       return [...actual, ...fillerRows];
     }
 
+    // setters
+    setSelected(data: ConductorDto | undefined) {
+      this.selectedSubject.next(data);
+    }
+
     // data
-    loadData(): void {
+    loadData(reload: boolean = false): void {
+      this.selected = undefined;
       this.loading = true;
       this.ldData.next(true);
-      this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
+
+      if(reload){
+        this.pageNumber = 1;
+        this.first = 0;
+        console.log(
+          this.pageNumber,
+          this.pageSize,
+          this.first
+        );
+      }
+
+
+      this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
         next: (res: TableData<ConductorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
+            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
             return x;
           });
 
-          this.pageNumber = res.page_number - 1;
+          this.pageNumber = res.page_number;
           this.pageSize = res.page_size;
-          this.totalRecords = res.data.length;
+          this.first = (this.pageNumber - 1) * this.pageSize;
+          this.totalRecords = res.total_records;
+          console.log(
+            'new data3',
+            this.pageNumber,
+            this.pageSize,
+            this.first,
+            this.totalRecords
+          );
           this.ldData.next(false);
           this.cd.detectChanges();
           this.loading = false;
         },
-        error: (e) => {
-          console.log('dd');
+        error: (e: HttpErrorResponse) => {
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
+          this.data = [];
+
+          this.alertService.showToast({
+              position: 'bottom-end',
+              icon: "error",
+              title: "Ocurrio un error al obtener los registros",
+              showCloseButton: true,
+              timerProgressBar: true,
+              timer: 4000,
+              customClass: {
+                container: 'z-[9999]!',
+                popup: 'z-[9999]!'
+              }
+          });
+          
         }
       });
     }
@@ -142,29 +190,32 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     //events
     evtToggleSelection(row: ConductorDto): void{
       if (this.selected === row) {
-        this.selected = undefined; // deselecciona si ya estaba seleccionado
+        this.setSelected(undefined);
+        this.selected = undefined;
       } else {
-        this.selected = row; // selecciona nuevo
+        this.setSelected(row);
+        this.selected = row;
       }
     }
 
     evtNext() {
-      /*this.queryParams = {
-        ...this.queryParams!,
-        start : this.first + this.queryParams!.length 
-      };*/
-
-      this.reload();
+      console.log(this.first, this.pageNumber, this.pageSize);
+      this.first = this.first + this.pageSize;
+      this.pageNumber = this.pageNumber + 1;
+      console.log(this.first, this.pageNumber, this.pageSize);
+      this.evtOnReload(false);
     }
 
     evtPrev() {
-      /*this.first = this.first - this.queryParams!.length;*/
-      this.reload();
+      this.first = this.first - this.pageSize;
+      console.log(this.pageNumber);
+      this.pageNumber--;
+      this.evtOnReload(false);
     }
 
-    private evtOnReload(): void{
+    private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
-      this.loadData();
+      this.loadData(reload);
     }
 
     evtOnFilter(value: string){
@@ -173,9 +224,10 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarConductorComponent,  {
-        width: '1000px',
+        width: '800px',
         closable: true,
         modal: true,
+        draggable: false,
         position: 'top',
         header: 'Registrar Conductor',
         styleClass: 'max-h-none! slide-down-dialog',
@@ -200,9 +252,10 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnEdit(): void{
       this.ref = this.dialogService.open(MdlEditarConductorComponent,  {
-        width: '1000px',
+        width: '800px',
         closable: true,
         modal: true,
+        draggable: false,
         position: 'top',
         header: 'Editar Conductor',
         styleClass: 'max-h-none! slide-down-dialog',
@@ -228,26 +281,133 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       this.subs.add(sub);
     }
 
+    evtOnDelete(): void{
+      this.confirmationService.confirm({
+          header: '¿Eliminar conductor?',
+          message: 'Confirmar la operación.',
+          accept: () => {
+
+              const subs = this.api.eliminar(this.selected!.id).subscribe({
+                next: (res: EliminarConductorResponseDto) => {
+
+                  this.alertService.showToast({
+                    position: 'bottom-end',
+                    icon: "success",
+                    title: res.detalle,
+                    showCloseButton: true,
+                    timerProgressBar: true,
+                    timer: 4000
+                  });
+
+                  this.loadData();
+                },
+                error: (err: HttpErrorResponse) => {
+
+                  this.alertService.showToast({
+                    position: 'bottom-end',
+                    icon: "error",
+                    title: err.error.error,
+                    showCloseButton: true,
+                    timerProgressBar: true,
+                    timer: 4000,
+                    customClass: {
+                      container: 'z-[9999]!',
+                      popup: 'z-[9999]!'
+                    }
+                  });
+                }
+              });
+              this.subs.add(subs);
+            
+          },
+          reject: () => {
+              
+          },
+      });
+    }
+
+    evtOnUpdateStatus(status: number): void{
+      this.confirmationService.confirm({
+          header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
+          message: 'Confirmar la operación.',
+          accept: () => {
+
+              const subs = this.api.actualizarEstado(this.selected!.id, status).subscribe({
+                next: (res: ActualizarEstadoConductorResponseDto) => {
+
+                  this.alertService.showToast({
+                    position: 'bottom-end',
+                    icon: "success",
+                    title: res.detalle,
+                    showCloseButton: true,
+                    timerProgressBar: true,
+                    timer: 4000
+                  });
+
+                  this.selected!.id_estado = res.id_estado;
+                  this.selected!.estado = res.estado;
+                  this.cd.detectChanges();
+                },
+                error: (err: HttpErrorResponse) => {
+
+                  this.alertService.showToast({
+                    position: 'bottom-end',
+                    icon: "error",
+                    title: err.error.error,
+                    showCloseButton: true,
+                    timerProgressBar: true,
+                    timer: 4000,
+                    customClass: {
+                      container: 'z-[9999]!',
+                      popup: 'z-[9999]!'
+                    }
+                  });
+                }
+              });
+              this.subs.add(subs);
+            
+          },
+          reject: () => {
+              
+          },
+      });
+    }
+
+    evtFirstChange(first: number): void{
+      this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
+    }
+
     evtRowsChange(rows: number): void{
+      this.first = 0;
+      this.pageNumber = this.pageSize !== rows ? 1 : this.pageNumber;
       this.pageSize = rows;
       this.loadData();
     }
 
     evtOnRowSelect(event: any) {
       this.selected = event.data;
+      this.setSelected(event.data);
     }
 
     //functions
     isLastPage(): boolean {
-      return this.data ? this.first >= this.recordsTotalTable : true;
+        return this.data ? this.first + this.pageSize >= this.totalRecords : true;
     }
 
     isFirstPage(): boolean {
-      return this.data ? this.first === 0 : true;
+        return this.data ? this.first === 0 : true;
     }
 
     reload(): void{
-      this.evtOnReload();
+      this.evtOnReload(true);
     }
 
+    private buildMenuItems(selected: ConductorDto | undefined): MenuItem[] {
+      return [
+        { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
+        { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
+        { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
+        { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+      ];
+    }
 }

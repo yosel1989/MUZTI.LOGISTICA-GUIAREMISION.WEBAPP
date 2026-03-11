@@ -66,3 +66,16 @@ export interface EditarConductorResponseDto{
   empleado_id_edicion: number | null;
   empleado_nombre_edicion: string | null;
 }
+
+export interface EliminarConductorResponseDto{
+  id: number;
+  eliminado: boolean;
+  detalle: string;
+}
+
+export interface ActualizarEstadoConductorResponseDto{
+  id: number;
+  id_estado: number;
+  estado: string;
+  detalle: string;
+}

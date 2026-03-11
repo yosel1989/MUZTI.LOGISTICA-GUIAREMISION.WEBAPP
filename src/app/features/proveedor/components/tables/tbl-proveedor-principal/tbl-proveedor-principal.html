@@ -80,6 +80,34 @@
                 styleClass="w-9! h-9!"
                 (click)="evtOnDelete()"
             />
+            @if(selected.id_estado === 0){
+            <p-button 
+                icon="pi pi-check-circle text-[13px]!"  
+                size="small" 
+                severity="success" 
+                [outlined]="true"
+                pTooltip="Activar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnUpdateStatus(1)"
+            />
+            }
+            @if(selected.id_estado === 1){
+            <p-button 
+                icon="pi pi-ban text-[13px]!" 
+                size="small" 
+                severity="secondary" 
+                [outlined]="true"
+                pTooltip="Desactivar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnUpdateStatus(0)"
+            />
+            }
         }
            
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
@@ -158,7 +186,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px] dark:b
                         [frozen]="col.sticky ?? false"
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[11px]! text-gray-500! font-semibold px-4!">
+                        class="text-nowrap py-2! text-[11px]! text-primary! font-semibold px-4!">
                             <div class="flex items-center gap-2">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
@@ -215,6 +243,19 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px] dark:b
                             @case('fecha_ultima_edicion'){
                                 <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
                             }
+                            @case('estado'){
+                                <td class="text-nowrap py-1! font-light!"> 
+                                    @if(rowData['id_estado']){
+                                        <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                            <i class="pi pi-check-circle me-1"></i> {{rowData[col.field]}}
+                                        </span>
+                                    }@else{
+                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2">
+                                            <i class="pi pi-ban me-1"></i> {{rowData[col.field]}}
+                                        </span>
+                                    }
+                                </td>
+                            }
                             @default {
                                 <td
                                 pFrozenColumn 
@@ -229,7 +270,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px] dark:b
     </ng-template>
 </p-table>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="items" appendTo="body"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
 
 <div class="card flex justify-center">
     <p-confirmdialog #cd appendTo="body">

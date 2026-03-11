@@ -1,6 +1,6 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
+import { ActualizarEstadoProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -12,7 +12,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { MdlRegistrarProveedorComponent } from '../../modals/mdl-registrar-proveedor/mdl-registrar-proveedor.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
@@ -55,6 +55,10 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
     selected: ProveedorDto | undefined;
+    private selectedSubject = new BehaviorSubject<ProveedorDto | undefined>(undefined);
+    items$ = this.selectedSubject.pipe(
+      map(selected => this.buildMenuItems(selected))
+    );
     loading: boolean = false;
 
     recordsTotalTable: number = 0;
@@ -103,7 +107,9 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     ngOnInit(): void{
       this.items = [
           { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-          { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }}
+          { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
+          { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }},
+          { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }},
       ];
     }
 
@@ -123,8 +129,14 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       return [...actual, ...fillerRows];
     }
 
+    // setters
+    setSelected(data: ProveedorDto | undefined) {
+      this.selectedSubject.next(data);
+    }
+
     // data
     loadData(): void {
+      this.selected = undefined;
       this.loading = true;
       this.ldData.next(true);
       this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
@@ -153,9 +165,11 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     //events
     evtToggleSelection(row: ProveedorDto): void{
       if (this.selected === row) {
-        this.selected = undefined; // deselecciona si ya estaba seleccionado
+        this.selected = undefined;
+        this.setSelected(undefined);
       } else {
-        this.selected = row; // selecciona nuevo
+        this.selected = row;
+        this.setSelected(row);
       }
     }
 
@@ -174,6 +188,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     private evtOnReload(): void{
+      this.setSelected(undefined);
       this.selected = undefined;
       this.loadData();
     }
@@ -247,7 +262,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
               const subs = this.api.eliminar(this.selected!.id).subscribe({
                 next: (res: EliminarProveedorResponseDto) => {
-                  
+
                   this.alertService.showToast({
                     position: 'bottom-end',
                     icon: "success",
@@ -284,12 +299,60 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       });
     }
 
+    evtOnUpdateStatus(status: number): void{
+      this.confirmationService.confirm({
+          header: !status ? '¿Desactivar el proveedor?' : '¿Activar el proveedor?',
+          message: 'Confirmar la operación.',
+          accept: () => {
+
+              const subs = this.api.actualizarEstado(this.selected!.id, status).subscribe({
+                next: (res: ActualizarEstadoProveedorResponseDto) => {
+
+                  this.alertService.showToast({
+                    position: 'bottom-end',
+                    icon: "success",
+                    title: res.detalle,
+                    showCloseButton: true,
+                    timerProgressBar: true,
+                    timer: 4000
+                  });
+
+                  this.selected!.id_estado = res.id_estado;
+                  this.selected!.estado = res.estado;
+                  this.cd.detectChanges();
+                },
+                error: (err: HttpErrorResponse) => {
+
+                  this.alertService.showToast({
+                    position: 'bottom-end',
+                    icon: "error",
+                    title: err.error.error,
+                    showCloseButton: true,
+                    timerProgressBar: true,
+                    timer: 4000,
+                    customClass: {
+                      container: 'z-[9999]!',
+                      popup: 'z-[9999]!'
+                    }
+                  });
+                }
+              });
+              this.subs.add(subs);
+            
+          },
+          reject: () => {
+              
+          },
+      });
+    }
+
     evtRowsChange(rows: number): void{
       this.pageSize = rows;
       this.loadData();
     }
 
     evtOnRowSelect(event: any) {
+      this.setSelected(event.data);
       this.selected = event.data;
     }
 
@@ -304,6 +367,15 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     reload(): void{
       this.evtOnReload();
+    }
+
+    private buildMenuItems(selected: ProveedorDto | undefined): MenuItem[] {
+      return [
+        { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
+        { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
+        { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
+        { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+      ];
     }
 
 }

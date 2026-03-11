@@ -11,6 +11,8 @@ export interface ProveedorDto{
     email: string;
     pais: string;
     codigo_sunat: string | null;
+    id_estado: number;
+    estado: string;
     fecha_creacion: Date;
     empleado_nombre_creacion: string;
     fecha_ultima_edicion: Date | null;
@@ -67,5 +69,12 @@ export interface EditarProveedorResponseDto{
 export interface EliminarProveedorResponseDto {
   id: number;
   eliminado: boolean;
+  detalle: string;
+}
+
+export interface ActualizarEstadoProveedorResponseDto{
+  id: number;
+  id_estado: number;
+  estado: string;
   detalle: string;
 }

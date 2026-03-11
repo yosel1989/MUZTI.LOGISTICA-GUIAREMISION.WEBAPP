@@ -42,3 +42,10 @@ p-select{
     align-self: center !important;
   }
 } 
+
+
+.card-body-empty{
+  .p-card-body{
+    @apply p-0!;
+  }
+}

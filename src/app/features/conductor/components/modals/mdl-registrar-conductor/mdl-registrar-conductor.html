@@ -1,13 +1,12 @@
 <form [formGroup]="frm" (ngSubmit)="evtOnSubmit()">
 
-    <div class="grid grid-cols-3 gap-3">
-        <div>
-            <img src="assets/media/bg/Copilot_20260307_122148.webp" width="100%" height="auto">
+    <div class="grid grid-cols-3 gap-6">
+        <div style="background-image: url('assets/media/bg/bg-registrar-conductor.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
         </div>
+            
         <div class="col-span-2">
 
-
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid gap-3">
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
                     <p-select 
@@ -59,7 +58,7 @@
                         @if (f.nombres.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.nombres.hasError('maxLength')) {
+                        @if (f.nombres.hasError('maxlength')) {
                             El nombre no debe exceder los 200 caracteres.
                         }</span>
                         </p-message>
@@ -81,7 +80,7 @@
                         @if (f.apellidos.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.apellidos.hasError('maxLength')) {
+                        @if (f.apellidos.hasError('maxlength')) {
                             El nombre no debe exceder los 200 caracteres.
                         }</span>
                         </p-message>
@@ -100,7 +99,7 @@
                     [invalid]="frm.get('cargo')?.invalid && (frm.get('cargo')?.touched || submitted)"/>
                     @if (frm.get('cargo')?.invalid && (frm.get('cargo')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.cargo.hasError('maxLength')) {
+                        @if (f.cargo.hasError('maxlength')) {
                             El nombre no debe exceder los 100 caracteres.
                         }</span>
                         </p-message>
@@ -122,7 +121,7 @@
                         @if (f.licencia.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.licencia.hasError('maxLength')) {
+                        @if (f.licencia.hasError('maxlength')) {
                             La licencia no debe exceder los 10 caracteres.
                         }</span>
                         </p-message>
@@ -133,7 +132,7 @@
     </div>
     
 
-    <div class="flex justify-end gap-2">
+    <div class="flex justify-end gap-2 pt-4">
         <p-button type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
         <p-button type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
     </div>
