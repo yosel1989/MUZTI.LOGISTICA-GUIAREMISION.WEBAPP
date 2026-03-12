@@ -127,7 +127,6 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
   evtOnSubmit(): void{
     this.isSubmitted = true;
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -161,7 +160,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",
-                  title: err.error.error,
+                  title: err.error.detalle,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000,
@@ -184,6 +183,5 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
   evtOnClose(): void{
     this.OnCanceled.emit(true);
   }
-
 
 }

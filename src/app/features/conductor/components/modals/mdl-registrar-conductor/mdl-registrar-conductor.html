@@ -106,7 +106,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Licencia *</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Licencia / Brevete *</label>
                     <input 
                     fluid 
                     pInputText 
@@ -121,9 +121,13 @@
                         @if (f.licencia.hasError('required')) {
                             Este campo es requerido.
                         }
+                        @if (f.licencia.hasError('minlength')) {
+                            La licencia debe tener minimo 9 caracteres.
+                        }
                         @if (f.licencia.hasError('maxlength')) {
                             La licencia no debe exceder los 10 caracteres.
-                        }</span>
+                        }
+                        </span>
                         </p-message>
                     }
                 </div>
@@ -133,8 +137,8 @@
     
 
     <div class="flex justify-end gap-2 pt-4">
-        <p-button type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
+        <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
     </div>
 
 </form>

@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, EditarConductorRequestDto, EditarConductorResponseDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
+import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, EditarConductorRequestDto, EditarConductorResponseDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
 import { TableData } from "app/core/models/table";
 
 @Injectable({
@@ -41,7 +41,7 @@ export class ConductorApiService {
   }
 
   editar(request: EditarConductorRequestDto): Observable<EditarConductorResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}?id=${request.id}`, request).pipe(
+    return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
       map(response =>{ return response as EditarConductorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -61,7 +61,7 @@ export class ConductorApiService {
   }
 
   eliminar(id: number): Observable<EliminarConductorResponseDto> {
-    return this.http.delete<any>(`${this.baseUrl}?id=${id}`).pipe(
+    return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
       map(response =>{ return response as EliminarConductorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -69,8 +69,8 @@ export class ConductorApiService {
     );
   }
 
-  actualizarEstado(id: number, status: 0 | 1 | number ): Observable<ActualizarEstadoConductorResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`,status).pipe(
+  actualizarEstado(id: number, request: ActualizarEstadoConductorRequestDto ): Observable<ActualizarEstadoConductorResponseDto> {
+    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>{ return response as ActualizarEstadoConductorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);

@@ -47,7 +47,7 @@
         size="small" 
         severity="info" 
         [outlined]="true"
-        pTooltip="Nuevo proveedor" 
+        pTooltip="Nueva Unidad de Transporte" 
         tooltipPosition="top"
         tooltipStyleClass="text-xs! text-center"
         placeholder="Top"
@@ -109,14 +109,14 @@
             />
             }
         }
-           
+
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
 
         <p-button 
             icon="pi pi-cloud-download text-[13px]!" 
             size="small"
             [outlined]="true"
-            severity="secondary"
+            severity="info"
             pTooltip="Descargar"
             tooltipPosition="top"
             tooltipStyleClass="text-xs!"
@@ -130,7 +130,7 @@
     <ng-template #end>
         <p-iconfield iconPosition="left">
             <p-inputicon class="pi pi-search text-[13px]!" />
-            <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[.875rem]! ps-[30px]! min-h-9!"
+            <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[.875rem]! ps-7.5! min-h-9!"
             (input)="evtOnFilter(inputFilter.value)"/>
         </p-iconfield>
     </ng-template>
@@ -160,10 +160,11 @@ stripedRows
 
 [totalRecords]="totalRecords"
 [rows]="pageSize"
-[first]="pageNumber"
+[first]="first"
 [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
 scrollHeight="400px"
 
+(firstChange)="evtFirstChange($event)"
 (rowsChange)="evtRowsChange($event)"
 
 class="border-none! text-mono! max-w-full!"
@@ -172,6 +173,8 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
 
 [contextMenu]="cm" 
 (onContextMenuSelect)="evtOnRowSelect($event)"
+
+[loading]="$ldData | async"
 >
     <ng-template pTemplate="header" let-columns>
         <tr class="text-nowrap uppercase">
@@ -190,7 +193,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
                         class="text-nowrap py-2! text-[11px]! text-primary! font-semibold px-4!">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 truncate">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
                             </div>
@@ -206,21 +209,20 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
         @if($ldData | async) {
             <tr>
                 @for (col of columns; let i = $index; track $index) {
-                    <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
+                    <td>
                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                     </td>
                 }
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class="uppercase text-[11px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
+            <tr [pSelectableRow]="rowData" class="uppercase text-[11px]!" [pContextMenuRow]="rowData">
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
                         pFrozenColumn
                         [frozen]="col.sticky ?? false" 
-                        [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
-                        >—</td>
+                        [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')">—</td>
                     }@else {
                         @switch(col.field){
                             @case('select'){
@@ -247,7 +249,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                 </td>
                             }
                             @case('fecha_creacion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light! truncate!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
                             }
                             @case('fecha_ultima_edicion'){
                                 <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
@@ -269,6 +271,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                 <td
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
+                                [class.border-e-0]="columns.lenght === i"
                                 class="text-nowrap py-1! font-light!">{{rowData[col.field]}}</td>
                             }
                         }
@@ -281,22 +284,21 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
 
 <p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
 
-<div class="card flex justify-center">
-    <p-confirmdialog #cd appendTo="body">
-        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-            <div class="flex flex-col items-center p-8 rounded-xl">
-                <div
-                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
-                >
-                    <i class="pi pi-question text-5xl!"></i>
-                </div>
-                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
-                <p class="mb-0">{{ message.message }}</p>
-                <div class="flex items-center gap-2 mt-6">
-                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
-                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
-                </div>
+
+<p-confirmdialog #cd appendTo="body" styleClass="max-w-[450px]!">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-8 rounded-xl">
+            <div
+                class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+            >
+                <i class="pi pi-question text-5xl!"></i>
             </div>
-        </ng-template>
-    </p-confirmdialog>
-</div>
+            <span class="font-semibold text-2xl block mb-2 mt-6 text-center">{{ message.header }}</span>
+            <p class="mb-0">{{ message.message }}</p>
+            <div class="flex items-center gap-2 mt-6">
+                <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>

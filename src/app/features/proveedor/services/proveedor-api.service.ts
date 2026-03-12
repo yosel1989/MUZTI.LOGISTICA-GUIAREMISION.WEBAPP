@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoProveedorResponseDto, EditarProveedorRequestDto, EditarProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EditarProveedorRequestDto, EditarProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
 
 @Injectable({
@@ -41,7 +41,7 @@ export class ProveedorApiService {
   }
 
   editar(request: EditarProveedorRequestDto): Observable<EditarProveedorResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}?id=${request.id}`, request).pipe(
+    return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
       map(response =>{ return response as EditarProveedorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -50,7 +50,7 @@ export class ProveedorApiService {
   }
 
   eliminar(id: number): Observable<EliminarProveedorResponseDto> {
-    return this.http.delete<any>(`${this.baseUrl}?id=${id}`).pipe(
+    return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
       map(response =>{ return response as EliminarProveedorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -58,8 +58,8 @@ export class ProveedorApiService {
     );
   }
 
-  actualizarEstado(id: number, status: 0 | 1 | number ): Observable<ActualizarEstadoProveedorResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`,status).pipe(
+  actualizarEstado(id: number, request: ActualizarEstadoProveedorRequestDto ): Observable<ActualizarEstadoProveedorResponseDto> {
+    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>{ return response as ActualizarEstadoProveedorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);

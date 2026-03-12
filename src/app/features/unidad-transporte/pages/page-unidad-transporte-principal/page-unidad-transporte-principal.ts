@@ -1,24 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
-import { TableProveedorPrincipalComponent } from '@features/proveedor/components/tables/tbl-proveedor-principal/tbl-proveedor-principal';
+import { TableUnidadTransportePrincipalComponent } from '@features/unidad-transporte/components/tables/tbl-unidad-transporte-principal/tbl-unidad-transporte-principal';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { CardModule } from 'primeng/card';
-
 @Component({
-  selector: 'app-page-proveedor-principal',
-  templateUrl: './page-proveedor-principal.html',
-  styleUrl: './page-proveedor-principal.scss',
+  selector: 'app-page-unidad-transporte-principal',
+  templateUrl: './page-unidad-transporte-principal.html',
+  styleUrl: './page-unidad-transporte-principal.scss',
   imports: [
     CommonModule,
     CardModule,
-    TableProveedorPrincipalComponent
+    TableUnidadTransportePrincipalComponent
   ],
   viewProviders: [],
   providers: [],
   animations: [fadeDownAnimation]
 })
 
-export class PageProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class PageUnidadTransportePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     constructor(
 

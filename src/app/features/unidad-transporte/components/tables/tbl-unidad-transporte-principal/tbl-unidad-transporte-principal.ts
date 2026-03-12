@@ -1,7 +1,5 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
-import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -13,21 +11,23 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, map, Subscription } from 'rxjs';
-import { MdlRegistrarProveedorComponent } from '../../modals/mdl-registrar-proveedor/mdl-registrar-proveedor.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
-import { MdlEditarProveedorComponent } from '../../modals/mdl-editar-proveedor/mdl-editar-proveedor.component';
 import { UtilService } from 'app/core/services/util.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ActualizarEstadoUnidadTransporteRequestDto, ActualizarEstadoUnidadTransporteResponseDto, EliminarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
+import { MdlRegistrarUnidadTransporteComponent } from '../../modals/mdl-registrar-unidad-transporte/mdl-registrar-unidad-transporte';
+import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unidad-transporte/mdl-editar-unidad-transporte';
 
 @Component({
-  selector: 'app-tbl-proveedor-principal',
-  templateUrl: './tbl-proveedor-principal.html',
-  styleUrl: './tbl-proveedor-principal.scss',
+  selector: 'app-tbl-unidad-transporte-principal',
+  templateUrl: './tbl-unidad-transporte-principal.html',
+  styleUrl: './tbl-unidad-transporte-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -47,15 +47,15 @@ import { HttpErrorResponse } from '@angular/common/http';
   providers: [DialogService, ConfirmationService]
 })
 
-export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class TableUnidadTransportePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     cols: Column[] = [];
 
-    data: ProveedorDto[] = [];
+    data: UnidadTransporteDto[] = [];
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
-    selected: ProveedorDto | undefined;
-    private selectedSubject = new BehaviorSubject<ProveedorDto | undefined>(undefined);
+    selected: UnidadTransporteDto | undefined;
+    private selectedSubject = new BehaviorSubject<UnidadTransporteDto | undefined>(undefined);
     items$ = this.selectedSubject.pipe(
       map(selected => this.buildMenuItems(selected))
     );
@@ -69,15 +69,17 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 0;
+    pageNumber: number = 1;
     pageSize: number = 5;
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
 
+    firstChange: boolean = false;
+
     constructor(
       public dialogService: DialogService,
-      private api: ProveedorApiService,
+      private api: UnidadTransporteApiService,
       private cd: ChangeDetectorRef,
       public util: UtilService,
       private confirmationService: ConfirmationService,
@@ -87,31 +89,21 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'tipo_documento', header: 'T. Documento', sort: true, sticky: false },
-          { field: 'numero_documento', header: 'N° Documento', sort: true, sticky: false },
-          { field: 'razon_social', header: 'R. Social', sort: true, sticky: false },
-          { field: 'departamento', header: 'Departamento', sort: true, sticky: false },
-          { field: 'provincia', header: 'Provincia', sort: true, sticky: false },
-          { field: 'distrito', header: 'Distrito', sort: true, sticky: false },
-          { field: 'direccion', header: 'Dirección', sort: true, sticky: false },
-          { field: 'email', header: 'Correo', sort: true, sticky: false },
-          { field: 'pais', header: 'País', sort: true, sticky: false },
-          { field: 'codigo_sunat', header: 'Cod. Sunat', sort: true, sticky: false },
-          { field: 'estado', header: 'Estado', sort: true, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: true, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: true, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: true, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: true, sticky: false },
+          { field: 'descripcion', header: 'Descripción', sort: false, sticky: false },
+          { field: 'marca', header: 'Marca', sort: false, sticky: false },
+          { field: 'modelo', header: 'Modelo', sort: false, sticky: false },
+          { field: 'placa', header: 'Placa', sort: false, sticky: false },
+          { field: 'numero_registro_mtc', header: 'MTC', sort: false, sticky: false },
+          { field: 'tarjeta', header: 'TUC', sort: false, sticky: false },
+          { field: 'estado', header: 'Estado', sort: false, sticky: false },
+          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
     ngOnInit(): void{
-      this.items = [
-          { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-          { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-          { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }},
-          { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }},
-      ];
     }
 
     ngAfterViewInit(): void{
@@ -131,67 +123,89 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     // setters
-    setSelected(data: ProveedorDto | undefined) {
+    setSelected(data: UnidadTransporteDto | undefined) {
       this.selectedSubject.next(data);
     }
 
     // data
-    loadData(): void {
+    loadData(reload: boolean = false): void {
       this.selected = undefined;
+      this.firstChange = false;
       this.loading = true;
       this.ldData.next(true);
-      const sub = this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
-        next: (res: TableData<ProveedorDto[]>) => {
+
+      if(reload){
+        this.pageNumber = 1;
+        this.first = 0;
+      }
+
+
+      const sub = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
+        next: (res: TableData<UnidadTransporteDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
+            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
             return x;
           });
 
-          this.pageNumber = res.page_number - 1;
+          this.pageNumber = res.page_number;
           this.pageSize = res.page_size;
-          this.totalRecords = res.data.length;
+          this.first = (this.pageNumber - 1) * this.pageSize;
+          this.totalRecords = res.total_records;
           this.ldData.next(false);
           this.cd.detectChanges();
           this.loading = false;
         },
-        error: (e) => {
+        error: (e: HttpErrorResponse) => {
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
+          this.data = [];
+
+          this.alertService.showToast({
+              position: 'bottom-end',
+              icon: "error",
+              title: "Ocurrio un error al obtener los registros",
+              showCloseButton: true,
+              timerProgressBar: true,
+              timer: 4000,
+              customClass: {
+                container: 'z-[9999]!',
+                popup: 'z-[9999]!'
+              }
+          });
+          
         }
       });
       this.subs.add(sub);
     }
 
     //events
-    evtToggleSelection(row: ProveedorDto): void{
+    evtToggleSelection(row: UnidadTransporteDto): void{
       if (this.selected === row) {
-        this.selected = undefined;
         this.setSelected(undefined);
+        this.selected = undefined;
       } else {
-        this.selected = row;
         this.setSelected(row);
+        this.selected = row;
       }
     }
 
     evtNext() {
-      /*this.queryParams = {
-        ...this.queryParams!,
-        start : this.first + this.queryParams!.length 
-      };*/
-
-      this.reload();
+      this.first = this.first + this.pageSize;
+      this.pageNumber = this.pageNumber + 1;
+      this.evtOnReload(false);
     }
 
     evtPrev() {
-      /*this.first = this.first - this.queryParams!.length;*/
-      this.reload();
+      this.first = this.first - this.pageSize;
+      this.pageNumber--;
+      this.evtOnReload(false);
     }
 
-    private evtOnReload(): void{
-      this.setSelected(undefined);
+    private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
-      this.loadData();
+      this.loadData(reload);
     }
 
     evtOnFilter(value: string){
@@ -199,23 +213,24 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlRegistrarProveedorComponent,  {
-        width: '1000px',
+      this.ref = this.dialogService.open(MdlRegistrarUnidadTransporteComponent,  {
+        width: '800px',
         closable: true,
         modal: true,
+        draggable: false,
         position: 'top',
-        header: 'Registrar Proveedor',
+        header: 'Registrar Unidad de Transporte',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body'
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarProveedorComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarUnidadTransporteComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarUnidadTransporteComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe(_ => {
+        const sub3 = cmp?.OnCanceled.subscribe((_: any) => {
           this.ref?.close();
         });
         this.subs.add(sub2);
@@ -226,12 +241,13 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnEdit(): void{
-      this.ref = this.dialogService.open(MdlEditarProveedorComponent,  {
-        width: '1000px',
+      this.ref = this.dialogService.open(MdlEditarUnidadTransporteComponent,  {
+        width: '800px',
         closable: true,
         modal: true,
+        draggable: false,
         position: 'top',
-        header: 'Editar Proveedor',
+        header: 'Editar Unidad de Transporte',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -240,8 +256,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarProveedorComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarUnidadTransporteComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarUnidadTransporteComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
@@ -257,12 +273,12 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnDelete(): void{
       this.confirmationService.confirm({
-          header: '¿Eliminar proveedor?',
+          header: '¿Eliminar Unidad de Transporte?',
           message: 'Confirmar la operación.',
           accept: () => {
 
               const subs = this.api.eliminar(this.selected!.id).subscribe({
-                next: (res: EliminarProveedorResponseDto) => {
+                next: (res: EliminarUnidadTransporteResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -302,18 +318,17 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnUpdateStatus(status: number): void{
       this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el proveedor?' : '¿Activar el proveedor?',
+          header: !status ? '¿Desactivar la Unidad de Transporte?' : '¿Activar la Unidad de Transporte',
           message: 'Confirmar la operación.',
           accept: () => {
-
               const request = {
                 id_estado: status,
                 edited_employee_id: 1,
                 edited_employee_name: 'SA'
-              } as ActualizarEstadoProveedorRequestDto;
+              } as ActualizarEstadoUnidadTransporteRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoProveedorResponseDto) => {
+                next: (res: ActualizarEstadoUnidadTransporteResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -326,6 +341,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
+                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
+                  this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
@@ -352,7 +369,6 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           },
       });
     }
-
     evtFirstChange(first: number): void{
       this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
     }
@@ -371,18 +387,18 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     //functions
     isLastPage(): boolean {
-      return this.data ? this.first >= this.recordsTotalTable : true;
+        return this.data ? this.first + this.pageSize >= this.totalRecords : true;
     }
 
     isFirstPage(): boolean {
-      return this.data ? this.first === 0 : true;
+        return this.data ? this.first === 0 : true;
     }
 
     reload(): void{
-      this.evtOnReload();
+      this.evtOnReload(true);
     }
 
-    private buildMenuItems(selected: ProveedorDto | undefined): MenuItem[] {
+    private buildMenuItems(selected: UnidadTransporteDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
         { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
@@ -390,5 +406,4 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
       ];
     }
-
 }

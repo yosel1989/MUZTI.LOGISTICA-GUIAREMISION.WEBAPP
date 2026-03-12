@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbigeoDistritoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
-import { BehaviorSubject, Subscriber } from 'rxjs';
+import { BehaviorSubject, Subscriber, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-distrito',
@@ -33,7 +33,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     collection: UbigeoDistritoDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
-    sub: Subscriber<any> = new Subscriber();
+    private sub = new Subscription();
 
     constructor(
         private ubigeoService: UbigeoApiService
@@ -67,7 +67,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         this.loading.next(true);
-            this.sub?.add(this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia).subscribe({
+            this.sub.add(this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia).subscribe({
                 next: (response) => {
                     this.collection = response;
                     this.loading.next(false);

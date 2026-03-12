@@ -16,6 +16,10 @@ const routes: Routes = [
         loadComponent: () => import('@features/conductor/pages/page-conductor-principal/page-conductor-principal').then(m => m.PageConductorPrincipalComponent)
       },
       {
+        path: 'unidad-transporte',
+        loadComponent: () => import('@features/unidad-transporte/pages/page-unidad-transporte-principal/page-unidad-transporte-principal').then(m => m.PageUnidadTransportePrincipalComponent)
+      },
+      {
         path: 'guia-remision',
         loadComponent: () => import('@features/guia-remision/pages/guia-remision-principal/guia-remision-principal').then(m => m.GuiaRemisionPrincipalComponent)
       },

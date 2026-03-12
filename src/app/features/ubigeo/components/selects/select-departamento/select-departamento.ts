@@ -5,7 +5,7 @@ import { UbigeoDepartamentoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-departamento',
@@ -36,6 +36,8 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
 
+    private subs = new Subscription();
+
     constructor(
         private ubigeoService: UbigeoApiService
     ) {}
@@ -49,13 +51,13 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     }
 
     ngOnDestroy(): void {
-        
+        this.subs.unsubscribe();
     }
 
     // Data
     getData(): void {
         this.loading.next(true);
-        this.ubigeoService.getDepartamentos().subscribe({
+        const sub = this.ubigeoService.getDepartamentos().subscribe({
             next: (response) => {
                 this.ubigeoDepartamentos = response;
                 this.loading.next(false);
@@ -65,6 +67,7 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
                 this.loading.next(false);
             }
         });
+        this.subs.add(sub);
     }
 
 }

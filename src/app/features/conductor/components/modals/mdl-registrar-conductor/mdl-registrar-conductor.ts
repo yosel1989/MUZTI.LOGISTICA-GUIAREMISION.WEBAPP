@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Subscription } from 'rxjs';
@@ -60,7 +60,6 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
 
   constructor(
     private fb: FormBuilder,
-    private ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     private api: ConductorApiService,
     private confirmationService: ConfirmationService,
@@ -72,7 +71,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
       nombres: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       apellidos: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       cargo: new FormControl(null, [Validators.maxLength(100)]),
-      licencia: new FormControl(null, [Validators.required, Validators.maxLength(10)]),
+      licencia: new FormControl(null, [Validators.required, Validators.minLength(9), Validators.maxLength(10)]),
       empleado_id_creacion: new FormControl(null),
       empleado_nombre_creacion: new FormControl(null)
     });
@@ -116,7 +115,6 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
   evtOnSubmit(): void{
     this.isSubmitted = true;
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -128,7 +126,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
             this.frm.disable();
             this.ldSubmit = true;
             
-            const subs = this.api.registrar(this.request).subscribe({
+            const sub = this.api.registrar(this.request).subscribe({
               next: (res: RegistrarConductorResponseDto) => {
                 this.frm.enable();
                 this.ldSubmit = false;
@@ -150,7 +148,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",
-                  title: err.error.error,
+                  title: err.error.detalle,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000,
@@ -161,7 +159,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
                 });
               }
             });
-            this.subs.add(subs);
+            this.subs.add(sub);
            
         },
         reject: () => {

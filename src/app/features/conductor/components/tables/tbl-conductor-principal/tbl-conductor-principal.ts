@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -19,7 +19,7 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
 import { MdlEditarConductorComponent } from '../../modals/mdl-editar-conductor/mdl-editar-conductor';
-import { ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -52,10 +52,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     cols: Column[] = [];
 
     data: ConductorDto[] = [];
+
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
+
     selected: ConductorDto | undefined;
     private selectedSubject = new BehaviorSubject<ConductorDto | undefined>(undefined);
+
     items$ = this.selectedSubject.pipe(
       map(selected => this.buildMenuItems(selected))
     );
@@ -71,9 +74,11 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     pageNumber: number = 1;
     pageSize: number = 5;
+    private pageSize$ = new BehaviorSubject<number>(5);
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
+    firstChange: boolean = false;
 
     constructor(
       public dialogService: DialogService,
@@ -85,7 +90,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     ){
         this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
-          { field: 'id', header: '#', sort: false, sticky: false },
+          { field: 'cod', header: '#', sort: false, sticky: false  },
+          { field: 'id', header: 'Código', sort: false, sticky: false },
           { field: 'tipo_documento', header: 'T. Documento', sort: false, sticky: false },
           { field: 'numero_documento', header: 'N° Documento', sort: false, sticky: false },
           { field: 'nombres', header: 'Nombres', sort: false, sticky: false },
@@ -108,7 +114,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     ngOnDestroy(): void{
-
+      this.subs.unsubscribe();
     }
 
     // getters
@@ -127,21 +133,17 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     // data
     loadData(reload: boolean = false): void {
       this.selected = undefined;
+      this.firstChange = false;
       this.loading = true;
       this.ldData.next(true);
 
       if(reload){
         this.pageNumber = 1;
         this.first = 0;
-        console.log(
-          this.pageNumber,
-          this.pageSize,
-          this.first
-        );
       }
 
 
-      this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
+      const sub = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
         next: (res: TableData<ConductorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
@@ -153,13 +155,6 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           this.pageSize = res.page_size;
           this.first = (this.pageNumber - 1) * this.pageSize;
           this.totalRecords = res.total_records;
-          console.log(
-            'new data3',
-            this.pageNumber,
-            this.pageSize,
-            this.first,
-            this.totalRecords
-          );
           this.ldData.next(false);
           this.cd.detectChanges();
           this.loading = false;
@@ -185,6 +180,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           
         }
       });
+      this.subs.add(sub);
     }
 
     //events
@@ -199,16 +195,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtNext() {
-      console.log(this.first, this.pageNumber, this.pageSize);
       this.first = this.first + this.pageSize;
       this.pageNumber = this.pageNumber + 1;
-      console.log(this.first, this.pageNumber, this.pageSize);
       this.evtOnReload(false);
     }
 
     evtPrev() {
       this.first = this.first - this.pageSize;
-      console.log(this.pageNumber);
       this.pageNumber--;
       this.evtOnReload(false);
     }
@@ -287,7 +280,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const subs = this.api.eliminar(this.selected!.id).subscribe({
+              const sub = this.api.eliminar(this.selected!.id).subscribe({
                 next: (res: EliminarConductorResponseDto) => {
 
                   this.alertService.showToast({
@@ -317,7 +310,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                   });
                 }
               });
-              this.subs.add(subs);
+              this.subs.add(sub);
             
           },
           reject: () => {
@@ -331,8 +324,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
           message: 'Confirmar la operación.',
           accept: () => {
+              const request = {
+                id_estado: status,
+                edited_employee_id: 1,
+                edited_employee_name: 'SA'
+              } as ActualizarEstadoConductorRequestDto;
 
-              const subs = this.api.actualizarEstado(this.selected!.id, status).subscribe({
+              const sub = this.api.actualizarEstado(this.selected!.id, request).subscribe({
                 next: (res: ActualizarEstadoConductorResponseDto) => {
 
                   this.alertService.showToast({
@@ -346,6 +344,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
+                  this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
+                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
@@ -364,7 +364,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                   });
                 }
               });
-              this.subs.add(subs);
+              this.subs.add(sub);
             
           },
           reject: () => {
@@ -378,9 +378,10 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtRowsChange(rows: number): void{
-      this.first = 0;
-      this.pageNumber = this.pageSize !== rows ? 1 : this.pageNumber;
-      this.pageSize = rows;
+      this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
+      this.pageSize = this.pageSize === rows ? this.pageSize : rows;
+      this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
+      this.first = (this.pageNumber - 1) * this.pageSize
       this.loadData();
     }
 

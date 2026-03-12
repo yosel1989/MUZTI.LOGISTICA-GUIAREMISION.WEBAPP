@@ -72,6 +72,13 @@ export interface EliminarProveedorResponseDto {
   detalle: string;
 }
 
+export interface ActualizarEstadoProveedorRequestDto{
+  id: number;
+  id_estado: number;
+  edited_employee_id: number;
+  edited_employee_name: string;
+}
+
 export interface ActualizarEstadoProveedorResponseDto{
   id: number;
   id_estado: number;

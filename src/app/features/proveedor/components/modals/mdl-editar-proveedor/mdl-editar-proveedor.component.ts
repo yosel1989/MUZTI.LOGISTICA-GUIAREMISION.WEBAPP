@@ -7,12 +7,12 @@ import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
-import { RegistrarProveedorRequestDto, RegistrarProveedorResponseDto, ProveedorDto, EditarProveedorRequestDto, EditarProveedorResponseDto } from '@features/proveedor/models/proveedor';
+import { ProveedorDto, EditarProveedorRequestDto, EditarProveedorResponseDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
@@ -79,13 +79,13 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
   constructor(
     private fb: FormBuilder,
-    private ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     private api: ProveedorApiService,
     private confirmationService: ConfirmationService,
     private alertService: AlertService
 	) {
     this.frm = this.fb.group({
+      codigo: new FormControl({value:null, disabled: true}),
       tipo_documento: new FormControl('DNI', Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
@@ -97,6 +97,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
       pais: new FormControl('PE', [Validators.minLength(1), Validators.maxLength(3), Validators.required]),
       codigo_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)])
     });
+    this.f.codigo.disable();
 
     this.headerValue = this.config.header ?? '';
   }
@@ -157,7 +158,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
             this.frm.disable();
             this.ldSubmit = true;
             
-            const subs = this.api.editar(this.request).subscribe({
+            const sub = this.api.editar(this.request).subscribe({
               next: (res: EditarProveedorResponseDto) => {
                 this.frm.enable();
                 this.ldSubmit = false;
@@ -190,7 +191,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
                 });
               }
             });
-            this.subs.add(subs);
+            this.subs.add(sub);
            
         },
         reject: () => {
@@ -203,12 +204,11 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
     this.OnCanceled.emit(true);
   }
 
-
   // data
   loadData(): void{
     this.ldData.next(true);
     this.frm.disable();
-    this.api.obtener(this.id).subscribe({
+    const sub = this.api.obtener(this.id).subscribe({
       next: (res: ProveedorDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);
@@ -230,7 +230,8 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
           }
         });
       }
-    })
+    });
+    this.subs.add(sub);
   }
 
 
@@ -238,6 +239,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   handlerLoadData(res: ProveedorDto): void{
     this.data = res;
     this.frm.patchValue({
+      codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       tipo_documento: res.tipo_documento,
       numero_documento: res.numero_documento,
       razon_social: res.razon_social,

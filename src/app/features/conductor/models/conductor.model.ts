@@ -73,9 +73,18 @@ export interface EliminarConductorResponseDto{
   detalle: string;
 }
 
+export interface ActualizarEstadoConductorRequestDto{
+  id_estado: number;
+  edited_employee_id: number;
+  edited_employee_name: string;
+}
+
+
 export interface ActualizarEstadoConductorResponseDto{
   id: number;
   id_estado: number;
   estado: string;
+  fecha_ultima_edicion: Date | null;
+  empleado_nombre_edicion: string;
   detalle: string;
 }

@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbigeoProvinciaDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
-import { BehaviorSubject, Subscriber } from 'rxjs';
+import { BehaviorSubject, Subscriber, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-provincia',
@@ -34,7 +34,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     collection: UbigeoProvinciaDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
-    sub: Subscriber<any> = new Subscriber();
+    private subs = new Subscription();
 
     constructor(
         private ubigeoService: UbigeoApiService
@@ -49,7 +49,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     ngOnDestroy(): void {
-        this.sub.unsubscribe();
+        this.subs.unsubscribe();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -70,7 +70,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
 
         this.loading.next(true);
             this.isLoaded.emit(true);
-            this.sub?.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
+            this.subs.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
                 next: (response) => {
                     this.collection = response;
                     this.isLoaded.emit(true);

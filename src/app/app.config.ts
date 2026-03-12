@@ -10,6 +10,7 @@ import { definePreset } from '@primeng/themes';
 import { registerLocaleData } from '@angular/common';
 import localeEsPe from '@angular/common/locales/es-PE';
 import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 registerLocaleData(localeEsPe, 'es-PE');
 
@@ -70,6 +71,8 @@ export const appConfig: ApplicationConfig = {
         }
     }),
 
-    provideToastr()
+    provideToastr(),
+
+    provideAnimations()
   ]
 };
