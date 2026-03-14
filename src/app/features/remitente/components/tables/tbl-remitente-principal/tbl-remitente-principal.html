@@ -47,39 +47,67 @@
         size="small" 
         severity="info" 
         [outlined]="true"
-        pTooltip="Emitir Nueva Guía" 
+        pTooltip="Nuevo proveedor" 
         tooltipPosition="top"
         tooltipStyleClass="text-xs! text-center"
         placeholder="Top"
         styleClass="w-9! h-9!"
-      
+        (click)="evtOnCreate()"
         />
 
         @if(selected){
             <p-button 
-                icon="pi pi-eye text-[13px]!"  
+                icon="pi pi-pencil text-[13px]!"  
                 size="small" 
-                severity="secondary" 
+                severity="warn" 
                 [outlined]="true"
-                pTooltip="Ver detalle" 
+                pTooltip="Editar" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="w-9! h-9!"
-          
+                (click)="evtOnEdit()"
             />
             <p-button 
-                icon="pi pi-file-pdf text-[13px]!"  
+                icon="pi pi-trash text-[13px]!"  
                 size="small" 
-                severity="secondary" 
+                severity="danger" 
                 [outlined]="true"
-                pTooltip="Ver PDF" 
+                pTooltip="Eliminar" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="w-9! h-9!"
-                (click)="evtOnShowPdf()"
+                (click)="evtOnDelete()"
             />
+            @if(selected.id_estado === 0){
+            <p-button 
+                icon="pi pi-check-circle text-[13px]!"  
+                size="small" 
+                severity="success" 
+                [outlined]="true"
+                pTooltip="Activar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnUpdateStatus(1)"
+            />
+            }
+            @if(selected.id_estado === 1){
+            <p-button 
+                icon="pi pi-ban text-[13px]!" 
+                size="small" 
+                severity="secondary" 
+                [outlined]="true"
+                pTooltip="Desactivar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnUpdateStatus(0)"
+            />
+            }
         }
            
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
@@ -102,7 +130,7 @@
     <ng-template #end>
         <p-iconfield iconPosition="left">
             <p-inputicon class="pi pi-search text-[13px]!" />
-            <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[.875rem]! ps-7.5! min-h-9!"
+            <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[.875rem]! ps-[30px]! min-h-9!"
             (input)="evtOnFilter(inputFilter.value)"/>
         </p-iconfield>
     </ng-template>

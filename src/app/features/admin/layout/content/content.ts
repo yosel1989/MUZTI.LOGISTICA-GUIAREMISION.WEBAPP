@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, HostBinding } from '@angular/core';
 import { PanelMenuModule } from 'primeng/panelmenu';
-import { GuiaRemisionRoutingModule } from "../../pages/guia-remision/guia-remision-routing.module";
 import { HeaderComponent } from '../header/header';
 
 
@@ -8,7 +7,7 @@ import { HeaderComponent } from '../header/header';
   selector: 'app-content',
   templateUrl: './content.html',
   styleUrl: './content.scss',
-  imports: [PanelMenuModule, GuiaRemisionRoutingModule, HeaderComponent],
+  imports: [PanelMenuModule, HeaderComponent],
 })
 export class ContentComponent implements OnInit, AfterViewInit, OnDestroy{
 

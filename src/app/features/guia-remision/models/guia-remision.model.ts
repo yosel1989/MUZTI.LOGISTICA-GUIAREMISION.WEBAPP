@@ -121,7 +121,6 @@ export interface GR_ProductoRequestDto {
   codigo_um: string; 
 }
 
-
 export interface GR_EnviarGuiaRemisionResponseDto {
   success: boolean;
 
@@ -129,4 +128,28 @@ export interface GR_EnviarGuiaRemisionResponseDto {
     codigo: string;
     descripcion: string;
   };
+}
+
+export interface GuiaRemisionDto {
+  id: number;
+  empresa: string;
+  ruc_empresa: string; 
+  razon_remitente: string;
+  tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
+  numero_guia: string;
+  tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
+  tipo_transporte: 'PUBLICO' | 'PRIVADO';
+  fecha_emision: Date;
+  hora_emision: string; 
+  respuesta_ticket: string | null;
+  razon_destinatario: string;
+  nro_documento_destinatario: string;
+  distrito_origen: string;
+  distrito_destino: string;
+  fecha_creacion: Date;
+  empleado_nombre_creacion: string;
+  fecha_ultima_edicion: Date | null;
+  empleado_nombre_edicion: string | null;
+  estado: string;
+  id_estado: number;
 }

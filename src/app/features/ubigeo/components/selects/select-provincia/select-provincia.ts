@@ -35,6 +35,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
     private subs = new Subscription();
+    isLoading = false;
 
     constructor(
         private ubigeoService: UbigeoApiService
@@ -68,16 +69,19 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
             return;
         }
 
+        this.isLoading = true;
         this.loading.next(true);
             this.isLoaded.emit(true);
             this.subs.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
                 next: (response) => {
                     this.collection = response;
-                    this.isLoaded.emit(true);
+                    this.isLoaded.emit(false);
                     this.loading.next(false);
+                    this.isLoading = false;
                 },
                 error: (error) => {
                     this.loading.next(false);
+                    this.isLoading = false;
                 }
             })
         );

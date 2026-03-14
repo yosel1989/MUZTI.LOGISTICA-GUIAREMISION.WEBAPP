@@ -1,16 +1,16 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { UbigeoDepartamentoDto } from 'app/features/ubigeo/models/ubigeo.model';
-import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
+import { PaisDto } from '@features/pais/models/pais.model';
+import { PaisApiService } from '@features/pais/services/pais-api.service';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-select-departamento',
-  templateUrl: './select-departamento.html',
-  styleUrl: './select-departamento.scss',
+  selector: 'app-select-pais',
+  templateUrl: './select-pais.html',
+  styleUrl: './select-pais.scss',
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
@@ -22,7 +22,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 
 export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDestroy{
     @Input() classLabel: string = '';
-    @Input() label: string = 'Departamento';
+    @Input() label: string = 'País';
     @Input() placeholder: string = 'Seleccionar...';
     @Input() placeholderLoading: string = 'Cargando...';
     @Input() inputId: string = '';
@@ -32,15 +32,14 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    ubigeoDepartamentos: UbigeoDepartamentoDto[] = [];
+    data: PaisDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
-    isLoading = false;
 
     private subs = new Subscription();
 
     constructor(
-        private ubigeoService: UbigeoApiService
+        private api: PaisApiService
     ) {}
 
     ngOnInit(): void {
@@ -58,17 +57,14 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     // Data
     getData(): void {
         this.loading.next(true);
-        this.isLoading = true;
-        const sub = this.ubigeoService.getDepartamentos().subscribe({
+        const sub = this.api.getPaises().subscribe({
             next: (response) => {
-                this.ubigeoDepartamentos = response;
+                this.data = response;
                 this.loading.next(false);
                 this.isLoaded.emit(true);
-                this.isLoading = false;
             },
             error: (error) => {
                 this.loading.next(false);
-                this.isLoading = false;
             }
         });
         this.subs.add(sub);

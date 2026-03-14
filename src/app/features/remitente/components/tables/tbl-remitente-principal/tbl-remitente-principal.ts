@@ -1,7 +1,7 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
-import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
+import { ActualizarEstadoRemitenteRequestDto, ActualizarEstadoRemitenteResponseDto, EliminarRemitenteResponseDto, RemitenteDto } from '@features/remitente/models/remitente';
+import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -13,21 +13,21 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, map, Subscription } from 'rxjs';
-import { MdlRegistrarProveedorComponent } from '../../modals/mdl-registrar-proveedor/mdl-registrar-proveedor.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
-import { MdlEditarProveedorComponent } from '../../modals/mdl-editar-proveedor/mdl-editar-proveedor.component';
 import { UtilService } from 'app/core/services/util.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MdlRegistrarRemitenteComponent } from '../../modals/mdl-registrar-remitente/mdl-registrar-remitente.component';
+import { MdlEditarRemitenteComponent } from '../../modals/mdl-editar-remitente/mdl-editar-remitente.component';
 
 @Component({
-  selector: 'app-tbl-proveedor-principal',
-  templateUrl: './tbl-proveedor-principal.html',
-  styleUrl: './tbl-proveedor-principal.scss',
+  selector: 'app-tbl-remitente-principal',
+  templateUrl: './tbl-remitente-principal.html',
+  styleUrl: './tbl-remitente-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -47,15 +47,15 @@ import { HttpErrorResponse } from '@angular/common/http';
   providers: [DialogService, ConfirmationService]
 })
 
-export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     cols: Column[] = [];
 
-    data: ProveedorDto[] = [];
+    data: RemitenteDto[] = [];
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
-    selected: ProveedorDto | undefined;
-    private selectedSubject = new BehaviorSubject<ProveedorDto | undefined>(undefined);
+    selected: RemitenteDto | undefined;
+    private selectedSubject = new BehaviorSubject<RemitenteDto | undefined>(undefined);
     items$ = this.selectedSubject.pipe(
       map(selected => this.buildMenuItems(selected))
     );
@@ -77,7 +77,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     constructor(
       public dialogService: DialogService,
-      private api: ProveedorApiService,
+      private api: RemitenteApiService,
       private cd: ChangeDetectorRef,
       public util: UtilService,
       private confirmationService: ConfirmationService,
@@ -87,15 +87,17 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'tipo_documento', header: 'T. Documento', sort: true, sticky: false },
-          { field: 'numero_documento', header: 'N° Documento', sort: true, sticky: false },
-          { field: 'razon_social', header: 'R. Social', sort: true, sticky: false },
+          { field: 'nombre_empresa', header: 'Empresa', sort: true, sticky: false },
+          { field: 'ruc', header: 'RUC', sort: true, sticky: false },
+          { field: 'descripcion', header: 'Descripción', sort: true, sticky: false },
           { field: 'departamento', header: 'Departamento', sort: true, sticky: false },
           { field: 'provincia', header: 'Provincia', sort: true, sticky: false },
           { field: 'distrito', header: 'Distrito', sort: true, sticky: false },
           { field: 'direccion', header: 'Dirección', sort: true, sticky: false },
           { field: 'email', header: 'Correo', sort: true, sticky: false },
+          { field: 'emailFacturador', header: 'Correo Factura', sort: true, sticky: false },
           { field: 'pais', header: 'País', sort: true, sticky: false },
+          { field: 'serie', header: 'Serie', sort: true, sticky: false },
           { field: 'codigo_sunat', header: 'Cod. Sunat', sort: true, sticky: false },
           { field: 'estado', header: 'Estado', sort: true, sticky: false },
           { field: 'fecha_creacion', header: 'F. Registro', sort: true, sticky: false },
@@ -131,7 +133,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     // setters
-    setSelected(data: ProveedorDto | undefined) {
+    setSelected(data: RemitenteDto | undefined) {
       this.selectedSubject.next(data);
     }
 
@@ -141,17 +143,16 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       this.loading = true;
       this.ldData.next(true);
       const sub = this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
-        next: (res: TableData<ProveedorDto[]>) => {
+        next: (res: TableData<RemitenteDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
-            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
+            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_creacion) : x.fecha_ultima_edicion;
             return x;
           });
 
-          this.pageNumber = res.page_number;
+          this.pageNumber = res.page_number - 1;
           this.pageSize = res.page_size;
-          this.first = (this.pageNumber - 1) * this.pageSize;
-          this.totalRecords = res.total_records;
+          this.totalRecords = res.data.length;
           this.ldData.next(false);
           this.cd.detectChanges();
           this.loading = false;
@@ -166,7 +167,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     //events
-    evtToggleSelection(row: ProveedorDto): void{
+    evtToggleSelection(row: RemitenteDto): void{
       if (this.selected === row) {
         this.selected = undefined;
         this.setSelected(undefined);
@@ -201,19 +202,19 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlRegistrarProveedorComponent,  {
+      this.ref = this.dialogService.open(MdlRegistrarRemitenteComponent,  {
         width: '1000px',
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Registrar Proveedor',
+        header: 'Registrar Remitente',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body'
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarProveedorComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarRemitenteComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarRemitenteComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
@@ -228,12 +229,12 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnEdit(): void{
-      this.ref = this.dialogService.open(MdlEditarProveedorComponent,  {
+      this.ref = this.dialogService.open(MdlEditarRemitenteComponent,  {
         width: '1000px',
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Editar Proveedor',
+        header: 'Editar Remitente',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -242,8 +243,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarProveedorComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarRemitenteComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarRemitenteComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
@@ -259,12 +260,12 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnDelete(): void{
       this.confirmationService.confirm({
-          header: '¿Eliminar proveedor?',
+          header: '¿Eliminar remitente?',
           message: 'Confirmar la operación.',
           accept: () => {
 
               const subs = this.api.eliminar(this.selected!.id).subscribe({
-                next: (res: EliminarProveedorResponseDto) => {
+                next: (res: EliminarRemitenteResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -304,7 +305,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnUpdateStatus(status: number): void{
       this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el proveedor?' : '¿Activar el proveedor?',
+          header: !status ? '¿Desactivar el remitente?' : '¿Activar el remitente?',
           message: 'Confirmar la operación.',
           accept: () => {
 
@@ -312,10 +313,10 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                 id_estado: status,
                 edited_employee_id: 1,
                 edited_employee_name: 'SA'
-              } as ActualizarEstadoProveedorRequestDto;
+              } as ActualizarEstadoRemitenteRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoProveedorResponseDto) => {
+                next: (res: ActualizarEstadoRemitenteResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -328,6 +329,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
+                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
+                  this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
@@ -347,7 +350,6 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                 }
               });
               this.subs.add(subs);
-            
           },
           reject: () => {
               
@@ -384,7 +386,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       this.evtOnReload();
     }
 
-    private buildMenuItems(selected: ProveedorDto | undefined): MenuItem[] {
+    private buildMenuItems(selected: RemitenteDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
         { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},

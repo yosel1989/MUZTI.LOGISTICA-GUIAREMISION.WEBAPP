@@ -33,7 +33,8 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     collection: UbigeoDistritoDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
-    private sub = new Subscription();
+    private subs = new Subscription();
+    isLoading = false;
 
     constructor(
         private ubigeoService: UbigeoApiService
@@ -48,7 +49,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     ngOnDestroy(): void {
-        this.sub.unsubscribe();
+        this.subs.unsubscribe();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -67,17 +68,20 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         this.loading.next(true);
-            this.sub.add(this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia).subscribe({
-                next: (response) => {
-                    this.collection = response;
-                    this.loading.next(false);
-                    this.isLoaded.emit(true);
-                },
-                error: (error) => {
-                    this.loading.next(false);
-                }
-            })
-        );
+        this.isLoading = true;
+        const sub = this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia).subscribe({
+            next: (response) => {
+                this.collection = response;
+                this.loading.next(false);
+                this.isLoading = false;
+                this.isLoaded.emit(true);
+            },
+            error: (error) => {
+                this.loading.next(false);
+                this.isLoading = false;
+            }
+        })
+        this.subs.add(sub);
     }
 
 }

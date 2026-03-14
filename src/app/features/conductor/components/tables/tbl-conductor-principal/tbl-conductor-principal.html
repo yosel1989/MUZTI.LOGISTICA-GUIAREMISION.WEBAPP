@@ -249,13 +249,13 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                 </td>
                             }
                             @case('fecha_creacion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light! truncate!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
                             }
                             @case('fecha_ultima_edicion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light! truncate!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
                             }
                             @case('estado'){
-                                <td class="text-nowrap py-1! font-light!"> 
+                                <td class="text-nowrap py-1! font-light! truncate!"> 
                                     @if(rowData['id_estado']){
                                         <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
                                             {{rowData[col.field]}}
@@ -272,7 +272,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 [class.border-e-0]="columns.lenght === i"
-                                class="text-nowrap py-1! font-light!">{{rowData[col.field]}}</td>
+                                class="text-nowrap py-1! font-light! truncate!">{{rowData[col.field]}}</td>
                             }
                         }
                     }
