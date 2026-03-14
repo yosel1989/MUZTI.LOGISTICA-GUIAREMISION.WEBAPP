@@ -23,6 +23,7 @@ import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MdlRegistrarRemitenteComponent } from '../../modals/mdl-registrar-remitente/mdl-registrar-remitente.component';
 import { MdlEditarRemitenteComponent } from '../../modals/mdl-editar-remitente/mdl-editar-remitente.component';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 
 @Component({
   selector: 'app-tbl-remitente-principal',
@@ -42,7 +43,8 @@ import { MdlEditarRemitenteComponent } from '../../modals/mdl-editar-remitente/m
         AsyncPipe,
         DatePipe,
         ContextMenuModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        LoaderComponent
   ],
   providers: [DialogService, ConfirmationService]
 })

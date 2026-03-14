@@ -4,9 +4,9 @@ import { TableGuiaRemisionPrincipalComponent } from '@features/guia-remision/com
 import { CardModule } from 'primeng/card';
 
 @Component({
-  selector: 'app-guia-remision-principal',
-  templateUrl: './guia-remision-principal.html',
-  styleUrl: './guia-remision-principal.scss',
+  selector: 'app-page-guia-remision-principal',
+  templateUrl: './page-guia-remision-principal.html',
+  styleUrl: './page-guia-remision-principal.scss',
   imports: [
     CommonModule,
     CardModule,
@@ -16,7 +16,7 @@ import { CardModule } from 'primeng/card';
   providers: []
 })
 
-export class GuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class PageGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     constructor(
 

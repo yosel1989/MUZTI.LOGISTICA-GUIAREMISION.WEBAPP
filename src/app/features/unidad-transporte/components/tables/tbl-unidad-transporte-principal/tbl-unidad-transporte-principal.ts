@@ -23,6 +23,7 @@ import { ActualizarEstadoUnidadTransporteRequestDto, ActualizarEstadoUnidadTrans
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { MdlRegistrarUnidadTransporteComponent } from '../../modals/mdl-registrar-unidad-transporte/mdl-registrar-unidad-transporte';
 import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unidad-transporte/mdl-editar-unidad-transporte';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 
 @Component({
   selector: 'app-tbl-unidad-transporte-principal',
@@ -42,7 +43,8 @@ import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unid
         AsyncPipe,
         DatePipe,
         ContextMenuModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        LoaderComponent
   ],
   providers: [DialogService, ConfirmationService]
 })

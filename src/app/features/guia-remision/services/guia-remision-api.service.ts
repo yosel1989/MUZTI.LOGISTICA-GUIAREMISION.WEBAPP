@@ -9,12 +9,12 @@ import { TableData } from "app/core/models/table";
   providedIn: 'root'
 })
 export class GuiaRemisionApiService {
-  private baseUrl = `${environment.apiUrl}/GuiaRemitente`;
+  private baseUrl = `${environment.apiUrl}/GuiaRemision`;
 
   constructor(private http: HttpClient) {}
 
   obtenerTodo(pageNumber: number, pageSize: number): Observable<TableData<GuiaRemisionDto[]>> {
-    return this.http.get<any>(`${this.baseUrl}/listado-guias/${pageNumber}/${pageSize}`).pipe(
+    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`).pipe(
       map(response =>{ return response as TableData<GuiaRemisionDto[]> }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);

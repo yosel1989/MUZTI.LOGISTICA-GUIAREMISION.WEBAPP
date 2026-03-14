@@ -23,6 +23,7 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 
 @Component({
   selector: 'app-tbl-proveedor-principal',
@@ -42,7 +43,8 @@ import { HttpErrorResponse } from '@angular/common/http';
         AsyncPipe,
         DatePipe,
         ContextMenuModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        LoaderComponent
   ],
   providers: [DialogService, ConfirmationService]
 })

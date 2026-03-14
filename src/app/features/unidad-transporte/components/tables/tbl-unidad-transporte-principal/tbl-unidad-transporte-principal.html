@@ -136,6 +136,11 @@
     </ng-template>
 </p-toolbar>
 
+<div class="relative h-full w-full">
+    @if($ldData | async){
+        <app-loader class="z-40"></app-loader>
+    }
+
 <p-table 
 #datatable
 [columns]="cols"
@@ -281,6 +286,8 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
         }
     </ng-template>
 </p-table>
+
+</div>
 
 <p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
 

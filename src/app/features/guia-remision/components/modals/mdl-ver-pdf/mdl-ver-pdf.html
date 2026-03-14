@@ -1,7 +1,7 @@
 @if(!(loading | async) && pdfUrl){
     <embed [src]="urlBlob! | safeUrl" type="application/pdf" class="w-full h-full">
 }@else {
-    <div class="relative">
+    <div class="relative h-full w-full bg-gray-700">
         <app-loader class="z-40"></app-loader>
     </div>
 }

@@ -23,6 +23,7 @@ import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseD
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 
 @Component({
   selector: 'app-tbl-conductor-principal',
@@ -42,7 +43,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
         AsyncPipe,
         DatePipe,
         ContextMenuModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        LoaderComponent
   ],
   providers: [DialogService, ConfirmationService]
 })

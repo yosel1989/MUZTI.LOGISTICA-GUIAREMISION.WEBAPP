@@ -136,6 +136,11 @@
     </ng-template>
 </p-toolbar>
 
+<div class="relative h-full w-full">
+    @if($ldData | async){
+        <app-loader class="z-40"></app-loader>
+    }
+
 <p-table 
 #datatable
 [columns]="cols"

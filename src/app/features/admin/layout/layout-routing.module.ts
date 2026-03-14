@@ -21,7 +21,7 @@ const routes: Routes = [
       },
       {
         path: 'guia-remision',
-        loadComponent: () => import('@features/guia-remision/pages/guia-remision-principal/guia-remision-principal').then(m => m.GuiaRemisionPrincipalComponent)
+        loadComponent: () => import('@features/guia-remision/pages/page-guia-remision-principal/page-guia-remision-principal').then(m => m.PageGuiaRemisionPrincipalComponent)
       },
       {
         path: 'remitente',

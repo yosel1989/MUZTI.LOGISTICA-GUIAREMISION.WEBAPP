@@ -1,8 +1,9 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { GuiaRemisionDto } from '@features/guia-remision/models/guia-remision.model';
 import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
-import { LoaderComponent } from 'app/core/components/modals/loader/loder.component';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { SafeUrlPipe } from 'app/core/pipes/safe-url-pipe/safe-url-pipe';
 import { BehaviorSubject } from 'rxjs';
 
@@ -21,6 +22,7 @@ import { BehaviorSubject } from 'rxjs';
 export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
 
   @Input() ticket!: string;
+  @Input() data!: GuiaRemisionDto;
 
   urlBlob: string | undefined;
   pdfUrl: SafeResourceUrl | undefined = undefined;

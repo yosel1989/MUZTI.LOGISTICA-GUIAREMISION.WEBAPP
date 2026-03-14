@@ -1,3 +1,4 @@
+
 <p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-[.5px] dark:border-b-gray-700">
     <ng-template #start>
     <div class="flex items-center gap-1">
@@ -52,7 +53,7 @@
         tooltipStyleClass="text-xs! text-center"
         placeholder="Top"
         styleClass="w-9! h-9!"
-      
+        routerLink="nuevo"
         />
 
         @if(selected){
@@ -108,6 +109,12 @@
     </ng-template>
 </p-toolbar>
 
+
+<div class="relative h-full w-full">
+    @if($ldData | async){
+        <app-loader class="z-40"></app-loader>
+    }
+
 <p-table 
 #datatable
 [columns]="cols"
@@ -132,10 +139,11 @@ stripedRows
 
 [totalRecords]="totalRecords"
 [rows]="pageSize"
-[first]="pageNumber"
+[first]="first"
 [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
 scrollHeight="400px"
 
+(firstChange)="evtFirstChange($event)"
 (rowsChange)="evtRowsChange($event)"
 
 class="border-none! text-mono! max-w-full!"
@@ -144,16 +152,18 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
 
 [contextMenu]="cm" 
 (onContextMenuSelect)="evtOnRowSelect($event)"
+
+[loading]="$ldData | async"
 >
     <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap uppercase">
+        <tr class="text-nowrap uppercase text-[12px]!">
             @for (col of columns; track col) {
                  @switch (col.field) {
                     @case('select'){
                         <th class="px-2 border-s-0!"></th>
                     }
                     @case('cod'){
-                        <th class="px-4! text-[11px]! text-primary! font-semibold">{{ col.header }}</th>
+                        <th class="px-4! text-primary! font-semibold">{{ col.header }}</th>
                     }
                     @default{
                         <th 
@@ -161,7 +171,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         [frozen]="col.sticky ?? false"
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[11px]! text-primary! font-semibold px-4!">
+                        class="text-nowrap py-2! text-primary! font-semibold px-4!">
                             <div class="flex items-center gap-2">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
@@ -185,7 +195,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class="uppercase text-[11px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
+            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
@@ -214,18 +224,18 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                 <td 
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
-                                class="cursor-pointer py-2! px-2!" >
+                                class="cursor-pointer py-2! px-2! truncate" >
                                 COD-{{ rowData[col.field].toString().padStart(4,'0') }}
                                 </td>
                             }
                             @case('fecha_creacion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light! truncate">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
                             }
                             @case('fecha_ultima_edicion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light! truncate">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
                             }
                             @case('estado'){
-                                <td class="text-nowrap py-1! font-light!"> 
+                                <td class="text-nowrap py-1! font-light! truncate"> 
                                     @if(rowData['id_estado']){
                                         <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
                                             {{rowData[col.field]}}
@@ -241,7 +251,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                 <td
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
-                                class="text-nowrap py-1! font-light!">{{rowData[col.field]}}</td>
+                                class="text-nowrap py-1! font-light! truncate">{{rowData[col.field]}}</td>
                             }
                         }
                     }
@@ -249,7 +259,10 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
             </tr>
         }
     </ng-template>
+    
 </p-table>
+
+</div>
 
 <p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
 
