@@ -173,7 +173,7 @@ scrollHeight="400px"
 
 class="border-none! text-mono! max-w-full!"
 paginatorDropdownAppendTo="body"
-paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
+paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
 
 [contextMenu]="cm" 
 (onContextMenuSelect)="evtOnRowSelect($event)"
@@ -186,7 +186,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         <th class="px-2 border-s-0!"></th>
                     }
                     @case('cod'){
-                        <th class="px-4! text-[11px]! text-primary! font-semibold">{{ col.header }}</th>
+                        <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
                     }
                     @default{
                         <th 
@@ -194,7 +194,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         [frozen]="col.sticky ?? false"
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[11px]! text-primary! font-semibold px-4!">
+                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4!">
                             <div class="flex items-center gap-2">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
@@ -218,7 +218,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class="uppercase text-[11px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
+            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
@@ -264,7 +264,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                             {{rowData[col.field]}}
                                         </span>
                                     }@else{
-                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2">
+                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
                                             {{rowData[col.field]}}
                                         </span>
                                     }

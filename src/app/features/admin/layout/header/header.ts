@@ -8,10 +8,13 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { BadgeModule } from 'primeng/badge';
-import { AlertService } from 'app/shared/services/alert.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AuthApiService } from 'app/features/auth/services/auth-api.service';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { Observable } from 'rxjs';
+import { LayoutService } from 'app/core/services/layout.service';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +30,9 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
     MenuModule,
     BadgeModule,
     ConfirmDialogModule,
-    OverlayBadgeModule 
+    OverlayBadgeModule,
+    BreadcrumbModule,
+    AsyncPipe
   ],
   providers: [ConfirmationService]
 })
@@ -35,12 +40,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('menuUser') menuUser!: Menu;
     items: MenuItem[] | undefined;
+    breadCrumbItems: Observable<MenuItem[]> | undefined;
 
     constructor(
-        private alertService: AlertService,
         private confirmationService: ConfirmationService,
-        private authApi: AuthApiService
+        private authApi: AuthApiService,
+        private layoutService: LayoutService
     ) {
+        this.breadCrumbItems = this.layoutService.breadCrumbItems;
     }
 
     ngOnInit(): void {

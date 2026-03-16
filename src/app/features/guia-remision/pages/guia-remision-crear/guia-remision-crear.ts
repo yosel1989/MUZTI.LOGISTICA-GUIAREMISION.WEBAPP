@@ -25,7 +25,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
 import { DialogService } from 'primeng/dynamicdialog';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from "primeng/table";
@@ -39,6 +39,8 @@ import { GR_EnviarGuiaRemisionResponseDto, GR_ProductoRequestDto, GuiaRemisionRe
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { DocumentoService } from 'app/features/documento/service/DocumentoService';
 import { saveAs } from 'file-saver';
+import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { LayoutService } from 'app/core/services/layout.service';
 
 
 interface Type {
@@ -81,7 +83,8 @@ interface Type {
     GuiaSectionCabeceraComponent
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
-  providers: [DialogService, ConfirmationService]
+  providers: [DialogService, ConfirmationService],
+  animations: [fadeDownAnimation]
 })
 
 export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
@@ -107,14 +110,19 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     modalRef: any | undefined;
     private subs = new Subscription();
 
+    breadCrumbItems: MenuItem[] = [{ label: 'Guia de Remisión', labelClass: 'font-semibold text-primary!' }, { label: 'Nueva Guía' }];
+
     constructor(
         private formBuilder: FormBuilder,
         public dialogService: DialogService,
         private cdr: ChangeDetectorRef,
         private confirmationService: ConfirmationService,
         private api: GuiaRemitenteApiService,
-        private documentApi: DocumentoService
+        private documentApi: DocumentoService,
+        private ls: LayoutService
     ){
+        this.ls.breadCrumbItems = this.breadCrumbItems;
+
         this.formGroup = this.formBuilder.group({
 
             remitente_id: new FormControl(null, Validators.required),
@@ -241,6 +249,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 direccion:  (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.direccion : this.f.direccion_remitente.value,
                 email: "yosel1989@gmail.com",
                 pais: "PE",
+                serie: this.remitenteSelected!.serie!,
+                codigo_sunat: this.remitenteSelected!.serie!,
                 empleado_id_creacion: 1,
                 empleado_nombre_creacion: "SA"
             },
@@ -352,7 +362,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             return;
         }
 
-        console.log('request', this.request);
+        //console.log('request', this.request);
 
         this.loadingSubmit.next(true);
         this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente?.selected?.ruc! ).subscribe({

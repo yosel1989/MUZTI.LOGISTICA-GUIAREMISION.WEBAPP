@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { TableConductorPrincipalComponent } from '@features/conductor/components/tables/tbl-conductor-principal/tbl-conductor-principal';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { LayoutService } from 'app/core/services/layout.service';
+import { MenuItem } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 @Component({
   selector: 'app-page-conductor-principal',
@@ -19,10 +21,12 @@ import { CardModule } from 'primeng/card';
 
 export class PageConductorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    constructor(
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración de Conductores', labelClass: 'font-semibold text-primary!' }];
 
+    constructor(
+      private ls: LayoutService
     ){
-        
+        this.ls.breadCrumbItems = this.breadCrumbItems;
     }
 
     ngOnInit(): void{

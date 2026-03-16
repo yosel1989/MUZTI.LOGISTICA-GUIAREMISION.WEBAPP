@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { FltGuiaRemisionPrincipalComponent } from '@features/guia-remision/components/filters/flt-guia-remision-principal/flt-guia-remision-principal';
 import { TableGuiaRemisionPrincipalComponent } from '@features/guia-remision/components/tables/tbl-guia-remision-principal/tbl-guia-remision-principal';
+import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { LayoutService } from 'app/core/services/layout.service';
+import { MenuItem } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 
 @Component({
@@ -10,18 +14,22 @@ import { CardModule } from 'primeng/card';
   imports: [
     CommonModule,
     CardModule,
-    TableGuiaRemisionPrincipalComponent
+    TableGuiaRemisionPrincipalComponent,
+    FltGuiaRemisionPrincipalComponent
   ],
   viewProviders: [],
-  providers: []
+  providers: [],
+  animations: [fadeDownAnimation]
 })
 
 export class PageGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    constructor(
+    breadCrumbItems: MenuItem[] = [{ label: 'Guia de Remisión', labelClass: 'font-semibold text-primary!' }, { label: 'Registros' }];
 
+    constructor(
+      private ls: LayoutService
     ){
-        
+      this.ls.breadCrumbItems = this.breadCrumbItems;
     }
 
     ngOnInit(): void{

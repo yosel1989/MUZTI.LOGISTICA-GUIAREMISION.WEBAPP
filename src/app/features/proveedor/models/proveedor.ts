@@ -17,6 +17,7 @@ export interface ProveedorDto{
     empleado_nombre_creacion: string;
     fecha_ultima_edicion: Date | null;
     empleado_nombre_edicion: string;
+    ldStatus: boolean;
 }
 
 
@@ -83,5 +84,7 @@ export interface ActualizarEstadoProveedorResponseDto{
   id: number;
   id_estado: number;
   estado: string;
+  empleado_nombre_edicion: string;
+  fecha_ultima_edicion: Date;
   detalle: string;
 }

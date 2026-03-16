@@ -24,6 +24,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MdlRegistrarRemitenteComponent } from '../../modals/mdl-registrar-remitente/mdl-registrar-remitente.component';
 import { MdlEditarRemitenteComponent } from '../../modals/mdl-editar-remitente/mdl-editar-remitente.component';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { fadeDownAnimation } from 'app/core/animations/page-animation';
 
 @Component({
   selector: 'app-tbl-remitente-principal',
@@ -46,7 +47,8 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
         ConfirmDialogModule,
         LoaderComponent
   ],
-  providers: [DialogService, ConfirmationService]
+  providers: [DialogService, ConfirmationService],
+  animations: [fadeDownAnimation]
 })
 
 export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
@@ -72,7 +74,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
     private subs = new Subscription();
 
     pageNumber: number = 0;
-    pageSize: number = 5;
+    pageSize: number = 10;
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;

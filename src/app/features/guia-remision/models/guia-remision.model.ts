@@ -39,6 +39,8 @@ export interface GR_RemitenteRequestDto {
   direccion: string;
   email: string;
   pais: string;
+  serie: string;
+  codigo_sunat: string;
   empleado_id_creacion: number | null;
   empleado_nombre_creacion: string | null;
 }

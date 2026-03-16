@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { TableProveedorPrincipalComponent } from '@features/proveedor/components/tables/tbl-proveedor-principal/tbl-proveedor-principal';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { LayoutService } from 'app/core/services/layout.service';
+import { MenuItem } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 
 @Component({
@@ -20,10 +22,12 @@ import { CardModule } from 'primeng/card';
 
 export class PageProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    constructor(
+    breadCrumbItems: MenuItem[] = [{ label: 'Proveedor', labelClass: 'font-semibold text-primary!' }, { label: 'Registros' }];
 
+    constructor(
+      private ls: LayoutService
     ){
-        
+        this.ls.breadCrumbItems = this.breadCrumbItems;
     }
 
     ngOnInit(): void{

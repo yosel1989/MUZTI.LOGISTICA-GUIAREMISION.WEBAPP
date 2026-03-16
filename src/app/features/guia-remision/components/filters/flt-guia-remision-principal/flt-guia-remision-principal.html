@@ -1,0 +1,240 @@
+<p-panel [toggleable]="true" collapsed="true"  class="border-none!">
+    <ng-template #header let-header>
+        <div class="flex items-center gap-2 text-primary! font-medium">
+            <i class="pi pi-filter"></i>
+            <span>Busqueda avanzada</span>
+        </div>
+    </ng-template>
+    <form [formGroup]="formGroup">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3 p-2">
+            <div>
+                <label class="font-normal text-[11px]!">RUC Empresa</label>
+                <p-iconfield>
+                    <input 
+                    onlyNumber
+                    #rucEmpresa
+                    formControlName="rucEmpresa"
+                    placeholder="Todos" 
+                    pSize="small" 
+                    fluid 
+                    pInputText 
+                    onlyNumber
+                    maxlength="11"
+                    class="shadow-none! text-xs min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
+                    @if(rucEmpresa.value){
+                        <p-inputicon 
+                        class="pi pi-times text-[12px]! cursor-pointer"
+                        (click)="evtClearControl('rucEmpresa')" 
+                        pTooltip="Limpiar"
+                        tooltipPosition="top"
+                        tooltipStyleClass="text-xs! text-center"/>
+                    }
+                </p-iconfield>
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Tipo Guía</label>
+                <p-select 
+                formControlName="tipoGuia"
+                fluid
+                size="small" 
+                [inputSize]="2" 
+                panelStyleClass="text-[.875rem]!"
+                class="shadow-none! min-h-9!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                [options]="tiposGuia"  
+                placeholder="Todos" 
+                optionValue="value" 
+                optionLabel="label" 
+                showClear="true"
+                appendTo="body"
+                >
+                    <ng-template #clearicon>
+                        <span class="px-2">
+                            <p-inputicon 
+                            class="pi pi-times text-[12px]! cursor-pointer"
+                            pTooltip="Limpiar"
+                            tooltipPosition="top"
+                            tooltipStyleClass="text-xs! text-center"/>
+                        </span>
+                    </ng-template>
+                </p-select>
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">N° Guía</label>
+                <p-iconfield>
+                    <input 
+                    #numeroGuia
+                    formControlName="numeroGuia"
+                    placeholder="Todos" 
+                    pSize="small" 
+                    fluid 
+                    pInputText 
+                    onlyNumber
+                    class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                    />
+                    @if(numeroGuia.value){
+                        <p-inputicon 
+                        pTooltip="Limpiar"
+                        tooltipPosition="top"
+                        tooltipStyleClass="text-xs! text-center"
+                        class="pi pi-times text-[12px]! cursor-pointer" 
+                        (click)="evtClearControl('numeroGuia')" 
+                        />
+                    }
+                </p-iconfield>
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">T. Traslado</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Dirección</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">F. Emisión</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Destinatario</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">N° Doc. Destinatario</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Origen</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Destino</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Estado</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">F. Registro</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">U. Registro</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">RUC Empresa</label>
+                <input 
+                placeholder="" 
+                pSize="small" 
+                fluid 
+                pInputText 
+                onlyNumber
+                class="shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3 p-2">
+            <p-button 
+                icon="pi pi-filter-slash text-[13px]!" 
+                label="Limpiar todo"
+                size="small"
+                fluid=""
+                severity="primary"
+                pTooltip="Limpiar todo"
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="min-w-9! h-9!"
+                placeholder="Top"
+                badge="2"
+                badgeSeverity="contrast"
+            />
+        </div>
+    </form>
+    
+</p-panel>

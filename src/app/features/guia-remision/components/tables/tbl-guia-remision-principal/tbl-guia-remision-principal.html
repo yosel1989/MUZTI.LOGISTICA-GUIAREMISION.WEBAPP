@@ -69,6 +69,7 @@
                 styleClass="w-9! h-9!"
           
             />
+            @if(selected.estado === 'ENVIADO'){
             <p-button 
                 icon="pi pi-file-pdf text-[13px]!"  
                 size="small" 
@@ -81,6 +82,7 @@
                 styleClass="w-9! h-9!"
                 (click)="evtOnShowPdf()"
             />
+            }
         }
            
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
@@ -101,11 +103,30 @@
     </div>
     </ng-template>
     <ng-template #end>
-        <p-iconfield iconPosition="left">
-            <p-inputicon class="pi pi-search text-[13px]!" />
-            <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[.875rem]! ps-7.5! min-h-9!"
-            (input)="evtOnFilter(inputFilter.value)"/>
-        </p-iconfield>
+        <div class="flex justify-between gap-x-2">
+            <p-button 
+                icon="pi pi-filter text-[13px]!" 
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                pTooltip="Filtros"
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="min-w-9! h-9!"
+                placeholder="Top"
+                badge="2"
+                badgeSeverity="primary"
+                badgeClass="font-normal!"
+                (click)="evtOnShowFilters()"
+            />
+            <p-iconfield iconPosition="left">
+                <p-inputicon class="pi pi-search text-[12px]!" />
+                <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[12px]! h-9!"
+                (input)="evtOnFilter(inputFilter.value)"/>
+            </p-iconfield>
+        </div>
+        
     </ng-template>
 </p-toolbar>
 
@@ -156,9 +177,9 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
 [loading]="$ldData | async"
 >
     <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap uppercase text-[12px]!">
+        <tr class="text-nowrap text-[12px]!">
             @for (col of columns; track col) {
-                 @switch (col.field) {
+                @switch (col.field) {
                     @case('select'){
                         <th class="px-2 border-s-0!"></th>
                     }
@@ -171,14 +192,14 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         [frozen]="col.sticky ?? false"
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-primary! font-semibold px-4!">
+                        class="text-nowrap py-2! text-primary! font-medium! px-4!">
                             <div class="flex items-center gap-2">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
                             </div>
                         </th>
                     }
-                 }
+                }
             }
         </tr>
     </ng-template>
@@ -241,7 +262,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                                             {{rowData[col.field]}}
                                         </span>
                                     }@else{
-                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2">
+                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
                                             {{rowData[col.field]}}
                                         </span>
                                     }
@@ -285,3 +306,13 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
         </ng-template>
     </p-confirmdialog>
 </div>
+
+
+
+<p-drawer header="Filtrar" [(visible)]="visibleFilters" position="right" appendTo="body">
+    <div class="grid grid-cols-1">
+        <div>
+            
+        </div>
+    </div>
+</p-drawer>

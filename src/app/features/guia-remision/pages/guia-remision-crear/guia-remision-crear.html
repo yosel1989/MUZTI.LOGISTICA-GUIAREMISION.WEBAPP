@@ -1,4 +1,4 @@
-<div class="md:container-fluid lg:container p-4 relative mx-auto">
+<div class="md:container-fluid lg:container p-4 relative mx-auto" @fadeDown>
     <form [formGroup]="formGroup" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
 
         <p-card>
@@ -141,13 +141,39 @@
 
                         <div class="grid grid-cols-3 gap-x-3 gap-y-4">
                             <div>
-                                <app-select-departamento [control]="f.departamento_remitente" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
+                                <app-select-departamento 
+                                [control]="f.departamento_remitente" 
+                                classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                                @if (formGroup.get('departamento_remitente')?.invalid && (formGroup.get('departamento_remitente')?.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple" >
+                                        <span class="text-[10px]! ">Este campo es requerido.</span>
+                                    </p-message>
+                                }
                             </div>
                             <div>
-                                <app-select-provincia [control]="f.provincia_remitente" [idUbigeoDepartamento]="f.departamento_remitente.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
+                                <app-select-provincia 
+                                [control]="f.provincia_remitente" 
+                                [idUbigeoDepartamento]="f.departamento_remitente.value" 
+                                classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                                @if (formGroup.get('provincia_remitente')?.invalid && (formGroup.get('provincia_remitente')?.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple" >
+                                        <span class="text-[10px]! ">Este campo es requerido.</span>
+                                    </p-message>
+                                }
                             </div>
                             <div>
-                                <app-select-distrito [control]="f.distrito_remitente" [idUbigeoProvincia]="f.provincia_remitente.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
+                                <app-select-distrito 
+                                [control]="f.distrito_remitente" 
+                                [idUbigeoProvincia]="f.provincia_remitente.value" 
+                                classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                                @if (formGroup.get('distrito_remitente')?.invalid && (formGroup.get('distrito_remitente')?.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple" >
+                                        <span class="text-[10px]! ">Este campo es requerido.</span>
+                                    </p-message>
+                                }
                             </div>
                         </div>
 
@@ -282,13 +308,39 @@
 
                         <div class="grid grid-cols-3 gap-x-3 gap-y-4">
                             <div>
-                                <app-select-departamento [control]="f.departamento_destinatario" classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
+                                <app-select-departamento 
+                                [control]="f.departamento_destinatario" 
+                                classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                                @if (formGroup.get('departamento_destinatario')?.invalid && (formGroup.get('departamento_destinatario')?.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple" >
+                                        <span class="text-[10px]! ">Este campo es requerido.</span>
+                                    </p-message>
+                                }
                             </div>
                             <div>
-                                <app-select-provincia [control]="f.provincia_destinatario" [idUbigeoDepartamento]="f.departamento_destinatario.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
+                                <app-select-provincia 
+                                [control]="f.provincia_destinatario" 
+                                [idUbigeoDepartamento]="f.departamento_destinatario.value" 
+                                classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                                @if (formGroup.get('provincia_destinatario')?.invalid && (formGroup.get('provincia_destinatario')?.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple" >
+                                        <span class="text-[10px]! ">Este campo es requerido.</span>
+                                    </p-message>
+                                }
                             </div>
                             <div>
-                                <app-select-distrito [control]="f.distrito_destinatario" [idUbigeoProvincia]="f.provincia_destinatario.value" classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
+                                <app-select-distrito 
+                                [control]="f.distrito_destinatario" 
+                                [idUbigeoProvincia]="f.provincia_destinatario.value" 
+                                classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                                @if (formGroup.get('distrito_destinatario')?.invalid && (formGroup.get('distrito_destinatario')?.touched || submitted)) {
+                                    <p-message severity="error" size="small" variant="simple" >
+                                        <span class="text-[10px]! ">Este campo es requerido.</span>
+                                    </p-message>
+                                }
                             </div>
                         </div>
 

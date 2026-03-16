@@ -1,5 +1,5 @@
 export interface RemitenteToSelect {
-  remitente_id: number;              
+  id: number;              
   nombre_empresa: string;            
   ruc: string;                       
   descripcion: string;               
@@ -11,13 +11,13 @@ export interface RemitenteToSelect {
   email: string;                     
   pais: string;                      
   serie: string | null;              
-  nueva_serie: string | null;        
+  /*nueva_serie: string | null;        
   nuevo_correlativo: number | null;  
-  nuevo_numero_guia: string | null;          
+  nuevo_numero_guia: string | null;*/          
 }
 
 export interface RemitenteByIdToGuia{
-  remitente_id: number;              
+  id: number;              
   nombre_empresa: string;            
   ruc: string;                       
   descripcion: string;               

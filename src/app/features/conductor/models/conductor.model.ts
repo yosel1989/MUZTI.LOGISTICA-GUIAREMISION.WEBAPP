@@ -13,6 +13,7 @@ export interface ConductorDto{
     empleado_nombre_edicion: string | null;
     estado: string;
     id_estado: number;
+    ldStatus: boolean;
 }
 
 export interface ConductorByNumeroDocumento{

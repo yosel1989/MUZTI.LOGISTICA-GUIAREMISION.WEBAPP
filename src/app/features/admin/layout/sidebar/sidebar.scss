@@ -218,4 +218,8 @@ body.collapsed :host ::ng-deep{
 
 :host{
   z-index: 11;
+
+  .nav-label{
+    @apply text-[12px]!
+  }
 }

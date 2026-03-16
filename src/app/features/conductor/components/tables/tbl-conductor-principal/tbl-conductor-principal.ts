@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, combineLatest, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -75,8 +75,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     private subs = new Subscription();
 
     pageNumber: number = 1;
-    pageSize: number = 5;
-    private pageSize$ = new BehaviorSubject<number>(5);
+    pageSize: number = 10;
+    private pageSize$ = new BehaviorSubject<number>(10);
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
@@ -150,6 +150,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
             x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
+            x.ldStatus = false;
             return x;
           });
 
@@ -326,6 +327,9 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
           message: 'Confirmar la operación.',
           accept: () => {
+              this.selected!.ldStatus = true;
+              this.cd.detectChanges();
+
               const request = {
                 id_estado: status,
                 edited_employee_id: 1,
@@ -343,7 +347,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                     timerProgressBar: true,
                     timer: 4000
                   });
-
+                  
+                  this.selected!.ldStatus = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
                   this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
@@ -364,6 +369,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                       popup: 'z-[9999]!'
                     }
                   });
+                  this.selected!.ldStatus = false;
+                  this.cd.detectChanges();
                 }
               });
               this.subs.add(sub);

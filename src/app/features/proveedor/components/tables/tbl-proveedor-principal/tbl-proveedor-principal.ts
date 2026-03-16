@@ -71,8 +71,9 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 0;
-    pageSize: number = 5;
+    pageNumber: number =1;
+    pageSize: number = 10;
+    private pageSize$ = new BehaviorSubject<number>(10);
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
@@ -138,15 +139,22 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     // data
-    loadData(): void {
+    loadData(reload: boolean = false): void {
       this.selected = undefined;
       this.loading = true;
       this.ldData.next(true);
-      const sub = this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
+
+      if(reload){
+        this.pageNumber = 1;
+        this.first = 0;
+      }
+
+      const sub = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
         next: (res: TableData<ProveedorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
             x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
+            x.ldStatus = false;
             return x;
           });
 
@@ -162,6 +170,20 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
+          this.data = [];
+
+          this.alertService.showToast({
+              position: 'bottom-end',
+              icon: "error",
+              title: "Ocurrio un error al obtener los registros",
+              showCloseButton: true,
+              timerProgressBar: true,
+              timer: 4000,
+              customClass: {
+                container: 'z-[9999]!',
+                popup: 'z-[9999]!'
+              }
+          }); 
         }
       });
       this.subs.add(sub);
@@ -170,32 +192,29 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     //events
     evtToggleSelection(row: ProveedorDto): void{
       if (this.selected === row) {
-        this.selected = undefined;
         this.setSelected(undefined);
+        this.selected = undefined;
       } else {
-        this.selected = row;
         this.setSelected(row);
+        this.selected = row;
       }
     }
 
     evtNext() {
-      /*this.queryParams = {
-        ...this.queryParams!,
-        start : this.first + this.queryParams!.length 
-      };*/
-
-      this.reload();
+      this.first = this.first + this.pageSize;
+      this.pageNumber = this.pageNumber + 1;
+      this.evtOnReload(false);
     }
 
     evtPrev() {
-      /*this.first = this.first - this.queryParams!.length;*/
-      this.reload();
+      this.first = this.first - this.pageSize;
+      this.pageNumber--;
+      this.evtOnReload(false);
     }
 
-    private evtOnReload(): void{
-      this.setSelected(undefined);
+    private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
-      this.loadData();
+      this.loadData(reload);
     }
 
     evtOnFilter(value: string){
@@ -309,6 +328,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           header: !status ? '¿Desactivar el proveedor?' : '¿Activar el proveedor?',
           message: 'Confirmar la operación.',
           accept: () => {
+              this.selected!.ldStatus = true;
+              this.cd.detectChanges();
 
               const request = {
                 id_estado: status,
@@ -328,11 +349,17 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                     timer: 4000
                   });
 
+                  this.selected!.ldStatus = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
+                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
+                  this.selected!.fecha_ultima_edicion = new Date(res.fecha_ultima_edicion);
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
+
+                  this.selected!.ldStatus = false;
+                  this.cd.detectChanges();
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -364,6 +391,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     evtRowsChange(rows: number): void{
       this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
       this.pageSize = this.pageSize === rows ? this.pageSize : rows;
+      this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
       this.first = (this.pageNumber - 1) * this.pageSize
       this.loadData();
     }
@@ -375,15 +403,15 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     //functions
     isLastPage(): boolean {
-      return this.data ? this.first >= this.recordsTotalTable : true;
+        return this.data ? this.first + this.pageSize >= this.totalRecords : true;
     }
 
     isFirstPage(): boolean {
-      return this.data ? this.first === 0 : true;
+        return this.data ? this.first === 0 : true;
     }
 
     reload(): void{
-      this.evtOnReload();
+      this.evtOnReload(true);
     }
 
     private buildMenuItems(selected: ProveedorDto | undefined): MenuItem[] {

@@ -72,7 +72,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     private subs = new Subscription();
 
     pageNumber: number = 1;
-    pageSize: number = 5;
+    pageSize: number = 10;
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
@@ -147,6 +147,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
             x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
+            x.ldStatus = false;
             return x;
           });
 
@@ -323,6 +324,9 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           header: !status ? '¿Desactivar la Unidad de Transporte?' : '¿Activar la Unidad de Transporte',
           message: 'Confirmar la operación.',
           accept: () => {
+              this.selected!.ldStatus = true;
+              this.cd.detectChanges();
+
               const request = {
                 id_estado: status,
                 edited_employee_id: 1,
@@ -341,6 +345,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                     timer: 4000
                   });
 
+                  this.selected!.ldStatus = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
                   this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
@@ -348,6 +353,9 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
+
+                  this.selected!.ldStatus = false;
+                  this.cd.detectChanges();
 
                   this.alertService.showToast({
                     position: 'bottom-end',

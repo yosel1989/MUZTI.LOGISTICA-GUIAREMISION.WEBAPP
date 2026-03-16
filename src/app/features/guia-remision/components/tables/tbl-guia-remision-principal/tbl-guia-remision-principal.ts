@@ -23,6 +23,7 @@ import { DocumentoApiService } from '@features/guia-remision/services/documento-
 import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
 import { LayoutRoutingModule } from "@features/admin/layout/layout-routing.module";
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -44,7 +45,8 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
     ContextMenuModule,
     ConfirmDialogModule,
     LayoutRoutingModule,
-    LoaderComponent
+    LoaderComponent,
+    DrawerModule
 ],
   providers: [DialogService, ConfirmationService]
 })
@@ -72,14 +74,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     private subs = new Subscription();
 
     pageNumber: number = 1;
-    pageSize: number = 5;
-    private pageSize$ = new BehaviorSubject<number>(5);
+    pageSize: number = 10;
+    private pageSize$ = new BehaviorSubject<number>(10);
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
     firstChange: boolean = false;
 
     subData: Subscription | undefined = undefined; 
+    visibleFilters: boolean = false;
 
     constructor(
       public dialogService: DialogService,
@@ -98,7 +101,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
           { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
           { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
-          { field: 'tipo_transporte', header: 'Dirección', sort: false, sticky: false },
+          { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
           { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
           { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
           { field: 'razon_destinatario', header: 'Destinatario', sort: false, sticky: false },
@@ -235,6 +238,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       });
     }
 
+    evtOnShowFilters(): void{
+      this.visibleFilters = true;
+    }
+
     evtFirstChange(first: number): void{
       this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
     }
@@ -268,7 +275,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     private buildMenuItems(selected: GuiaRemisionDto | undefined): MenuItem[] {
       return [
         { label: 'Ver Detalle', icon: 'pi pi-eye text-blue-500!', command: () => { this.evtOnShowDetail(); }},
-        { label: 'Ver PDF', icon: 'pi pi-file-pdf text-gray-500!', command: () => { this.evtOnShowPdf(); }},
+        { label: 'Ver PDF', icon: 'pi pi-file-pdf text-gray-500!', command: () => { this.evtOnShowPdf(); }, visible: selected?.estado === 'ENVIADO' },
       ];
     }
 

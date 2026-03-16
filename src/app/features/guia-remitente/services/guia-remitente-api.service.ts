@@ -8,12 +8,12 @@ import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionRemitenteRequestDto } fro
   providedIn: 'root'
 })
 export class GuiaRemitenteApiService {
-  private baseUrl = `${environment.apiUrl}/GuiaRemitente`;
+  private baseUrl = `${environment.apiUrl}/GuiaRemision`;
 
   constructor(private http: HttpClient) {}
 
   saveRemisionRemitente(request: GuiaRemisionRemitenteRequestDto, ruc: string): Observable<GR_EnviarGuiaRemisionResponseDto> {
-    return this.http.post<any>(`${this.baseUrl}/${ruc}`, request).pipe(
+    return this.http.post<any>(`${this.baseUrl}/remitente/${ruc}`, request).pipe(
       map(response =>{ return response as GR_EnviarGuiaRemisionResponseDto }),
       catchError(error => {
         return throwError(() => error);
