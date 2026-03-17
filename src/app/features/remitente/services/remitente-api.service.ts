@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoRemitenteResponseDto, EditarRemitenteRequestDto, EditarRemitenteResponseDto, EliminarRemitenteResponseDto, RegistrarRemitenteRequestDto, RegistrarRemitenteResponseDto, RemitenteByIdToGuia, RemitenteDto, RemitenteToSelect } from "../models/remitente";
+import { ActualizarEstadoRemitenteResponseDto, EditarRemitenteRequestDto, EditarRemitenteResponseDto, EliminarRemitenteResponseDto, RegistrarRemitenteRequestDto, RegistrarRemitenteResponseDto, RemitenteByIdToGuia, RemitenteDto, RemitenteNombre, RemitenteToSelect } from "../models/remitente";
 import { TableData } from "app/core/models/table";
 import { ActualizarEstadoProveedorRequestDto } from "@features/proveedor/models/proveedor";
 
@@ -17,6 +17,12 @@ export class RemitenteApiService {
   getToSelect(): Observable<RemitenteToSelect[]> {
     return this.http.get<any>(`${this.baseUrl}/listar-select`).pipe(
       map(response =>{ return response as RemitenteToSelect[]})
+    );
+  }
+
+  getToFilter(): Observable<RemitenteNombre[]> {
+    return this.http.get<any>(`${this.baseUrl}/listar-nombres`).pipe(
+      map(response =>{ return response as RemitenteNombre[]})
     );
   }
 

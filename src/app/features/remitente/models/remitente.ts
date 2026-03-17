@@ -55,6 +55,7 @@ export interface RemitenteDto {
   empleado_nombre_edicion: string | null; 
   estado: string; 
   id_estado: number;
+  ldEstado: boolean;
 }
 
 export interface RegistrarRemitenteRequestDto{
@@ -131,4 +132,9 @@ export interface ActualizarEstadoRemitenteResponseDto{
   fecha_ultima_edicion: Date | null;
   empleado_nombre_edicion: string | null;
   detalle: string;
+}
+
+export interface RemitenteNombre {
+  id: number;                                  
+  descripcion: string;                      
 }

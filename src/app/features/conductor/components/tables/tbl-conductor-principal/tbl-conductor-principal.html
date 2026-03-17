@@ -199,7 +199,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-0! border
 [loading]="$ldData | async"
 >
     <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap uppercase">
+        <tr class="text-nowrap">
             @for (col of columns;  let i = $index; track $index) {
                  @switch (col.field) {
                     @case('select'){

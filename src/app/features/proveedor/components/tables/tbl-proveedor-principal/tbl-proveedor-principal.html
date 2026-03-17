@@ -179,7 +179,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
 (onContextMenuSelect)="evtOnRowSelect($event)"
 >
     <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap uppercase">
+        <tr class="text-nowrap">
             @for (col of columns; track col) {
                  @switch (col.field) {
                     @case('select'){

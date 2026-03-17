@@ -177,14 +177,14 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
 [loading]="$ldData | async"
 >
     <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap text-[12px]!">
+        <tr class="text-nowrap">
             @for (col of columns; track col) {
                 @switch (col.field) {
                     @case('select'){
                         <th class="px-2 border-s-0!"></th>
                     }
                     @case('cod'){
-                        <th class="px-4! text-primary! font-semibold">{{ col.header }}</th>
+                        <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
                     }
                     @default{
                         <th 
@@ -192,7 +192,7 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         [frozen]="col.sticky ?? false"
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-primary! font-medium! px-4!">
+                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!">
                             <div class="flex items-center gap-2">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}

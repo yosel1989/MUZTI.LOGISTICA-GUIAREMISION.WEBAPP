@@ -151,6 +151,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
             x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_creacion) : x.fecha_ultima_edicion;
+            x.ldEstado = false;
             return x;
           });
 
@@ -313,6 +314,9 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
           message: 'Confirmar la operación.',
           accept: () => {
 
+              this.selected!.ldEstado = true;
+              this.cd.detectChanges();
+
               const request = {
                 id_estado: status,
                 edited_employee_id: 1,
@@ -331,6 +335,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
                     timer: 4000
                   });
 
+                  this.selected!.ldEstado = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
                   this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
@@ -338,6 +343,9 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
+
+                  this.selected!.ldEstado = false;
+                  this.cd.detectChanges();
 
                   this.alertService.showToast({
                     position: 'bottom-end',

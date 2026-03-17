@@ -49,3 +49,16 @@ p-select{
     @apply p-0!;
   }
 }
+
+
+
+.p-multiselect-overlay{
+
+    .p-multiselect-header{
+      @apply border-b border-b-gray-200 py-2!;
+    }
+
+    .p-multiselect-filter{
+      @apply h-[28px]! text-[12px]!;
+    }
+}

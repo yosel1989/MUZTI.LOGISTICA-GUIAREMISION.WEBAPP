@@ -179,7 +179,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
 (onContextMenuSelect)="evtOnRowSelect($event)"
 >
     <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap uppercase">
+        <tr class="text-nowrap">
             @for (col of columns; track col) {
                  @switch (col.field) {
                     @case('select'){
@@ -259,15 +259,20 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                             }
                             @case('estado'){
                                 <td class="text-nowrap py-1! font-light!"> 
-                                    @if(rowData['id_estado']){
-                                        <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
-                                            {{rowData[col.field]}}
-                                        </span>
-                                    }@else{
-                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
-                                            {{rowData[col.field]}}
-                                        </span>
+                                    @if(rowData['ldEstado']){
+                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                                    }@else {
+                                        @if(rowData['id_estado']){
+                                            <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        }@else{
+                                            <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        }
                                     }
+                                    
                                 </td>
                             }
                             @default {
