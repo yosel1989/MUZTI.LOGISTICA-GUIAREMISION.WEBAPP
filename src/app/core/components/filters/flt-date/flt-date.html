@@ -10,14 +10,25 @@
         type="text" 
         pInputText 
         readonly
-        class="ps-8! h-[28px]!"
+        class="h-[28px]!"
         [formControl]="ctrlText"
         (click)="toggle($event)"/>
-        @if(ctrlText.value !== null && clear){<p-inputicon title="Limpiar" class="pi pi-times text-xs!" (click)="evtClear()" />}
+        @if(ctrlText.value !== null && clear){
+            <p-inputicon  
+            pTooltip="Limpiar todo"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            class="pi pi-times text-xs! cursor-pointer" 
+            (click)="evtClear()" />
+        }
     </p-iconfield>
-    <p-popover #popover class="w-full! custom-popover" styleClass="custom-popover" appendTo="body">
-        <div class="flex flex-col gap-2 w-full  text-xs!">
-            <div>
+    <p-popover 
+    #popover 
+    class="w-full! custom-popover p-0" 
+    styleClass="custom-popover" 
+    appendTo="body">
+        <div class="flex flex-col gap-y-1 w-full  text-xs!">
+            <div class="p-3">
                 <span class="block mb-2">{{ title }}</span>
                 <p-select 
                 autofocus="true"
@@ -31,78 +42,90 @@
                 panelStyleClass="text-[12px]!" />
             </div>
 
-            @if(ctrlMode.value === 'range'){
 
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p-datepicker
-                        size="small" 
-                        [formControl]="ctrlDateStart"
-                        fluid
-                        [showOnFocus]="true" 
-                        [readonlyInput]="true"
-                        inputStyleClass="w-[120px]!"
-                        [iconDisplay]="'input'" 
-                        [showIcon]="true"
-                        panelStyleClass="text-[12px]!"
-                        [touchUI]="isMobile"
-                        [invalid]="submitted && ctrlDateStart.hasError('required')"
-                        />
-                        @if (submitted && ctrlDateStart.hasError('required')) {
-                            <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
-                        }
-                    </div>
+            @if(ctrlMode.value === 'range' || ctrlMode.value === 'date'){
 
-                    <span>Hasta</span>
+                <div class="px-3 pb-3">
+                    @if(ctrlMode.value === 'range'){
 
-                    <div>
-                        <p-datepicker
-                        size="small" 
-                        [formControl]="ctrlDateEnd"
-                        fluid
-                        [showOnFocus]="true" 
-                        [readonlyInput]="true"
-                        [iconDisplay]="'input'" 
-                        [showIcon]="true"
-                        inputStyleClass="w-[120px]!"
-                        panelStyleClass="text-[12px]!"
-                        [touchUI]="isMobile"
-                        [invalid]="submitted && ctrlDateEnd.hasError('required')"
-                        />
-                        @if (submitted && ctrlDateEnd.hasError('required')) {
-                            <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
-                        }
-                        @if (submitted && ctrlDateEnd.hasError('dateEndBeforeStart')) {
-                            <p-message severity="error" size="small" variant="simple" class="text-xs">Debe ser mayor a la fecha inicial</p-message>
-                        }
-                    </div>
-                </div>
-            }
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p-datepicker
+                                size="small" 
+                                [formControl]="ctrlDateStart"
+                                fluid
+                                placeholder="dd/mm/yyyy"
+                                class="h-[30px]!"
+                                [showOnFocus]="true" 
+                                [readonlyInput]="true"
+                                inputStyleClass="w-[120px]!"
+                                [iconDisplay]="'input'" 
+                                [showIcon]="true"
+                                panelStyleClass="text-[12px]!"
+                                [touchUI]="isMobile"
+                                [invalid]="submitted && ctrlDateStart.hasError('required')"
+                                />
+                                @if (submitted && ctrlDateStart.hasError('required')) {
+                                    <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                                }
+                            </div>
 
-            @if(ctrlMode.value === 'date'){
-                <div class="flex flex-col gap-1">
-                    <label class="font-normal">
-                    Fecha <span class="text-red-300">*</span>
-                    </label>
-                    <p-datepicker
-                        [formControl]="ctrlDate"
-                        size="small" 
-                        fluid
-                        [showOnFocus]="true" 
-                        [readonlyInput]="true"
-                        [iconDisplay]="'input'" 
-                        [showIcon]="true"
-                        panelStyleClass="text-[12px]!"
-                        [touchUI]="isMobile"
-                        [invalid]="submitted && ctrlDate.hasError('required')"
-                        />
-                    @if (submitted && ctrlDate.hasError('required')) {
-                        <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                            <span class="text-[12px]!">Hasta</span>
+
+                            <div>
+                                <p-datepicker
+                                size="small" 
+                                [formControl]="ctrlDateEnd"
+                                fluid
+                                placeholder="dd/mm/yyyy"
+                                class="h-[30px]!"
+                                [showOnFocus]="true" 
+                                [readonlyInput]="true"
+                                [iconDisplay]="'input'" 
+                                [showIcon]="true"
+                                inputStyleClass="w-[120px]!"
+                                panelStyleClass="text-[12px]!"
+                                [touchUI]="isMobile"
+                                [min]="ctrlDateStart.value ? ctrlDateStart.value : null"
+                                [max]="ctrlDateStart.value ? ctrlDateStart.value : null"
+                                [invalid]="submitted && ctrlDateEnd.hasError('required')"
+                                />
+                                @if (submitted && ctrlDateEnd.hasError('required')) {
+                                    <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                                }
+                                @if (submitted && ctrlDateEnd.hasError('dateEndBeforeStart')) {
+                                    <p-message severity="error" size="small" variant="simple" class="text-xs">Debe ser mayor a la fecha inicial</p-message>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if(ctrlMode.value === 'date'){
+                        <div class="flex flex-col gap-1">
+                            <p-datepicker
+                                [formControl]="ctrlDate"
+                                size="small" 
+                                fluid
+                                placeholder="dd/mm/yyyy"
+                                [showOnFocus]="true" 
+                                [readonlyInput]="true"
+                                [iconDisplay]="'input'" 
+                                [showIcon]="true"
+                                class="h-[30px]!"
+                                panelStyleClass="text-[12px]!"
+                                [touchUI]="isMobile"
+                                [invalid]="submitted && ctrlDate.hasError('required')"
+                                />
+                            @if (submitted && ctrlDate.hasError('required')) {
+                                <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                            }
+                        </div>
                     }
                 </div>
+
             }
 
-            <div class="flex mt-3">
+            <div class="flex p-3 border-t border-t-gray-200">
                 @if(clear && ctrlText.value){
                     <p-button 
                     label="Limpiar" 

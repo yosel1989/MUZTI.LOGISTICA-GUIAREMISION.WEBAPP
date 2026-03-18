@@ -135,7 +135,7 @@ export interface GR_EnviarGuiaRemisionResponseDto {
 export interface GuiaRemisionDto {
   id: number;
   empresa: string;
-  ruc_empresa: string; 
+  ruc: string; 
   razon_remitente: string;
   tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
   numero_guia: string;

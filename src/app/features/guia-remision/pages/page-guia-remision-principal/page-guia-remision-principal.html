@@ -1,11 +1,11 @@
 <div class="container-fluid p-4 pb-0! relative mx-auto" @fadeDown>
     <p-card class="py-2 card-body-empty">
-        <app-flt-guia-remision-principal></app-flt-guia-remision-principal>
+        <app-flt-guia-remision-principal #fltGuiaRemision [collapsed]="collapseFilter"></app-flt-guia-remision-principal>
     </p-card>
 </div>
 
 <div class="container-fluid p-4 relative mx-auto" @fadeDown>
     <p-card class="py-2 card-body-empty">
-        <app-tbl-guia-remision-principal></app-tbl-guia-remision-principal>
+        <app-tbl-guia-remision-principal [filter]="fltGuiaRemision" (OnShowFilter)="evtShowFilter()"></app-tbl-guia-remision-principal>
     </p-card>
 </div>

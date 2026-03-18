@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { GuiaRemisionTipoTrasladoEnum, TipoGuiaRemisionEnum } from "@features/guia-remision/enums/guia-remision.enum";
 import { ButtonModule } from "primeng/button";
@@ -18,7 +18,12 @@ import { SelectTipoTraslado } from "../../selects/select-motivo-traslado/select-
 import { FltDateComponent } from "app/core/components/filters/flt-date/flt-date";
 import { DestinatarioBusqueda } from "@features/destinatario/models/destinatario";
 import { DestinatarioApiService } from "@features/destinatario/services/destinatario-api.service";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, NgClass } from "@angular/common";
+import { ColumnsFilterDto } from "app/core/models/filter";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { heroQuestionMarkCircleMini } from "@ng-icons/heroicons/mini";
+import { EmpresaApiService } from "@features/empresa/services/empresa-api.service";
+import { EmpresaDto } from "@features/empresa/models/empresa.model";
 
 
 @Component({
@@ -38,16 +43,25 @@ import { AsyncPipe } from "@angular/common";
         OnlyNumberDirective,
         MultiSelectModule,
         FltDateComponent,
-        AsyncPipe
-    ]
+        AsyncPipe,
+        NgIcon,
+        NgClass
+    ],
+    viewProviders: [provideIcons({ heroQuestionMarkCircleMini })]
 })
 
 export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    @Input() collapsed: boolean = false;
+    @ViewChild('fechaRegistro') ctrlFechaRegistro: FltDateComponent | undefined;
+    @ViewChild('fechaEmision') ctrlFechaEmision: FltDateComponent | undefined;
+
+    filters = new BehaviorSubject<ColumnsFilterDto[]>([]);
+
     formGroup: FormGroup = new FormGroup({});
     tiposGuia: {label: string, value: string | null}[] = [ 
-        { label: 'Guía Remitente', value: TipoGuiaRemisionEnum.remitente }, 
-        { label: 'Guía Transportista', value: TipoGuiaRemisionEnum.transportista }
+        { label: 'REMITENTE', value: TipoGuiaRemisionEnum.remitente }, 
+        { label: 'TRANSPORTISTA', value: TipoGuiaRemisionEnum.transportista }
     ];
 
     tiposTraslado: SelectTipoTraslado[] = [ 
@@ -64,6 +78,9 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     remitentes: RemitenteNombre[] = [];
     ldRemitentes: boolean = false;
 
+    empresas: EmpresaDto[] = [];
+    ldEmpresas: boolean = false;
+
     private subs = new Subscription();
     countActived = 0;
 
@@ -78,11 +95,15 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         private alertService: AlertService,
         private destinatarioService: DestinatarioApiService,
         private cd: ChangeDetectorRef,
+        private empresaApiService: EmpresaApiService
     ){
         this.formGroup = this.fb.group({
+            fechaRegistro: new FormControl(null),
+            fechaEmision: new FormControl(null),
             rucEmpresa: new FormControl(null),
             tipoGuia: new FormControl(null),
             idRemitente: new FormControl(null),
+            serieGuia: new FormControl(null),
             numeroGuia: new FormControl(null),
             idTipoTraslado: new FormControl(null),
             idTipoTransporte: new FormControl(null),
@@ -97,11 +118,31 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     }
     ngAfterViewInit(): void {
         this.loadRemitentes();
+        this.loadEmpresas();
     }
     ngOnDestroy(): void {
         this.subs.unsubscribe();
     }
 
+    // Getters
+    get f(): any{
+        return this.formGroup.controls;
+    }
+
+    get request(): ColumnsFilterDto[]{
+        const output: ColumnsFilterDto[] = [];
+        this.ctrlFechaRegistro?.filter && output.push(this.ctrlFechaRegistro.filter);
+        this.ctrlFechaEmision?.filter && output.push(this.ctrlFechaEmision.filter);
+        this.f.idRemitente.value && output.push({data: 'id_remitente', search: { value: this.f.idRemitente.value.join(',') }});
+        this.f.tipoGuia.value && output.push({data: 'tipo_guia', search: { value: this.f.tipoGuia.value }});
+        this.f.rucEmpresa.value && output.push({data: 'ruc', search: { value: this.f.rucEmpresa.value }});
+        this.f.serieGuia.value && output.push({data: 'serie_guia', search: { value: this.f.serieGuia.value }});
+        this.f.numeroGuia.value && output.push({data: 'numero_guia', search: { value: this.f.numeroGuia.value }});
+        this.f.idTipoTraslado.value && output.push({data: 'tipo_traslado', search: { value: this.f.idTipoTraslado.value }});
+        this.f.idTipoTransporte.value && output.push({data: 'tipo_transporte', search: { value: this.f.idTipoTransporte.value }});
+        this.f.idDestinatario.value && output.push({data: 'tipo_transporte', search: { value: this.f.idDestinatario.value }});
+        return output;
+    }
 
     // Events
 
@@ -115,6 +156,15 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
 
     evtFilterDestinatario(val: any): void{
         this.loadDestinatarios(val.target.value);
+    }
+
+
+    evtChangeFechaRegistro(data: ColumnsFilterDto | null){
+        this.f.fechaRegistro.setValue(data ? this.ctrlFechaRegistro?.ctrlText.value : null);
+    }
+
+    evtChangeFechaEmision(data: ColumnsFilterDto | null){
+        this.f.fechaEmision.setValue(data ? this.ctrlFechaEmision?.ctrlText.value : null);
     }
 
     // Data
@@ -159,12 +209,32 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         }
     }
 
+    loadEmpresas(): void{
+        this.ldEmpresas = false;
+        const sub = this.empresaApiService.obtenerTodo().subscribe({
+            next: (value: EmpresaDto[]) => {
+                this.empresas = value;
+                this.ldEmpresas = false;
+            },
+            error: () => {
+                this.alertService.showToast({
+                    title: 'No se pudo obtener los remitentes',
+                    icon: 'error'
+                });
+                this.ldEmpresas = false;
+            }
+        });
+        this.subs.add(sub);
+    }
+
     // functions
 
     private updateFilledCount() {
         this.countActived = Object.values(this.formGroup.controls)
         .filter(control => control.value !== null && control.value !== '')
         .length;
+        
+        this.filters.next(this.request);
     }
 
 }

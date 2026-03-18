@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -24,6 +24,8 @@ import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
 import { LayoutRoutingModule } from "@features/admin/layout/layout-routing.module";
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { DrawerModule } from 'primeng/drawer';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -51,7 +53,10 @@ import { DrawerModule } from 'primeng/drawer';
   providers: [DialogService, ConfirmationService]
 })
 
-export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
+    @Output() OnShowFilter: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     cols: Column[] = [];
 
@@ -84,6 +89,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     subData: Subscription | undefined = undefined; 
     visibleFilters: boolean = false;
 
+    filters: ColumnsFilterDto[] = [];
+
     constructor(
       public dialogService: DialogService,
       private api: GuiaRemisionApiService,
@@ -96,7 +103,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
           { field: 'empresa', header: 'Empresa', sort: false, sticky: false },
-          { field: 'ruc_empresa', header: 'RUC Empresa', sort: false, sticky: false },
+          { field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
           { field: 'razon_remitente', header: 'Remitente / Local', sort: false, sticky: false },
           { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
           { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
@@ -120,6 +127,12 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     }
 
     ngAfterViewInit(): void{
+      this.filter?.filters.subscribe((res: ColumnsFilterDto[]) => {
+        console.log(res);
+        this.filters = res;
+        this.loadData();
+      });
+
       this.loadData();
     }
 
@@ -214,6 +227,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       
     }
 
+
     evtOnShowPdf(): void{
       this.ref = this.dialogService.open(MdlVerPdfComponent,  {
         width: '1200px',
@@ -222,10 +236,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         maximizable: true,
         modal: true,
         draggable: false,
-        position: 'top',
         header: this.selected?.numero_guia,
         styleClass: 'max-h-none! slide-down-dialog overflow-hidden',
-        maskStyleClass: 'overflow-y-auto py-4 ',
+        maskStyleClass: 'overflow-y-auto',
         contentStyle: {
           height: '100%',
           padding: '0',
@@ -240,7 +253,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     }
 
     evtOnShowFilters(): void{
-      this.visibleFilters = true;
+      this.OnShowFilter.emit(true);
     }
 
     evtFirstChange(first: number): void{

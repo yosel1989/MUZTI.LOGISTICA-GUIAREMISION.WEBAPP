@@ -1,5 +1,5 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -14,6 +14,7 @@ import { DividerModule } from 'primeng/divider';
 import { AlertService } from 'app/shared/services/alert.service';
 import { MessageModule } from 'primeng/message';
 import { ColumnsFilterDto } from 'app/core/models/filter';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-flt-date',
@@ -31,7 +32,8 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
     DatePickerModule,
     FormsModule,
     DividerModule,
-    MessageModule
+    MessageModule,
+    TooltipModule
   ],
   templateUrl: './flt-date.html',
   styleUrl: './flt-date.scss',
@@ -71,12 +73,14 @@ export class FltDateComponent implements OnInit, AfterViewInit, OnDestroy {
   isMobile = false;
 
   constructor(
-    private alertService: AlertService
+    private alertService: AlertService,
+    private cd: ChangeDetectorRef
   ) {
 
   }
 
   ngOnInit(): void {
+    this.isMobile = window.innerWidth <= 768;
     this.ctrlMode.valueChanges.subscribe((res: string) => {
       this.ctrlDateEnd.clearAsyncValidators();
       this.ctrlDateStart.clearAsyncValidators();
@@ -113,7 +117,6 @@ export class FltDateComponent implements OnInit, AfterViewInit, OnDestroy {
       data: this.column,
       search:{
         value: `${formatDate(this.dateStart!, 'yyyy-MM-dd', 'en-US')}|${formatDate(this.dateEnd!, 'yyyy-MM-dd', 'en-US')}`,
-        regex: false
       }
     }
   }
@@ -191,6 +194,7 @@ export class FltDateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.OnValuesChange.emit(this.filter);
         this.submitted = false;
         this.op.hide();
+        this.cd.detectChanges();
     } catch (error: any) {
       this.alertService.showToast({
         icon: 'warning',
@@ -249,6 +253,12 @@ export class FltDateComponent implements OnInit, AfterViewInit, OnDestroy {
 
       return end >= start ? null : { dateEndBeforeStart: true };
     };
+  }
+
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.isMobile = event.target.innerWidth <= 768;
   }
 
 }

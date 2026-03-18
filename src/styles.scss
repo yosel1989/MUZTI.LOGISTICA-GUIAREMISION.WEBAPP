@@ -62,3 +62,20 @@ p-select{
       @apply h-[28px]! text-[12px]!;
     }
 }
+
+
+
+.custom-popover {
+  min-width: var(--trigger-width) !important;
+  .p-popover-content{
+    @apply p-0!;
+  }
+}
+
+
+// Transforms
+
+.rotate-icon {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}

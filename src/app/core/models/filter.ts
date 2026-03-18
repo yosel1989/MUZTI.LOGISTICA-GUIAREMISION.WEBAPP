@@ -1,8 +1,8 @@
 export interface ColumnsFilterDto{
   data: string;
   search: {
-    value: string;
-    regex: boolean;
+    value?: string;
+    regex?: boolean;
     match?: string;
   }
 }
