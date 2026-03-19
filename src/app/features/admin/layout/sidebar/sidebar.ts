@@ -8,7 +8,11 @@ import { PanelMenuModule } from 'primeng/panelmenu';
   selector: 'app-sidebar',
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
-  imports: [PanelMenuModule, RouterModule],
+  imports: [
+    PanelMenuModule,
+    RouterModule
+],
+  
 })
 export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy{
 

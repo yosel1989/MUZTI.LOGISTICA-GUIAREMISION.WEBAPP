@@ -78,7 +78,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     remitentes: RemitenteNombre[] = [];
     ldRemitentes: boolean = false;
 
-    empresas: EmpresaDto[] = [];
+    empresas = new BehaviorSubject<EmpresaDto[]>([]);
     ldEmpresas: boolean = false;
 
     private subs = new Subscription();
@@ -167,6 +167,12 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         this.f.fechaEmision.setValue(data ? this.ctrlFechaEmision?.ctrlText.value : null);
     }
 
+    evtClearAll(): void{
+        this.ctrlFechaRegistro?.evtClear();
+        this.ctrlFechaEmision?.evtClear();
+        this.formGroup.reset();
+    }
+
     // Data
 
     loadRemitentes(): void{
@@ -213,7 +219,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         this.ldEmpresas = false;
         const sub = this.empresaApiService.obtenerTodo().subscribe({
             next: (value: EmpresaDto[]) => {
-                this.empresas = value;
+                this.empresas.next(value);
                 this.ldEmpresas = false;
             },
             error: () => {

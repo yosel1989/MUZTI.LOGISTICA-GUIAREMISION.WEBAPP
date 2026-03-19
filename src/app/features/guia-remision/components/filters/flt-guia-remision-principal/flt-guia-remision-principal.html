@@ -37,7 +37,7 @@
                 [inputSize]="2" 
                 panelStyleClass="text-[12px]!"
                 class="h-[28px]!"
-                [options]="empresas"  
+                [options]="empresas | async"  
                 placeholder="Todos" 
                 optionValue="ruc" 
                 optionLabel="empresa" 
@@ -347,6 +347,7 @@
                 placeholder="Top"
                 [badge]="countActived.toString()"
                 badgeSeverity="contrast"
+                (click)="evtClearAll()"
             />
         </div>
     </form>

@@ -128,7 +128,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
     ngAfterViewInit(): void{
       this.filter?.filters.subscribe((res: ColumnsFilterDto[]) => {
-        console.log(res);
         this.filters = res;
         this.loadData();
       });
@@ -167,7 +166,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         this.first = 0;
       }
 
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
         next: (res: TableData<GuiaRemisionDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
