@@ -21,7 +21,7 @@ import { CardModule } from 'primeng/card';
 
 export class PageUnidadTransportePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Unidad de Transporte', labelClass: 'font-semibold text-primary!' }, { label: 'Registros' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Unidad de Transporte', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Administración', labelClass: 'text-[12px]!' }];
 
     constructor(
       private ls: LayoutService

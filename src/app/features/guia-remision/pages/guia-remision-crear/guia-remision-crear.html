@@ -27,13 +27,13 @@
 
                     <div class="grid grid-cols-2">
                         <div>
-                            <app-select-tipo-guia #selectTipoGuia classLabel="text-xs text-gray-500 font-semibold"></app-select-tipo-guia>
+                            <app-select-tipo-guia #selectTipoGuia classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-tipo-guia>
                         </div>
                     </div>
 
                     @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
                         <div>
-                            <app-select-motivo-traslado [control]="f.tipo_traslado" classLabel="text-xs text-gray-500 font-semibold"></app-select-motivo-traslado>
+                            <app-select-motivo-traslado [control]="f.tipo_traslado" classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-motivo-traslado>
                         </div>
                     }
 
@@ -144,7 +144,7 @@
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                                 <app-select-departamento 
                                 [control]="f.departamento_remitente" 
-                                classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                                classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-departamento>
                                 @if (formGroup.get('departamento_remitente')?.invalid && (formGroup.get('departamento_remitente')?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple" >
                                         <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -156,7 +156,7 @@
                                 <app-select-provincia 
                                 [control]="f.provincia_remitente" 
                                 [idUbigeoDepartamento]="f.departamento_remitente.value" 
-                                classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                                classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-provincia>
                                 @if (formGroup.get('provincia_remitente')?.invalid && (formGroup.get('provincia_remitente')?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple" >
                                         <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -168,7 +168,7 @@
                                 <app-select-distrito 
                                 [control]="f.distrito_remitente" 
                                 [idUbigeoProvincia]="f.provincia_remitente.value" 
-                                classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                                classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-distrito>
                                 @if (formGroup.get('distrito_remitente')?.invalid && (formGroup.get('distrito_remitente')?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple" >
                                         <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -377,7 +377,7 @@
 
                 <div class="flex flex-col gap-4 gap-x-3">
                     <div class="">
-                        <label  class="block text-xs">Fecha de emisión</label>
+                        <label  class="block text-[11px]!">Fecha de emisión</label>
                         <p-datepicker 
                         readonlyInput="true" 
                         formControlName="fecha_emision" 

@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -48,7 +48,8 @@ import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remisi
     ConfirmDialogModule,
     LayoutRoutingModule,
     LoaderComponent,
-    DrawerModule
+    DrawerModule,
+    NgClass
 ],
   providers: [DialogService, ConfirmationService]
 })
@@ -90,6 +91,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     visibleFilters: boolean = false;
 
     filters: ColumnsFilterDto[] = [];
+    search: string | null = null;
 
     constructor(
       public dialogService: DialogService,
@@ -111,7 +113,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
           { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
           { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
-          { field: 'razon_destinatario', header: 'Destinatario', sort: false, sticky: false },
+          { field: 'razon_destinatario', header: 'Destinatario', sort: false, sticky: false, className: 'w-[100px]' },
           { field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
           { field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
           { field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
@@ -129,7 +131,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     ngAfterViewInit(): void{
       this.filter?.filters.subscribe((res: ColumnsFilterDto[]) => {
         this.filters = res;
-        this.loadData();
+        this.loadData(true);
       });
 
       this.loadData();
@@ -164,6 +166,16 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       if(reload){
         this.pageNumber = 1;
         this.first = 0;
+      }
+
+      //console.log(this.filters);
+      if(this.search){
+        this.filters.push({
+          data: 'search',
+          search: {
+            value: this.search
+          }
+        });
       }
 
       this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
@@ -218,7 +230,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       this.loadData(reload);
     }
 
-    evtOnFilter(value: string){
+    evtOnFilter(value: string | null){
+      this.search = value;
       this.evtOnReload();
     }
 

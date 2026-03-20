@@ -24,14 +24,14 @@
 <p-toolbar class="rounded-none! sticky top-0 z-10 w-full border-x-0! border-t! shadow-md">
     <ng-template #start>
         <div class="flex items-center gap-2">
-            <p-breadcrumb [model]="(breadCrumbItems | async) ?? []" styleClass="py-0!"/>
+            <p-breadcrumb [model]="(breadCrumbItems | async) ?? []" styleClass="py-0!">
+                <ng-template #separator> <i class="pi pi-chevron-right text-xs!"></i> </ng-template>
+            </p-breadcrumb>
         </div>
     </ng-template>
     <ng-template #end>
     </ng-template>
 </p-toolbar>
-
-
 
 <p-menu #menuUser [model]="items" [popup]="true" target="body" appendTo="body" >
     <ng-template #submenuheader let-item>

@@ -122,7 +122,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy{
         // Close all open dropdowns
         const closeAllDropdowns = () => {
             document.querySelectorAll(".dropdown-container.open").forEach((openDropdown) => {
-                toggleDropdown(openDropdown, openDropdown.querySelector(".dropdown-menu"), false);
+                //toggleDropdown(openDropdown, openDropdown.querySelector(".dropdown-menu"), false);
             });
         };
         // Attach click event to all dropdown toggles
@@ -133,7 +133,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy{
                 const menu = dropdown?.querySelector(".dropdown-menu");
                 const isOpen = dropdown?.classList.contains("open");
                 closeAllDropdowns(); // Close all open dropdowns
-                toggleDropdown(dropdown, menu, !isOpen); // Toggle current dropdown visibility
+                //toggleDropdown(dropdown, menu, !isOpen); // Toggle current dropdown visibility
             });
         });
         // Attach click event to sidebar toggle buttons

@@ -330,6 +330,63 @@
                 </p-select>
             </div>
 
+
+            <div>
+                <label class="font-normal text-[11px]!">Estado</label>
+                <p-multiselect
+                #estadoGuia 
+                formControlName="estadoGuia"
+                fluid
+                [options]="estadosGuia"  
+                placeholder="Todos" 
+                size="small" 
+                panelStyleClass="text-[12px]!"
+                class="h-[28px]!"
+                optionValue="value" 
+                optionLabel="label" 
+                showClear="true"
+                appendTo="body"
+                filter="true"
+                >
+                    <ng-template #clearicon>
+                        <span class="px-2">
+                            <p-inputicon 
+                            class="pi pi-times text-xs! cursor-pointer"
+                            pTooltip="Limpiar"
+                            tooltipPosition="top"
+                            tooltipStyleClass="text-xs! text-center"
+                            />
+                        </span>
+                    </ng-template>
+
+                    <ng-template #footer>
+                        <div class="p-3 flex border-t border-t-gray-200">
+                            @if(estadoGuia.value){
+                            <p-button 
+                            label="Limpiar" 
+                            severity="danger" 
+                            size="small" 
+                            outlined
+                            class="mr-auto!"
+                            styleClass="text-xs! bg-red-100! border-0! hover:bg-red-500! hover:text-white!"
+                            icon="pi pi-times text-xs!" 
+                            (click)="evtClearControl('estadoGuia')" />
+                            }
+                            <p-button 
+                            class="ml-auto!"
+                            label="Aceptar" 
+                            severity="success" 
+                            styleClass="text-xs! bg-green-100! border-0! hover:bg-green-500! hover:text-white!"
+                            outline
+                            text 
+                            size="small" 
+                            icon="pi pi-check text-xs!"  
+                            (click)="evtCloseMultiSelect(estadoGuia)" />
+                        </div>
+                    </ng-template>
+                </p-multiselect>
+            </div>
+
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3 p-2">

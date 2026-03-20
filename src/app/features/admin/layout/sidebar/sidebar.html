@@ -17,31 +17,31 @@
     <nav class="sidebar-nav">
     <!-- Primary Top Nav -->
     <ul class="nav-list primary-nav">
-        <li class="nav-item">
+        <li class="nav-item" routerLinkActive="open">
             <a href="#" class="nav-link">
                 <i class="fa-duotone fa-light fa-layer-group text-[20px]!"></i>
                 <span class="nav-label">Dashboard</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" routerLinkActive="open"> 
             <a routerLink="conductor" class="nav-link">
                 <i class="fa-duotone fa-light fa-id-card text-[20px]!"></i>
                 <span class="nav-label">Conductor</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" routerLinkActive="open">
             <a routerLink="proveedor" class="nav-link">
                 <i class="fa-duotone fa-light fa-user-gear text-[20px]!"></i>
                 <span class="nav-label">Proveedor</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" routerLinkActive="open">
             <a routerLink="unidad-transporte" class="nav-link">
                 <i class="fa-duotone fa-light fa-car-bus text-[20px]!"></i>
                 <span class="nav-label">Unidad de Transporte</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" routerLinkActive="open">
             <a routerLink="remitente" class="nav-link">
                 <i class="fa-duotone fa-light fa-user-check text-[20px]!"></i>
                 <span class="nav-label">Remitente</span>
@@ -54,9 +54,15 @@
                 <span class="dropdown-icon material-symbols-rounded">keyboard_arrow_down</span>
             </a>
             <ul class="dropdown-menu">
-                <li class="nav-item"><a class="nav-link dropdown-title">Services</a></li>
-                <li class="nav-item"><a routerLink="guia-remision/nuevo" class="nav-link dropdown-link">Nueva Guia</a></li>
-                <li class="nav-item"><a routerLink="guia-remision" class="nav-link dropdown-link">Ver</a></li>
+                <li class="nav-item">
+                    <a class="nav-link dropdown-title">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="guia-remision/nuevo" class="nav-link dropdown-link">Nueva Guia</a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="guia-remision" class="nav-link dropdown-link">Ver</a>
+                </li>
             </ul>
         </li>
         <!--<li class="nav-item">

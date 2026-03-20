@@ -21,7 +21,7 @@ import { CardModule } from 'primeng/card';
 
 export class PageConductorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Administración de Conductores', labelClass: 'font-semibold text-primary!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Conductores', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Administración', labelClass : 'text-[12px]!' }];
 
     constructor(
       private ls: LayoutService

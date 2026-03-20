@@ -22,7 +22,7 @@ import { CardModule } from 'primeng/card';
 
 export class PageProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Proveedor', labelClass: 'font-semibold text-primary!' }, { label: 'Registros' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Proveedores', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Administración', labelClass : 'text-[12px]!' }];
 
     constructor(
       private ls: LayoutService

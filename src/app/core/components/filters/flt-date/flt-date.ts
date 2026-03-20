@@ -209,8 +209,11 @@ export class FltDateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ctrlMode.setValue(null);
     this.ctrlText.setValue(null);
     this.ctrlDate.setValue(null);
+    this.ctrlDate.clearValidators();
     this.ctrlDateStart.setValue(null);
+    this.ctrlDateStart.clearValidators();
     this.ctrlDateEnd.setValue(null);
+    this.ctrlDateEnd.clearValidators();
     this.dateEnd = null;
     this.dateStart = null;
     this.OnValuesChange.emit(this.filter);

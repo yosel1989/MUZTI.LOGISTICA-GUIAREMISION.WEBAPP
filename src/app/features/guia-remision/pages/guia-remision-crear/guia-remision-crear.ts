@@ -110,7 +110,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     modalRef: any | undefined;
     private subs = new Subscription();
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Guia de Remisión', labelClass: 'font-semibold text-primary!' }, { label: 'Nueva Guía' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Guia de Remisión', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Nueva Guía', labelClass: 'text-[12px]!' }];
 
     constructor(
         private formBuilder: FormBuilder,

@@ -62,10 +62,11 @@ body {
   transition: 0.4s ease;
 }
 .sidebar .sidebar-nav .primary-nav {
-  overflow-y: auto;
+  //overflow-y: auto;
+  overflow: hidden;
   scrollbar-width: thin;
   padding-bottom: 20px;
-  height: calc(100vh - 227px);
+  height: calc(100vh - 127px);
   scrollbar-color: transparent transparent;
 }
 .sidebar .sidebar-nav .primary-nav:hover {
@@ -95,6 +96,7 @@ body.collapsed :host ::ng-deep{
   .sidebar .nav-link :where(.nav-label, .dropdown-icon) {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
   }
   .sidebar .nav-link .dropdown-icon {
     transition: opacity 0.3s 0s ease;
@@ -102,7 +104,7 @@ body.collapsed :host ::ng-deep{
   .sidebar .sidebar-header .sidebar-toggler {
     transform: translate(-4px, 65px);
   }
-  .sidebar .dropdown-menu {
+  /*.sidebar .dropdown-menu {
     position: absolute;
     top: -10px;
     left: 100%;
@@ -114,19 +116,20 @@ body.collapsed :host ::ng-deep{
     border-radius: 0 10px 10px 0;
     background: #151A2D;
     transition: 0s;
-  }
+  }*/
   .sidebar .dropdown-menu:has(.dropdown-link) {
     padding: 7px 10px 7px 24px;
   }
-  .sidebar.sidebar .nav-item:hover>.dropdown-menu {
+  /*.sidebar.sidebar .nav-item:hover>.dropdown-menu {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
     transform: translateY(12px);
     transition: all 0.4s ease;
   }
   .sidebar.sidebar .nav-item:hover>.dropdown-menu:has(.dropdown-link) {
     transform: translateY(10px);
-  }
+  }*/
   .sidebar .dropdown-menu .nav-link {
     padding: 7px 15px;
   }

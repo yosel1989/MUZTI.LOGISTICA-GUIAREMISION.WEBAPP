@@ -192,7 +192,8 @@ paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! borde
                         [frozen]="col.sticky ?? false"
                         pResizableColumn 
                         [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!">
+                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!"
+                        [ngClass]="col.className">
                             <div class="flex items-center gap-2">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}

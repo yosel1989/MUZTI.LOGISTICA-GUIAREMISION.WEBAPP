@@ -3,4 +3,5 @@ interface Column {
     header: string;
 	sort?: boolean;
 	sticky?: boolean;
+    className?: string;
 }

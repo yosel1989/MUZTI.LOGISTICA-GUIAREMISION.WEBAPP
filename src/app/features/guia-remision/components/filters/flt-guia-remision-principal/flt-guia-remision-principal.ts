@@ -75,6 +75,11 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         { label: 'PRIVADO', value: 'PRIVADO' }
     ];
 
+    estadosGuia: {label: string, value: string | null}[] = [ 
+        { label: 'CREADO', value: 'CREADO' },
+        { label: 'ENVIADO', value: 'ENVIADO' }
+    ];
+
     remitentes: RemitenteNombre[] = [];
     ldRemitentes: boolean = false;
 
@@ -107,7 +112,8 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
             numeroGuia: new FormControl(null),
             idTipoTraslado: new FormControl(null),
             idTipoTransporte: new FormControl(null),
-            idDestinatario: new FormControl(null)
+            idDestinatario: new FormControl(null),
+            estadoGuia: new FormControl(null),
         });
     }
 
@@ -137,10 +143,11 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         this.f.tipoGuia.value && output.push({data: 'tipo_guia', search: { value: this.f.tipoGuia.value }});
         this.f.rucEmpresa.value && output.push({data: 'ruc', search: { value: this.f.rucEmpresa.value }});
         this.f.serieGuia.value && output.push({data: 'serie_guia', search: { value: this.f.serieGuia.value }});
-        this.f.numeroGuia.value && output.push({data: 'numero_guia', search: { value: this.f.numeroGuia.value }});
-        this.f.idTipoTraslado.value && output.push({data: 'tipo_traslado', search: { value: this.f.idTipoTraslado.value }});
+        this.f.numeroGuia.value && output.push({data: 'correlativo', search: { value: this.f.numeroGuia.value }});
+        this.f.idTipoTraslado.value && output.push({data: 'tipo_traslado', search: { value: this.f.idTipoTraslado.value.join(',') }});
         this.f.idTipoTransporte.value && output.push({data: 'tipo_transporte', search: { value: this.f.idTipoTransporte.value }});
-        this.f.idDestinatario.value && output.push({data: 'tipo_transporte', search: { value: this.f.idDestinatario.value }});
+        this.f.idDestinatario.value && output.push({data: 'id_destinatario', search: { value: this.f.idDestinatario.value }});
+        this.f.estadoGuia.value && output.push({data: 'estado', search: { value: this.f.estadoGuia.value }});
         return output;
     }
 
