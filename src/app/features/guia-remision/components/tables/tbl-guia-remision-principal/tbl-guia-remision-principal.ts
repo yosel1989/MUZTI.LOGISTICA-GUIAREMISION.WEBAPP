@@ -26,6 +26,8 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { DrawerModule } from 'primeng/drawer';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
+import saveAs from 'file-saver';
+import { AlertService } from 'app/core/services/alert.service';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -93,8 +95,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     filters: ColumnsFilterDto[] = [];
     search: string | null = null;
 
+    loadingDownload = new BehaviorSubject<boolean>(false);
+    loadingDownload$ = this.loadingDownload.asObservable();
+
+
     constructor(
       public dialogService: DialogService,
+      private alertService: AlertService,
       private api: GuiaRemisionApiService,
       private cd: ChangeDetectorRef,
       public util: UtilService,
@@ -283,6 +290,38 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     evtOnRowSelect(event: any) {
       this.selected = event.data;
       this.setSelected(event.data);
+    }
+
+    evtExport(): void{
+      this.loadingDownload.next(true)
+
+      if(this.search){
+        this.filters.push({
+          data: 'search',
+          search: {
+            value: this.search
+          }
+        });
+      }
+
+      this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
+          saveAs(blob, 'reporte.xlsx'); // 👈 descarga el archivo
+        this.loadingDownload.next(false);
+        }, (error) => {
+        this.loadingDownload.next(false);
+        this.alertService.showToast({
+          position: 'bottom-end',
+          icon: "error",
+          title: "Error al descargar el archivo",
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000
+        });
+      });
+
+
+
+
     }
 
     //functions

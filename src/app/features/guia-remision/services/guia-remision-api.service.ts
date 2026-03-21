@@ -38,4 +38,23 @@ export class GuiaRemisionApiService {
     );
   }
 
+
+  exportarTodo(filters: ColumnsFilterDto[]): Observable<Blob> {
+    let httpParams = new HttpParams();
+
+    filters.forEach((col, i) => {
+      httpParams = httpParams
+        .set(`columns[${i}][data]`, col.data)
+        .set(`columns[${i}][search][value]`, col.search.value!);
+        col.search.regex && httpParams.set(`columns[${i}][search][regex]`, col.search.regex.toString());
+        col.search.match && httpParams.set(`columns[${i}][search][match]`, col.search.match ?? '');
+    });
+
+    return this.http.get(`${this.baseUrl}/exportar`, {
+      params: httpParams,
+      responseType: 'blob'
+    });
+
+  }
+
 }

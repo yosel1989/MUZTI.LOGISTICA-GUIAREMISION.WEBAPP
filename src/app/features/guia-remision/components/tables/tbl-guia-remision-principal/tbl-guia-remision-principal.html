@@ -98,6 +98,8 @@
             placeholder="Top"
             styleClass="w-9! h-9!"
             placeholder="Top"
+            [loading]="loadingDownload$ | async"
+            (click)="evtExport()"
         />
 
     </div>
