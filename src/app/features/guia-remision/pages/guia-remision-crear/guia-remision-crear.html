@@ -504,15 +504,27 @@
 
 <div class="sticky bottom-0 p-4 bg-white text-end border-t shadow-lg! border-gray-300 z-10">
     <div class="container mx-auto">
-        <p-button 
-        [raised]="true"
-        class="ml-auto" 
-        styleClass="px-8!" 
-        icon="pi pi-file" 
-        type="submit" 
-        label="Emitir Guía" 
-        [loading]="$loadingSubmit | async"
-        severity="primary" 
-        (onClick)="evtOnSubmit()"></p-button>
+        <div class="inline-flex flex-row ml-auto gap-x-2" >
+            <p-button 
+            [raised]="true"
+            class="ml-auto" 
+            styleClass="px-8!" 
+            icon="pi pi-eye" 
+            type="submit" 
+            label="Previsualizar" 
+            [disabled]="$loadingSubmit | async"
+            severity="secondary" 
+            (onClick)="evtPreview()"></p-button>
+            <p-button 
+            [raised]="true"
+            class="ml-auto" 
+            styleClass="px-8!" 
+            icon="pi pi-file" 
+            type="submit" 
+            label="Emitir Guía" 
+            [loading]="$loadingSubmit | async"
+            severity="primary" 
+            (onClick)="evtOnSubmit()"></p-button>
+        </div>
     </div>
 </div>

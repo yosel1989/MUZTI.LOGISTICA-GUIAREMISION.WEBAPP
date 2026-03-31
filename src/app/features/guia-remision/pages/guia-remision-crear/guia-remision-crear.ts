@@ -20,7 +20,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { TooltipModule } from 'primeng/tooltip';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
@@ -42,6 +42,7 @@ import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 
 interface Type {
     name: string;
@@ -584,6 +585,29 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     evtSelectDestEmi(val: any): void{
         this.tabRemitenteDestinatario.next(parseInt(val, 10));
         console.log(this.tabRemitenteDestinatario, this.selectTipoGuiaComponent?.tipoGuiaSelected);
+    }
+
+    evtPreview(): void{
+        this.modalRef = this.dialogService.open(MdlPrevisualizarPdfComponent,  {
+            width: '1200px',
+            height: '90vh',
+            closable: true,
+            maximizable: true,
+            modal: true,
+            draggable: false,
+            header: "Previsualización",
+            styleClass: 'max-h-none! slide-down-dialog overflow-hidden',
+            maskStyleClass: 'overflow-y-auto',
+            contentStyle: {
+                height: '100%',
+                padding: '0',
+                overflow: 'hide'
+            },
+            appendTo: 'body',
+            inputValues:{
+                data: this.request
+            }
+        });
     }
 
     // handlers
