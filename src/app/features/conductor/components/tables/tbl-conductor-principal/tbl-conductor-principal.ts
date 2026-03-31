@@ -24,6 +24,8 @@ import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-tbl-conductor-principal',
@@ -44,7 +46,8 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
         DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
-        LoaderComponent
+        LoaderComponent,
+        ReactiveFormsModule
   ],
   providers: [DialogService, ConfirmationService]
 })
@@ -82,6 +85,12 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     items: MenuItem[] | undefined;
     firstChange: boolean = false;
 
+    filters: ColumnsFilterDto[] = [];
+    search: string | null = null;
+
+    subData: Subscription | undefined = undefined;
+    ctrlSearch = new FormControl(null);
+
     constructor(
       public dialogService: DialogService,
       private api: ConductorApiService,
@@ -112,11 +121,16 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     ngAfterViewInit(): void{
+      this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
+        this.search = val;
+        this.evtOnReload();
+      });
       this.loadData();
     }
 
     ngOnDestroy(): void{
       this.subs.unsubscribe();
+      this.subData?.unsubscribe();
     }
 
     // getters
@@ -134,6 +148,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     // data
     loadData(reload: boolean = false): void {
+      this.subData?.unsubscribe();
       this.selected = undefined;
       this.firstChange = false;
       this.loading = true;
@@ -145,7 +160,16 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       }
 
 
-      const sub = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
+      this.filters =  this.search ? [{
+        data: 'search',
+        search: {
+          value: this.search
+        }
+      }] : [];
+      
+
+
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
         next: (res: TableData<ConductorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
@@ -183,7 +207,6 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           
         }
       });
-      this.subs.add(sub);
     }
 
     //events
@@ -212,10 +235,6 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
       this.loadData(reload);
-    }
-
-    evtOnFilter(value: string){
-      this.evtOnReload();
     }
 
     evtOnCreate(): void{

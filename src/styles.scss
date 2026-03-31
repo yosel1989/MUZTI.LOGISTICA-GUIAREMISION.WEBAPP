@@ -80,3 +80,8 @@ p-select{
   transform: rotate(180deg);
   transition: transform 0.3s ease;
 }
+
+.p-select.p-disabled,
+.p-inputtext:disabled{
+  @apply cursor-not-allowed!;
+}

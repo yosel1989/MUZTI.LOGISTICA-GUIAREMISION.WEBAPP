@@ -18,10 +18,6 @@ export class GuiaRemisionApiService {
 
     let httpParams = new HttpParams();
 
-    /*Object.entries(baseParams).forEach(([key, value]) => {
-      httpParams = httpParams.set(key, value.toString());
-    });*/
-
     filters.forEach((col, i) => {
       httpParams = httpParams
         .set(`columns[${i}][data]`, col.data)

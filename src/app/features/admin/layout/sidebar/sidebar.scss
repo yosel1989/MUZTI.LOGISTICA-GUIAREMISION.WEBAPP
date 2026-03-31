@@ -136,10 +136,6 @@ body.collapsed :host ::ng-deep{
   .sidebar .dropdown-menu .nav-item .dropdown-title {
     display: block;
   }
-  .sidebar {
-    width: 270px;
-    //left: -270px;
-  }
   .sidebar .sidebar-header .sidebar-toggler {
     transform: none;
   }
@@ -148,6 +144,17 @@ body.collapsed :host ::ng-deep{
   }
   .sidebar {
     width: 85px;
+
+    &:hover{
+        width: 270px !important;
+
+        .nav-link :where(.nav-label, .dropdown-icon) {
+          opacity: 1;
+          pointer-events: all;
+          visibility: visible;
+        }
+    }
+
   }
   .sidebar .sidebar-header .sidebar-toggler span {
     transform: rotate(180deg);
@@ -156,6 +163,9 @@ body.collapsed :host ::ng-deep{
     overflow: unset;
     transform: translateY(65px);
   }
+
+
+
 }
 
 

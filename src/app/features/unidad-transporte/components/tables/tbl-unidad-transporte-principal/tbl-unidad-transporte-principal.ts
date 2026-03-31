@@ -24,6 +24,8 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
 import { MdlRegistrarUnidadTransporteComponent } from '../../modals/mdl-registrar-unidad-transporte/mdl-registrar-unidad-transporte';
 import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unidad-transporte/mdl-editar-unidad-transporte';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-tbl-unidad-transporte-principal',
@@ -44,7 +46,8 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
         DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
-        LoaderComponent
+        LoaderComponent,
+        ReactiveFormsModule
   ],
   providers: [DialogService, ConfirmationService]
 })
@@ -79,6 +82,12 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
     firstChange: boolean = false;
 
+    filters: ColumnsFilterDto[] = [];
+    search: string | null = null;
+
+    subData: Subscription | undefined = undefined;
+    ctrlSearch = new FormControl(null);
+
     constructor(
       public dialogService: DialogService,
       private api: UnidadTransporteApiService,
@@ -109,11 +118,16 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     }
 
     ngAfterViewInit(): void{
+      this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
+        this.search = val;
+        this.evtOnReload();
+      });
       this.loadData();
     }
 
     ngOnDestroy(): void{
       this.subs.unsubscribe();
+      this.subData?.unsubscribe();
     }
 
     // getters
@@ -131,6 +145,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
     // data
     loadData(reload: boolean = false): void {
+      this.subData?.unsubscribe();
       this.selected = undefined;
       this.firstChange = false;
       this.loading = true;
@@ -141,8 +156,14 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         this.first = 0;
       }
 
+      this.filters =  this.search ? [{
+        data: 'search',
+        search: {
+          value: this.search
+        }
+      }] : [];
 
-      const sub = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
         next: (res: TableData<UnidadTransporteDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
@@ -177,10 +198,8 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                 popup: 'z-[9999]!'
               }
           });
-          
         }
       });
-      this.subs.add(sub);
     }
 
     //events
@@ -209,10 +228,6 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
       this.loadData(reload);
-    }
-
-    evtOnFilter(value: string){
-      this.evtOnReload();
     }
 
     evtOnCreate(): void{

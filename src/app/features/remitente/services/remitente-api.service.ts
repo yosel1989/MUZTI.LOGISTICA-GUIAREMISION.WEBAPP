@@ -1,10 +1,11 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { ActualizarEstadoRemitenteResponseDto, EditarRemitenteRequestDto, EditarRemitenteResponseDto, EliminarRemitenteResponseDto, RegistrarRemitenteRequestDto, RegistrarRemitenteResponseDto, RemitenteByIdToGuia, RemitenteDto, RemitenteNombre, RemitenteToSelect } from "../models/remitente";
 import { TableData } from "app/core/models/table";
 import { ActualizarEstadoProveedorRequestDto } from "@features/proveedor/models/proveedor";
+import { ColumnsFilterDto } from "app/core/models/filter";
 
 @Injectable({
   providedIn: 'root'
@@ -32,8 +33,18 @@ export class RemitenteApiService {
     );
   }
 
-  obtenerTodo(pageNumber: number, pageSize: number): Observable<TableData<RemitenteDto[]>> {
-    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`).pipe(
+  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<RemitenteDto[]>> {
+    let httpParams = new HttpParams();
+
+    filters.forEach((col, i) => {
+      httpParams = httpParams
+        .set(`columns[${i}][data]`, col.data)
+        .set(`columns[${i}][search][value]`, col.search.value!);
+        col.search.regex && httpParams.set(`columns[${i}][search][regex]`, col.search.regex.toString());
+        col.search.match && httpParams.set(`columns[${i}][search][match]`, col.search.match ?? '');
+    });
+
+    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<RemitenteDto[]> }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);

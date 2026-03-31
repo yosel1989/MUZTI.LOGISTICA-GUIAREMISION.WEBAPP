@@ -21,7 +21,7 @@ export interface SelectTipoDocumento{
 
 export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDestroy{
     @Input() classLabel: string = 'text-xs';
-    @Input() label: string = 'Tipo de Documento';
+    @Input() label: string | null = null;
     @Input() control!: FormControl;
 
     data: SelectTipoDocumento[] = [ 

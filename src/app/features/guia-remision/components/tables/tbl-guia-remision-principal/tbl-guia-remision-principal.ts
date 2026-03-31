@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -28,6 +28,7 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
 import saveAs from 'file-saver';
 import { AlertService } from 'app/core/services/alert.service';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -51,7 +52,8 @@ import { AlertService } from 'app/core/services/alert.service';
     LayoutRoutingModule,
     LoaderComponent,
     DrawerModule,
-    NgClass
+    NgClass,
+    ReactiveFormsModule
 ],
   providers: [DialogService, ConfirmationService]
 })
@@ -89,14 +91,17 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     items: MenuItem[] | undefined;
     firstChange: boolean = false;
 
-    subData: Subscription | undefined = undefined; 
     visibleFilters: boolean = false;
+
+    loadingDownload = new BehaviorSubject<boolean>(false);
+    loadingDownload$ = this.loadingDownload.asObservable();
 
     filters: ColumnsFilterDto[] = [];
     search: string | null = null;
 
-    loadingDownload = new BehaviorSubject<boolean>(false);
-    loadingDownload$ = this.loadingDownload.asObservable();
+    subData: Subscription | undefined = undefined;
+    ctrlSearch = new FormControl(null);
+
 
 
     constructor(
@@ -175,7 +180,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         this.first = 0;
       }
 
-      //console.log(this.filters);
       if(this.search){
         this.filters.push({
           data: 'search',
@@ -205,6 +209,20 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
+          this.data = [];
+
+          this.alertService.showToast({
+              position: 'bottom-end',
+              icon: "error",
+              title: "Ocurrio un error al obtener los registros",
+              showCloseButton: true,
+              timerProgressBar: true,
+              timer: 4000,
+              customClass: {
+                container: 'z-[9999]!',
+                popup: 'z-[9999]!'
+              }
+          }); 
         }
       });
     }
@@ -235,11 +253,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
       this.loadData(reload);
-    }
-
-    evtOnFilter(value: string | null){
-      this.search = value;
-      this.evtOnReload();
     }
 
     evtOnShowDetail(): void{

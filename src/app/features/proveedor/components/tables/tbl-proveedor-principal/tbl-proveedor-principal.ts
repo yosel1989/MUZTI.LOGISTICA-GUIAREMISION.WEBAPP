@@ -24,6 +24,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-tbl-proveedor-principal',
@@ -44,7 +46,8 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
         DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
-        LoaderComponent
+        LoaderComponent,
+        ReactiveFormsModule
   ],
   providers: [DialogService, ConfirmationService]
 })
@@ -77,6 +80,12 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
+
+    filters: ColumnsFilterDto[] = [];
+    search: string | null = null;
+
+    subData: Subscription | undefined = undefined;
+    ctrlSearch = new FormControl(null);
 
     constructor(
       public dialogService: DialogService,
@@ -118,11 +127,16 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     ngAfterViewInit(): void{
+      this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
+        this.search = val;
+        this.evtOnReload();
+      });
       this.loadData();
     }
 
     ngOnDestroy(): void{
       this.subs.unsubscribe();
+      this.subData?.unsubscribe();
     }
 
     // getters
@@ -140,6 +154,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     // data
     loadData(reload: boolean = false): void {
+      this.subData?.unsubscribe();
       this.selected = undefined;
       this.loading = true;
       this.ldData.next(true);
@@ -149,7 +164,14 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         this.first = 0;
       }
 
-      const sub = this.api.obtenerTodo(this.pageNumber, this.pageSize).subscribe({
+      this.filters =  this.search ? [{
+        data: 'search',
+        search: {
+          value: this.search
+        }
+      }] : [];
+
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
         next: (res: TableData<ProveedorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
@@ -186,7 +208,6 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           }); 
         }
       });
-      this.subs.add(sub);
     }
 
     //events
@@ -215,10 +236,6 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     private evtOnReload(reload: boolean = false): void{
       this.selected = undefined;
       this.loadData(reload);
-    }
-
-    evtOnFilter(value: string){
-      this.evtOnReload();
     }
 
     evtOnCreate(): void{

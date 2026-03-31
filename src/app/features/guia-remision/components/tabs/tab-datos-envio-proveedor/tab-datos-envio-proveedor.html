@@ -249,7 +249,6 @@
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Razón social o denominación *</label>
                                     <input 
-                                    placeholder="Razón social o denominación *" 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
@@ -264,7 +263,6 @@
                                     <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500">N° de registro MTC<ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el código de registro del Ministerio de Transportes y Comunicaciones que tenga actualmente el vehículo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
 
                                     <input 
-                                    placeholder="N° de registro MTC" 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
@@ -274,7 +272,6 @@
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500">E-mail del Transportista</label>
                                     <input 
-                                    placeholder="E-mail del Transportista" 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
@@ -306,7 +303,6 @@
                                     pInputText 
                                     class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                                     formControlName="traslado_vehiculo_categoria_placa_vehiculo" 
-                                    placeholder="Placa" 
                                     />
                                 </div>
                             </div>
@@ -333,7 +329,7 @@
                                                     fluid 
                                                     pInputText 
                                                     class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="placa_vehiculo" 
-                                                    [placeholder]="$index == 0 ? 'Placa principal *' : 'Placa secundaria *'" [invalid]="vehiculo.get('placa_vehiculo')?.invalid && (vehiculo.get('placa_vehiculo')?.touched || submitted)"/>
+                                                    />
                                                     @if (vehiculo.get('placa_vehiculo')?.invalid && (vehiculo.get('placa_vehiculo')?.touched || submitted)) {
                                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                     }
@@ -347,7 +343,6 @@
                                                         fluid 
                                                         pInputText 
                                                         class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="cert_habilitacion_vehiculo" 
-                                                        placeholder="TUCE o Cert. de habilitación vehicular *" 
                                                         [invalid]="vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)"/>
                                                         @if (vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)) {
                                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
@@ -378,7 +373,6 @@
                                                 <div class="flex flex-col">
                                                     <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >N° de autorización vehícular (opcional)</label>
                                                     <input 
-                                                    placeholder="N° de autorización vehícular (opcional)" 
                                                     pSize="small" 
                                                     fluid 
                                                     pInputText 
@@ -389,7 +383,17 @@
                                             @if(vehiculos.length > 1){
                                                 <div class="w-12.5 text-end">
                                                     @if($index > 0){
-                                                        <p-button pTooltip="Quitar vehiculo" tooltipStyleClass="text-[10px]! " tooltipPosition="left" class="text-xs! w-6! h-6!" size="small" icon="pi pi-times font-semibold!" styleClass="w-6! h-6!" (click)="evtRemoveVehiculo($index)" rounded="true" severity="primary"/>
+                                                        <p-button 
+                                                        pTooltip="Quitar vehiculo" 
+                                                        tooltipStyleClass="text-[10px]! " 
+                                                        tooltipPosition="left" 
+                                                        class="text-xs! w-6! h-6!" 
+                                                        size="small" 
+                                                        icon="pi pi-times font-semibold!" 
+                                                        styleClass="w-6! h-6!" 
+                                                        (click)="evtRemoveVehiculo($index)" 
+                                                        rounded="true" 
+                                                        severity="primary"/>
                                                     }
                                                 </div>
                                             }
@@ -448,7 +452,6 @@
                                                         <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
                                                         <div class="relative">
                                                            <input 
-                                                            placeholder="N° Doc. de identidad *" 
                                                             pSize="small" 
                                                             fluid 
                                                             pInputText 
@@ -472,7 +475,6 @@
                                                     <div>
                                                         <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° de licencia o brevete *</label>
                                                         <input 
-                                                        placeholder="N° de licencia o brevete *" 
                                                         pSize="small" 
                                                         fluid 
                                                         pInputText 
@@ -486,7 +488,6 @@
                                                     <div>
                                                         <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre del conductor *</label>
                                                         <input 
-                                                        placeholder="Nombre del conductor *" 
                                                         pSize="small" 
                                                         fluid 
                                                         pInputText 
@@ -499,7 +500,6 @@
                                                     <div>
                                                         <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Apellido del conductor *</label>
                                                         <input 
-                                                        placeholder="Apellido del conductor *" 
                                                         pSize="small" 
                                                         fluid 
                                                         pInputText 
@@ -560,7 +560,6 @@
                                     <div class="flex flex-col">
                                         <label class="text-[11px]! h-4.5! text-gray-500">N° de autorización especial (opcional)</label>
                                         <input 
-                                        placeholder="N° de autorización especial (opcional)" 
                                         pSize="small" 
                                         fluid 
                                         pInputText 
@@ -601,19 +600,28 @@
 
                                 @if(!f_datosEnvio.traslado_vehiculo_categoria.value){
                                     <div class="flex items-center gap-2">
-                                        <p-checkbox formControlName="indic_retorno_vehiculo_envase_adicional" inputId="indic_retorno_vehiculo_envase_adicional" size="large" [binary]="true"/>
+                                        <p-checkbox 
+                                        formControlName="indic_retorno_vehiculo_envase_adicional" inputId="indic_retorno_vehiculo_envase_adicional" 
+                                        size="large" 
+                                        [binary]="true"/>
                                         <label for="indic_retorno_vehiculo_envase_adicional" class="text-xs! font-semibold text-gray-500! cursor-pointer">Indicador de retorno de vehículo con envases o embalajes vacíos</label>
                                     </div>
                                 }
 
                                 <div class="flex items-center gap-2">
-                                    <p-checkbox formControlName="transbordo_programado_adicional" inputId="transbordo_programado_adicional" size="large" [binary]="true"/>
+                                    <p-checkbox 
+                                    formControlName="transbordo_programado_adicional" inputId="transbordo_programado_adicional" 
+                                    size="large" 
+                                    [binary]="true"/>
                                     <label for="transbordo_programado_adicional" class="text-xs! font-semibold text-gray-500! cursor-pointer">Transbordo Programado</label>
                                 </div>
 
                                 @if(!f_datosEnvio.traslado_vehiculo_categoria.value){
                                     <div class="flex items-center gap-2">
-                                        <p-checkbox formControlName="indic_retorno_vehiculo_vacio_adicional" inputId="indic_retorno_vehiculo_vacio_adicional" size="large" [binary]="true"/>
+                                        <p-checkbox 
+                                        formControlName="indic_retorno_vehiculo_vacio_adicional" inputId="indic_retorno_vehiculo_vacio_adicional" 
+                                        size="large" 
+                                        [binary]="true"/>
                                         <label for="indic_retorno_vehiculo_vacio_adicional" class="text-xs! font-semibold text-gray-500! cursor-pointer">Indicador de retorno de vehículo vacío</label>
                                     </div>
                                 }
@@ -653,7 +661,6 @@
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
                                 <input 
-                                placeholder="N° Doc. de identidad *" 
                                 pSize="small" 
                                 fluid 
                                 pInputText 
@@ -668,7 +675,6 @@
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre o Razón Social *</label>
                                 <input 
-                                placeholder="Nombre o Razón Social *" 
                                 pSize="small" 
                                 fluid 
                                 pInputText 

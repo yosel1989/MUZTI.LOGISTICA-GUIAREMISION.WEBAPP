@@ -19,7 +19,7 @@ import { BehaviorSubject, Subscriber } from 'rxjs';
 })
 
 export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
-    private _valueEdit: number | null = null;
+    private _valueEdit: string | null = null;
 
     @Input() idUbigeoDepartamento: string | null = null;
     @Input() classLabel: string = '';
@@ -31,7 +31,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Input() control!: FormControl;
 
     @Input()
-    set valueEdit(val: number | null) {
+    set valueEdit(val: string | null) {
         this._valueEdit = val;
     }
 
@@ -44,7 +44,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
         private ubigeoService: UbigeoApiService
     ) {}
 
-    get valueEdit(): number | null {
+    get valueEdit(): string | null {
         return this._valueEdit;
     }
     

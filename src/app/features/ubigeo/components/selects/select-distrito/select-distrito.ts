@@ -27,6 +27,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() control!: FormControl;
     @Input() invalid: boolean = false;
     @Input() inputId: string = '';
+    @Input() valueEdit: string | null = null;
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -75,6 +76,8 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
                 this.loading.next(false);
                 this.isLoading = false;
                 this.isLoaded.emit(true);
+                this.valueEdit && this.control.setValue(this.valueEdit);
+                console.log(this.valueEdit);
             },
             error: (error) => {
                 this.loading.next(false);

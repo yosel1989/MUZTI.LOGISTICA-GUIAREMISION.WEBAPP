@@ -122,10 +122,27 @@
                 badgeClass="font-normal!"
                 (click)="evtOnShowFilters()"
             />
-            <p-iconfield iconPosition="left">
-                <p-inputicon class="pi pi-search text-[12px]!" />
-                <input #inputFilter type="text" pInputText pSize="small" placeholder="Buscar ..." class="text-[12px]! h-9!"
-                (input)="evtOnFilter(inputFilter.value)"/>
+            <p-iconfield iconPosition="left" class="w-[190px]!">
+                <p-inputicon class="pi pi-search" />
+                <input 
+                #inputFilter 
+                fluid
+                type="text" 
+                pInputText 
+                pSize="small" 
+                placeholder="Buscar ..." 
+                class="text-[12px]! h-9!"
+                [formControl]="ctrlSearch"
+                />
+                @if(inputFilter.value){
+                    <p-inputicon 
+                    pTooltip="Limpiar"
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs! text-center"
+                    class="pi pi-times text-xs! cursor-pointer" 
+                    (click)="ctrlSearch.setValue(null)" 
+                    />
+                }
             </p-iconfield>
         </div>
         

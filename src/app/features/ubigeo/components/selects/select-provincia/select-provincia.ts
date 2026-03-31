@@ -27,6 +27,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Input() placeholderLoading: string = 'Cargando...';
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
+    @Input() valueEdit: string | null = null;
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -78,6 +79,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
                     this.isLoaded.emit(false);
                     this.loading.next(false);
                     this.isLoading = false;
+                    this.valueEdit && this.control.setValue(this.valueEdit);
                 },
                 error: (error) => {
                     this.loading.next(false);

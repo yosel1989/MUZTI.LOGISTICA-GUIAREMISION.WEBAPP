@@ -25,6 +25,8 @@ import { MdlRegistrarRemitenteComponent } from '../../modals/mdl-registrar-remit
 import { MdlEditarRemitenteComponent } from '../../modals/mdl-editar-remitente/mdl-editar-remitente.component';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ColumnsFilterDto } from 'app/core/models/filter';
 
 @Component({
   selector: 'app-tbl-remitente-principal',
@@ -45,7 +47,8 @@ import { fadeDownAnimation } from 'app/core/animations/page-animation';
         DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
-        LoaderComponent
+        LoaderComponent,
+        ReactiveFormsModule
   ],
   providers: [DialogService, ConfirmationService],
   animations: [fadeDownAnimation]
@@ -73,11 +76,19 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 0;
+    pageNumber: number = 1;
     pageSize: number = 10;
+    private pageSize$ = new BehaviorSubject<number>(10);
     totalRecords: number = 0;
 
+    firstChange: boolean = false;
     items: MenuItem[] | undefined;
+
+    filters: ColumnsFilterDto[] = [];
+    search: string | null = null;
+
+    subData: Subscription | undefined = undefined;
+    ctrlSearch = new FormControl(null);
 
     constructor(
       public dialogService: DialogService,
@@ -121,11 +132,16 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     ngAfterViewInit(): void{
+      this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
+        this.search = val;
+        this.evtOnReload();
+      });
       this.loadData();
     }
 
     ngOnDestroy(): void{
       this.subs.unsubscribe();
+      this.subData?.unsubscribe();
     }
 
     // getters
@@ -142,12 +158,28 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     // data
-    loadData(): void {
+    loadData(reload: boolean = false): void {
+      this.subData?.unsubscribe();
       this.selected = undefined;
+      this.firstChange = false;
       this.loading = true;
       this.ldData.next(true);
-      const sub = this.api.obtenerTodo(this.pageNumber + 1, this.pageSize).subscribe({
+
+      if(reload){
+        this.pageNumber = 1;
+        this.first = 0;
+      }
+
+      this.filters =  this.search ? [{
+        data: 'search',
+        search: {
+          value: this.search
+        }
+      }] : [];
+
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
         next: (res: TableData<RemitenteDto[]>) => {
+          
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
             x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_creacion) : x.fecha_ultima_edicion;
@@ -155,9 +187,10 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
             return x;
           });
 
-          this.pageNumber = res.page_number - 1;
+          this.pageNumber = res.page_number;
           this.pageSize = res.page_size;
-          this.totalRecords = res.data.length;
+          this.first = (this.pageNumber - 1) * this.pageSize;
+          this.totalRecords = res.total_records;
           this.ldData.next(false);
           this.cd.detectChanges();
           this.loading = false;
@@ -166,9 +199,22 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
+          this.data = [];
+
+          this.alertService.showToast({
+              position: 'bottom-end',
+              icon: "error",
+              title: "Ocurrio un error al obtener los registros",
+              showCloseButton: true,
+              timerProgressBar: true,
+              timer: 4000,
+              customClass: {
+                container: 'z-[9999]!',
+                popup: 'z-[9999]!'
+              }
+          });
         }
       });
-      this.subs.add(sub);
     }
 
     //events
@@ -200,10 +246,6 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
       this.setSelected(undefined);
       this.selected = undefined;
       this.loadData();
-    }
-
-    evtOnFilter(value: string){
-      this.evtOnReload();
     }
 
     evtOnCreate(): void{
@@ -376,6 +418,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
     evtRowsChange(rows: number): void{
       this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
       this.pageSize = this.pageSize === rows ? this.pageSize : rows;
+      this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
       this.first = (this.pageNumber - 1) * this.pageSize
       this.loadData();
     }

@@ -1,9 +1,10 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, EditarConductorRequestDto, EditarConductorResponseDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
 import { TableData } from "app/core/models/table";
+import { ColumnsFilterDto } from "app/core/models/filter";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,19 @@ export class ConductorApiService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodo(pageNumber: number, pageSize: number): Observable<TableData<ConductorDto[]>> {
-    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`).pipe(
+  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<ConductorDto[]>> {
+
+    let httpParams = new HttpParams();
+
+    filters.forEach((col, i) => {
+      httpParams = httpParams
+        .set(`columns[${i}][data]`, col.data)
+        .set(`columns[${i}][search][value]`, col.search.value!);
+        col.search.regex && httpParams.set(`columns[${i}][search][regex]`, col.search.regex.toString());
+        col.search.match && httpParams.set(`columns[${i}][search][match]`, col.search.match ?? '');
+    });
+
+    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<ConductorDto[]> }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);

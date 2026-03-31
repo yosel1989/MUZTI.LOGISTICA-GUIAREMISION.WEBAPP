@@ -34,23 +34,15 @@ export interface GR_DocRelacionadoDto{
 
 export interface GR_RemitenteRequestDto {
   ruc: string;
-  descripcion: string; 
-  ubigeo_id: string; 
-  direccion: string;
-  email: string;
-  pais: string;
-  serie: string;
-  codigo_sunat: string;
-  empleado_id_creacion: number | null;
-  empleado_nombre_creacion: string | null;
+  descripcion: string;
 }
 
 export interface GR_DestinatarioRequestDto {
   tipo_documento: 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
   numero_documento: string; 
   razon_social: string; 
-  ubigeo_id: string; 
-  direccion: string;
+  ubigeo_id: string | null; 
+  direccion: string | null;
   email_destinatario: { email: string}[] | null; 
   pais: string; 
   empleado_id_creacion: number | null;
