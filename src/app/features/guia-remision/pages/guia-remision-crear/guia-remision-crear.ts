@@ -396,8 +396,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         marca: null,
                         modelo: null,
                         placa: d.placa_vehiculo,
-                        numero_registro_mtc: null,
-                        tarjeta: "TARJETA",
+                        numero_registro_mtc: d.numero_autoriza_vehicular_vehiculo,
+                        tarjeta: d.cert_habilitacion_vehiculo,
                         empleado_id_creacion: 1,
                         empleado_nombre_creacion: "SA"
                     };

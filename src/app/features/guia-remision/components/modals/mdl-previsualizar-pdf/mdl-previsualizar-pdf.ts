@@ -97,30 +97,30 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
         {
           columns: [
             {
-              width: '*',
+              width: '50%',
               stack: [
                 {text: 'DETALLE DE LA GUÍA:', bold: true, marginLeft: 10, marginTop:5, marginBottom: 2.5},
                 {
                   table: {
-                    widths: ['auto', 100, 'auto', '*'],
+                    widths: ['auto', 'auto', 'auto', '*'],
                     body: [
                       [
                         {text: 'Tipo de Transportista:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 2}, 
-                        {text: 'PRIVADO', border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 2}, 
+                        {text: 'PRIVADO', border: [false, true, false, false], marginLeft:0,  marginTop: 5, marginBottom: 2}, 
                         {text: 'Fecha Inicio traslado:', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 2, bold: true}, 
-                        {text: '31-mar-2026', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 2}
+                        {text: '31-mar-2026', border: [false, true, true, false], marginLeft:0, marginTop: 5, marginBottom: 2}
                       ],
                       [
                         {text: 'Und. de Medida:', border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                        {text: 'KGM', border: [false, false, false, false], marginLeft:10, marginTop: 2, marginBottom: 2}, 
+                        {text: 'KGM', border: [false, false, false, false], marginLeft:0, marginTop: 2, marginBottom: 2}, 
                         {text: 'Peso Bruto:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                        {text: '2,344.00', border: [false, false, true, false], marginLeft:10, marginTop: 2, marginBottom: 2}
+                        {text: '2,344.00', border: [false, false, true, false], marginLeft:0, marginTop: 2, marginBottom: 2}
                       ],
                       [
                         {text: 'Motivo:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                        {text: 'VENTA', border: [false, false, false, true], marginLeft:10, marginTop: 2, marginBottom: 5}, 
+                        {text: 'VENTA', border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5}, 
                         {text: 'Descripción:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                        {text: '', border: [false, false, true, true], marginLeft:10, marginTop: 2, marginBottom: 5}
+                        {text: '', border: [false, false, true, true], marginLeft:0, marginTop: 2, marginBottom: 5}
                       ]
                     ],
                   },
@@ -132,33 +132,18 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
               ]
             },
             {
-              width: '*',
+              width: '50%',
               columns: [
                 {
-                  width: '*',
+                  width: '50%',
                   stack: [
-                    {text: 'DETALLE DE LA GUÍA:', bold: true, marginLeft: 10, marginTop:5, marginBottom: 2.5},
+                    {text: 'PUNTO DE PARTIDA:', bold: true, marginLeft: 10, marginTop:5, marginBottom: 2.5},
                     {
                       table: {
-                        widths: ['auto', 100, 'auto', '*'],
+                        widths: ['*'],
                         body: [
                           [
-                            {text: 'Tipo de Transportista:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 2}, 
-                            {text: 'PRIVADO', border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 2}, 
-                            {text: 'Fecha Inicio traslado:', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 2, bold: true}, 
-                            {text: '31-mar-2026', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 2}
-                          ],
-                          [
-                            {text: 'Und. de Medida:', border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                            {text: 'KGM', border: [false, false, false, false], marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                            {text: 'Peso Bruto:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                            {text: '2,344.00', border: [false, false, true, false], marginLeft:10, marginTop: 2, marginBottom: 2}
-                          ],
-                          [
-                            {text: 'Motivo:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                            {text: 'VENTA', border: [false, false, false, true], marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                            {text: 'Descripción:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                            {text: '', border: [false, false, true, true], marginLeft:10, marginTop: 2, marginBottom: 5}
+                            {text: 'Jr. Lima. Nro. 263 (Sec15), ANCASH - ASUNCION - ACOCHACA',  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },
@@ -170,30 +155,15 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                   ]
                 },
                 {
-                  width: '*',
+                  width: '50%',
                   stack: [
-                    {text: 'DETALLE DE LA GUÍA:', bold: true, marginLeft: 10, marginTop:5, marginBottom: 2.5},
+                    {text: 'PUNTO DE LLEGADA:', bold: true, marginLeft: 10, marginTop:5, marginBottom: 2.5},
                     {
                       table: {
-                        widths: ['auto', 100, 'auto', '*'],
+                        widths: ['*'],
                         body: [
                           [
-                            {text: 'Tipo de Transportista:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 2}, 
-                            {text: 'PRIVADO', border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 2}, 
-                            {text: 'Fecha Inicio traslado:', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 2, bold: true}, 
-                            {text: '31-mar-2026', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 2}
-                          ],
-                          [
-                            {text: 'Und. de Medida:', border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                            {text: 'KGM', border: [false, false, false, false], marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                            {text: 'Peso Bruto:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                            {text: '2,344.00', border: [false, false, true, false], marginLeft:10, marginTop: 2, marginBottom: 2}
-                          ],
-                          [
-                            {text: 'Motivo:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                            {text: 'VENTA', border: [false, false, false, true], marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                            {text: 'Descripción:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                            {text: '', border: [false, false, true, true], marginLeft:10, marginTop: 2, marginBottom: 5}
+                            {text: 'Jr. Lima. Nro. 263 (Sec15), ANCASH - AIJA - CORIS', marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },
@@ -204,9 +174,54 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     },
                   ]
                 }
-              ]
+              ],
+              columnGap: 10
             }
-          ]
+          ],
+          columnGap: 10
+        },
+
+        {
+          marginTop: 10,
+          table: {
+            widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*'],
+            body: [
+              [
+                {text: 'ITEM', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'}, 
+                {text: 'CANTIDAD', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
+                {text: 'UNIDAD', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
+                {text: 'CÓDIGO', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
+                {text: 'DESCRIPCIÓN', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
+                {text: 'COD. DE PRD. SUNAT', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
+                {text: 'GTIN', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
+                {text: 'BIEN NORMALIZADO', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'}
+              ],
+              [
+                {text: '1', border: [true, true, true, true], margin: 5},
+                {text: '1', border: [true, true, true, true], margin: 5},
+                {text: 'Unidad', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5},
+                {text: 'PRODUCTO 1', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5}
+              ],
+              [
+                {text: '2', border: [true, true, true, true], margin: 5},
+                {text: '1', border: [true, true, true, true], margin: 5},
+                {text: 'Unidad', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5},
+                {text: 'PRODUCTO 2', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5},
+                {text: '', border: [true, true, true, true], margin: 5}
+              ]
+            ]
+          },
+          layout: {
+            hLineColor: () => '#adadad',
+            vLineColor: () => '#adadad'
+          },
         },
 
         { text: 'Cliente: Yosel Edwin Aguirre Balbin', margin: [0, 0, 0, 5] },
@@ -272,7 +287,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
       ],
       defaultStyle: {
         font: 'Roboto',
-        fontSize: 9,
+        fontSize: 8,
         color: '#60615b'
       },
     };
