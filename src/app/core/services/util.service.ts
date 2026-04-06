@@ -13,8 +13,8 @@ export class UtilService {
 
   private datePipe = new DatePipe('en-US')
 
-  dateFormat(stringDateISO: string, format: string): any {
-    return this.datePipe.transform(stringDateISO, format) || '';
+  dateFormat(stringDateISO: string, format: string, locale: string = 'es-PE'): any {
+    return this.datePipe.transform(stringDateISO, format, undefined, locale) || '';
   }
 
   copy(body?: string, message?: string): void{

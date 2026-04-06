@@ -37,12 +37,22 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     private subs = new Subscription();
     isLoading = false;
 
+    labelSelected: string | null = null;
+
     constructor(
         private ubigeoService: UbigeoApiService
     ) {}
 
     ngOnInit(): void {
         this.getData();
+        this.control.valueChanges.subscribe(value => {
+            if(value){
+                const distrito = this.collection.find(dist => dist.id === value);
+                this.labelSelected = distrito ? distrito.distrito : null;
+            }else{
+                this.labelSelected = null;
+            }
+        });
     }
 
     ngAfterViewInit(): void {

@@ -1,16 +1,16 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PaisDto } from '@features/pais/models/pais.model';
-import { PaisApiService } from '@features/pais/services/pais-api.service';
+import { EmisorVehicularDto } from '@features/catalogo/models/catalogo.model';
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-select-pais',
-  templateUrl: './select-pais.html',
-  styleUrl: './select-pais.scss',
+  selector: 'app-select-emisor-vehicular',
+  templateUrl: './select-emisor-vehicular.html',
+  styleUrl: './select-emisor-vehicular.scss',
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
@@ -20,9 +20,9 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   ]
 })
 
-export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDestroy{
+export class SelectEmisorVehicularComponent implements OnInit, AfterViewInit, OnDestroy{
     @Input() classLabel: string = '';
-    @Input() label: string = 'País';
+    @Input() label: string = 'Emisor Vehicular';
     @Input() placeholder: string = 'Seleccionar...';
     @Input() placeholderLoading: string = 'Cargando...';
     @Input() inputId: string = '';
@@ -32,14 +32,14 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    data: PaisDto[] = [];
+    data: EmisorVehicularDto[] = [];
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
 
     private subs = new Subscription();
 
     constructor(
-        private api: PaisApiService
+        private api: CatalogoApiService
     ) {}
 
     ngOnInit(): void {
@@ -57,7 +57,7 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     // Data
     getData(): void {
         this.loading.next(true);
-        const sub = this.api.getPaises().subscribe({
+        const sub = this.api.getEmisorVehicular().subscribe({
             next: (response) => {
                 this.data = response;
                 this.loading.next(false);

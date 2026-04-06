@@ -7,7 +7,7 @@
                     <app-select-empresa-remitente #selectEmpresaRemitente [control]="f.remitente_id"></app-select-empresa-remitente>
                 </div>
                 <div class="col">
-                   <app-guia-section-cabecera [idRemitente]="f.remitente_id.value" [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"></app-guia-section-cabecera>   
+                   <app-guia-section-cabecera #guiaCabecera [idRemitente]="f.remitente_id.value" [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"></app-guia-section-cabecera>   
                 </div>
             </div>
         </p-card>

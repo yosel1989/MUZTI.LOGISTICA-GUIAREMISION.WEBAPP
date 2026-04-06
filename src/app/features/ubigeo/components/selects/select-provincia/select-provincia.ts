@@ -38,12 +38,22 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     private subs = new Subscription();
     isLoading = false;
 
+    labelSelected: string | null = null;
+
     constructor(
         private ubigeoService: UbigeoApiService
     ) {}
 
     ngOnInit(): void {
         this.getData();
+        this.control.valueChanges.subscribe(value => {
+            if(value){
+                const provincia = this.collection.find(prov => prov.id === value);
+                this.labelSelected = provincia ? provincia.provincia : null;
+            }else{
+                this.labelSelected = null;
+            }
+        });
     }
 
     ngAfterViewInit(): void {

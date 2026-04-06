@@ -11,6 +11,7 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
 import pdfMake from "pdfmake/build/pdfmake";
 import "pdfmake/build/vfs_fonts";
+import { UtilService } from 'app/core/services/util.service';
 
 @Component({
   selector: 'app-mdl-previsualizar-pdf',
@@ -35,7 +36,8 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
   constructor(
     private cdr: ChangeDetectorRef,
     private api: DocumentoApiService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private utilService: UtilService
   ) {
 
   }
@@ -58,33 +60,94 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
       pageMargins: [40, 60, 40, 60], 
       content: [
 
-        { text: 'CAROLINA SAC', style: 'header' },
-        { text: 'Av. Simón Bolívar 1831\nPUEBLO LIBRE - LIMA - LIMA', margin: [0, 0, 0, 10] },
-        { text: 'RUC: 20341191476', bold: true },
-        { text: 'GUÍA DE REMISIÓN REMITENTE ELECTRÓNICA', style: 'subheader' },
-        { text: 'Nro. T001-00000116', margin: [0, 0, 0, 10] },
+        {
+          table: {
+            widths: [100, '*', 200],
+            heights: [80],
+            body: [
+              [
+                { text: '', border: [false,false,false,false] },
+                { 
+                  stack: [
+                    {text: this.data.remitente.nombre_empresa, bold: true, marginBottom: 2},
+                    {text: this.data.remitente.direccion.toUpperCase(), marginBottom:10, color: '#adadad'},
+                    {text: `${this.data.remitente.distrito} - ${this.data.remitente.provincia} - ${this.data.remitente.departamento}`, color: '#adadad'},
+                  ],
+                  border: [false,false,false,false],
+                },
+                {
+                  stack: [
+                    {
+                      canvas: [
+                        {
+                          type: 'rect',
+                          x: 0,
+                          y: 0,
+                          w: 200,
+                          h: 80,
+                          r: 10,
+                          lineColor: '#adadad'
+                        }
+                      ],
+                      margin: [0, 0, 0, 0],
+                      alignment: 'right'
+                    },
+                    {
+                      stack: [
+                        {
+                          text: `RUC: ${this.data.remitente.ruc}`,
+                          alignment: 'center',
+                          color: '#adadad'
+                        },
+                        {
+                          text: 'GUÍA DE REMISIÓN REMITENTE ELECTRÓNICA',
+                          alignment: 'center',
+                          bold: true,
+                          fontSize: 10,
+                          marginTop: 5,
+                          marginBottom: 5
+                        },
+                        {
+                          text: `Nro. ${this.data.remitente.serie_numero}`,
+                          alignment: 'center',
+                          color: '#adadad'
+                        }
+                      ],
+                      margin: [0, -65, 0, 0]
+                    }
+                  ],
+                  border: [false, false, false, false],
+                  margin: [0, 0, 0, 0],
+                  alignment: 'right'
+                }
+              ]
+            ]
+          },
+          margin: [0,0,0,5]
+        },
+
 
         {
           table: {
             widths: ['auto', 200, 'auto', '*'],
             body: [
               [
-                {text: 'Cliente:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 2}, 
-                {text: 'MTC SAC', border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 2}, 
-                {text: '', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 2}, 
-                {text: '', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 2}
+                {text: 'Cliente:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 1}, 
+                {text: this.data.destinatario.razon_social, border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 1, color: '#adadad'}, 
+                {text: '', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 1}, 
+                {text: '', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 1}
               ],
               [
-                {text: 'RUC:', border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                {text: '10458464613', border: [false, false, false, false], marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                {text: 'Dirección:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                {text: 'Av. Universitaria 2345', border: [false, false, true, false], marginLeft:10, marginTop: 2, marginBottom: 2}
+                {text: `${this.data.destinatario.tipo_documento}:`, border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
+                {text: this.data.destinatario.numero_documento, border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
+                {text: 'Dirección:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
+                {text: this.data.destinatario.direccion ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
               ],
               [
-                {text: 'Fecha de emisión:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                {text: '31-MAR-2026', border: [false, false, false, true], marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                {text: 'Ciudad:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                {text: 'LIMA - LIMA - LIMA', border: [false, false, true, true], marginLeft:10, marginTop: 2, marginBottom: 5}
+                {text: 'Fecha de emisión:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
+                {text: this.utilService.dateFormat(this.data.fecha, 'dd-MMM-yyyy').toUpperCase().replace(".",""), border: [false, false, false, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}, 
+                {text: 'Ciudad:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
+                {text: `${this.data.destinatario.distrito ?? '-'} - ${this.data.destinatario.provincia ?? '-'} - ${this.data.destinatario.departamento ?? '-'}`, border: [false, false, true, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}
               ]
             ],
           },
@@ -106,19 +169,19 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     body: [
                       [
                         {text: 'Tipo de Transportista:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 2}, 
-                        {text: 'PRIVADO', border: [false, true, false, false], marginLeft:0,  marginTop: 5, marginBottom: 2}, 
+                        {text: this.data.tipo_transporte.toUpperCase(), border: [false, true, false, false], marginLeft:0,  marginTop: 5, marginBottom: 2, color: '#adadad'}, 
                         {text: 'Fecha Inicio traslado:', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 2, bold: true}, 
-                        {text: '31-mar-2026', border: [false, true, true, false], marginLeft:0, marginTop: 5, marginBottom: 2}
+                        {text: this.data.datos_envio.fecha_envio ? this.utilService.dateFormat(this.data.datos_envio.fecha_envio, 'dd-MMM-yyyy').toUpperCase().replace(".","") : '-', border: [false, true, true, false], marginLeft:0, marginTop: 5, marginBottom: 2, color: '#adadad'}
                       ],
                       [
                         {text: 'Und. de Medida:', border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                        {text: 'KGM', border: [false, false, false, false], marginLeft:0, marginTop: 2, marginBottom: 2}, 
+                        {text: this.data.datos_envio.codigo_um, border: [false, false, false, false], marginLeft:0, marginTop: 2, marginBottom: 2, color: '#adadad'}, 
                         {text: 'Peso Bruto:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                        {text: '2,344.00', border: [false, false, true, false], marginLeft:0, marginTop: 2, marginBottom: 2}
+                        {text: this.data.datos_envio.peso_bruto ?? '-', border: [false, false, true, false], marginLeft:0, marginTop: 2, marginBottom: 2, color: '#adadad'}
                       ],
                       [
                         {text: 'Motivo:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                        {text: 'VENTA', border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5}, 
+                        {text: this.data.tipo_traslado, border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5, color: '#adadad'}, 
                         {text: 'Descripción:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
                         {text: '', border: [false, false, true, true], marginLeft:0, marginTop: 2, marginBottom: 5}
                       ]
@@ -143,7 +206,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                         widths: ['*'],
                         body: [
                           [
-                            {text: 'Jr. Lima. Nro. 263 (Sec15), ANCASH - ASUNCION - ACOCHACA',  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
+                            {text: `${this.data.origen.direccion ?? '-'}`,  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },
@@ -163,7 +226,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                         widths: ['*'],
                         body: [
                           [
-                            {text: 'Jr. Lima. Nro. 263 (Sec15), ANCASH - AIJA - CORIS', marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
+                            {text: `${this.data.destino[0].direccion ?? '-'}`, marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },
@@ -184,39 +247,97 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
         {
           marginTop: 10,
           table: {
-            widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*'],
+            widths: [25, 40, 50, 50, '*', 60, 35, 70],
             body: [
               [
-                {text: 'ITEM', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'}, 
-                {text: 'CANTIDAD', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
-                {text: 'UNIDAD', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
-                {text: 'CÓDIGO', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
-                {text: 'DESCRIPCIÓN', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
-                {text: 'COD. DE PRD. SUNAT', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
-                {text: 'GTIN', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'},
-                {text: 'BIEN NORMALIZADO', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center'}
+                {text: 'ITEM', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'}, 
+                {text: 'CANTIDAD', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
+                {text: 'UNIDAD', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
+                {text: 'CÓDIGO', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
+                {text: 'DESCRIPCIÓN', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
+                {text: 'COD. DE PRD. SUNAT', border: [true, true, true, true], bold: true, marginTop: 5, marginBottom:5, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
+                {text: 'GTIN', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
+                {text: 'BIEN NORMALIZADO', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center', fillColor: '#adadad', color: '#ffffff'}
               ],
-              [
-                {text: '1', border: [true, true, true, true], margin: 5},
-                {text: '1', border: [true, true, true, true], margin: 5},
-                {text: 'Unidad', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5},
-                {text: 'PRODUCTO 1', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5}
-              ],
-              [
-                {text: '2', border: [true, true, true, true], margin: 5},
-                {text: '1', border: [true, true, true, true], margin: 5},
-                {text: 'Unidad', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5},
-                {text: 'PRODUCTO 2', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5},
-                {text: '', border: [true, true, true, true], margin: 5}
-              ]
+              ...this.data.productos.map((producto, index) => [
+                {text: index + 1, border: [true, true, true, true], margin: 5, alignment: 'center'}
+              ])
             ]
+          },
+          layout: {
+            hLineColor: function (i, node) {
+              if (i === 0 || i === 1) {
+                return '#bababa'; 
+              }
+              return '#adadad';
+            },
+            vLineColor: function (i, node) {
+              if (node.table.body[0]) {
+                return '#bababa';
+              }
+              return '#adadad';
+            }
+          }
+
+        },
+
+        { text: 'OBSERVACIONES', bold: true, marginTop:5, marginBottom: 2.5},
+        { text: 'ASDFADSFADS', marginLeft: 10, marginTop: 5},
+
+
+        { text: 'DATOS DEL CONDUCTOR', bold: true, marginTop: 30, marginBottom: 2.5},
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+            body: [
+              [
+                {text: 'Principal:', border: [true, true, false, false], bold: true, margin: 0}, 
+                {text: '', border: [false, true, false, false], margin: 0}, 
+                {text: '', border: [false, true, false, false], margin: 0}, 
+                {text: '', border: [false, true, true, false], margin: 0},
+              ],
+              [
+                {
+                  text: [
+                    { text: 'N° de documento:', bold: true},
+                    { text: '\t' },
+                    { text: '45846461', color: '#adadad'}
+                  ],
+                  border: [true, false, false, true],
+                  marginLeft: 10
+                },
+
+                {
+                  text: [
+                    { text: 'N° de licencia:', bold: true},
+                    { text: '\t' },
+                    { text: '4456345345', color: '#adadad'}
+                  ],
+                  border: [false, false, false, true],
+                  marginLeft: 10
+                },
+
+                {
+                  text: [
+                    { text: 'Nombres y apellidos:', bold: true },
+                    { text: '\t' },
+                    { text: 'Yosel Edwin - Aguirre Balbin', color: '#adadad' }
+                  ],
+                  border: [false, false, false, true],
+                  marginLeft: 10
+                },
+
+                {
+                  text: [
+                    { text: '', bold: true},
+                    { text: '\t' },
+                    { text: ''}
+                  ],
+                  border: [false, false, true, true],
+                  marginLeft: 10
+                }
+              ]
+            ],
           },
           layout: {
             hLineColor: () => '#adadad',
@@ -224,67 +345,74 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
           },
         },
 
-        { text: 'Cliente: Yosel Edwin Aguirre Balbin', margin: [0, 0, 0, 5] },
-        { text: 'RUC: 10458464613', margin: [0, 0, 0, 5] },
-        { text: 'Fecha de emisión: 31-MAR-2026', margin: [0, 0, 0, 10] },
 
+        { text: 'DATOS DEL VEHÍCULO', bold: true, marginTop: 5, marginBottom: 2.5},
         {
           table: {
-            widths: ['auto', '*'],
+            widths: ['*', '*', '*'],
             body: [
-              ['Dirección:', 'Jr. Libertad 816 km 11'],
-              ['Ciudad:', 'LIMA - LIMA - LIMA']
-            ]
+              [
+                {text: 'Principal:', border: [true, true, false, false], bold: true, margin: 0}, 
+                {text: 'Secundario', border: [false, true, false, false], bold: true, margin: 0}, 
+                {text: '', border: [false, true, true, false], margin: 0}, 
+              ],
+              [
+                {
+                  stack:[
+                    [
+                      {text:[
+                        { text: 'Placa:', bold: true},
+                        { text: '\t' },
+                        { text: 'ERT001', color: '#adadad'}
+                      ]},
+                      {text:[
+                        { text: 'TUCE:', bold: true},
+                        { text: '\t' },
+                        { text: 'J05151515'}
+                      ]},
+                      {text:[
+                        { text: 'N° de Autorización vehicular:', bold: true},
+                        { text: '\t' },
+                        { text: 'L879787879 - DIGEMID', color: '#adadad'}
+                      ]},
+                    ],
+                  ],
+                  border: [true, false, false, true],
+                  marginLeft: 10
+                },
+
+                {
+                  text: [
+                    { text: 'Placa:', bold: true},
+                    { text: '\t' },
+                    { text: 'YUI005', color: '#adadad' }
+                  ],
+                  border: [false, false, false, true],
+                  marginLeft: 10
+                },
+
+                {
+                  text: [
+                    { text: '', bold: true },
+                    { text: '\t' },
+                    { text: ''}
+                  ],
+                  border: [false, false, true, true],
+                  marginLeft: 10
+                },
+
+              ]
+            ],
           },
-          margin: [0, 0, 0, 10]
+          layout: {
+            hLineColor: () => '#adadad',
+            vLineColor: () => '#adadad'
+          },
         },
 
-        { text: 'DETALLE DE LA GUÍA:', style: 'subheader' },
-        { text: 'Tipo de Transportista: PRIVADO' },
-        { text: 'Fecha inicio traslado: 31-mar-2026' },
-        { text: 'Und. de Medida: KGM' },
-        { text: 'Motivo: VENTA', margin: [0, 0, 0, 10] },
 
-        {
-          table: {
-            widths: ['auto', '*'],
-            body: [
-              ['Peso Bruto:', '2,344.00'],
-              ['Descripción:', 'PRIVADO']
-            ]
-          },
-          margin: [0, 0, 0, 10],
-        },
-
-        { text: 'PUNTO DE PARTIDA: JR. LIBERTAD 816, LIMA - LIMA - COMAS' },
-        { text: 'PUNTO DE LLEGADA: AV. UNIVERSITARIA 2345, LIMA - LIMA - CARABAYLLO', margin: [0, 0, 0, 10] },
-
-        {
-          table: {
-            headerRows: 1,
-            widths: ['auto', 'auto', 'auto', 'auto', '*', 'auto', 'auto', 'auto'],
-            body: [
-              ['ITEM', 'CANTIDAD', 'UNIDAD', 'CÓDIGO', 'DESCRIPCIÓN', 'COD. DE PRD. SUNAT', 'GTIN', 'BIEN NORMALIZADO'],
-              ['1', '1', 'Unidad', '', 'PRODUCTO 1', '', '', ''],
-              ['2', '1', 'Unidad', '', 'PRODUCTO 2', '', '', '']
-            ]
-          },
-          margin: [0, 0, 0, 10]
-        },
-
-        { text: 'OBSERVACIONES\nDescripción', margin: [0, 0, 0, 10] },
-
-        { text: '# DATOS DEL CONDUCTOR', style: 'subheader' },
-        { text: 'Nº de documento: 45846461' },
-        { text: 'Nº de licencia: L435435454' },
-        { text: 'Nombres y apellidos: Yosel Edwin - Aguirre Balbin', margin: [0, 0, 0, 10] },
-
-        { text: '# DATOS DEL VEHÍCULO', style: 'subheader' },
-        { text: 'Placa: RTY789', margin: [0, 0, 0, 10] },
-
-        { text: 'Operador de Servicios Electrónicos según Resolución Nº 034-005-0008776', italics: true },
-        { text: 'Representación impresa de la guía de remisión remitente, consulte en www.efact.pe', fontSize: 8, italics: true }
       ],
+      watermark: { text: 'PREVISUALIZACIÓN', color: 'red', opacity: 0.1, bold: true, italics: false },
       defaultStyle: {
         font: 'Roboto',
         fontSize: 8,

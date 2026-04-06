@@ -1,0 +1,15 @@
+<p-select 
+panelStyleClass="text-[.875rem]!"
+size="small" 
+[loading]="loading | async" 
+fluid 
+[options]="data" 
+[formControl]="control" 
+[invalid]="invalid" 
+optionLabel="abreviatura" 
+optionValue="nombre" 
+[class]="invalid ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+[placeholder]="(loading | async) ? placeholderLoading : placeholder" 
+[filter]="true" 
+appendTo="body"
+[inputId]="inputId"></p-select>

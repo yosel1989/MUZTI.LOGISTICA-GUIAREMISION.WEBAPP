@@ -35,6 +35,12 @@ export interface GR_DocRelacionadoDto{
 export interface GR_RemitenteRequestDto {
   ruc: string;
   descripcion: string;
+  nombre_empresa: string;
+  direccion: string;
+  departamento: string;
+  provincia: string;
+  distrito: string;
+  serie_numero: string;
 }
 
 export interface GR_DestinatarioRequestDto {
@@ -42,6 +48,9 @@ export interface GR_DestinatarioRequestDto {
   numero_documento: string; 
   razon_social: string; 
   ubigeo_id: string | null; 
+  departamento: string | null;
+  provincia: string | null;
+  distrito: string | null; 
   direccion: string | null;
   email_destinatario: { email: string}[] | null; 
   pais: string; 
@@ -63,7 +72,7 @@ export interface GR_ProveedorRequestDto {
 
 export interface GR_DatosEnvioRequestDto {
   motivo_envio: string; 
-  fecha_envio: string; 
+  fecha_envio: string | null; 
   peso_bruto: string; 
   codigo_um: string; 
   ruc_empresa_currier: string | null;

@@ -20,7 +20,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { TooltipModule } from 'primeng/tooltip';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
@@ -97,8 +97,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('tabOrigenDestino') tabOrigenDestino: TabOrigenDestinoComponent | undefined;
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
     @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
+    @ViewChild('departamentoDestinatario') departamentoDestinatario: SelectDepartamentoComponent | undefined;
     @ViewChild('provinciaDestinatario') provinciaDestinatario: SelectProvinciaComponent | undefined;
     @ViewChild('distritoDestinatario') distritoDestinatario: SelectDistritoComponent | undefined;
+    @ViewChild('guiaCabecera') guiaCabecera: GuiaSectionCabeceraComponent | undefined;
 
     tipoGuia = TipoGuiaRemisionEnum;
 
@@ -307,9 +309,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     get request(): GuiaRemisionRemitenteRequestDto{
 
-
         return {
-            tipo_transporte: this.tabDatosEnvioProveedor?.data.tipo_transporte ?? 'PRIVADO',
+            tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             tipo_traslado: this.f.tipo_traslado.value,
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
@@ -329,6 +330,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 ruc: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ruc : this.f.numero_documento_remitente.value,
                 /*descripcion: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.descripcion : this.f.razon_social_remitente.value,*/
                 descripcion: this.selectEmpresaRemitente!.selected!.descripcion,
+                nombre_empresa: this.selectEmpresaRemitente!.selected!.nombre_empresa,
+                direccion: this.selectEmpresaRemitente!.selected!.direccion,
+                departamento: this.selectEmpresaRemitente!.selected!.departamento,
+                provincia: this.selectEmpresaRemitente!.selected!.provincia,
+                distrito: this.selectEmpresaRemitente!.selected!.distrito,
+                serie_numero: this.guiaCabecera!.serieNumero,
                 /*ubigeo_id: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ubigeo_id : this.f.distrito_remitente.value,
                 direccion:  (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.direccion : this.f.direccion_remitente.value,
                 email: "yosel1989@gmail.com",
@@ -344,6 +351,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 numero_documento: this.f.numero_documento_destinatario.value,
                 razon_social: this.f.tipo_documento_destinatario.value === 'RUC' ? this.f.razon_social_destinatario.value : this.f.nombres_apellidos_destinatario.value,
                 ubigeo_id: this.f.distrito_destinatario.value,
+                departamento: this.departamentoDestinatario?.labelSelected ?? null,
+                provincia: this.provinciaDestinatario?.labelSelected ?? null,
+                distrito: this.distritoDestinatario?.labelSelected ?? null,
                 direccion: this.f.direccion_destinatario.value,
                 pais: "PE",
                 empleado_id_creacion: 1,
@@ -370,7 +380,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             datos_envio: {
 
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
-                fecha_envio: formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US'),
+                fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
                 peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_peso_bruto,
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
@@ -588,6 +598,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     evtPreview(): void{
+        console.log('remitente', this.selectEmpresaRemitente!.selected!);
         this.modalRef = this.dialogService.open(MdlPrevisualizarPdfComponent,  {
             width: '1200px',
             height: '90vh',
