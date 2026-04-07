@@ -7,7 +7,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { SafeUrlPipe } from 'app/core/pipes/safe-url-pipe/safe-url-pipe';
 import { BehaviorSubject } from 'rxjs';
 
-import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 
 import pdfMake from "pdfmake/build/pdfmake";
 import "pdfmake/build/vfs_fonts";
@@ -250,18 +250,48 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
             widths: [25, 40, 50, 50, '*', 60, 35, 70],
             body: [
               [
-                {text: 'ITEM', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'}, 
-                {text: 'CANTIDAD', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
-                {text: 'UNIDAD', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
-                {text: 'CÓDIGO', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
-                {text: 'DESCRIPCIÓN', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
-                {text: 'COD. DE PRD. SUNAT', border: [true, true, true, true], bold: true, marginTop: 5, marginBottom:5, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
-                {text: 'GTIN', border: [true, true, true, true], bold: true, marginTop: 10, marginBottom:10, marginLeft: 0, marginRight: 0, alignment: 'center', fillColor: '#adadad', color: '#ffffff'},
-                {text: 'BIEN NORMALIZADO', border: [true, true, true, true], bold: true, margin: 5, alignment: 'center', fillColor: '#adadad', color: '#ffffff'}
+                { text: 'ITEM', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'CANTIDAD', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'UNIDAD', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'CÓDIGO', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'DESCRIPCIÓN', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'COD. DE PRD. SUNAT', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'GTIN', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' },
+                { text: 'BIEN NORMALIZADO', border: [true, true, true, true], bold: true, alignment: 'center', fillColor: '#adadad', color: '#ffffff' }
               ],
-              ...this.data.productos.map((producto, index) => [
-                {text: index + 1, border: [true, true, true, true], margin: 5, alignment: 'center'}
-              ])
+
+              [
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' }
+              ],
+
+              [
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' }
+              ],
+
+              [
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' },
+                { text: "", border: [true, true, true, true], alignment: 'center' }
+              ]
             ]
           },
           layout: {
