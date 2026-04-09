@@ -659,7 +659,7 @@
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Documento *</label>
                                 <input 
                                 pSize="small" 
                                 fluid 
@@ -699,21 +699,23 @@
                             </div>
 
                             <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500">Departamento</label>
                                 <app-select-departamento 
                                 [control]="f_datosProveedor.idDepartamento" 
                                 classLabel="text-[11px]! h-4.5! text-gray-500 " 
                                 label="Departamento"
                                 ></app-select-departamento>
                             </div>
-                            <div>
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500">Provincia</label>
                                 <app-select-provincia 
                                 [control]="f_datosProveedor.idProvincia" 
                                 [idUbigeoDepartamento]="f_datosProveedor.idDepartamento.value" 
                                 classLabel="text-[11px]! h-4.5! text-gray-500"
-                                label="Provincia"
                                 ></app-select-provincia>
                             </div>
-                            <div>
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500">Distrito</label>
                                 <app-select-distrito 
                                 label="Distrito"
                                 [control]="f_datosProveedor.idDistrito" 

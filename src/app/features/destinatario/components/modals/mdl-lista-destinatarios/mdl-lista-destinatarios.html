@@ -1,0 +1,72 @@
+
+<div class="grid grid-cols-3 gap-4">
+    <div class="">
+        <p-iconfield>
+            <p-inputicon class="pi pi-search" />
+            <input [formControl]="search" pSize="small" fluid type="text" pInputText placeholder="Filtrar" />
+        </p-iconfield>           
+    </div>
+</div>
+
+<div class="pt-5">
+    <p-table
+        size="small"
+        [columns]="cols"
+        showGridlines
+        [value]="data()"
+        [(selection)]="selected"
+        selectionMode="single"
+        [tableStyle]="{ 'min-width': '100px' }"
+        [scrollable]="true"
+        [showLoader]="false"
+    
+        [lazy]="true"
+        [rowHover]="true"
+        scrollHeight="400px"
+        class="border-0! text-[12px]!"
+        >
+        
+            <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        @for (col of columns; track $index) {
+                            <th 
+                            class="text-nowrap text-[12px]! text-gray-500! font-semibold py-4!">
+                                {{ col.header }}
+                            </th>
+                        }
+                    </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                @if(ldData()){
+                    <tr>
+                        @for (col of columns; track $index) {
+                            <td>
+                                <p-skeleton [width]="$index == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                            </td>
+                        }
+                    </tr>
+                }@else {
+                    <tr [pSelectableRow]="rowData">
+                        @for (col of columns; track $index) {
+                            <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
+                        }
+                    </tr>
+                }
+            </ng-template>
+
+            <ng-template pTemplate="empty" let-columns="columns">
+                <tr>
+                    <td [colSpan]="columns.length">
+                        No se encontraron registros.
+                    </td>
+                </tr>
+            </ng-template>
+    </p-table>
+</div>
+
+<div class="flex gap-2 justify-end pt-6">
+    <p-button size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
+    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldSelected()" [disabled]="!selected" size="small" [label]="!ldSelected() ? 'Seleccionar' : ''" severity="primary"></p-button>
+</div>
+

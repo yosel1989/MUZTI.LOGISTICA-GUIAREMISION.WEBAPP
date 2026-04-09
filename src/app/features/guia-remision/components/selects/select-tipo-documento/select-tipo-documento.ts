@@ -23,6 +23,7 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
     @Input() classLabel: string = 'text-xs';
     @Input() label: string | null = null;
     @Input() control!: FormControl;
+    @Input() disabled: boolean = false;
 
     data: SelectTipoDocumento[] = [ 
         { label: 'DNI', value: TipoDocumentoEnum.dni }, 

@@ -125,12 +125,9 @@ export interface GR_ProductoRequestDto {
 }
 
 export interface GR_EnviarGuiaRemisionResponseDto {
-  success: boolean;
-
-  respuesta_facturador: {
-    codigo: string;
-    descripcion: string;
-  };
+  id: number;
+  tipo_guia: string;
+  numero_guia: string;
 }
 
 export interface GuiaRemisionDto {

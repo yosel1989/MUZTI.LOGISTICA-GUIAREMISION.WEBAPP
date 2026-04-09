@@ -16,7 +16,7 @@ import { BehaviorSubject, Subscription } from "rxjs";
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { SelectTipoTraslado } from "../../selects/select-motivo-traslado/select-motivo-traslado";
 import { FltDateComponent } from "app/core/components/filters/flt-date/flt-date";
-import { DestinatarioBusqueda } from "@features/destinatario/models/destinatario";
+import { DestinatarioBusqueda, DestinatarioSugeridoDto } from "@features/destinatario/models/destinatario";
 import { DestinatarioApiService } from "@features/destinatario/services/destinatario-api.service";
 import { AsyncPipe, NgClass } from "@angular/common";
 import { ColumnsFilterDto } from "app/core/models/filter";
@@ -89,7 +89,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     private subs = new Subscription();
     countActived = 0;
 
-    destinatarios = new BehaviorSubject<DestinatarioBusqueda[]>([]);
+    destinatarios = new BehaviorSubject<DestinatarioSugeridoDto[]>([]);
     destinatarios$ = this.destinatarios.asObservable();
     ldDestinatarios: boolean = false;
     subDestinatario = new Subscription();
@@ -207,7 +207,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         if(search){
             this.ldDestinatarios = true;
             this.subDestinatario = this.destinatarioService.buscar(search).subscribe({
-                next: (val: DestinatarioBusqueda[]) => {
+                next: (val: DestinatarioSugeridoDto[]) => {
                     this.destinatarios.next(val);
                     this.ldDestinatarios = false;
                 },

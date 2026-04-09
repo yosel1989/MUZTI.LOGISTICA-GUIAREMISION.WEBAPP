@@ -225,6 +225,20 @@
                             selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente
                         )
                     ){
+                        <div class="flex flex-wrap gap-x-2">
+                            <p-button 
+                                size="small"
+                                icon="fa-duotone fa-light fa-angle-down"
+                                label="Seleccionar destinatario"
+                                iconPos="right"
+                                (click)="evtOnShowDestinatarios()"
+                                outlined="true"
+                            >
+                            </p-button>
+
+                            <p-button size="small" routerLink="/admin/remitente" label="Administrar" link target="_blank" />
+                        </div>
+
                         <div>
                             <div class="grid grid-cols-2 gap-y-3 gap-x-3">
                                 <div class="flex flex-col">
@@ -232,20 +246,22 @@
                                     <app-select-tipo-documento 
                                     class="flex flex-col" 
                                     [control]="f.tipo_documento_destinatario"
+                                    [disabled]="true"
                                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
                                     </app-select-tipo-documento>
                                 </div>
                                 <div class="flex flex-col">
                                     <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nro. de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                     <input 
-                                    formControlName="numero_documento_destinatario" 
-                                    onlyNumber  
-                                    pSize="small" 
-                                    [invalid]="f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)"
-                                    [minlength]="f.tipo_documento_destinatario.value === 'RUC' ? 11 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : null"
-                                    [maxlength]="f.tipo_documento_destinatario.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_destinatario.value === 'PASAPORTE' ? 12 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : f.tipo_documento_destinatario.value === 'RUC' ? 11 : null"
-                                    fluid 
-                                    pInputText />
+                                        formControlName="numero_documento_destinatario" 
+                                        onlyNumber  
+                                        pSize="small" 
+                                        [invalid]="f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)"
+                                        [minlength]="f.tipo_documento_destinatario.value === 'RUC' ? 11 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : null"
+                                        [maxlength]="f.tipo_documento_destinatario.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_destinatario.value === 'PASAPORTE' ? 12 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : f.tipo_documento_destinatario.value === 'RUC' ? 11 : null"
+                                        fluid 
+                                        pInputText 
+                                    />
                                     @if (f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                             @if(f.numero_documento_destinatario.errors?.['required']){
@@ -275,11 +291,12 @@
                                     <div class="flex flex-col">
                                         <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                         <input 
-                                        formControlName="razon_social_destinatario" 
-                                        pSize="small" 
-                                        fluid 
-                                        [invalid]="f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)"
-                                        pInputText />
+                                            formControlName="razon_social_destinatario" 
+                                            pSize="small" 
+                                            fluid 
+                                            [invalid]="f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)"
+                                            pInputText 
+                                        />
                                         @if (f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)) {
                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                 @if(f.razon_social_destinatario.errors?.['required']){

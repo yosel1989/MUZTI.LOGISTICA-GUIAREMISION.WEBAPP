@@ -6,13 +6,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { tablerLoader2 } from '@ng-icons/tabler-icons';
 import { AuthApiService } from '../../services/auth-api.service';
-import { AlertService } from '../../../../shared/services/alert.service';
 import { StorageService } from '../../../../core/services/storage.service';
 import { AuthRequest, User } from '../../services/auth.interface';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { AlertService } from 'app/core/services/alert.service';
 
 @Component({
   selector: 'app-auth',
