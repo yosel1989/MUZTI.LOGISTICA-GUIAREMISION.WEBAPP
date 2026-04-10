@@ -32,6 +32,11 @@ import { SelectDistritoComponent } from '../../selects/select-distrito/select-di
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { AlertService } from 'app/core/services/alert.service';
 import { ConductorApiService } from 'app/features/conductor/services/conductor-api.service';
+import { DialogService } from 'primeng/dynamicdialog';
+import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
+import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -77,13 +82,17 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ussuingEntities: IssuingEntity[] = FAKE_ISSUING_ENTITY;
     documentEntityTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PERSON;
     documentEntityProviderTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
+    modalRef: any | undefined;
+
+    subs = new Subscription();
 
     constructor(
       private fb: FormBuilder,
       private cdr: ChangeDetectorRef,
       private confirmationService: ConfirmationService,
       private alertService: AlertService,
-      private conductorService: ConductorApiService
+      private conductorService: ConductorApiService,
+      private dialogService: DialogService
     ){
         this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
@@ -278,13 +287,23 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }, '¿Desea remover el conductor seleccionado?', 'Confirmar la operación.');
     }
 
-    newVehiculo(): FormGroup { 
-      return this.fb.group({ 
-        placa_vehiculo: [ null, Validators.required], 
-        cert_habilitacion_vehiculo: [null, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-        entidad_emisora_autoriza_vehiculo: [null], 
-        numero_autoriza_vehicular_vehiculo: [null]
-      }); 
+    newVehiculo(vehiculo: UnidadTransporteDto | null = null): FormGroup { 
+      if(vehiculo){
+        return this.fb.group({ 
+          placa_vehiculo: [ null, Validators.required], 
+          cert_habilitacion_vehiculo: [null, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
+          entidad_emisora_autoriza_vehiculo: [null], 
+          numero_autoriza_vehicular_vehiculo: [null]
+        }); 
+      }else{
+        return this.fb.group({ 
+          placa_vehiculo: [ null, Validators.required], 
+          cert_habilitacion_vehiculo: [null, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
+          entidad_emisora_autoriza_vehiculo: [null], 
+          numero_autoriza_vehicular_vehiculo: [null]
+        }); 
+      }
+      
     }
 
     // events
@@ -494,6 +513,43 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         fg.get('apellido_conductor')?.setValue(res.apellidos);
         fg.get('loading')?.setValue(false);
       });
+    }
+
+    evtOnShowListaUnidadTransporte(): void{
+        this.modalRef = this.dialogService.open(MdlListaUnidadTransporteComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Lista de vehiculos registrados`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+              'padding': "0 !important"
+            },
+            appendTo: 'body'
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaUnidadTransporteComponent) => {
+            const sub2 = cmp?.OnSelect.subscribe(( s: UnidadTransporteDto) => {
+
+               /* this.formGroup.patchValue({
+                    tipo_documento_destinatario: s.tipo_documento,
+                    numero_documento_destinatario: s.numero_documento,
+                    razon_social_destinatario: s.razon_social,
+                    nombres_apellidos_destinatario: s.razon_social,
+                    direccion_destinatario: s.direccion,
+                    departamento_destinatario: s.ubigeo_id.substring(0, 2)
+                });*/
+
+                this.modalRef?.close();
+            });
+            this.subs.add(sub2);
+        });
+
+        this.subs.add(sub);
     }
 
     // handlers

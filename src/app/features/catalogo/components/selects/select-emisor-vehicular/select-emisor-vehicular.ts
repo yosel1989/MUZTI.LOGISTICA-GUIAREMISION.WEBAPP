@@ -36,18 +36,26 @@ export class SelectEmisorVehicularComponent implements OnInit, AfterViewInit, On
     loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loading = this.loading.asObservable();
 
+    selected: EmisorVehicularDto | undefined = undefined;
+
     private subs = new Subscription();
 
     constructor(
         private api: CatalogoApiService
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.getData();
     }
 
     ngAfterViewInit(): void {
-        
+        this.control.valueChanges.subscribe( (res: any) => {
+            this.selected = undefined;
+            if(res){
+                this.selected = this.data.find(x => x.codigo === res);
+            }
+        });
     }
 
     ngOnDestroy(): void {

@@ -10,16 +10,16 @@ import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { DestinatarioDto, DestinatarioSugeridoDto } from '@features/destinatario/models/destinatario';
-import { DestinatarioApiService } from '@features/destinatario/services/destinatario-api.service';
 import { Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { UnidadTransporteDto, UnidadTransporteSugeridoDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 
 @Component({
-  selector: 'app-mdl-lista-destinatarios',
-  templateUrl: './mdl-lista-destinatarios.html',
-  styleUrls: ['./mdl-lista-destinatarios.scss'],                          
+  selector: 'app-mdl-lista-unidad-transporte',
+  templateUrl: './mdl-lista-unidad-transporte.html',
+  styleUrls: ['./mdl-lista-unidad-transporte.scss'],                          
   imports: [
     CommonModule,
     InputTextModule,
@@ -37,13 +37,12 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 })
 
 
-export class MdlListaDestinatariosComponent implements OnInit, AfterViewInit, OnDestroy{
+export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy{
 
-  @Output() OnSelect: EventEmitter<DestinatarioDto> = new EventEmitter<DestinatarioDto>();
-  @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>(false);
+  @Output() OnSelect: EventEmitter<UnidadTransporteDto> = new EventEmitter<UnidadTransporteDto>();
 
-  data = signal<DestinatarioSugeridoDto[]>([]);
-  selected: DestinatarioSugeridoDto | undefined;
+  data = signal<UnidadTransporteSugeridoDto[]>([]);
+  selected: UnidadTransporteSugeridoDto | undefined;
   cols: TableColumn[] = []
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
@@ -53,7 +52,7 @@ export class MdlListaDestinatariosComponent implements OnInit, AfterViewInit, On
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private api: DestinatarioApiService,
+    private api: UnidadTransporteApiService,
     public util: UtilService
   ) {
     this.search.valueChanges.subscribe(res => {
@@ -63,10 +62,8 @@ export class MdlListaDestinatariosComponent implements OnInit, AfterViewInit, On
 
   ngOnInit(): void {
     this.cols = [
-      //{ field: 'tipo_documento', header: 'T. Documento', sort: false },
-      { field: 'numero_documento', header: 'N° Documento', sort: false },
-      { field: 'razon_social', header: 'Nombre o Razón Social', sort: true},
-      { field: 'codigo_sunat', header: 'Código Sunat', sort: true, sticky: true }
+      { field: 'placa', header: 'Placa', sort: false },
+      { field: 'tarjeta', header: 'N° Tarjeta', sort: true}
     ];
   }
 
@@ -78,33 +75,8 @@ export class MdlListaDestinatariosComponent implements OnInit, AfterViewInit, On
     this.sbData?.unsubscribe();
   }
 
-  // functions
-
-  /*isSelected(item: ItemsToAddGuiaDto): boolean{
-    return !!this.selectedItems.find(x => x.code === item.code);
-  }*/
-
-  // events
-
-  /*evtToggleSelected(item: ItemsToAddGuiaDto, selected: boolean): void {
-    item.selected = selected;
-
-    if (selected) {
-      const exists = this.selectedItems.some(x => x.code === item.code);
-      if (!exists) {
-        this.selectedItems = [...this.selectedItems, item];
-      }
-    } else {
-      this.selectedItems = this.selectedItems.filter(x => x.code !== item.code);
-    }
-  }*/
-
   evtSelect(): void{
     this.getDataById();
-  }
-
-  evtOnClose(): void{
-    this.OnClose.emit(true);
   }
 
   // Data
@@ -112,11 +84,11 @@ export class MdlListaDestinatariosComponent implements OnInit, AfterViewInit, On
   getData(): void{
     this.ldData.set(true);
     this.data.set( Array.from({ length: 5 }).map((_, i) => (
-      { numero_documento: i.toString() } as DestinatarioSugeridoDto
+      { placa: i.toString() } as UnidadTransporteSugeridoDto
     )) );
     this.sbData?.unsubscribe();
     this.sbData = this.api.buscar(this.search.value).subscribe({
-      next: (value: DestinatarioSugeridoDto[]) => {
+      next: (value: UnidadTransporteSugeridoDto[]) => {
         this.data.set(value);
         this.ldData.set(false);
         this.cdr.markForCheck();
@@ -132,7 +104,7 @@ export class MdlListaDestinatariosComponent implements OnInit, AfterViewInit, On
   getDataById(): void{
     this.ldSelected.set(true);
     this.sbData = this.api.getById(this.selected!.id).subscribe({
-      next: (value: DestinatarioDto) => {
+      next: (value: UnidadTransporteDto) => {
         this.OnSelect.emit(value);
         this.ldSelected.set(false);
       },

@@ -206,15 +206,16 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                         <th class="px-2 border-s-0!"></th>
                     }
                     @case('cod'){
-                        <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
+                        <th class="px-4! text-[12px]! text-primary! font-semibold truncate">{{ col.header }}</th>
                     }
                     @default{
                         <th 
-                        pFrozenColumn 
-                        [frozen]="col.sticky ?? false"
-                        pResizableColumn 
-                        [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4!">
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            pResizableColumn 
+                            [pSortableColumn]="col.sort ? col.field : undefined" 
+                            class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4! truncate overflow-hidden"
+                        >
                             <div class="flex items-center gap-2 truncate">
                                 {{ col.header }}
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}

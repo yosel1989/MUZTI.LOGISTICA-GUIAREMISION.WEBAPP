@@ -225,19 +225,25 @@
                             selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente
                         )
                     ){
-                        <div class="flex flex-wrap gap-x-2">
-                            <p-button 
-                                size="small"
-                                icon="fa-duotone fa-light fa-angle-down"
-                                label="Seleccionar destinatario"
-                                iconPos="right"
-                                (click)="evtOnShowDestinatarios()"
-                                outlined="true"
-                            >
-                            </p-button>
 
-                            <p-button size="small" routerLink="/admin/remitente" label="Administrar" link target="_blank" />
-                        </div>
+                        @if(!(selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente && f.tipo_traslado.value === 'TRASLADO')){
+
+                            <div class="flex flex-wrap gap-x-2">
+                                <p-button 
+                                    size="small"
+                                    icon="fa-duotone fa-light fa-angle-down"
+                                    label="Seleccionar destinatario"
+                                    iconPos="right"
+                                    (click)="evtOnShowDestinatarios()"
+                                    outlined="true"
+                                >
+                                </p-button>
+
+                                <a href="/admin/remitente" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                            </div>
+
+                        }
 
                         <div>
                             <div class="grid grid-cols-2 gap-y-3 gap-x-3">
@@ -388,6 +394,16 @@
                             [typeahead]="false" 
                             [addOnTab]="true" 
                             placeholder="Escribe y presiona Tab para añadir..." />
+                            @if (f.contactos_destinatario.invalid && (f.contactos_destinatario.touched || submitted)) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                    @if(f.contactos_destinatario.hasError('maxEmails')){
+                                        Solo puedes ingresar hasta 3 correos
+                                    }
+                                    @if(f.contactos_destinatario.hasError('invalidEmails')){
+                                       El correo ingresado no es correcto.
+                                    }
+                                </span></p-message>
+                            }
                         </div>
 
                         <!--<div class="grid grid-cols-3 gap-x-3 gap-y-4" formArrayName="contactos_destinatario">

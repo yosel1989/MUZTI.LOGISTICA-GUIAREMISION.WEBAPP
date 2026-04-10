@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,6 +19,7 @@ import { AlertService } from 'app/core/services/alert.service';
 import { RegistrarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { RegistrarUnidadTransporteRequestDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
+import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
 
 @Component({
   selector: 'app-mdl-registrar-unidad-transporte',
@@ -32,13 +33,16 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
-    SelectModule
+    SelectModule,
+    SelectEmisorVehicularComponent
   ],
   templateUrl: './mdl-registrar-unidad-transporte.html',
   styleUrl: './mdl-registrar-unidad-transporte.scss',
   providers: [ConfirmationService]
 })
 export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -58,6 +62,11 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
     {id: 1, label: 'Activo'}
   ];
 
+   tipos: {id: string, label: string}[] = [
+    {id: 'INTERNO', label: 'INTERNO'},
+    {id: 'EXTERNO', label: 'EXTERNO'}
+  ];
+
   constructor(
     private fb: FormBuilder,
     public config: DynamicDialogConfig,
@@ -67,11 +76,14 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
 	) {
     this.frm = this.fb.group({
       descripcion: new FormControl(null, Validators.maxLength(50)),
-      marca: new FormControl(null, Validators.maxLength(50)),
+      marca: new FormControl(null, Validators.maxLength(20)),
       modelo: new FormControl(null, Validators.maxLength(20)),
-      placa: new FormControl(null, [Validators.required, Validators.maxLength(8)]),
-      numero_registro_mtc: new FormControl(null, [Validators.maxLength(20)]),
-      tarjeta: new FormControl(null, [Validators.required, Validators.maxLength(20)]),
+      placa: new FormControl(null, [Validators.required, Validators.maxLength(8), Validators.pattern('^[A-Z0-9]{6,8}$')]),
+      tarjeta: new FormControl(null, [Validators.maxLength(20)]),
+      cod_emisor_vehicular: new FormControl(null, [Validators.maxLength(2)]),
+      emisor_vehicular: new FormControl(null, [Validators.minLength(2), Validators.maxLength(100)]),
+      nro_autorizacion: new FormControl(null, [Validators.minLength(3), Validators.maxLength(50)]),
+      //tipo: new FormControl('INTERNO', [Validators.maxLength(20)]),
       empleado_id_creacion: new FormControl(null),
       empleado_nombre_creacion: new FormControl(null)
     });
@@ -104,8 +116,10 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       marca: form.marca,
       modelo: form.modelo,
       placa: form.placa,
-      numero_registro_mtc: form.numero_registro_mtc,
       tarjeta: form.tarjeta,
+      cod_emisor_vehicular: form.cod_emisor_vehicular,
+      emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
+      nro_autorizacion: form.nro_autorizacion,
       empleado_id_creacion: 1,
       empleado_nombre_creacion: 'SA'
     };

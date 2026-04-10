@@ -4,22 +4,26 @@ export interface GuiaRemisionRemitenteRequestDto {
   tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
   fecha: string;
   hora: string;
-  observacion: string;
-  doc_relacionado: GR_DocRelacionadoDto[] | null;
+  observacion: string | null;
+  area: string | null;
+  registro_mtc: string | null;
   empleado_id_creacion: number;
   empleado_nombre_creacion: string;
 
+  doc_relacionado: GR_DocRelacionadoDto[] | null;
+  
   remitente: GR_RemitenteRequestDto;
+
   destinatario: GR_DestinatarioRequestDto;
+
   proveedor: GR_ProveedorRequestDto | null;
+
   datos_envio: GR_DatosEnvioRequestDto;
 
-  ruc_empresa_currier?: string;
-  razon_social_currier?: string;
-  registro_mtc_currier?: string;
-
   origen: GR_OrigenRequestDto;
+
   destino: GR_DestinoRequestDto[];
+
   productos: GR_ProductoRequestDto[];
 }
 
@@ -35,39 +39,17 @@ export interface GR_DocRelacionadoDto{
 export interface GR_RemitenteRequestDto {
   ruc: string;
   descripcion: string;
-  nombre_empresa: string;
-  direccion: string;
-  departamento: string;
-  provincia: string;
-  distrito: string;
-  serie_numero: string;
 }
 
 export interface GR_DestinatarioRequestDto {
-  tipo_documento: 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
+  destinatario_id: number;
   numero_documento: string; 
-  razon_social: string; 
-  ubigeo_id: string | null; 
-  departamento: string | null;
-  provincia: string | null;
-  distrito: string | null; 
-  direccion: string | null;
   email_destinatario: { email: string}[] | null; 
-  pais: string; 
-  empleado_id_creacion: number | null;
-  empleado_nombre_creacion: string | null;
 }
 
 export interface GR_ProveedorRequestDto {
-  tipo_documento: 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
-  numero_documento: string; 
-  razon_social: string; 
-  ubigeo_id: string; 
-  direccion: string; 
-  email: string; 
-  pais: string; 
-  empleado_id_creacion: number | null;
-  empleado_nombre_creacion: string | null;
+  proveedor_id: number;
+  numero_documento: string;
 }
 
 export interface GR_DatosEnvioRequestDto {
@@ -79,8 +61,10 @@ export interface GR_DatosEnvioRequestDto {
   razon_social_currier: string | null;
   registro_mtc_currier: string | null;
 
-  conductor: GR_ConductorRequestDto[] | null;
-  unidad_transporte: GR_UnidadTransporteRequestDto[] | null;
+  indicador_vehiculo_conductor: boolean;
+
+  conductor: number[] | null;
+  transporte: number[] | null;
 }
 
 export interface GR_ConductorRequestDto {

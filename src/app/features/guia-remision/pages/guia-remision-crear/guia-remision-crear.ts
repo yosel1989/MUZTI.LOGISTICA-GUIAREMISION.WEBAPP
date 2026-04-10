@@ -1,6 +1,6 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -35,7 +35,6 @@ import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/compone
 import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { DocumentoService } from 'app/features/documento/service/DocumentoService';
-import { saveAs } from 'file-saver';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -157,7 +156,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             departamento_remitente: new FormControl(null),
             provincia_remitente: new FormControl(null),
             distrito_remitente: new FormControl(null),
-            contactos_remitente: new FormControl([]),
+            contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
             tipo_documento_destinatario: new FormControl('RUC'),
             numero_documento_destinatario: new FormControl({value: null, disabled: true}),
@@ -167,7 +166,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             departamento_destinatario: new FormControl({value: null, disabled: true}),
             provincia_destinatario: new FormControl({value: null, disabled: true}),
             distrito_destinatario: new FormControl({value: null, disabled: true}),
-            contactos_destinatario: new FormControl([]),
+            contactos_destinatario: new FormControl([], [this.maxEmailsValidator(3)]),
 
             fecha_emision: new FormControl(new Date(), Validators.required),
             docs_ref: new FormArray([]),
@@ -186,11 +185,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         this.formGroup.get('numero_documento_remitente')?.enable();
 
                         this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                        this.formGroup.get('tipo_documento_destinatario')?.enable();
                         this.formGroup.get('numero_documento_destinatario')?.setValue(null);
-                        this.formGroup.get('numero_documento_destinatario')?.enable();
                         this.formGroup.get('razon_social_destinatario')?.setValue(null);
-                        this.formGroup.get('razon_social_destinatario')?.enable();
+
+                        this.formGroup.get('contactos_destinatario')?.setValue([]);
+                        this.formGroup.get('contactos_destinatario')?.clearAsyncValidators();
+                        this.formGroup.get('contactos_destinatario')?.addValidators(this.maxEmailsValidator(1));
                     break;
                 case 'TRASLADO': 
                         this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
@@ -200,11 +200,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         this.formGroup.get('numero_documento_remitente')?.disable();
 
                         this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                        this.formGroup.get('tipo_documento_destinatario')?.disable();
                         this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                        this.formGroup.get('numero_documento_destinatario')?.disable();
                         this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-                        this.formGroup.get('razon_social_destinatario')?.disable();
 
                         this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.direccion);
                         this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,2));
@@ -229,11 +226,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         this.formGroup.get('numero_documento_remitente')?.disable();
 
                         this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                        this.formGroup.get('tipo_documento_destinatario')?.disable();
                         this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
                         this.formGroup.get('numero_documento_destinatario')?.disable();
                         this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-                        this.formGroup.get('razon_social_destinatario')?.disable();
                         this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.direccion);
                         this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,2));
 
@@ -736,5 +731,31 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         return false;
     }*/
+
+
+    maxEmailsValidator(max: number = 3): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value || !Array.isArray(value)) {
+            return null;
+            }
+
+            // Validar cantidad máxima
+            if (value.length > max) {
+            return { maxEmails: { requiredMax: max, actual: value.length } };
+            }
+
+            // Validar formato de cada correo
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const invalidEmails = value.filter((email: string) => !emailRegex.test(email));
+
+            if (invalidEmails.length > 0) {
+            return { invalidEmails: invalidEmails };
+            }
+
+            return null;
+        };
+    }
 
 }

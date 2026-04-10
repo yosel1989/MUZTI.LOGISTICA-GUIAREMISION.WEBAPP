@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -18,6 +18,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { AsyncPipe } from '@angular/common';
 import { EditarUnidadTransporteRequestDto, EditarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
+import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
 @Component({
   selector: 'app-mdl-editar-unidad-transporte',
   imports: [
@@ -32,14 +33,16 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
     ConfirmDialog,
     SelectModule,
     SkeletonModule,
-    AsyncPipe
+    AsyncPipe,
+    SelectEmisorVehicularComponent
   ],
   templateUrl: './mdl-editar-unidad-transporte.html',
   styleUrl: './mdl-editar-unidad-transporte.scss',
   providers: [ConfirmationService]
 })
 export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy {
-
+  
+  @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
   @Input() id!: number;
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -51,7 +54,6 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   private subs = new Subscription();
   
   submitted: boolean = false;
-
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
@@ -73,11 +75,14 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
     this.frm = this.fb.group({
       codigo: new FormControl({value:null, disabled: true}),
       descripcion: new FormControl(null, Validators.maxLength(50)),
-      marca: new FormControl(null, Validators.maxLength(50)),
+      marca: new FormControl(null, Validators.maxLength(20)),
       modelo: new FormControl(null, Validators.maxLength(20)),
-      placa: new FormControl(null, [Validators.required, Validators.maxLength(8)]),
-      numero_registro_mtc: new FormControl(null, [Validators.maxLength(20)]),
-      tarjeta: new FormControl(null, [Validators.required, Validators.maxLength(20)]),
+      placa: new FormControl(null, [Validators.required, Validators.maxLength(8), Validators.pattern('^[A-Z0-9]{6,8}$')]),
+      tarjeta: new FormControl(null, [Validators.maxLength(20)]),
+      cod_emisor_vehicular: new FormControl(null, [Validators.maxLength(2)]),
+      emisor_vehicular: new FormControl(null, [Validators.minLength(2), Validators.maxLength(100)]),
+      nro_autorizacion: new FormControl(null, [Validators.minLength(3), Validators.maxLength(50)]),
+      //tipo: new FormControl('INTERNO', [Validators.maxLength(20)]),
       empleado_id_creacion: new FormControl(null),
       empleado_nombre_creacion: new FormControl(null)
     });
@@ -109,8 +114,10 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       marca: form.marca,
       modelo: form.modelo,
       placa: form.placa,
-      numero_registro_mtc: form.numero_registro_mtc,
       tarjeta: form.tarjeta,
+      cod_emisor_vehicular: form.cod_emisor_vehicular,
+      emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
+      nro_autorizacion: form.nro_autorizacion,
       empleado_id_edicion: 1,
       empleado_nombre_edicion: 'SA'
     };
@@ -182,7 +189,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   loadData(): void{
     this.ldData.next(true);
     this.frm.disable();
-    const sub = this.api.obtener(this.id).subscribe({
+    const sub = this.api.getById(this.id).subscribe({
       next: (res: UnidadTransporteDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);
@@ -218,8 +225,10 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       marca: res.marca,
       modelo: res.modelo,
       placa: res.placa,
-      numero_registro_mtc: res.numero_registro_mtc,
-      tarjeta: res.tarjeta
+      tarjeta: res.tarjeta,
+      cod_emisor_vehicular: res.cod_emisor_vehicular,
+      emisor_vehicular: res.emisor_vehicular,
+      nro_autorizacion: res.nro_autorizacion
     });
   }
 

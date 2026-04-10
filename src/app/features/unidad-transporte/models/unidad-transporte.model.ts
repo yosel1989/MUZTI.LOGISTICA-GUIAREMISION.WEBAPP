@@ -4,12 +4,15 @@ export interface UnidadTransporteDto{
     marca: string;
     modelo: string;
     placa: string;
-    numero_registro_mtc: string | null;
     tarjeta: string;
+    cod_emisor_vehicular: string | null;
+    emisor_vehicular: string | null;
+    nro_autorizacion: string | null;
     fecha_creacion: Date;
     empleado_nombre_creacion: string;
     fecha_ultima_edicion: Date | null;
     empleado_nombre_edicion: string | null;
+    tipo: string | null;
     estado: string;
     id_estado: number;
     ldStatus: boolean;
@@ -20,8 +23,10 @@ export interface RegistrarUnidadTransporteRequestDto{
     marca: string | null;
     modelo: string | null;
     placa: string;
-    numero_registro_mtc: string | null;
     tarjeta: string | null;
+    cod_emisor_vehicular: string | null;
+    emisor_vehicular: string | null;
+    nro_autorizacion: string | null;
     empleado_id_creacion: number;
     empleado_nombre_creacion: string;
 }
@@ -36,8 +41,10 @@ export interface EditarUnidadTransporteRequestDto{
     marca: string | null;
     modelo: string | null;
     placa: string;
-    numero_registro_mtc: string | null;
     tarjeta: string | null;
+    cod_emisor_vehicular: string | null;
+    emisor_vehicular: string | null;
+    nro_autorizacion: string | null;
     empleado_id_edicion: number;
     empleado_nombre_edicion: string;
 }
@@ -78,4 +85,14 @@ export interface ActualizarEstadoUnidadTransporteResponseDto{
   empleado_nombre_edicion: string;
   fecha_ultima_edicion: Date | null;
   detalle: string;
+}
+
+
+export interface UnidadTransporteSugeridoDto{
+    id: number;
+    descripcion: string | null;
+    marca: string | null;
+    modelo: string | null;
+    placa: string;
+    tarjeta: string | null;
 }

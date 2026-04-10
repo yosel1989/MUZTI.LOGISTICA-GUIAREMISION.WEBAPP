@@ -67,28 +67,15 @@
                         @if (f.placa.hasError('maxlength')) {
                             La placa no debe exceder los 8 caracteres.
                         }
+                        @if (f.placa.hasError('pattern')) {
+                            No tiene el formato correcto.
+                        }
                         </span></p-message>
                     }
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">MTC</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="numero_registro_mtc"
-                        [invalid]="frm.get('numero_registro_mtc')?.invalid && (frm.get('numero_registro_mtc')?.touched || submitted)"/>
-                    @if (frm.get('numero_registro_mtc')?.invalid && (frm.get('numero_registro_mtc')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                        El número de registro MTC no debe exceder los 8 caracteres.
-                        </span></p-message>
-                    }
-                </div>
-
-                <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tarjeta *</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Tarjeta</label>
                     <input 
                         pSize="small" 
                         fluid 
@@ -98,11 +85,44 @@
                         [invalid]="frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)"/>
                     @if (frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                        @if (f.tarjeta.hasError('required')) {
-                            Este campo es requerido.
-                        }
                         @if (f.tarjeta.hasError('maxlength')) {
                             La tarjeta no debe exceder los 20 caracteres.
+                        }
+                        </span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Entidad emisora de la autorización vehícular</label>
+                    <app-select-emisor-vehicular
+                        #ctrlEmisorVehicular
+                        [control]="f.cod_emisor_vehicular"
+                    ></app-select-emisor-vehicular>
+                    @if (frm.get('cod_emisor_vehicular')?.invalid && (frm.get('cod_emisor_vehicular')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                        @if (f.tarjeta.hasError('maxlength')) {
+                            La tarjeta no debe exceder los 2 caracteres.
+                        }
+                        </span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500">N° de autorización vehícular</label>
+                    <input 
+                        pSize="small" 
+                        fluid 
+                        pInputText 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                        formControlName="nro_autorizacion"
+                        [invalid]="frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)"/>
+                    @if (frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                        @if (f.nro_autorizacion.hasError('minlength')) {
+                            El número de autorización debe tener más de 3 caracteres.
+                        }
+                        @if (f.nro_autorizacion.hasError('maxlength')) {
+                            El número de autorización no debe exceder los 50 caracteres.
                         }
                         </span></p-message>
                     }

@@ -316,6 +316,21 @@
                     ){
                         <div class="flex flex-col gap-4">
                             <label for="" class="text-md font-semibold text-primary">Datos del vehículo</label>
+
+                            <div class="flex flex-wrap gap-x-2">
+                                <p-button 
+                                    size="small"
+                                    icon="fa-duotone fa-light fa-angle-down"
+                                    label="Seleccionar vehiculo"
+                                    iconPos="right"
+                                    outlined="true"
+                                >
+                                </p-button>
+
+                                <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                            </div>
+
                             <div formArrayName="vehiculos" class="flex flex-col gap-0">
                                 @for (vehiculo of vehiculos.controls; ; track vehiculo; let i = $index) {
                                     <p-fieldset styleClass="text-xs!" [toggleable]="false" [collapsed]="true" [legend]="'Vehículo #' + ($index+1)">
@@ -513,9 +528,21 @@
                                                 
                                             </div>
                                             @if(conductores.length > 1){
-                                                <div class="w-12.5 text-end">
+                                                <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                                                     @if($index > 0){
                                                         <p-button pTooltip="Quitar conductor" tooltipStyleClass="text-[10px]! " tooltipPosition="left" class="text-xs! w-6! h-6!" size="small" icon="pi pi-times font-semibold!" styleClass="w-6! h-6!" (click)="evtRemoveCoductor($index)" rounded="true" severity="primary"/>
+                                                        <p-button 
+                                                            pTooltip="Quitar conductor" 
+                                                            tooltipStyleClass="text-[10px]! " 
+                                                            tooltipPosition="left" 
+                                                            class="text-xs! w-6! h-6!" 
+                                                            size="small" 
+                                                            icon="pi pi-times font-semibold!" 
+                                                            styleClass="w-6! h-6!" 
+                                                            (click)="evtRemoveCoductor($index)" 
+                                                            rounded="true" 
+                                                            severity="primary" 
+                                                        />
                                                     }
                                                 </div>
                                             }

@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
-import { ActualizarEstadoUnidadTransporteRequestDto, ActualizarEstadoUnidadTransporteResponseDto, EditarUnidadTransporteRequestDto, EditarUnidadTransporteResponseDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto } from "../models/unidad-transporte.model";
+import { ActualizarEstadoUnidadTransporteRequestDto, ActualizarEstadoUnidadTransporteResponseDto, EditarUnidadTransporteRequestDto, EditarUnidadTransporteResponseDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
 import { ColumnsFilterDto } from "app/core/models/filter";
 
 @Injectable({
@@ -43,9 +43,15 @@ export class UnidadTransporteApiService {
     );
   }
 
-  obtener(id: number): Observable<UnidadTransporteDto> {
+  getById(id: number): Observable<UnidadTransporteDto> {
     return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
-      map(response =>{ return response as UnidadTransporteDto }),
+      map(response =>{ 
+        return {
+          ...response,
+          fecha_creacion: new Date(response.fecha_creacion),
+          fecha_ultima_edicion: response.fecha_ultima_edicion ? new Date(response.fecha_ultima_edicion) : null
+        } as UnidadTransporteDto 
+      }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -79,4 +85,17 @@ export class UnidadTransporteApiService {
     );
   }
   
+  buscar(texto: string | null): Observable<UnidadTransporteSugeridoDto[]> {
+      let params = new HttpParams();
+      if (texto) {
+          params = params.set('numeroDoc', texto);
+      }
+
+      return this.http.get<any>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+          map(response =>{ return response as UnidadTransporteSugeridoDto[] }),
+          catchError((error: HttpErrorResponse) => {
+              return throwError(() => error);
+          })
+      );
+  }
 }
