@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
@@ -26,17 +26,20 @@ import { MessageModule } from 'primeng/message';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SelectDepartamentoComponent } from '../../selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '../../selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '../../selects/select-distrito/select-distrito';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { AlertService } from 'app/core/services/alert.service';
 import { ConductorApiService } from 'app/features/conductor/services/conductor-api.service';
 import { DialogService } from 'primeng/dynamicdialog';
-import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
 import { Subscription } from 'rxjs';
+import { MdlListaConductorComponent } from '@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor';
+import { ConductorDto } from '@features/conductor/models/conductor.model';
+import { MdlListaProveedorComponent } from '@features/proveedor/components/modals/mdl-lista-proveedor/mdl-lista-proveedor';
+import { ProveedorDto } from '@features/proveedor/models/proveedor';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -69,6 +72,10 @@ import { Subscription } from 'rxjs';
 
 
 export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
+
+    @ViewChild('departamentoProveedor') departamentoProveedor: SelectDepartamentoComponent | undefined;
+    @ViewChild('provinciaProveedor') provinciaProveedor: SelectProvinciaComponent | undefined;
+    @ViewChild('distritoProveedor') distritoProveedor: SelectDistritoComponent | undefined;
 
     @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
     @Input() motivoTraslado: string | 'VENTA' | 'TRASLADO' | 'COMPRA' | null = null;
@@ -129,13 +136,14 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         });
 
         this.formDatosProveedor = this.fb.group({
-          tipo_documento_proveedor: new FormControl(null, Validators.required),
-          numero_documento_proveedor: new FormControl(null, Validators.required),
-          nombre_rsocial_proveedor: new FormControl(null, Validators.required),
-          direccion_proveedor: new FormControl(null),
-          idDepartamento : new FormControl(null),
-          idProvincia : new FormControl(null),
-          idDistrito : new FormControl(null)
+          id: new FormControl({value: null, disabled: true}, Validators.required),
+          tipo_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
+          numero_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
+          nombre_rsocial_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
+          direccion_proveedor: new FormControl({value: null, disabled: true}),
+          idDepartamento : new FormControl({value: null, disabled: true}),
+          idProvincia : new FormControl({value: null, disabled: true}),
+          idDistrito : new FormControl({value: null, disabled: true})
         });
     }
 
@@ -183,6 +191,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           registrar_vehiculos_conductores: this.f_datosEnvio.registrar_vehiculos_conductores.value,
 
           vehiculos: (this.vehiculos.controls as FormGroup[]).map(group => ({ 
+            id: group.get('id')?.value, 
             placa_vehiculo: group.get('placa_vehiculo')?.value, 
             cert_habilitacion_vehiculo: group.get('cert_habilitacion_vehiculo')?.value, 
             entidad_emisora_autoriza_vehiculo: group.get('entidad_emisora_autoriza_vehiculo')?.value, 
@@ -190,6 +199,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           })),
 
           conductores: (this.conductores.controls as FormGroup[]).map(group => ({ 
+            id : group.get('id')?.value, 
             tipo_documento_conductor : group.get('tipo_documento_conductor')?.value, 
             numero_documento_conductor: group.get('numero_documento_conductor')?.value, 
             numero_licencia_brevete_conductor: group.get('numero_licencia_brevete_conductor')?.value, 
@@ -204,6 +214,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_vacio_adicional.value,
         },
         proveedor: {
+          id: this.f_datosProveedor.id.value,
           tipo_documento_proveedor: this.f_datosProveedor.tipo_documento_proveedor.value,
           numero_documento_proveedor: this.f_datosProveedor.numero_documento_proveedor.value,
           nombre_rsocial_proveedor: this.f_datosProveedor.nombre_rsocial_proveedor.value,
@@ -241,8 +252,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     ngAfterViewInit(): void {
-        this.evtAddVehiculo();
-        this.evtAddConductor();
+        //this.evtAddVehiculo();
+        //this.evtAddConductor();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -260,22 +271,35 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     // functions
-    newConductor(): FormGroup { 
-      return this.fb.group({ 
-        tipo_documento_conductor: [ 'DNI', Validators.required], 
-        numero_documento_conductor: [null, Validators.required], 
-        numero_licencia_brevete_conductor: [null, Validators.required],
-        nombre_conductor: [null, Validators.required],
-        apellido_conductor: [null, Validators.required],
-        loading: [false]
-      }); 
+    newConductor(item: ConductorDto | null = null): FormGroup { 
+      if(item){
+        return this.fb.group({ 
+          id: [ {value: item?.id, disabled: true}, Validators.required],
+          tipo_documento_conductor: [{value: item.tipo_documento, disabled: true}, Validators.required], 
+          numero_documento_conductor: [{value: item.numero_documento, disabled: true}, Validators.required], 
+          numero_licencia_brevete_conductor: [{value: item.licencia, disabled: true}, Validators.required],
+          nombre_conductor: [{value: item.nombres, disabled: true}, Validators.required],
+          apellido_conductor: [{value: item.apellidos, disabled: true}, Validators.required],
+          loading: [false]
+        });
+      }else{
+        return this.fb.group({ 
+          id: [ {value: 0, disabled: true}, Validators.required],
+          tipo_documento_conductor: [ 'DNI', Validators.required], 
+          numero_documento_conductor: [null, Validators.required], 
+          numero_licencia_brevete_conductor: [null, Validators.required],
+          nombre_conductor: [null, Validators.required],
+          apellido_conductor: [null, Validators.required],
+          loading: [false]
+        }); 
+      }
     }
 
     
 
     // events
-    evtAddConductor(): void{
-      const row = this.newConductor();
+    evtAddConductor(item: ConductorDto | null = null): void{
+      const row = this.newConductor(item);
       this.conductores.push(row);
       this.cdr.markForCheck(); 
     }
@@ -290,25 +314,27 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     newVehiculo(vehiculo: UnidadTransporteDto | null = null): FormGroup { 
       if(vehiculo){
         return this.fb.group({ 
-          placa_vehiculo: [ null, Validators.required], 
-          cert_habilitacion_vehiculo: [null, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-          entidad_emisora_autoriza_vehiculo: [null], 
-          numero_autoriza_vehicular_vehiculo: [null]
-        }); 
+          id: [ {value: vehiculo?.id, disabled: true}, Validators.required], 
+          placa_vehiculo: [ {value: vehiculo?.placa, disabled: true}, Validators.required], 
+          cert_habilitacion_vehiculo: [{value: null, disabled: true}, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
+          entidad_emisora_autoriza_vehiculo: [{value: vehiculo?.cod_emisor_vehicular, disabled: true}], 
+          numero_autoriza_vehicular_vehiculo: [{value: vehiculo?.nro_autorizacion, disabled: true}]
+        });
       }else{
         return this.fb.group({ 
-          placa_vehiculo: [ null, Validators.required], 
-          cert_habilitacion_vehiculo: [null, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-          entidad_emisora_autoriza_vehiculo: [null], 
-          numero_autoriza_vehicular_vehiculo: [null]
-        }); 
+          id: [ {value: 0, disabled: true}, Validators.required], 
+          placa_vehiculo: [ {value: null, disabled: true}, Validators.required], 
+          cert_habilitacion_vehiculo: [{value: null, disabled: true}, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
+          entidad_emisora_autoriza_vehiculo: [{value: null, disabled: true}], 
+          numero_autoriza_vehicular_vehiculo: [{value: null, disabled: true}]
+        });
       }
       
     }
 
     // events
-    evtAddVehiculo(): void{
-      const row = this.newVehiculo();
+    evtAddVehiculo(item: UnidadTransporteDto | null = null): void{
+      const row = this.newVehiculo(item);
       this.vehiculos.push(row);
       this.cdr.markForCheck(); 
     }
@@ -374,8 +400,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
 
-        this.evtAddVehiculo();
-        this.evtAddConductor();
+        //this.evtAddVehiculo();
+        //this.evtAddConductor();
         
         /*this.f_datosEnvio.fecha_inicio_traslado.addValidators(Validators.required);
         this.f_datosEnvio.fecha_entrega_transportista.clearValidators();
@@ -426,8 +452,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.conductores.clear();
 
       if(value && this.f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
-        this.evtAddVehiculo();
-        this.evtAddConductor();
+        //this.evtAddVehiculo();
+        //this.evtAddConductor();
       }
 
       this.cdr.markForCheck();
@@ -535,15 +561,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaUnidadTransporteComponent) => {
             const sub2 = cmp?.OnSelect.subscribe(( s: UnidadTransporteDto) => {
 
-               /* this.formGroup.patchValue({
-                    tipo_documento_destinatario: s.tipo_documento,
-                    numero_documento_destinatario: s.numero_documento,
-                    razon_social_destinatario: s.razon_social,
-                    nombres_apellidos_destinatario: s.razon_social,
-                    direccion_destinatario: s.direccion,
-                    departamento_destinatario: s.ubigeo_id.substring(0, 2)
-                });*/
-
+                this.evtAddVehiculo(s);
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -552,7 +570,84 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.subs.add(sub);
     }
 
+    evtOnShowListaConductor(): void{
+        this.modalRef = this.dialogService.open(MdlListaConductorComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Lista de conductores registrados`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+              'padding': "0 !important"
+            },
+            appendTo: 'body'
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaConductorComponent) => {
+            const sub2 = cmp?.OnSelect.subscribe(( c: ConductorDto) => {
+
+                this.evtAddConductor(c);
+                this.modalRef?.close();
+            });
+            this.subs.add(sub2);
+        });
+
+        this.subs.add(sub);
+    }
+
+    evtOnShowListaProveedor(): void{
+        this.modalRef = this.dialogService.open(MdlListaProveedorComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Lista de proveedores registrados`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+              'padding': "0 !important"
+            },
+            appendTo: 'body'
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaProveedorComponent) => {
+            const sub2 = cmp?.OnSelect.subscribe(( c: ProveedorDto) => {
+
+                this.formDatosProveedor.patchValue({
+                  id: c.id,
+                  tipo_documento_proveedor: c.tipo_documento,
+                  numero_documento_proveedor: c.numero_documento,
+                  nombre_rsocial_proveedor: c.razon_social,
+                  direccion_proveedor: c.direccion,
+                  idDepartamento : c.ubigeo_id?.substring(0,2)
+                });
+                this.provinciaProveedor!.valueEdit = c.ubigeo_id!.substring(0,4);
+                const subProvincia1 = this.provinciaProveedor?.loading.subscribe(res => {
+                    this.formDatosProveedor.get('idProvincia')?.setValue(c.ubigeo_id.substring(0,4));
+                });
+                this.distritoProveedor!.valueEdit = c.ubigeo_id;
+                const subDistrito1 = this.distritoProveedor?.loading.subscribe((res: any) => {
+                    this.formDatosProveedor.get('idDistrito')?.setValue(c.ubigeo_id);
+                });
+
+                subProvincia1?.unsubscribe();
+                subDistrito1?.unsubscribe();
+
+                this.modalRef?.close();
+            });
+            this.subs.add(sub2);
+        });
+
+        this.subs.add(sub);
+    }
     // handlers
+
     handlerConfirmDialog(callback: () => void, header: string, message: string): void{
       this.confirmationService.confirm({
           header: header,

@@ -208,7 +208,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   loadData(): void{
     this.ldData.next(true);
     this.frm.disable();
-    const sub = this.api.obtener(this.id).subscribe({
+    const sub = this.api.obtenerPorId(this.id).subscribe({
       next: (res: ProveedorDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);

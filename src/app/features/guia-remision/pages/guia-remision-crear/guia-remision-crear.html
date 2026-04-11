@@ -49,7 +49,7 @@
                                     <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
 
                                     <app-select-tipo-documento 
-                                    class="flex flex-col" 
+                                    class="flex flex-col cursor-not-allowed" 
                                     [control]="f.tipo_documento_remitente" 
                                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
                                     </app-select-tipo-documento>
@@ -250,7 +250,7 @@
                                 <div class="flex flex-col">
                                     <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Tipo de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                     <app-select-tipo-documento 
-                                    class="flex flex-col" 
+                                    class="flex flex-col cursor-not-allowed" 
                                     [control]="f.tipo_documento_destinatario"
                                     [disabled]="true"
                                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
@@ -348,6 +348,7 @@
                                 <app-select-departamento 
                                 #departamentoDestinatario
                                 [control]="f.departamento_destinatario" 
+                                class="cursor-not-allowed"
                                 classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
                                 <!--@if (formGroup.get('departamento_destinatario')?.invalid && (formGroup.get('departamento_destinatario')?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple" >
@@ -360,6 +361,7 @@
                                 <app-select-provincia 
                                 #provinciaDestinatario
                                 [control]="f.provincia_destinatario" 
+                                class="cursor-not-allowed"
                                 [idUbigeoDepartamento]="f.departamento_destinatario.value" 
                                 classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
                                 <!--@if (formGroup.get('provincia_destinatario')?.invalid && (formGroup.get('provincia_destinatario')?.touched || submitted)) {
@@ -372,6 +374,7 @@
                                 <label class="text-[11px]! h-4.5! text-gray-500">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                 <app-select-distrito 
                                 #distritoDestinatario
+                                class="cursor-not-allowed"
                                 [control]="f.distrito_destinatario" 
                                 [idUbigeoProvincia]="f.provincia_destinatario.value" 
                                 classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>

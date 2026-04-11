@@ -88,3 +88,13 @@ export interface ActualizarEstadoProveedorResponseDto{
   fecha_ultima_edicion: Date;
   detalle: string;
 }
+
+export interface ProveedorSugeridoDto{
+  id: number;
+  tipo_documento: string;
+  numero_documento: string;
+  razon_social: string;
+  direccion: string;
+  email: string;
+  codigo_sunat: string | null;
+}

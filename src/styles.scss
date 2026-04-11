@@ -85,3 +85,8 @@ p-select{
 .p-inputtext:disabled{
   @apply cursor-not-allowed!;
 }
+
+.p-inputtext:disabled,
+.p-select.p-disabled{
+  @apply bg-gray-100!;
+}

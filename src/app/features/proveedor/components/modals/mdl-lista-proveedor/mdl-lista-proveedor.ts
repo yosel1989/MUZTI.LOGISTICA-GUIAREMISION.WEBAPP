@@ -13,13 +13,13 @@ import { InputIconModule } from 'primeng/inputicon';
 import { Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { UnidadTransporteDto, UnidadTransporteSugeridoDto } from '@features/unidad-transporte/models/unidad-transporte.model';
-import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
+import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
+import { ProveedorDto, ProveedorSugeridoDto } from '@features/proveedor/models/proveedor';
 
 @Component({
-  selector: 'app-mdl-lista-unidad-transporte',
-  templateUrl: './mdl-lista-unidad-transporte.html',
-  styleUrls: ['./mdl-lista-unidad-transporte.scss'],                          
+  selector: 'app-mdl-lista-proveedor',
+  templateUrl: './mdl-lista-proveedor.html',
+  styleUrls: ['./mdl-lista-proveedor.scss'],                          
   imports: [
     CommonModule,
     InputTextModule,
@@ -36,23 +36,21 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
   ],
 })
 
+export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDestroy{
 
-export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy{
+  @Output() OnSelect: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
 
-  @Output() OnSelect: EventEmitter<UnidadTransporteDto> = new EventEmitter<UnidadTransporteDto>();
-
-  data = signal<UnidadTransporteSugeridoDto[]>([]);
-  selected: UnidadTransporteSugeridoDto | undefined;
-  cols: TableColumn[] = []
+  data = signal<ProveedorSugeridoDto[]>([]);
+  selected: ProveedorSugeridoDto | undefined;
+  cols: TableColumn[] = [];
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
   sbData: Subscription | undefined;
   search = new FormControl(null);
 
-
   constructor(
     private cdr: ChangeDetectorRef,
-    private api: UnidadTransporteApiService,
+    private api: ProveedorApiService,
     public util: UtilService
   ) {
     this.search.valueChanges.subscribe(res => {
@@ -63,8 +61,11 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
   ngOnInit(): void {
     this.cols = [
       { field: 'id', header: 'Código', sort: false },
-      { field: 'placa', header: 'Placa', sort: false },
-      { field: 'tarjeta', header: 'N° Tarjeta', sort: true}
+      { field: 'numero_documento', header: 'N° Documento', sort: false },
+      { field: 'razon_social', header: 'Nombre o Razón Social', sort: true},
+      { field: 'direccion', header: 'Dirección', sort: true},
+      { field: 'email', header: 'Email', sort: true},
+      { field: 'codigo_sunat', header: 'Cod. Sunat', sort: true},
     ];
   }
 
@@ -85,11 +86,11 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
   getData(): void{
     this.ldData.set(true);
     this.data.set( Array.from({ length: 5 }).map((_, i) => (
-      { placa: i.toString() } as UnidadTransporteSugeridoDto
+      { numero_documento: i.toString() } as ProveedorSugeridoDto
     )) );
     this.sbData?.unsubscribe();
-    this.sbData = this.api.buscar(this.search.value).subscribe({
-      next: (value: UnidadTransporteSugeridoDto[]) => {
+    this.sbData = this.api.buscarSugerido(this.search.value).subscribe({
+      next: (value: ProveedorSugeridoDto[]) => {
         this.data.set(value);
         this.ldData.set(false);
         this.cdr.markForCheck();
@@ -104,13 +105,12 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.getById(this.selected!.id).subscribe({
-      next: (value: UnidadTransporteDto) => {
+    this.sbData = this.api.obtenerPorId(this.selected!.id).subscribe({
+      next: (value: ProveedorDto) => {
         this.OnSelect.emit(value);
         this.ldSelected.set(false);
       },
       error: (err: any) => {
-        this.data.set([]);
         this.ldData.set(false);
         this.ldSelected.set(false);
       }

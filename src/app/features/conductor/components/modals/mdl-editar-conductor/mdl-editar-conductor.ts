@@ -185,7 +185,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
   loadData(): void{
     this.ldData.next(true);
     this.frm.disable();
-    const sub = this.api.obtener(this.id).subscribe({
+    const sub = this.api.buscarPorId(this.id).subscribe({
       next: (res: ConductorDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);

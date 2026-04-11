@@ -317,20 +317,6 @@
                         <div class="flex flex-col gap-4">
                             <label for="" class="text-md font-semibold text-primary">Datos del vehículo</label>
 
-                            <div class="flex flex-wrap gap-x-2">
-                                <p-button 
-                                    size="small"
-                                    icon="fa-duotone fa-light fa-angle-down"
-                                    label="Seleccionar vehiculo"
-                                    iconPos="right"
-                                    outlined="true"
-                                >
-                                </p-button>
-
-                                <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
-
-                            </div>
-
                             <div formArrayName="vehiculos" class="flex flex-col gap-0">
                                 @for (vehiculo of vehiculos.controls; ; track vehiculo; let i = $index) {
                                     <p-fieldset styleClass="text-xs!" [toggleable]="false" [collapsed]="true" [legend]="'Vehículo #' + ($index+1)">
@@ -366,24 +352,26 @@
                                                 }
                                                 <div class="flex flex-col">
                                                     <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >Entidad emisora de la autorización vahícular (opcional)</label>
-                                                    <p-select 
-                                                    fluid
-                                                    size="small" 
-                                                    [inputSize]="2" 
-                                                    
-                                                    panelStyleClass="text-[.875rem]!"
-                                                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                                                    [options]="ussuingEntities" 
-                                                    placeholder="Seleccionar..." 
-                                                    optionValue="value" 
-                                                    optionLabel="description" 
-                                                    appendTo="body"
-                                                    [showClear]="true"
-                                                    formControlName="entidad_emisora_autoriza_vehiculo"
-                                                    pTooltip="Entidad emisora de la autorización vahícular (opcional)"
-                                                    tooltipPosition="top"
-                                                    tooltipStyleClass="text-xs!"
-                                                    />
+                                                    <div class="cursor-not-allowed">
+                                                        <p-select 
+                                                        fluid
+                                                        size="small" 
+                                                        [inputSize]="2" 
+                                                        
+                                                        panelStyleClass="text-[.875rem]!"
+                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                                                        [options]="ussuingEntities" 
+                                                        placeholder="Seleccionar..." 
+                                                        optionValue="value" 
+                                                        optionLabel="description" 
+                                                        appendTo="body"
+                                                        [showClear]="true"
+                                                        formControlName="entidad_emisora_autoriza_vehiculo"
+                                                        pTooltip="Entidad emisora de la autorización vahícular (opcional)"
+                                                        tooltipPosition="top"
+                                                        tooltipStyleClass="text-xs!"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div class="flex flex-col">
                                                     <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >N° de autorización vehícular (opcional)</label>
@@ -416,15 +404,22 @@
                                     </p-fieldset>
                                 }
                             </div>
+                            
                             @if(vehiculos.length < 3){
-                                <p-button 
-                                [raised]="true"
-                                (onClick)="evtAddVehiculo()" 
-                                size="small" 
-                                styleClass="text-xs!" 
-                                class="text-xs!" 
-                                severity="primary" 
-                                label="Agregar vehículo"></p-button>
+                                <div class="flex flex-wrap gap-x-2">
+                                    <p-button 
+                                        size="small"
+                                        icon="fa-duotone fa-light fa-angle-down"
+                                        label="Seleccionar vehiculo"
+                                        iconPos="right"
+                                        outlined="true"
+                                        (click)="evtOnShowListaUnidadTransporte()"
+                                    >
+                                    </p-button>
+
+                                    <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                                </div>
                             }
                         </div>
                         <p-divider class="my-0!"></p-divider>
@@ -530,7 +525,6 @@
                                             @if(conductores.length > 1){
                                                 <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                                                     @if($index > 0){
-                                                        <p-button pTooltip="Quitar conductor" tooltipStyleClass="text-[10px]! " tooltipPosition="left" class="text-xs! w-6! h-6!" size="small" icon="pi pi-times font-semibold!" styleClass="w-6! h-6!" (click)="evtRemoveCoductor($index)" rounded="true" severity="primary"/>
                                                         <p-button 
                                                             pTooltip="Quitar conductor" 
                                                             tooltipStyleClass="text-[10px]! " 
@@ -552,14 +546,20 @@
                                 }
                             </div>
                             @if(conductores.length < 3){
-                                <p-button 
-                                [raised]="true"
-                                (onClick)="evtAddConductor()" 
-                                size="small" 
-                                styleClass="text-xs!" 
-                                class="text-xs!" 
-                                severity="primary" 
-                                label="Agregar conductor"></p-button>
+                                <div class="flex flex-wrap gap-x-2">
+                                    <p-button 
+                                        size="small"
+                                        icon="fa-duotone fa-light fa-angle-down"
+                                        label="Seleccionar conductor"
+                                        iconPos="right"
+                                        outlined="true"
+                                        (click)="evtOnShowListaConductor()"
+                                    >
+                                    </p-button>
+
+                                    <a href="/admin/conductor" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                                </div>
                             }
                         </div>
                     }
@@ -662,9 +662,27 @@
             @if(motivoTraslado === 'COMPRA' && tipoGuia === 'REMITENTE'){
                 <p-tabpanel value="1">
                     <div [formGroup]="formDatosProveedor" class="flex flex-col gap-4">
+
+                        <div class="flex flex-wrap gap-x-2">
+                            <p-button 
+                                size="small"
+                                icon="fa-duotone fa-light fa-angle-down"
+                                label="Seleccionar proveedor"
+                                iconPos="right"
+                                outlined="true"
+                                (click)="evtOnShowListaProveedor()"
+                            >
+                            </p-button>
+
+                            <a href="/admin/proveedor" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                        </div>
+
+
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
+                                <div class="cursor-not-allowed">
                                 <p-select 
                                 fluid
                                 size="small"
@@ -680,6 +698,7 @@
                                 formControlName="tipo_documento_proveedor"
                                 [invalid]="f_datosProveedor.tipo_documento_proveedor.invalid && ( f_datosProveedor.tipo_documento_proveedor.touched || submitted)"
                                 />
+                                </div>
                                 @if (f_datosProveedor.tipo_documento_proveedor.invalid && (f_datosProveedor.tipo_documento_proveedor.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                 }
@@ -728,7 +747,9 @@
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500">Departamento</label>
                                 <app-select-departamento 
+                                #departamentoProveedor
                                 [control]="f_datosProveedor.idDepartamento" 
+                                class="cursor-not-allowed"
                                 classLabel="text-[11px]! h-4.5! text-gray-500 " 
                                 label="Departamento"
                                 ></app-select-departamento>
@@ -736,7 +757,9 @@
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500">Provincia</label>
                                 <app-select-provincia 
+                                #provinciaProveedor
                                 [control]="f_datosProveedor.idProvincia" 
+                                class="cursor-not-allowed"
                                 [idUbigeoDepartamento]="f_datosProveedor.idDepartamento.value" 
                                 classLabel="text-[11px]! h-4.5! text-gray-500"
                                 ></app-select-provincia>
@@ -744,8 +767,10 @@
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500">Distrito</label>
                                 <app-select-distrito 
+                                #distritoProveedor
                                 label="Distrito"
                                 [control]="f_datosProveedor.idDistrito" 
+                                class="cursor-not-allowed"
                                 [idUbigeoProvincia]="f_datosProveedor.idProvincia.value" 
                                 classLabel="text-[11px]! h-4.5! text-gray-500" 
                                 ></app-select-distrito>

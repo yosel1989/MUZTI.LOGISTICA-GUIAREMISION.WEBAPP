@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EditarProveedorRequestDto, EditarProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EditarProveedorRequestDto, EditarProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
 import { ColumnsFilterDto } from "app/core/models/filter";
 
@@ -43,7 +43,7 @@ export class ProveedorApiService {
     );
   }
 
-  obtener(id: number): Observable<ProveedorDto> {
+  obtenerPorId(id: number): Observable<ProveedorDto> {
     return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
       map(response =>{ return response as ProveedorDto }),
       catchError((error: HttpErrorResponse) => {
@@ -77,6 +77,20 @@ export class ProveedorApiService {
         return throwError(() => error);
       })
     );
+  }
+
+  buscarSugerido(texto: string | null): Observable<ProveedorSugeridoDto[]> {
+      let params = new HttpParams();
+      if (texto) {
+          params = params.set('numeroDoc', texto);
+      }
+
+      return this.http.get<any>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+          map(response =>{ return response as ProveedorSugeridoDto[] }),
+          catchError((error: HttpErrorResponse) => {
+              return throwError(() => error);
+          })
+      );
   }
 
 }

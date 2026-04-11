@@ -21,7 +21,7 @@ import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { TooltipModule } from 'primeng/tooltip';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
 import { DialogService } from 'primeng/dynamicdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, identity, Subscription } from 'rxjs';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
 import { MessageModule } from 'primeng/message';
@@ -158,6 +158,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             distrito_remitente: new FormControl(null),
             contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
+            id_destinatario: new FormControl(null, Validators.required),
             tipo_documento_destinatario: new FormControl('RUC'),
             numero_documento_destinatario: new FormControl({value: null, disabled: true}),
             razon_social_destinatario: new FormControl({value: null, disabled: true}),
@@ -318,6 +319,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
             observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
+            area: 'sistemas',
+            registro_mtc: null,
             empleado_id_creacion: 1,
             empleado_nombre_creacion: 'SA',
 
@@ -331,25 +334,17 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             remitente: {
                 ruc: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ruc : this.f.numero_documento_remitente.value,
-                /*descripcion: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.descripcion : this.f.razon_social_remitente.value,*/
                 descripcion: this.selectEmpresaRemitente!.selected!.descripcion,
                 nombre_empresa: this.selectEmpresaRemitente!.selected!.nombre_empresa,
                 direccion: this.selectEmpresaRemitente!.selected!.direccion,
                 departamento: this.selectEmpresaRemitente!.selected!.departamento,
                 provincia: this.selectEmpresaRemitente!.selected!.provincia,
                 distrito: this.selectEmpresaRemitente!.selected!.distrito,
-                serie_numero: this.guiaCabecera!.serieNumero,
-                /*ubigeo_id: (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ubigeo_id : this.f.distrito_remitente.value,
-                direccion:  (this.f.tipo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.direccion : this.f.direccion_remitente.value,
-                email: "yosel1989@gmail.com",
-                pais: "PE",
-                serie: '',
-                codigo_sunat: '',
-                empleado_id_creacion: 1,
-                empleado_nombre_creacion: "SA"*/
+                serie_numero: this.guiaCabecera!.serieNumero
             },
 
             destinatario: {
+                destinatario_id: this.f.id_destinatario.value,
                 tipo_documento: this.f.tipo_documento_destinatario.value,
                 numero_documento: this.f.numero_documento_destinatario.value,
                 razon_social: this.f.tipo_documento_destinatario.value === 'RUC' ? this.f.razon_social_destinatario.value : this.f.nombres_apellidos_destinatario.value,
@@ -358,26 +353,19 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 provincia: this.provinciaDestinatario?.labelSelected ?? null,
                 distrito: this.distritoDestinatario?.labelSelected ?? null,
                 direccion: this.f.direccion_destinatario.value,
-                pais: "PE",
-                empleado_id_creacion: 1,
-                empleado_nombre_creacion: "SA",
                 email_destinatario: this.destinatarioContactos.length ? (this.destinatarioContactos as FormArray).controls.map((element: any) => {
-                    return {
-                        email: element.get('email')?.value
-                    };
+                    return element.get('email')?.value;
                 }) : null,
             },
 
             proveedor: this.f.tipo_traslado.value !== "COMPRA" ? null : {
+                proveedor_id: this.tabDatosEnvioProveedor?.data.proveedor.id,
                 tipo_documento: this.tabDatosEnvioProveedor?.data.proveedor.tipo_documento_proveedor,
                 numero_documento: this.tabDatosEnvioProveedor?.data.proveedor.numero_documento_proveedor,
                 razon_social: this.tabDatosEnvioProveedor?.data.proveedor.nombre_rsocial_proveedor,
                 ubigeo_id: this.tabDatosEnvioProveedor?.data.proveedor.idDistrito,
                 direccion: this.tabDatosEnvioProveedor?.data.proveedor.direccion_proveedor,
                 email: "sistemas4@carolina-peru.com",
-                pais: "PE",
-                empleado_id_creacion: 1,
-                empleado_nombre_creacion: "SA"
             },
 
             datos_envio: {
@@ -390,30 +378,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
 
+                indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.registrar_vehiculos_conductores,
+
                 conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.map((d: any) => {
-                    return {
-                        tipo_documento: d.tipo_documento_conductor,
-                        numero_documento: d.numero_documento_conductor,
-                        nombres: d.nombre_conductor,
-                        apellidos: d.apellido_conductor,
-                        cargo: "CONDUCTOR",
-                        licencia: d.numero_licencia_brevete_conductor,
-                        empleado_id_creacion: 1,
-                        empleado_nombre_creacion: "SA"
-                    };
+                    return d.id
                 }) : null,
 
-                unidad_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.map((d: any) => {
-                    return {
-                        descripcion: null,
-                        marca: null,
-                        modelo: null,
-                        placa: d.placa_vehiculo,
-                        numero_registro_mtc: d.numero_autoriza_vehicular_vehiculo,
-                        tarjeta: d.cert_habilitacion_vehiculo,
-                        empleado_id_creacion: 1,
-                        empleado_nombre_creacion: "SA"
-                    };
+                transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.map((d: any) => {
+                    return d.id;
                 }) : null
             },
 
@@ -596,6 +568,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             const sub2 = cmp?.OnSelect.subscribe(( s: DestinatarioDto) => {
 
                 this.formGroup.patchValue({
+                    id_destinatario: s.id,
                     tipo_documento_destinatario: s.tipo_documento,
                     numero_documento_destinatario: s.numero_documento,
                     razon_social_destinatario: s.razon_social,

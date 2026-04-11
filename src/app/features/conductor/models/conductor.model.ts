@@ -89,3 +89,13 @@ export interface ActualizarEstadoConductorResponseDto{
   empleado_nombre_edicion: string;
   detalle: string;
 }
+
+export interface ConductorSugeridoDto{
+  id: number;
+  tipo_documento: string | 'DNI' | 'CE' | 'PASAPORTE';
+  numero_documento: string;
+  nombres: string;
+  apellidos: string;
+  cargo: string | null;
+  licencia: string
+}

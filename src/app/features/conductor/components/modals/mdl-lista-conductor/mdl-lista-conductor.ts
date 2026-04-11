@@ -13,13 +13,13 @@ import { InputIconModule } from 'primeng/inputicon';
 import { Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { UnidadTransporteDto, UnidadTransporteSugeridoDto } from '@features/unidad-transporte/models/unidad-transporte.model';
-import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
+import { ConductorDto, ConductorSugeridoDto } from '@features/conductor/models/conductor.model';
+import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 
 @Component({
-  selector: 'app-mdl-lista-unidad-transporte',
-  templateUrl: './mdl-lista-unidad-transporte.html',
-  styleUrls: ['./mdl-lista-unidad-transporte.scss'],                          
+  selector: 'app-mdl-lista-conductor',
+  templateUrl: './mdl-lista-conductor.html',
+  styleUrls: ['./mdl-lista-conductor.scss'],                          
   imports: [
     CommonModule,
     InputTextModule,
@@ -36,23 +36,21 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
   ],
 })
 
+export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDestroy{
 
-export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy{
+  @Output() OnSelect: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
 
-  @Output() OnSelect: EventEmitter<UnidadTransporteDto> = new EventEmitter<UnidadTransporteDto>();
-
-  data = signal<UnidadTransporteSugeridoDto[]>([]);
-  selected: UnidadTransporteSugeridoDto | undefined;
+  data = signal<ConductorSugeridoDto[]>([]);
+  selected: ConductorSugeridoDto | undefined;
   cols: TableColumn[] = []
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
   sbData: Subscription | undefined;
   search = new FormControl(null);
 
-
   constructor(
     private cdr: ChangeDetectorRef,
-    private api: UnidadTransporteApiService,
+    private api: ConductorApiService,
     public util: UtilService
   ) {
     this.search.valueChanges.subscribe(res => {
@@ -63,8 +61,11 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
   ngOnInit(): void {
     this.cols = [
       { field: 'id', header: 'Código', sort: false },
-      { field: 'placa', header: 'Placa', sort: false },
-      { field: 'tarjeta', header: 'N° Tarjeta', sort: true}
+      { field: 'numero_documento', header: 'N° Documento', sort: false },
+      { field: 'nombres', header: 'Nombre', sort: true},
+      { field: 'apellidos', header: 'Apellido', sort: true},
+      { field: 'cargo', header: 'Cargo', sort: true},
+      { field: 'licencia', header: 'N° Licencia', sort: true},
     ];
   }
 
@@ -85,11 +86,11 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
   getData(): void{
     this.ldData.set(true);
     this.data.set( Array.from({ length: 5 }).map((_, i) => (
-      { placa: i.toString() } as UnidadTransporteSugeridoDto
+      { numero_documento: i.toString() } as ConductorSugeridoDto
     )) );
     this.sbData?.unsubscribe();
-    this.sbData = this.api.buscar(this.search.value).subscribe({
-      next: (value: UnidadTransporteSugeridoDto[]) => {
+    this.sbData = this.api.buscarSugerido(this.search.value).subscribe({
+      next: (value: ConductorSugeridoDto[]) => {
         this.data.set(value);
         this.ldData.set(false);
         this.cdr.markForCheck();
@@ -104,8 +105,8 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.getById(this.selected!.id).subscribe({
-      next: (value: UnidadTransporteDto) => {
+    this.sbData = this.api.buscarPorId(this.selected!.id).subscribe({
+      next: (value: ConductorDto) => {
         this.OnSelect.emit(value);
         this.ldSelected.set(false);
       },

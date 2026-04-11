@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, EditarConductorRequestDto, EditarConductorResponseDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
+import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, ConductorSugeridoDto, EditarConductorRequestDto, EditarConductorResponseDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
 import { TableData } from "app/core/models/table";
 import { ColumnsFilterDto } from "app/core/models/filter";
 
@@ -43,7 +43,7 @@ export class ConductorApiService {
     );
   }
 
-  obtener(id: number): Observable<ConductorDto> {
+  buscarPorId(id: number): Observable<ConductorDto> {
     return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
       map(response =>{ return response as ConductorDto }),
       catchError((error: HttpErrorResponse) => {
@@ -89,5 +89,19 @@ export class ConductorApiService {
       })
     );
   }
-  
+
+  buscarSugerido(texto: string | null): Observable<ConductorSugeridoDto[]> {
+      let params = new HttpParams();
+      if (texto) {
+          params = params.set('numeroDoc', texto);
+      }
+
+      return this.http.get<any>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+          map(response =>{ return response as ConductorSugeridoDto[] }),
+          catchError((error: HttpErrorResponse) => {
+              return throwError(() => error);
+          })
+      );
+  }
+    
 }
