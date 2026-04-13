@@ -64,7 +64,8 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
     this.cols = [
       { field: 'id', header: 'Código', sort: false },
       { field: 'placa', header: 'Placa', sort: false },
-      { field: 'tarjeta', header: 'N° Tarjeta', sort: true}
+      { field: 'tarjeta', header: 'N° Tarjeta', sort: true},
+      { field: 'tipo', header: 'Tipo', sort: true}
     ];
   }
 

@@ -66,6 +66,7 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
       { field: 'apellidos', header: 'Apellido', sort: true},
       { field: 'cargo', header: 'Cargo', sort: true},
       { field: 'licencia', header: 'N° Licencia', sort: true},
+      { field: 'tipo', header: 'Tipo', sort: true},
     ];
   }
 

@@ -560,8 +560,16 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaUnidadTransporteComponent) => {
             const sub2 = cmp?.OnSelect.subscribe(( s: UnidadTransporteDto) => {
+                const existe = this.vehiculos.controls.some(ctrl => ctrl.get('id')?.value === s.id);
+                if(existe){
+                  this.alertService.showToast({
+                    text: "El vehiculo ya se encuentra seleccionado",
+                    icon: "warning"
+                  });
+                }else{
+                  this.evtAddVehiculo(s);
+                }
 
-                this.evtAddVehiculo(s);
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -589,8 +597,15 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaConductorComponent) => {
             const sub2 = cmp?.OnSelect.subscribe(( c: ConductorDto) => {
-
-                this.evtAddConductor(c);
+                const existe = this.conductores.controls.some(ctrl => ctrl.get('id')?.value === c.id);
+                if(existe){
+                  this.alertService.showToast({
+                    text: "El conductor ya se encuentra seleccionado",
+                    icon: "warning"
+                  });
+                }else{
+                  this.evtAddConductor(c);
+                }
                 this.modalRef?.close();
             });
             this.subs.add(sub2);

@@ -129,6 +129,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     valueTab: any[] = [];
 
+    minFechaEmision = new Date();
+
     constructor(
         private formBuilder: FormBuilder,
         public dialogService: DialogService,
@@ -140,6 +142,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         private alertService: AlertService,
         private router: Router
     ){
+        this.minFechaEmision.setDate(this.minFechaEmision.getDate() - 1);
+
         this.ls.breadCrumbItems = this.breadCrumbItems;
 
         this.formGroup = this.formBuilder.group({
@@ -213,7 +217,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         });
                         this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id;
                         const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                             console.log('cargo distritos');
                             this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id);
                         });
                         subProvincia1?.unsubscribe();
@@ -235,11 +238,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
                         this.provinciaDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id!.substring(0,4);
                         const subProvincia = this.provinciaDestinatario?.loading.subscribe(res => {
-                            this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(2,4));
+                            this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,4));
                         });
                         this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id;
                         const subDistrito = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                             console.log('cargo distritos');
                             this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id);
                         });
                         subProvincia?.unsubscribe();

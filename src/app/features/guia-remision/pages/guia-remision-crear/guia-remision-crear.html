@@ -443,13 +443,15 @@
                     <div class="">
                         <label  class="block text-[11px]!">Fecha de emisión</label>
                         <p-datepicker 
-                        readonlyInput="true" 
-                        formControlName="fecha_emision" 
-                        size="small" 2
-                        [iconDisplay]="'input'" 
-                        [showIcon]="true" 
-                        showButtonBar="true"
-                        inputId="icondisplay" />
+                            readonlyInput="true" 
+                            formControlName="fecha_emision" 
+                            size="small" 2
+                            [iconDisplay]="'input'" 
+                            [showIcon]="true" 
+                            showButtonBar="true"
+                            inputId="icondisplay" 
+                            [minDate]="minFechaEmision"
+                        />
                     </div>
 
                     @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.remitente){

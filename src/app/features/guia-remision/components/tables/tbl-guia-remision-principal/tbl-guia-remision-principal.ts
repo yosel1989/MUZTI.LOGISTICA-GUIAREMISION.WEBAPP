@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input, Output, EventEmitter, ViewChild, ElementRef, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -17,7 +17,7 @@ import { UtilService } from 'app/core/services/util.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { GuiaRemisionDto } from '@features/guia-remision/models/guia-remision.model';
+import { GR_EmitirGuiaRemisionResponseDto, GuiaRemisionDto } from '@features/guia-remision/models/guia-remision.model';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
 import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
@@ -29,6 +29,8 @@ import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remisi
 import saveAs from 'file-saver';
 import { AlertService } from 'app/core/services/alert.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
+import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -53,13 +55,15 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
     LoaderComponent,
     DrawerModule,
     NgClass,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DragScrollDirective
 ],
   providers: [DialogService, ConfirmationService]
 })
 
 export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
 
+    @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
     @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
     @Output() OnShowFilter: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -102,12 +106,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
-
+    hands = signal<boolean>(false);
 
     constructor(
       public dialogService: DialogService,
       private alertService: AlertService,
       private api: GuiaRemisionApiService,
+      private apiGuiaRemitente: GuiaRemitenteApiService,
       private cd: ChangeDetectorRef,
       public util: UtilService,
       public documentoApi: DocumentoApiService
@@ -130,6 +135,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
           { field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
+          { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
           { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
           { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
           { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
@@ -284,6 +290,41 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       });
     }
 
+    evtEmitInvoice(): void{
+        if(!this.selected){
+          this.alertService.showSwalAlert({
+            text: "Debe seleccionar una guía",
+            icon: "warning"
+          });
+          return;
+        }
+        this.selected.loading_update = true;
+        this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.ruc).subscribe({
+          next: (val: GR_EmitirGuiaRemisionResponseDto) => {
+            if(val.success){
+              this.alertService.showSwalAlert({
+                icon: "success",
+                text: `Se emitio la guia N° ${this.selected?.numero_guia} con exito`
+              });
+              this.selected!.loading_update = false;
+              this.reload();
+            }else{
+              this.alertService.showSwalAlert({
+                icon: "error",
+                text: "Ocurrio un error al emitir la guía"
+              });
+            }
+          },
+          error: (err: any) => {
+              this.alertService.showSwalAlert({
+                icon: "error",
+                text: "Ocurrio un error al emitir la guía"
+              });
+              this.selected!.loading_update = false;
+          }
+        });
+    }
+
     evtOnShowFilters(): void{
       this.OnShowFilter.emit(true);
     }
@@ -303,6 +344,11 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     evtOnRowSelect(event: any) {
       this.selected = event.data;
       this.setSelected(event.data);
+    }
+
+    evtToggleHand(): void{
+      this.hands.set(!this.hands());
+      console.log(this.hands());
     }
 
     evtExport(): void{
@@ -352,8 +398,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
     private buildMenuItems(selected: GuiaRemisionDto | undefined): MenuItem[] {
       return [
-        { label: 'Ver Detalle', icon: 'pi pi-eye text-blue-500!', command: () => { this.evtOnShowDetail(); }},
+        //{ label: 'Ver Detalle', icon: 'pi pi-eye text-blue-500!', command: () => { this.evtOnShowDetail(); }},
         { label: 'Ver PDF', icon: 'pi pi-file-pdf text-gray-500!', command: () => { this.evtOnShowPdf(); }, visible: selected?.estado === 'ENVIADO' },
+        { label: 'Aprobar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtEmitInvoice(); }, visible: selected?.estado === 'REGISTRADO' },
+        { label: 'Rechazar', icon: 'pi pi-ban text-red-500!', command: () => { this.evtEmitInvoice(); }, visible: selected?.estado === 'REGISTRADO' },
       ];
     }
 

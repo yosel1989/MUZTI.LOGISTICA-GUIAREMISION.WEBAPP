@@ -95,4 +95,5 @@ export interface UnidadTransporteSugeridoDto{
     modelo: string | null;
     placa: string;
     tarjeta: string | null;
+    tipo: string | null;
 }

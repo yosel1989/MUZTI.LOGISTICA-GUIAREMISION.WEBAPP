@@ -97,5 +97,6 @@ export interface ConductorSugeridoDto{
   nombres: string;
   apellidos: string;
   cargo: string | null;
-  licencia: string
+  licencia: string,
+  tipo: string | 'INTERNO' | 'EXTERNO';
 }

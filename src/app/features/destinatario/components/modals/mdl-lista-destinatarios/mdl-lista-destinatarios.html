@@ -18,7 +18,11 @@
         selectionMode="single"
         [tableStyle]="{ 'min-width': '100px' }"
         [scrollable]="true"
-        [showLoader]="false"
+        [showLoader]="true"
+        [loading]="ldSelected()"
+
+        [metaKeySelection]="true"
+        dataKey="id"
     
         [lazy]="true"
         [rowHover]="true"
@@ -47,7 +51,7 @@
                         }
                     </tr>
                 }@else {
-                    <tr [pSelectableRow]="rowData">
+                    <tr [pSelectableRow]="rowData" (dblclick)="evtSelect()">
                         @for (col of columns; track $index) {
                             <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
                         }

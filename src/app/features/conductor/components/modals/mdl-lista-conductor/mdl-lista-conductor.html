@@ -18,12 +18,17 @@
         selectionMode="single"
         [tableStyle]="{ 'min-width': '100px' }"
         [scrollable]="true"
-        [showLoader]="false"
+        [showLoader]="true"
+        scrollDirection="horizontal"
+
+        [metaKeySelection]="true"
+        dataKey="id"
     
         [lazy]="true"
         [rowHover]="true"
         scrollHeight="400px"
         class="border-0! text-[12px]!"
+        [loading]="ldSelected()"
         >
         
             <ng-template pTemplate="header" let-columns>
@@ -47,7 +52,7 @@
                         }
                     </tr>
                 }@else {
-                    <tr [pSelectableRow]="rowData" >
+                    <tr [pSelectableRow]="rowData" (dblclick)="evtSelect()">
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){

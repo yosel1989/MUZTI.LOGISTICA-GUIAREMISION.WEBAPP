@@ -132,6 +132,14 @@ export interface GR_EnviarGuiaRemisionResponseDto {
   numero_guia: string;
 }
 
+export interface GR_EmitirGuiaRemisionResponseDto {
+  success: boolean;
+  respuesta_facturador: {
+    codigo: string;
+    descripcion: string;
+  }
+}
+
 export interface GuiaRemisionDto {
   id: number;
   empresa: string;
@@ -154,4 +162,5 @@ export interface GuiaRemisionDto {
   empleado_nombre_edicion: string | null;
   estado: string;
   id_estado: number;
+  loading_update: boolean;
 }

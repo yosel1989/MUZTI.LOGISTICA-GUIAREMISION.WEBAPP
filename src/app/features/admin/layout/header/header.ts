@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -15,6 +15,7 @@ import { Observable } from 'rxjs';
 import { LayoutService } from 'app/core/services/layout.service';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AsyncPipe } from '@angular/common';
+import { animate, AnimationBuilder, AnimationPlayer, style } from '@angular/animations';
 
 @Component({
   selector: 'app-header',
@@ -37,15 +38,18 @@ import { AsyncPipe } from '@angular/common';
   providers: [ConfirmationService]
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
-
-    @ViewChild('menuUser') menuUser!: Menu;
+    @ViewChild('breadcrumbContainer') breadcrumbContainer: ElementRef | undefined;
+    @ViewChild('menuUser') menuUser!: Menu;  
     items: MenuItem[] | undefined;
     breadCrumbItems: Observable<MenuItem[]> | undefined;
+    fadeState = 'in';
+    private player!: AnimationPlayer;
 
     constructor(
         private confirmationService: ConfirmationService,
         private authApi: AuthApiService,
-        private layoutService: LayoutService
+        private layoutService: LayoutService,
+        private builder: AnimationBuilder
     ) {
         this.breadCrumbItems = this.layoutService.breadCrumbItems;
     }
@@ -80,17 +84,20 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
                 ]
             }
         ];
+        this.layoutService.breadCrumbItems.subscribe(() => {
+            this.handlerPlayFadeLeft();
+        });
     }
 
     ngAfterViewInit(): void {
-
     }
 
     ngOnDestroy(): void {
-
+        this.player?.destroy();
     }
 
     // events
+
     evtShowMenu(evt: any): void{
         const target = evt.currentTarget as HTMLElement;
         this.menuUser?.show({ currentTarget: target });
@@ -112,6 +119,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     // handlers
+
     handlerConfirmDialog(callback: () => void, header: string, message: string): void{
       this.confirmationService.confirm({
           header: header,
@@ -123,6 +131,20 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
               
           },
       });
+    }
+
+    handlerPlayFadeLeft() {
+        const factory = this.builder.build([
+            style({ opacity: 0, transform: 'translateX(-20px)' }),
+            animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+        ]);
+
+        if (this.player) {
+            this.player.destroy();
+        }
+
+        this.player = factory.create(this.breadcrumbContainer?.nativeElement);
+        this.player.play();
     }
 
 }

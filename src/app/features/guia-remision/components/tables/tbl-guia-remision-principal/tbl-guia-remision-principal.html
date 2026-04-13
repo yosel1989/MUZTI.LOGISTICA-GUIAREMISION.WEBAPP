@@ -102,6 +102,21 @@
             (click)="evtExport()"
         />
 
+        <p-button 
+            [icon]="(hands() ? 'fa-solid ' : 'fa-light ') + 'fa-hand text-[13px]! '" 
+            size="small"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Arrastrar"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            placeholder="Top"
+            [loading]="loadingDownload$ | async"
+            (click)="evtToggleHand()"
+        />
+
     </div>
     </ng-template>
     <ng-template #end>
@@ -155,153 +170,201 @@
         <app-loader class="z-40"></app-loader>
     }
 
-<p-table 
-#datatable
-[columns]="cols"
-[value]="paddedData"
-size="small" 
-currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-[showCurrentPageReport]="true"
+    <p-table 
+        #datatable
+        [columns]="cols"
+        [value]="paddedData"
+        size="small" 
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+        [showCurrentPageReport]="true"
 
-[(selection)]="selected"
-[tableStyle]="{ 'min-width': '100px' }"
-[scrollable]="true"
-[showLoader]="false"
-[resizableColumns]="true"
-columnResizeMode="expand"
+        [(selection)]="selected"
+        [tableStyle]="{ 'min-width': '100px' }"
+        [showLoader]="false"
+        [resizableColumns]="true"
+        columnResizeMode="expand"
 
-showGridlines 
+        showGridlines 
 
-stripedRows
-[lazy]="true"
-[rowHover]="true"
-[paginator]="true"
+        stripedRows
+        [lazy]="true"
+        [rowHover]="true"
+        [paginator]="true"
 
-[totalRecords]="totalRecords"
-[rows]="pageSize"
-[first]="first"
-[rowsPerPageOptions]="[5, 10, 25, 50, 100]"
-scrollHeight="400px"
+        [totalRecords]="totalRecords"
+        [rows]="pageSize"
+        [first]="first"
+        [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+        scrollHeight="400px"
 
-(firstChange)="evtFirstChange($event)"
-(rowsChange)="evtRowsChange($event)"
+        (firstChange)="evtFirstChange($event)"
+        (rowsChange)="evtRowsChange($event)"
 
-class="border-none! text-mono! max-w-full!"
-paginatorDropdownAppendTo="body"
-paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
+        class="border-none! text-mono! max-w-full!"
+        paginatorDropdownAppendTo="body"
+        paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
 
-[contextMenu]="cm" 
-(onContextMenuSelect)="evtOnRowSelect($event)"
+        [contextMenu]="cm" 
+        (onContextMenuSelect)="evtOnRowSelect($event)"
 
-[loading]="$ldData | async"
->
-    <ng-template pTemplate="header" let-columns>
-        <tr class="text-nowrap">
-            @for (col of columns; track col) {
-                @switch (col.field) {
-                    @case('select'){
-                        <th class="px-2 border-s-0!"></th>
-                    }
-                    @case('cod'){
-                        <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
-                    }
-                    @default{
-                        <th 
-                        pFrozenColumn 
-                        [frozen]="col.sticky ?? false"
-                        pResizableColumn 
-                        [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!"
-                        [ngClass]="col.className">
-                            <div class="flex items-center gap-2">
-                                {{ col.header }}
-                                @if(col.sort){<p-sortIcon [field]="col.field" />}
-                            </div>
-                        </th>
-                    }
-                }
-            }
-        </tr>
-    </ng-template>
-
-    <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
-
-        @if($ldData | async) {
-            <tr>
-                @for (col of columns; let i = $index; track $index) {
-                    <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
-                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                    </td>
-                }
-            </tr>
-        }
-        @else{
-            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
-                @for (col of columns; let i = $index; track $index) {
-                    @if(rowData.__empty) {
-                        <td 
-                        pFrozenColumn
-                        [frozen]="col.sticky ?? false" 
-                        [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
-                        >—</td>
-                    }@else {
-                        @switch(col.field){
-                            @case('select'){
-                                <td
-                                class="cursor-pointer py-2! px-2! border-s-0!" >
-                                <p-tableRadioButton
-                                [value]="rowData" 
-                                (click)="evtToggleSelection(rowData)"
-                                class="flex text-center justify-center"/>
-                                </td>
-                            }
-                            @case('cod'){
-                                <td
-                                class="cursor-pointer py-2! px-4!" >
-                                    {{ (rowIndex + 1) }}
-                                </td>
-                            }
-                            @case('id'){
-                                <td 
-                                pFrozenColumn 
-                                [frozen]="col.sticky ?? false"
-                                class="cursor-pointer py-2! px-2! truncate" >
-                                COD-{{ rowData[col.field].toString().padStart(4,'0') }}
-                                </td>
-                            }
-                            @case('fecha_creacion'){
-                                <td class="text-nowrap py-1! font-light! truncate">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
-                            }
-                            @case('fecha_ultima_edicion'){
-                                <td class="text-nowrap py-1! font-light! truncate">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
-                            }
-                            @case('estado'){
-                                <td class="text-nowrap py-1! font-light! truncate"> 
-                                    @if(rowData['id_estado']){
-                                        <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
-                                            {{rowData[col.field]}}
-                                        </span>
-                                    }@else{
-                                        <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
-                                            {{rowData[col.field]}}
-                                        </span>
-                                    }
-                                </td>
-                            }
-                            @default {
-                                <td
-                                pFrozenColumn 
-                                [frozen]="col.sticky ?? false"
-                                class="text-nowrap py-1! font-light! truncate">{{rowData[col.field]}}</td>
-                            }
+        [loading]="$ldData | async"
+        [scrollable]="true"
+        scrollDirection="horizontal" 
+        [appDragScroll]=" (hands() ? '.p-datatable-table-container' : null)"
+    >
+        <ng-template pTemplate="header" let-columns>
+            <tr class="text-nowrap">
+                @for (col of columns; track col) {
+                    @switch (col.field) {
+                        @case('select'){
+                            <th class="px-2 border-s-0!"></th>
+                        }
+                        @case('cod'){
+                            <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
+                        }
+                        @default{
+                            <th 
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            pResizableColumn 
+                            [pSortableColumn]="col.sort ? col.field : undefined" 
+                            class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!"
+                            [ngClass]="col.className">
+                                <div class="flex items-center gap-2">
+                                    {{ col.header }}
+                                    @if(col.sort){<p-sortIcon [field]="col.field" />}
+                                </div>
+                            </th>
                         }
                     }
                 }
             </tr>
-        }
-    </ng-template>
-    
-</p-table>
+        </ng-template>
+
+        <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
+
+            @if($ldData | async) {
+                <tr>
+                    @for (col of columns; let i = $index; track $index) {
+                        <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
+                            <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                        </td>
+                    }
+                </tr>
+            }
+            @else{
+                <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
+                    @for (col of columns; let i = $index; track $index) {
+                        @if(rowData.__empty) {
+                            <td 
+                            pFrozenColumn
+                            [frozen]="col.sticky ?? false" 
+                            [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
+                            >—</td>
+                        }@else {
+                            @switch(col.field){
+                                @case('select'){
+                                    <td
+                                    class="cursor-pointer py-2! px-2! border-s-0!" >
+                                    <p-tableRadioButton
+                                    [value]="rowData" 
+                                    (click)="evtToggleSelection(rowData)"
+                                    class="flex text-center justify-center"/>
+                                    </td>
+                                }
+                                @case('cod'){
+                                    <td
+                                    class="cursor-pointer py-2! px-4!" >
+                                        {{ (rowIndex + 1) }}
+                                    </td>
+                                }
+                                @case('id'){
+                                    <td 
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    class="cursor-pointer py-2! px-2! truncate" >
+                                        @if(rowData['loading_update']){
+                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        }@else{
+                                            COD-{{ rowData[col.field].toString().padStart(4,'0') }}
+                                        }
+                                    </td> 
+                                }
+                                @case('fecha_creacion'){
+                                    <td class="text-nowrap py-1! font-light! truncate">
+                                        @if(rowData['loading_update']){
+                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        }@else{
+                                            {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                        }
+                                    </td>
+                                }
+                                @case('fecha_ultima_edicion'){
+                                    <td class="text-nowrap py-1! font-light! truncate">
+                                        @if(rowData['loading_update']){
+                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        }@else{
+                                            {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                        }
+                                    </td>
+                                }
+                                @case('estado'){
+                                    <td class="text-nowrap py-1! font-light! truncate"> 
+
+                                        @if(rowData['loading_update']){
+                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        }@else{
+
+                                            @if(rowData['id_estado']){
+                                                <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                    {{rowData[col.field]}}
+                                                </span>
+                                            }@else{
+                                                <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                    {{rowData[col.field]}}
+                                                </span>
+                                            }
+                                        }
+                                    </td>
+                                }
+                                @case('estado_sunat'){
+                                    <td class="text-nowrap py-1! font-light! truncate"> 
+
+                                        @if(rowData['loading_update']){
+                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        }@else{
+                                            @if(rowData['id_estado_sunat']){
+                                                <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                    {{rowData[col.field]}}
+                                                </span>
+                                            }@else{
+                                                <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                    {{rowData[col.field]}}
+                                                </span>
+                                            }
+                                        }
+                                    </td>
+                                }
+                                @default {
+                                    <td
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    class="text-nowrap py-1! font-light! truncate">
+                                        @if(rowData['loading_update']){
+                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        }@else {
+                                            {{rowData[col.field]}}
+                                        }
+                                    </td>
+                                }
+                            }
+                        }
+                    }
+                </tr>
+            }
+        </ng-template>
+        
+    </p-table>
 
 </div>
 
