@@ -1,14 +1,39 @@
-import { Directive, ElementRef, Input, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, AfterViewInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 
 @Directive({
   selector: '[appDragScroll]'
 })
-export class DragScrollDirective implements AfterViewInit, OnChanges {
+export class DragScrollDirective implements AfterViewInit, OnChanges, OnDestroy {
   @Input('appDragScroll') targetSelector: string | null = null;
+
+  private targetEl: HTMLElement | null = null;
 
   private isDown = false;
   private startX = 0;
-  private targetEl: HTMLElement | null = null;
+
+  // Handlers guardados para poder removerlos
+  private onMouseDown = (e: MouseEvent) => {
+    this.isDown = true;
+    this.startX = e.pageX;
+    this.targetEl!.classList.add('dragging');
+  };
+
+  private onMouseLeave = () => {
+    this.isDown = false;
+    this.targetEl!.classList.remove('dragging');
+  };
+
+  private onMouseUp = () => {
+    this.isDown = false;
+    this.targetEl!.classList.remove('dragging');
+  };
+
+  private onMouseMove = (e: MouseEvent) => {
+    if (!this.isDown) return;
+    e.preventDefault();
+    const walk = e.movementX;
+    this.targetEl!.scrollLeft -= walk;
+  };
 
   constructor(private el: ElementRef) {}
 
@@ -18,8 +43,13 @@ export class DragScrollDirective implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['targetSelector']) {
+      this.removeListeners();
       this.initListeners();
     }
+  }
+
+  ngOnDestroy() {
+    this.removeListeners();
   }
 
   private initListeners() {
@@ -28,28 +58,20 @@ export class DragScrollDirective implements AfterViewInit, OnChanges {
     this.targetEl = this.el.nativeElement.querySelector(this.targetSelector) || this.el.nativeElement;
     if (!this.targetEl) return;
 
-    // Limpia listeners previos si es necesario
-    this.targetEl.onmousedown = (e: MouseEvent) => {
-      this.isDown = true;
-      this.startX = e.pageX;
-      this.targetEl!.classList.add('dragging');
-    };
+    this.targetEl.addEventListener('mousedown', this.onMouseDown);
+    this.targetEl.addEventListener('mouseleave', this.onMouseLeave);
+    this.targetEl.addEventListener('mouseup', this.onMouseUp);
+    this.targetEl.addEventListener('mousemove', this.onMouseMove);
+  }
 
-    this.targetEl.onmouseleave = () => {
-      this.isDown = false;
-      this.targetEl!.classList.remove('dragging');
-    };
+  private removeListeners() {
+    if (!this.targetEl) return;
 
-    this.targetEl.onmouseup = () => {
-      this.isDown = false;
-      this.targetEl!.classList.remove('dragging');
-    };
+    this.targetEl.removeEventListener('mousedown', this.onMouseDown);
+    this.targetEl.removeEventListener('mouseleave', this.onMouseLeave);
+    this.targetEl.removeEventListener('mouseup', this.onMouseUp);
+    this.targetEl.removeEventListener('mousemove', this.onMouseMove);
 
-    this.targetEl.onmousemove = (e: MouseEvent) => {
-      if (!this.isDown) return;
-      e.preventDefault();
-      const walk = e.movementX;
-      this.targetEl!.scrollLeft -= walk;
-    };
+    this.targetEl = null;
   }
 }

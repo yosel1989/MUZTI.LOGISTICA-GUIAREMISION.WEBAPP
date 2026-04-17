@@ -80,7 +80,7 @@
                 styleClass="w-9! h-9!"
                 (click)="evtOnDelete()"
             />
-            @if(selected.id_estado === 0){
+            @if(selected!.id_estado === 0){
             <p-button 
                 icon="pi pi-check-circle text-[13px]!"  
                 size="small" 
@@ -94,7 +94,7 @@
                 (click)="evtOnUpdateStatus(1)"
             />
             }
-            @if(selected.id_estado === 1){
+            @if(selected!.id_estado === 1){
             <p-button 
                 icon="pi pi-ban text-[13px]!" 
                 size="small" 
@@ -128,7 +128,7 @@
     </div>
     </ng-template>
     <ng-template #end>
-        <p-iconfield iconPosition="left" class="w-[190px]!">
+        <p-iconfield iconPosition="left" class="w-47.5!">
             <p-inputicon class="pi pi-search" />
             <input 
             #inputFilter 
@@ -268,14 +268,30 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="cursor-pointer py-2! px-2!" >
-                                COD-{{ rowData[col.field].toString().padStart(4,'0') }}
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        COD-{{ rowData[col.field].toString().padStart(4,'0') }}
+                                    }
                                 </td>
                             }
                             @case('fecha_creacion'){
-                                <td class="text-nowrap py-1! font-light! truncate!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light! truncate!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                    }
+                                </td>
                             }
                             @case('fecha_ultima_edicion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                    }
+                                </td>
                             }
                             @case('estado'){
                                 <td class="text-nowrap py-1! font-light!"> 
@@ -284,11 +300,19 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                     }@else{
                                         @if(rowData['id_estado']){
                                             <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
-                                                {{rowData[col.field]}}
+                                                @if(rowData.ldUpdate){
+                                                    <p-skeleton width='100%' height="20px"></p-skeleton>
+                                                }@else{
+                                                    {{rowData[col.field]}}
+                                                }
                                             </span>
                                         }@else{
                                             <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
-                                                {{rowData[col.field]}}
+                                                @if(rowData.ldUpdate){
+                                                    <p-skeleton width='100%' height="20px"></p-skeleton>
+                                                }@else{
+                                                    {{rowData[col.field]}}
+                                                }
                                             </span>
                                         }
                                     }
@@ -300,7 +324,13 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 [class.border-e-0]="columns.lenght === i"
-                                class="text-nowrap py-1! font-light!">{{rowData[col.field]}}</td>
+                                class="text-nowrap py-1! font-light!">
+                                    @if(rowData['ldUpdate']){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{rowData[col.field]}}
+                                    }
+                                </td>
                             }
                         }
                     }

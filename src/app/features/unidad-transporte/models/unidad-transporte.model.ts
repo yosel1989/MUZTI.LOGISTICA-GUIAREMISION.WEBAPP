@@ -16,6 +16,7 @@ export interface UnidadTransporteDto{
     estado: string;
     id_estado: number;
     ldStatus: boolean;
+    ldUpdate: boolean;
 }
 
 export interface RegistrarUnidadTransporteRequestDto{
@@ -55,8 +56,8 @@ export interface EditarUnidadTransporteResponseDto{
     marca: string;
     modelo: string;
     placa: string;
-    numero_registro_mtc: string | null;
     tarjeta: string;
+    numero_registro_mtc: string | null;
     fecha_creacion: Date;
     empleado_nombre_creacion: string;
     fecha_ultima_edicion: Date | null;

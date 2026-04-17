@@ -23,26 +23,30 @@ import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/se
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { EditarRemitenteRequestDto, EditarRemitenteResponseDto, RemitenteDto } from '@features/remitente/models/remitente';
 import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
+import { DividerModule } from 'primeng/divider';
+import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 
 @Component({
   selector: 'app-mdl-editar-remitente',
   imports: [
-    FormsModule, 
+    FormsModule,
     InputNumberModule,
-    InputTextModule, 
-    TextareaModule, 
-    ButtonModule, 
-    EditorModule, 
-    ReactiveFormsModule, 
-    MessageModule, 
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    EditorModule,
+    ReactiveFormsModule,
+    MessageModule,
     ConfirmDialog,
     SelectModule,
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
     SelectDistritoComponent,
     SkeletonModule,
-    AsyncPipe
-  ],
+    AsyncPipe,
+    DividerModule,
+    OnlyNumberDirective
+],
   templateUrl: './mdl-editar-remitente.component.html',
   styleUrl: './mdl-editar-remitente.component.scss',
   providers: [ConfirmationService]
@@ -50,7 +54,7 @@ import { RemitenteApiService } from '@features/remitente/services/remitente-api.
 export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() OnCreated: EventEmitter<RemitenteDto> = new EventEmitter<RemitenteDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
@@ -161,12 +165,10 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.frm.disable();
             this.ldSubmit = true;
             
             const sub = this.api.editar(this.data!.id, this.request).subscribe({
-              next: (res: EditarRemitenteResponseDto) => {
-                this.frm.enable();
+              next: (res: RemitenteDto) => {
                 this.ldSubmit = false;
 
                 this.alertService.showToast({
@@ -178,10 +180,9 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
                 this.ldSubmit = false;
                 this.alertService.showToast({
                   position: 'bottom-end',
@@ -213,15 +214,12 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   // data
   loadData(): void{
     this.ldData.next(true);
-    this.frm.disable();
     const sub = this.api.obtener(this.id).subscribe({
       next: (res: RemitenteDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);
-        this.frm.enable();
       },
       error: (err: HttpErrorResponse) => {
-        this.frm.enable();
         this.ldData.next(false);
         this.alertService.showToast({
           position: 'bottom-end',
@@ -247,9 +245,9 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       ruc: res.ruc,
-      descripcion: res.descripcion,
-      direccion: res.direccion,
-      email: res.email,
+      descripcion: res.descripcion.toUpperCase(),
+      direccion: res.direccion.toUpperCase(),
+      email: res.email.toUpperCase(),
       pais: res.pais,
       serie: res.serie,
       codigo_sunat: res.codigo_sunat,

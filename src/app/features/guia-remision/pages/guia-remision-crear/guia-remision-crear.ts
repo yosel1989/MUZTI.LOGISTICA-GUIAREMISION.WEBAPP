@@ -21,7 +21,7 @@ import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { TooltipModule } from 'primeng/tooltip';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
 import { DialogService } from 'primeng/dynamicdialog';
-import { BehaviorSubject, identity, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
 import { MessageModule } from 'primeng/message';
@@ -43,7 +43,7 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 import { AlertService } from 'app/core/services/alert.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
 import { DestinatarioDto } from '@features/destinatario/models/destinatario';
 
@@ -86,8 +86,7 @@ interface Type {
     SelectEmpresaRemitenteComponent,
     GuiaSectionCabeceraComponent,
     AsyncPipe,
-    AutoCompleteModule,
-    RouterLink
+    AutoCompleteModule
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -122,7 +121,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     modalRef: any | undefined;
     private subs = new Subscription();
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Guia de Remisión', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Nueva Guía', labelClass: 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/admin/guia-remision",}, { label: 'Nuevo', labelClass: 'text-[12px]!' }];
 
     tabRemitenteDestinatario = new BehaviorSubject<number>(0);
     tabRemitenteDestinatario$ = this.tabRemitenteDestinatario.asObservable();
@@ -259,7 +258,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             if(value === 'RUC'){
                 this.formGroup.get('razon_social_remitente')?.setValidators(Validators.required);
             }else{
-                console.log('dd');
                 this.formGroup.get('nombres_apellidos_remitente')?.setValidators(Validators.required);
             }
 
@@ -309,8 +307,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
       return this.formGroup.get('contactos_remitente') as FormArray; 
     }
 
-    get destinatarioContactos(): FormArray {
-      return this.formGroup.get('contactos_destinatario') as FormArray; 
+    get destinatarioContactos(): string[] {
+      return this.formGroup.get('contactos_destinatario')!.value as string[]; 
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
@@ -355,9 +353,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 provincia: this.provinciaDestinatario?.labelSelected ?? null,
                 distrito: this.distritoDestinatario?.labelSelected ?? null,
                 direccion: this.f.direccion_destinatario.value,
-                email_destinatario: this.destinatarioContactos.length ? (this.destinatarioContactos as FormArray).controls.map((element: any) => {
-                    return element.get('email')?.value;
-                }) : null,
+                email_destinatario: this.destinatarioContactos.length ? this.destinatarioContactos : null,
             },
 
             proveedor: this.f.tipo_traslado.value !== "COMPRA" ? null : {
@@ -451,6 +447,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                     });
                 }*/
                this.alertService.showSwalAlert({
+                icon: "success",
+                title: "¡Guía de Remisión Registrada!",
                 text: `Se registro la GUÍA DE REMISIÓN ${response.tipo_guia} ELECTRÓNICA\n N° ${response.numero_guia}`
                });
                this.router.navigate(['/admin/guia-remision']);

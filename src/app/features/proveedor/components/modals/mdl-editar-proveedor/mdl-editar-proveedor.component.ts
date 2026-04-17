@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -23,6 +23,8 @@ import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 
 @Component({
   selector: 'app-mdl-editar-proveedor',
@@ -41,7 +43,9 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
     SelectProvinciaComponent,
     SelectDistritoComponent,
     SkeletonModule,
-    AsyncPipe
+    AsyncPipe,
+    OnlyNumberDirective,
+    OnlyUpperDirective
   ],
   templateUrl: './mdl-editar-proveedor.component.html',
   styleUrl: './mdl-editar-proveedor.component.scss',
@@ -59,7 +63,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
   frm: FormGroup = new FormGroup({});
   isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
@@ -97,9 +101,29 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
       pais: new FormControl('PE', [Validators.minLength(1), Validators.maxLength(3), Validators.required]),
       codigo_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)])
     });
-    this.f.codigo.disable();
 
     this.headerValue = this.config.header ?? '';
+
+    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
+      this.frm.get('numero_documento')?.setValue(null);
+      this.frm.get('numero_documento')?.clearValidators();
+      switch(value){
+          case 'DNI':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
+            break;
+          case 'PASAPORTE':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
+            break;
+          case 'CARNET DE EXTRANJERIA':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
+            break;
+          case 'RUC':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
+            break;
+          default:
+            break;
+      }
+    }));
   }
 
   ngOnInit(): void {
@@ -155,13 +179,11 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const sub = this.api.editar(this.request).subscribe({
-              next: (res: EditarProveedorResponseDto) => {
-                this.frm.enable();
-                this.ldSubmit = false;
+              next: (res: ProveedorDto) => {
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'bottom-end',
@@ -175,12 +197,12 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
+                console.log(this.ldSubmit);
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",
-                  title: err.error.error,
+                  title: err.error.detalle,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000,
@@ -205,17 +227,15 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   }
 
   // data
+
   loadData(): void{
     this.ldData.next(true);
-    this.frm.disable();
     const sub = this.api.obtenerPorId(this.id).subscribe({
       next: (res: ProveedorDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);
-        this.frm.enable();
       },
       error: (err: HttpErrorResponse) => {
-        this.frm.enable();
         this.ldData.next(false);
         this.alertService.showToast({
           position: 'bottom-end',
@@ -236,20 +256,20 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
 
   // handlers
+
   handlerLoadData(res: ProveedorDto): void{
     this.data = res;
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       tipo_documento: res.tipo_documento,
       numero_documento: res.numero_documento,
-      razon_social: res.razon_social,
+      razon_social: res.razon_social?.toUpperCase(),
       departamento: res.ubigeo_id.substring(0,2),
-      direccion: res.direccion,
-      email: res.email,
+      direccion: res.direccion?.toUpperCase(),
+      email: res.email?.toUpperCase(),
       pais: res.pais,
       codigo_sunat: res.codigo_sunat
     });
   }
-
 
 }

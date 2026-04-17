@@ -304,7 +304,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
             if(val.success){
               this.alertService.showSwalAlert({
                 icon: "success",
-                text: `Se emitio la guia N° ${this.selected?.numero_guia} con exito`
+                title: "¡Guía de Remisión Emitida!",
+                text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
               });
               this.selected!.loading_update = false;
               this.reload();
@@ -318,9 +319,11 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           error: (err: any) => {
               this.alertService.showSwalAlert({
                 icon: "error",
-                text: "Ocurrio un error al emitir la guía"
+                title: err.error.error,
+                text: err.error.detalle
               });
               this.selected!.loading_update = false;
+              this.cd.detectChanges();
           }
         });
     }

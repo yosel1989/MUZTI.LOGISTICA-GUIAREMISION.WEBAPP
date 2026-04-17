@@ -27,7 +27,16 @@ export class ProveedorApiService {
     });
 
     return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
-      map(response =>{ return response as TableData<ProveedorDto[]> }),
+      map((response: TableData<ProveedorDto[]>) => ({  
+        ...response,
+        data: response.data.map((x: ProveedorDto) => ({
+          ...x,
+          fecha_creacion: new Date(x.fecha_creacion),
+          fecha_ultima_edicion: x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null,
+          ldStatus: false,
+          ldUpdate: false
+        }))
+      }) ),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -52,9 +61,13 @@ export class ProveedorApiService {
     );
   }
 
-  editar(request: EditarProveedorRequestDto): Observable<EditarProveedorResponseDto> {
+  editar(request: EditarProveedorRequestDto): Observable<ProveedorDto> {
     return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
-      map(response =>{ return response as EditarProveedorResponseDto }),
+      map((response: ProveedorDto) =>({ 
+        ...response, 
+        fecha_creacion: new Date(response.fecha_creacion),
+        fecha_ultima_edicion: response.fecha_ultima_edicion ? new Date(response.fecha_ultima_edicion) : null
+      } as ProveedorDto)),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

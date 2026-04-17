@@ -45,7 +45,16 @@ export class RemitenteApiService {
     });
 
     return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
-      map(response =>{ return response as TableData<RemitenteDto[]> }),
+      map((response: TableData<RemitenteDto[]>) => ({ 
+        ...response,
+        data: response.data.map((x: RemitenteDto) => ({
+          ...x,
+          fecha_creacion: new Date(x.fecha_creacion),
+          fecha_ultima_edicion: x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null,
+          ldEstado: false,
+          ldUpdate: false
+        }))
+      })),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -70,9 +79,13 @@ export class RemitenteApiService {
     );
   }
 
-  editar(id: number, request: EditarRemitenteRequestDto): Observable<EditarRemitenteResponseDto> {
+  editar(id: number, request: EditarRemitenteRequestDto): Observable<RemitenteDto> {
     return this.http.put<any>(`${this.baseUrl}/${id}`, request).pipe(
-      map(response =>{ return response as EditarRemitenteResponseDto }),
+      map(response => ({ 
+        ...response,
+        fecha_creacion: new Date(response.fecha_creacion),
+        fecha_ultima_edicion: new Date(response.fecha_ultima_edicion)
+      }) as RemitenteDto ),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

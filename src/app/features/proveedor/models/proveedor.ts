@@ -18,6 +18,7 @@ export interface ProveedorDto{
     fecha_ultima_edicion: Date | null;
     empleado_nombre_edicion: string;
     ldStatus: boolean;
+    ldUpdate: boolean;
 }
 
 

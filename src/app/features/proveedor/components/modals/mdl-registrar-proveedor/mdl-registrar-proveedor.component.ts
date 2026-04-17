@@ -21,6 +21,8 @@ import { SelectProvinciaComponent } from '@features/guia-remision/components/sel
 import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 
 @Component({
   selector: 'app-mdl-registrar-proveedor',
@@ -37,7 +39,9 @@ import { AlertService } from 'app/core/services/alert.service';
     SelectModule,
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
-    SelectDistritoComponent
+    SelectDistritoComponent,
+    OnlyNumberDirective,
+    OnlyUpperDirective
   ],
   templateUrl: './mdl-registrar-proveedor.component.html',
   styleUrl: './mdl-registrar-proveedor.component.scss',
@@ -87,6 +91,27 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     });
 
     this.headerValue = this.config.header ?? '';
+
+    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
+      this.frm.get('numero_documento')?.setValue(null);
+      this.frm.get('numero_documento')?.clearValidators();
+      switch(value){
+          case 'DNI':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
+            break;
+          case 'PASAPORTE':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
+            break;
+          case 'CARNET DE EXTRANJERIA':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
+            break;
+          case 'RUC':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
+            break;
+          default:
+            break;
+      }
+    }));
   }
 
   ngOnInit(): void {

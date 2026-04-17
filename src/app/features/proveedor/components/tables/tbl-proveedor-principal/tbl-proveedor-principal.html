@@ -235,7 +235,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
+            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData">
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
@@ -265,18 +265,34 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="cursor-pointer py-2! px-2!" >
-                                COD-{{ rowData[col.field].toString().padStart(4,'0') }}
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        COD-{{ rowData[col.field].toString().padStart(4,'0') }}
+                                    }
                                 </td>
                             }
                             @case('fecha_creacion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                    }
+                                </td>
                             }
                             @case('fecha_ultima_edicion'){
-                                <td class="text-nowrap py-1! font-light!">{{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
+                                <td class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                    }
+                                </td>
                             }
                             @case('estado'){
                                 <td class="text-nowrap py-1! font-light!"> 
-                                    @if(rowData['ldStatus']){
+                                    @if(rowData['ldStatus'] || rowData.ldUpdate){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else{
                                         @if(rowData['id_estado']){
@@ -297,7 +313,13 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 <td
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
-                                class="text-nowrap py-1! font-light!">{{rowData[col.field]}}</td>
+                                class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{rowData[col.field]}}
+                                    }
+                                </td>
                             }
                         }
                     }

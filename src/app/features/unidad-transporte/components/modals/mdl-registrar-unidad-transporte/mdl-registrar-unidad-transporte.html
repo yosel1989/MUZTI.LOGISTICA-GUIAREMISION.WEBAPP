@@ -6,11 +6,12 @@
             
         <div class="col-span-2">
 
-            <div class="grid gap-3">
+            <div class="flex flex-col gap-3">
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
                     <input 
                         pSize="small" 
+                        onlyUpper
                         fluid 
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="descripcion"
@@ -26,6 +27,7 @@
                     <input 
                         pSize="small" 
                         fluid 
+                        onlyUpper
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="marca"
@@ -41,6 +43,7 @@
                     <input 
                         pSize="small" 
                         fluid 
+                        onlyUpper
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="modelo"
@@ -51,14 +54,19 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Placa *</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold flex gap-x-2 items-center ">
+                        Placa *
+                        <i class="fa-solid fa-circle-question" pTooltip="Aquí deberás ingresar la placa del vehículo sin guión" tooltipStyleClass="text-xs! text-center" tooltipPosition="top"></i>
+                    </label>
                     <input 
                         pSize="small" 
                         fluid 
+                        onlyUpper
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="placa"
-                        [invalid]="frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)"/>
+                        [invalid]="frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)"
+                    />
                     @if (frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.placa.hasError('required')) {
@@ -79,6 +87,7 @@
                     <input 
                         pSize="small" 
                         fluid 
+                        onlyUpper
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="tarjeta"
@@ -112,6 +121,7 @@
                     <input 
                         pSize="small" 
                         fluid 
+                        onlyUpper
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="nro_autorizacion"

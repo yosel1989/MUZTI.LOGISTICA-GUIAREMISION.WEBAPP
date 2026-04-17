@@ -30,7 +30,11 @@ const routes: Routes = [
       {
         path: 'guia-remision/nuevo',
         loadComponent: () => import('@features/guia-remision/pages/guia-remision-crear/guia-remision-crear').then(m => m.GuiaRemisionCrearComponent)
-      }
+      },
+      {
+        path: 'transportista',
+        loadComponent: () => import('@features/transportista/pages/page-transportista-principal/page-transportista-principal').then(m => m.PageTransportistaPrincipalComponent)
+      },
     ]
   }
 ];

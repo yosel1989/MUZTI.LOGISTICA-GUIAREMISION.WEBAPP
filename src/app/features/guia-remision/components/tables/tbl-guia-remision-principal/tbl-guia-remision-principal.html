@@ -10,7 +10,7 @@
         [outlined]="true"
         severity="secondary"
         pTooltip="Anterior"
-        tooltipPosition="top"
+        tooltipPosition="bottom"
         tooltipStyleClass="text-xs!"
         placeholder="Top"
         styleClass="w-9! h-9!"
@@ -21,7 +21,7 @@
         severity="secondary" 
         [outlined]="true"
         pTooltip="Actualizar" 
-        tooltipPosition="top" 
+        tooltipPosition="bottom" 
         tooltipStyleClass="text-xs!"
         placeholder="Top"
         styleClass="w-9! h-9!"
@@ -34,7 +34,7 @@
         [outlined]="true"
         severity="secondary"
         pTooltip="Siguiente"
-        tooltipPosition="top"
+        tooltipPosition="bottom"
         tooltipStyleClass="text-xs!"
         placeholder="Top"
         styleClass="w-9! h-9!"
@@ -49,7 +49,7 @@
         severity="info" 
         [outlined]="true"
         pTooltip="Emitir Nueva Guía" 
-        tooltipPosition="top"
+        tooltipPosition="bottom"
         tooltipStyleClass="text-xs! text-center"
         placeholder="Top"
         styleClass="w-9! h-9!"
@@ -63,7 +63,7 @@
                 severity="secondary" 
                 [outlined]="true"
                 pTooltip="Ver detalle" 
-                tooltipPosition="top"
+                tooltipPosition="bottom"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="w-9! h-9!"
@@ -76,7 +76,7 @@
                 severity="secondary" 
                 [outlined]="true"
                 pTooltip="Ver PDF" 
-                tooltipPosition="top"
+                tooltipPosition="bottom"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="w-9! h-9!"
@@ -93,7 +93,7 @@
             [outlined]="true"
             severity="secondary"
             pTooltip="Descargar"
-            tooltipPosition="top"
+            tooltipPosition="bottom"
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -108,7 +108,7 @@
             [outlined]="true"
             severity="secondary"
             pTooltip="Arrastrar"
-            tooltipPosition="top"
+            tooltipPosition="bottom"
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -127,7 +127,7 @@
                 [outlined]="true"
                 severity="secondary"
                 pTooltip="Filtros"
-                tooltipPosition="top"
+                tooltipPosition="bottom"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="min-w-9! h-9!"
@@ -152,7 +152,7 @@
                 @if(inputFilter.value){
                     <p-inputicon 
                     pTooltip="Limpiar"
-                    tooltipPosition="top"
+                    tooltipPosition="bottom"
                     tooltipStyleClass="text-xs! text-center"
                     class="pi pi-times text-xs! cursor-pointer" 
                     (click)="ctrlSearch.setValue(null)" 
@@ -206,6 +206,11 @@
 
         [contextMenu]="cm" 
         (onContextMenuSelect)="evtOnRowSelect($event)"
+
+        [selectionMode]="'single'"
+        [(selection)]="selected" 
+        metaKeySelection="true" 
+        dataKey="id"
 
         [loading]="$ldData | async"
         [scrollable]="true"
@@ -309,7 +314,7 @@
                                     </td>
                                 }
                                 @case('estado'){
-                                    <td class="text-nowrap py-1! font-light! truncate"> 
+                                    <td class="text-nowrap py-1! font-light! truncate text-center"> 
 
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
@@ -328,17 +333,17 @@
                                     </td>
                                 }
                                 @case('estado_sunat'){
-                                    <td class="text-nowrap py-1! font-light! truncate"> 
+                                    <td class="text-nowrap py-1! font-light! truncate text-center"> 
 
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
                                             @if(rowData['id_estado_sunat']){
-                                                <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 mx-auto">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }@else{
-                                                <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 mx-auto">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }

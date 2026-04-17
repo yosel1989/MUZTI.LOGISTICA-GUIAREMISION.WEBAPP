@@ -170,6 +170,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
             x.fecha_creacion = new Date(x.fecha_creacion);
             x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
             x.ldStatus = false;
+            x.ldUpdate = false;
             return x;
           });
 
@@ -276,8 +277,17 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarUnidadTransporteComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarUnidadTransporteComponent) => {
-          this.evtOnReload();
+        const sub2 = cmp?.OnCreated.subscribe(( s: UnidadTransporteDto ) => {
+          this.selected!.ldUpdate = true;
+          this.cd.detectChanges();
+
+          setTimeout(() => {
+            const idx = this.data.findIndex(x => x.id === this.selected!.id);
+            if (idx > -1) {
+              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
+            }
+            this.cd.detectChanges();
+          }, 1000);
           this.ref?.close();
         });
         const sub3 = cmp?.OnCanceled.subscribe(_ => {
@@ -285,6 +295,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         });
         this.subs.add(sub2);
         this.subs.add(sub3);
+
       });
 
       this.subs.add(sub);

@@ -22,7 +22,7 @@ import { CardModule } from 'primeng/card';
 
 export class PageRemitentePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Remitente', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Administración', labelClass: 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Remitente', labelClass: 'text-[12px]!' }];
 
     constructor(
       private ls: LayoutService

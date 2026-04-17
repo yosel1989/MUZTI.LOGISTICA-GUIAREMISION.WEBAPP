@@ -281,8 +281,17 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarProveedorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarProveedorComponent) => {
-          this.evtOnReload();
+        const sub2 = cmp?.OnCreated.subscribe(( s: ProveedorDto) => {
+          this.selected!.ldUpdate = true;
+          this.cd.detectChanges();
+
+          setTimeout(() => {
+            const idx = this.data.findIndex(x => x.id === this.selected!.id);
+            if (idx > -1) {
+              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
+            }
+            this.cd.detectChanges();
+          }, 1000);
           this.ref?.close();
         });
         const sub3 = cmp?.OnCanceled.subscribe(_ => {
@@ -320,7 +329,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                   this.alertService.showToast({
                     position: 'bottom-end',
                     icon: "error",
-                    title: err.error.error,
+                    title: err.error.detalle,
                     showCloseButton: true,
                     timerProgressBar: true,
                     timer: 4000,

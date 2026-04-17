@@ -25,7 +25,7 @@ import { MdlRegistrarRemitenteComponent } from '../../modals/mdl-registrar-remit
 import { MdlEditarRemitenteComponent } from '../../modals/mdl-editar-remitente/mdl-editar-remitente.component';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 
 @Component({
@@ -291,8 +291,18 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarRemitenteComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlEditarRemitenteComponent) => {
-          this.evtOnReload();
+        const sub2 = cmp?.OnCreated.subscribe(( s: RemitenteDto) => {
+          console.log(this.selected);
+          this.selected!.ldUpdate = true;
+          this.cd.detectChanges();
+
+          setTimeout(() => {
+            const idx = this.data.findIndex(x => x.id === this.selected!.id);
+            if (idx > -1) {
+              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
+            }
+            this.cd.detectChanges();
+          }, 1000);
           this.ref?.close();
         });
         const sub3 = cmp?.OnCanceled.subscribe(_ => {

@@ -231,11 +231,28 @@
 
                             <label for="" class="text-md font-semibold text-primary">Datos del transportista</label>
 
+                            @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+                                <div class="flex flex-wrap gap-x-2">
+                                    <p-button 
+                                        size="small"
+                                        icon="fa-duotone fa-light fa-angle-down"
+                                        label="Seleccionar transportista"
+                                        iconPos="right"
+                                        outlined="true"
+                                        (click)="evtOnShowListaUnidadTransporte()"
+                                    >
+                                    </p-button>
+
+                                    <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                                </div>
+                            }
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">RUC *</label>
                                     <input 
-                                    placeholder="RUC *" 
+                                    placeholder="" 
                                     pSize="small" 
                                     fluid 
                                     pInputText 

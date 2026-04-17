@@ -4,26 +4,24 @@
         <div style="background-image: url('assets/media/bg/bg-registrar-remitente.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
         </div>
         <div class="col-span-2">
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
+            <p-divider class="my-0!"></p-divider>
+            <div class="grid grid-cols-2 gap-3 py-10!">
+                <div class="flex flex-col">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código</label>
                     @if(!($ldData | async)){
                     <input 
                         pSize="small" 
                         fluid 
                         pInputText 
-                        class="bg-gray-200! font-semibold! shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="codigo"
-                        readonly
-                        [disabled]="true"
                     />
                     }@else{
                     <p-skeleton width="100%" height="32px"></p-skeleton>
                     }
                 </div>
 
-                <div>
+                <div class="flex flex-col">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° RUC *</label>
                     @if(!($ldData | async)){
                     <input 
@@ -131,36 +129,13 @@
                         </p-message>
                     }
                 </div>
-                <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Código Sunat</label>
-                    @if(!($ldData | async)){
-                    <input 
-                    fluid 
-                    pInputText 
-                    type="text" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="codigo_sunat" 
-                    maxlength="4" 
-                    minlength="4" 
-                    autofocus="true"
-                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)"/>
-                    }@else{
-                    <p-skeleton width="100%" height="32px"></p-skeleton>
-                    }
-                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.codigo_sunat.hasError('maxlength')) {
-                            El código de sunat debe tener 4 caracteres.
-                        }</span>
-                        </p-message>
-                    }
-                </div>
+                
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección *</label>
                     @if(!($ldData | async)){
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
@@ -183,7 +158,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Email</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Email</label>
                     @if(!($ldData | async)){
                     <input 
                     fluid 
@@ -211,10 +186,11 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie *</label>
                     @if(!($ldData | async)){
                     <input 
                     fluid 
+                    onlyNumber
                     pInputText 
                     type="serie" 
                     pSize="small" 
@@ -234,7 +210,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Sunat</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Cod. Sunat</label>
                     @if(!($ldData | async)){
                     <input 
                     fluid 
@@ -256,6 +232,7 @@
                     }
                 </div>
             </div>
+            <p-divider class="my-0!"></p-divider>
         </div>
     </div>
 
@@ -265,8 +242,6 @@
     </div>
 
 </form>
-
-
 
 <div class="card flex justify-center">
 

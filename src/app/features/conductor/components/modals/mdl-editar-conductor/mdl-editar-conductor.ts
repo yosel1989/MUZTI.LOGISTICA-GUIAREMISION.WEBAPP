@@ -20,6 +20,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { AsyncPipe } from '@angular/common';
 import { ConductorDto, EditarConductorRequestDto, EditarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
+import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 @Component({
   selector: 'app-mdl-editar-conductor',
   imports: [
@@ -34,7 +36,9 @@ import { ConductorApiService } from '@features/conductor/services/conductor-api.
     ConfirmDialog,
     SelectModule,
     SkeletonModule,
-    AsyncPipe
+    AsyncPipe,
+    OnlyNumberDirective,
+    OnlyUpperDirective
   ],
   templateUrl: './mdl-editar-conductor.html',
   styleUrl: './mdl-editar-conductor.scss',
@@ -82,9 +86,29 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
       cargo: new FormControl(null),
       licencia: new FormControl(null, [Validators.required, Validators.minLength(9), Validators.maxLength(10)]),
     });
-    this.f.codigo.disable();
 
     this.headerValue = this.config.header ?? '';
+
+    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
+      this.frm.get('numero_documento')?.setValue(null);
+      this.frm.get('numero_documento')?.clearValidators();
+      switch(value){
+          case 'DNI':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
+            break;
+          case 'PASAPORTE':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
+            break;
+          case 'CARNET DE EXTRANJERIA':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
+            break;
+          case 'RUC':
+              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
+            break;
+          default:
+            break;
+      }
+    }));
   }
 
   ngOnInit(): void {
@@ -184,15 +208,15 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
   // data
   loadData(): void{
     this.ldData.next(true);
-    this.frm.disable();
+    //this.frm.disable();
     const sub = this.api.buscarPorId(this.id).subscribe({
       next: (res: ConductorDto) => {
         this.handlerLoadData(res);
         this.ldData.next(false);
-        this.frm.enable();
+        //this.frm.enable();
       },
       error: (err: HttpErrorResponse) => {
-        this.frm.enable();
+        //this.frm.enable();
         this.ldData.next(false);
         this.alertService.showToast({
           position: 'bottom-end',
@@ -218,10 +242,10 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       tipo_documento: res.tipo_documento,
       numero_documento: res.numero_documento,
-      nombres: res.nombres,
-      apellidos: res.apellidos,
-      cargo: res.cargo,
-      licencia: res.licencia
+      nombres: res.nombres?.toString().toUpperCase(),
+      apellidos: res.apellidos?.toString().toUpperCase(),
+      cargo: res.cargo?.toString().toUpperCase(),
+      licencia: res.licencia?.toString().toUpperCase()
     });
   }
 

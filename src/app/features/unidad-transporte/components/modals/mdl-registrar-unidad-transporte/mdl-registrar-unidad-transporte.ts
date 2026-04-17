@@ -20,6 +20,8 @@ import { RegistrarConductorResponseDto } from '@features/conductor/models/conduc
 import { RegistrarUnidadTransporteRequestDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-mdl-registrar-unidad-transporte',
@@ -34,11 +36,15 @@ import { SelectEmisorVehicularComponent } from '@features/catalogo/components/se
     MessageModule, 
     ConfirmDialog,
     SelectModule,
-    SelectEmisorVehicularComponent
+    SelectEmisorVehicularComponent,
+    OnlyUpperDirective,
+    TooltipModule
   ],
   templateUrl: './mdl-registrar-unidad-transporte.html',
   styleUrl: './mdl-registrar-unidad-transporte.scss',
-  providers: [ConfirmationService]
+  providers: [
+    ConfirmationService
+  ]
 })
 export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy {
 

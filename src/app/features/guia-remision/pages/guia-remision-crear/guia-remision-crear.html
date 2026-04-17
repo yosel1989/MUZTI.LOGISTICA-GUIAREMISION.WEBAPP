@@ -441,20 +441,23 @@
 
                 <div class="flex flex-col gap-4 gap-x-3">
                     <div class="">
-                        <label  class="block text-[11px]!">Fecha de emisión</label>
-                        <p-datepicker 
-                            readonlyInput="true" 
-                            formControlName="fecha_emision" 
-                            size="small" 2
-                            [iconDisplay]="'input'" 
-                            [showIcon]="true" 
-                            showButtonBar="true"
-                            inputId="icondisplay" 
-                            [minDate]="minFechaEmision"
-                        />
+                        <label class="text-[11px]! text-gray-500 font-semibold">Fecha de emisión</label>
+                        <div class="w-full">
+                            <p-datepicker 
+                                readonlyInput="true" 
+                                formControlName="fecha_emision" 
+                                size="small"
+                                [iconDisplay]="'input'" 
+                                [showIcon]="true" 
+                                showButtonBar="true"
+                                inputId="icondisplay" 
+                                [minDate]="minFechaEmision"
+                            />
+                        </div>
+                        
                     </div>
 
-                    @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.remitente){
+                    @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.transportista){
                         <div>
                             <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">N° de registro MTC <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
                             <input 

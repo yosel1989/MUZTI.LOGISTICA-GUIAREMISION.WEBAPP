@@ -24,7 +24,7 @@ import { CardModule } from 'primeng/card';
 
 export class PageGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Guia de Remisión', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Administración', labelClass: 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guia de Remisión', labelClass: 'text-[12px]!' }];
     
     @ViewChild('fltGuiaRemision') fltGuiaRemision: FltGuiaRemisionPrincipalComponent | undefined;
 

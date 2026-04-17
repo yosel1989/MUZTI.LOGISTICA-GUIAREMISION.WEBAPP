@@ -1,0 +1,355 @@
+<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-[.5px] dark:border-b-gray-700">
+    <ng-template #start>
+    <div class="flex items-center gap-1">
+        <p-button 
+        size="small"
+        icon="pi pi-angle-left text-[13px]!" 
+        size="small" 
+        [disabled]="isFirstPage()"
+        [outlined]="true"
+        severity="secondary"
+        pTooltip="Anterior"
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="evtPrev()"
+        />
+        <p-button icon="pi pi-refresh text-[13px]!" 
+        size="small"  
+        severity="secondary" 
+        [outlined]="true"
+        pTooltip="Actualizar" 
+        tooltipPosition="top" 
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="reload()"
+        />
+        <p-button 
+        icon="pi pi-angle-right text-[13px]!" 
+        size="small" 
+        [disabled]="isLastPage()"
+        [outlined]="true"
+        severity="secondary"
+        pTooltip="Siguiente"
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs!"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="evtNext()"
+        />
+        
+        <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
+        
+        <p-button 
+        icon="pi pi-plus text-[13px]!"  
+        size="small" 
+        severity="info" 
+        [outlined]="true"
+        pTooltip="Nuevo transportista" 
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs! text-center"
+        placeholder="Top"
+        styleClass="w-9! h-9!"
+        (click)="evtOnCreate()"
+        />
+
+        @if(selected){
+            <p-button 
+                icon="pi pi-pencil text-[13px]!"  
+                size="small" 
+                severity="warn" 
+                [outlined]="true"
+                pTooltip="Editar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnEdit()"
+            />
+            <p-button 
+                icon="pi pi-trash text-[13px]!"  
+                size="small" 
+                severity="danger" 
+                [outlined]="true"
+                pTooltip="Eliminar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnDelete()"
+            />
+            @if(selected.id_estado === 0){
+            <p-button 
+                icon="pi pi-check-circle text-[13px]!"  
+                size="small" 
+                severity="success" 
+                [outlined]="true"
+                pTooltip="Activar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnUpdateStatus(1)"
+            />
+            }
+            @if(selected.id_estado === 1){
+            <p-button 
+                icon="pi pi-ban text-[13px]!" 
+                size="small" 
+                severity="secondary" 
+                [outlined]="true"
+                pTooltip="Desactivar" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtOnUpdateStatus(0)"
+            />
+            }
+        }
+           
+        <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
+
+        <p-button 
+            icon="pi pi-cloud-download text-[13px]!" 
+            size="small"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Descargar"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            placeholder="Top"
+        />
+
+    </div>
+    </ng-template>
+    <ng-template #end>
+        <p-iconfield iconPosition="left" class="w-[190px]!">
+            <p-inputicon class="pi pi-search" />
+            <input 
+            fluid
+            #inputFilter 
+            type="text" 
+            pInputText 
+            pSize="small" 
+            placeholder="Buscar ..." 
+            class="text-[12px]! h-9!"
+            [formControl]="ctrlSearch"
+            />
+            @if(inputFilter.value){
+                <p-inputicon 
+                pTooltip="Limpiar"
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs! text-center"
+                class="pi pi-times text-xs! cursor-pointer" 
+                (click)="ctrlSearch.setValue(null)" 
+                />
+            }
+        </p-iconfield>
+    </ng-template>
+</p-toolbar>
+
+<div class="relative h-full w-full">
+    @if($ldData | async){
+        <app-loader class="z-40"></app-loader>
+    }
+
+<p-table 
+#datatable
+[columns]="cols"
+[value]="paddedData"
+size="small" 
+currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+[showCurrentPageReport]="true"
+
+[(selection)]="selected"
+[tableStyle]="{ 'min-width': '100px' }"
+[scrollable]="true"
+[showLoader]="false"
+[resizableColumns]="true"
+columnResizeMode="expand"
+
+showGridlines 
+
+stripedRows
+[lazy]="true"
+[rowHover]="true"
+[paginator]="true"
+
+[totalRecords]="totalRecords"
+[rows]="pageSize"
+[first]="pageNumber"
+[rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+scrollHeight="400px"
+
+(rowsChange)="evtRowsChange($event)"
+
+class="border-none! text-mono! max-w-full!"
+paginatorDropdownAppendTo="body"
+paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
+
+[contextMenu]="cm" 
+(onContextMenuSelect)="evtOnRowSelect($event)"
+>
+    <ng-template pTemplate="header" let-columns>
+        <tr class="text-nowrap">
+            @for (col of columns; track col) {
+                 @switch (col.field) {
+                    @case('select'){
+                        <th class="px-2 border-s-0!"></th>
+                    }
+                    @case('cod'){
+                        <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
+                    }
+                    @default{
+                        <th 
+                        pFrozenColumn 
+                        [frozen]="col.sticky ?? false"
+                        pResizableColumn 
+                        [pSortableColumn]="col.sort ? col.field : undefined" 
+                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4!">
+                            <div class="flex items-center gap-2">
+                                {{ col.header }}
+                                @if(col.sort){<p-sortIcon [field]="col.field" />}
+                            </div>
+                        </th>
+                    }
+                 }
+            }
+        </tr>
+    </ng-template>
+
+    <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
+
+        @if($ldData | async) {
+            <tr>
+                @for (col of columns; let i = $index; track $index) {
+                    <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
+                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                    </td>
+                }
+            </tr>
+        }
+        @else{
+            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData">
+                @for (col of columns; let i = $index; track $index) {
+                    @if(rowData.__empty) {
+                        <td 
+                        pFrozenColumn
+                        [frozen]="col.sticky ?? false" 
+                        [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
+                        >—</td>
+                    }@else {
+                        @switch(col.field){
+                            @case('select'){
+                                <td
+                                class="cursor-pointer py-2! px-2! border-s-0!" >
+                                <p-tableRadioButton
+                                [value]="rowData" 
+                                (click)="evtToggleSelection(rowData)"
+                                class="flex text-center justify-center"/>
+                                </td>
+                            }
+                            @case('cod'){
+                                <td class="cursor-pointer py-2! px-4!" >
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ (rowIndex) }}
+                                    }
+                                    
+                                </td>
+                            }
+                            @case('id'){
+                                <td 
+                                pFrozenColumn 
+                                [frozen]="col.sticky ?? false"
+                                class="cursor-pointer py-2! px-2!" >
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        COD-{{ rowData[col.field].toString().padStart(4,'0') }}
+                                    }
+                                </td>
+                            }
+                            @case('fecha_creacion'){
+                                <td class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                    }
+                                </td>
+                            }
+                            @case('fecha_ultima_edicion'){
+                                <td class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
+                                    }
+                                </td>
+                            }
+                            @case('estado'){
+                                <td class="text-nowrap py-1! font-light!"> 
+                                    @if(rowData['ldEstado'] || rowData.ldUpdate){
+                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                                    }@else {
+                                        @if(rowData['id_estado']){
+                                            <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        }@else{
+                                            <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        }
+                                    }
+                                    
+                                </td>
+                            }
+                            @default {
+                                <td
+                                pFrozenColumn 
+                                [frozen]="col.sticky ?? false"
+                                class="text-nowrap py-1! font-light!">
+                                    @if(rowData.ldUpdate){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        {{rowData[col.field]}}
+                                    }
+                                </td>
+                            }
+                        }
+                    }
+                }
+            </tr>
+        }
+    </ng-template>
+</p-table>
+
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
+
+<div class="card flex justify-center">
+    <p-confirmdialog #cd appendTo="body">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>

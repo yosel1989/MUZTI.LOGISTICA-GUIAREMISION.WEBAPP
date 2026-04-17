@@ -19,6 +19,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { RegistrarRemitenteRequestDto, RegistrarRemitenteResponseDto } from '@features/remitente/models/remitente';
 import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
+import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-mdl-registrar-remitente',
@@ -35,7 +38,10 @@ import { RemitenteApiService } from '@features/remitente/services/remitente-api.
     SelectModule,
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
-    SelectDistritoComponent
+    SelectDistritoComponent,
+    OnlyNumberDirective,
+    OnlyUpperDirective,
+    DividerModule
   ],
   templateUrl: './mdl-registrar-remitente.component.html',
   styleUrl: './mdl-registrar-remitente.component.scss',

@@ -3,14 +3,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-10">
         <div style="background-image: url('assets/media/bg/bg-registrar-remitente.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
         </div>
-        <div class="col-span-2">
-
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
+        <div class="col-span-2"> 
+            <p-divider class="my-0!"></p-divider>
+            <div class="grid grid-cols-2 gap-3 py-10!">
+                <div class="flex flex-col">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° RUC *</label>
                     <input 
                         pSize="small" 
+                        onlyNumber
                         fluid 
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="ruc"
@@ -31,6 +31,7 @@
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre / Razón Social *</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
@@ -89,31 +90,12 @@
                         </p-message>
                     }
                 </div>
-                <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Código Sunat</label>
-                    <input 
-                    fluid 
-                    pInputText 
-                    type="text" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="codigo_sunat" 
-                    maxlength="4" 
-                    minlength="4" 
-                    autofocus="true"
-                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)"/>
-                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.codigo_sunat.hasError('maxLength')) {
-                            El código de sunat debe tener 4 caracteres.
-                        }</span>
-                        </p-message>
-                    }
-                </div>
+                
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección *</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
@@ -132,10 +114,12 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Email</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Email</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="email" 
                     pSize="small" 
@@ -156,9 +140,10 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie *</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="serie" 
                     pSize="small" 
@@ -174,9 +159,10 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Sunat</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 ">Cod. Sunat</label>
                     <input 
                     fluid 
+                    onlyNumber
                     pInputText 
                     type="codigo_sunat" 
                     pSize="small" 
@@ -191,6 +177,7 @@
                     }
                 </div>
             </div>
+            <p-divider class="my-0!"></p-divider>
         </div>
     </div>
     

@@ -10,7 +10,7 @@ import { ColumnsFilterDto } from "app/core/models/filter";
   providedIn: 'root'
 })
 export class UnidadTransporteApiService {
-  private baseUrl = `${environment.apiUrl}/Transporte`;
+  private baseUrl = `${environment.apiUrl}/unidad-transporte`;
 
   constructor(private http: HttpClient) {}
 
@@ -58,9 +58,15 @@ export class UnidadTransporteApiService {
     );
   }
 
-  editar(id: number, request: EditarUnidadTransporteRequestDto): Observable<EditarUnidadTransporteResponseDto> {
+  editar(id: number, request: EditarUnidadTransporteRequestDto): Observable<UnidadTransporteDto> {
     return this.http.put<any>(`${this.baseUrl}/${id}`, request).pipe(
-      map(response =>{ return response as EditarUnidadTransporteResponseDto }),
+      map(response =>{ return ({
+        ...response,
+        fecha_creacion: new Date(response.fecha_creacion),
+        fecha_ultima_edicion: new Date(response.fecha_ultima_edicion),
+        ldStatus: false,
+        ldUpdate: false
+      } as UnidadTransporteDto )  }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

@@ -19,6 +19,7 @@ import { AsyncPipe } from '@angular/common';
 import { EditarUnidadTransporteRequestDto, EditarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 @Component({
   selector: 'app-mdl-editar-unidad-transporte',
   imports: [
@@ -34,7 +35,8 @@ import { SelectEmisorVehicularComponent } from '@features/catalogo/components/se
     SelectModule,
     SkeletonModule,
     AsyncPipe,
-    SelectEmisorVehicularComponent
+    SelectEmisorVehicularComponent,
+    OnlyUpperDirective
   ],
   templateUrl: './mdl-editar-unidad-transporte.html',
   styleUrl: './mdl-editar-unidad-transporte.scss',
@@ -44,7 +46,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   
   @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() OnCreated: EventEmitter<UnidadTransporteDto | undefined> = new EventEmitter<UnidadTransporteDto | undefined>(undefined);
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
@@ -61,6 +63,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
     {id: 1, label: 'Activo'}
   ];
 
+  ldUpdate: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   $ldData = this.ldData.asObservable();
   data: UnidadTransporteDto | undefined;
@@ -135,13 +138,13 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.frm.disable();
             this.ldSubmit = true;
+            this.ldUpdate.next(true);
             
             const subs = this.api.editar(this.data!.id, this.request).subscribe({
-              next: (res: EditarUnidadTransporteResponseDto) => {
-                this.frm.enable();
+              next: (res: UnidadTransporteDto) => {
                 this.ldSubmit = false;
+                this.ldUpdate.next(false);
 
                 this.alertService.showToast({
                   position: 'bottom-end',
@@ -152,10 +155,10 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
+                this.ldUpdate.next(false);
                 this.ldSubmit = false;
                 this.alertService.showToast({
                   position: 'bottom-end',

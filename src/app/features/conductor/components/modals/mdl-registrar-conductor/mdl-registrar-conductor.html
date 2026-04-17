@@ -33,19 +33,54 @@
                     <input 
                         placeholder="N° Doc. de identidad *" 
                         pSize="small" 
+                        onlyNumber
                         fluid 
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento"
-                        [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)"/>
+                        [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)"
+                        [minlength]="
+                            f.tipo_documento.value === 'RUC' ? 11 : 
+                            f.tipo_documento.value === 'DNI' ? 8 : 
+                            null
+                        "
+                        [maxlength]="
+                            f.tipo_documento.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento.value === 'PASAPORTE' ? 12 : 
+                            f.tipo_documento.value === 'DNI' ? 8 : 
+                            f.tipo_documento.value === 'RUC' ? 11 : 
+                            null
+                        "
+                    />
                     
                     @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            @if(f.numero_documento.errors?.['required']){
+                                Este campo es requerido.
+                            }@else if(f.numero_documento.errors?.['minlength']){
+                                El documento debe tener mínimo 
+                                @switch(f.numero_documento.value){
+                                    @case('DNI'){ 8 }
+                                    @case('RUC'){ 11 }    
+                                    @default { 11 }
+                                }
+                                caracteres.
+                            }@else{
+                                El documento debe tener máximo
+                                @switch(f.numero_documento.value){
+                                    @case('DNI'){ 8 }
+                                    @case('CARNET DE EXTRANJERIA'){ 12 }
+                                    @case('PASAPORTE'){ 12 }    
+                                    @default { 11 }
+                                }
+                                caracteres.
+                            }
+                        </span></p-message>
                     }
                 </div>
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombres *</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
@@ -68,6 +103,7 @@
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Apellidos *</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
@@ -90,6 +126,7 @@
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cargo</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
@@ -109,6 +146,7 @@
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Licencia / Brevete *</label>
                     <input 
                     fluid 
+                    onlyUpper
                     pInputText 
                     type="text" 
                     pSize="small" 
