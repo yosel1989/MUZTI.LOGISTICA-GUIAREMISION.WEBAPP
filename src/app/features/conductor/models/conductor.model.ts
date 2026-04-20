@@ -80,7 +80,6 @@ export interface ActualizarEstadoConductorRequestDto{
   edited_employee_name: string;
 }
 
-
 export interface ActualizarEstadoConductorResponseDto{
   id: number;
   id_estado: number;
