@@ -221,7 +221,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
         this.alertService.showToast({
           position: 'bottom-end',
           icon: "error",
-          title: err.error.error,
+          title: err.error.detalle,
           showCloseButton: true,
           timerProgressBar: true,
           timer: 4000,

@@ -27,7 +27,18 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
     data: SelectTipoTraslado[] = [ 
         { label: 'Venta', value: GuiaRemisionTipoTrasladoEnum.venta }, 
         { label: 'Compra', value: GuiaRemisionTipoTrasladoEnum.compra },
-        { label: 'Traslado entre establecimientos de la misma empresa', value: GuiaRemisionTipoTrasladoEnum.traslado }, 
+        { label: 'Venta con entrega a terceros', value: GuiaRemisionTipoTrasladoEnum.venta_entrega_terceros }, 
+        { label: 'Traslado entre establecimientos de la misma empresa', value: GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa }, 
+        { label: 'Consignación', value: GuiaRemisionTipoTrasladoEnum.consignacion }, 
+        { label: 'Devolución', value: GuiaRemisionTipoTrasladoEnum.devolucion }, 
+        { label: 'Recojo de bienes transformados', value: GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados }, 
+        { label: 'Importación', value: GuiaRemisionTipoTrasladoEnum.importacion }, 
+        { label: 'Exportación', value: GuiaRemisionTipoTrasladoEnum.exportacion }, 
+        { label: 'Otros', value: GuiaRemisionTipoTrasladoEnum.otros }, 
+        { label: 'Venta sujeta a confirmación del comprador', value: GuiaRemisionTipoTrasladoEnum.venta_sujeta_confirmacion_comprador }, 
+        { label: 'Traslado de bienes para transformación', value: GuiaRemisionTipoTrasladoEnum.traslado_bienes_transformacion }, 
+        { label: 'Traslado emisor itinerante CP', value: GuiaRemisionTipoTrasladoEnum.traslado_emisor_itinerante_CP }, 
+        { label: 'Traslado de mercancía extranjera', value: GuiaRemisionTipoTrasladoEnum.traslado_mercancia_extranjera }, 
     ];
 
     constructor() {}

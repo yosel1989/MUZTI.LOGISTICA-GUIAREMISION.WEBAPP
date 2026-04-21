@@ -31,6 +31,7 @@ import { AlertService } from 'app/core/services/alert.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
 import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -115,7 +116,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       private apiGuiaRemitente: GuiaRemitenteApiService,
       private cd: ChangeDetectorRef,
       public util: UtilService,
-      public documentoApi: DocumentoApiService
+      public documentoApi: DocumentoApiService,
+      private confirmationService: ConfirmationService,
     ){
         this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
@@ -211,7 +213,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.cd.detectChanges();
           this.loading = false;
         },
-        error: (e) => {
+        error: (e: HttpErrorResponse) => {
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
@@ -298,33 +300,43 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           });
           return;
         }
-        this.selected.loading_update = true;
-        this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.ruc).subscribe({
-          next: (val: GR_EmitirGuiaRemisionResponseDto) => {
-            if(val.success){
-              this.alertService.showSwalAlert({
-                icon: "success",
-                title: "¡Guía de Remisión Emitida!",
-                text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
-              });
-              this.selected!.loading_update = false;
-              this.reload();
-            }else{
-              this.alertService.showSwalAlert({
-                icon: "error",
-                text: "Ocurrio un error al emitir la guía"
-              });
-            }
+
+        this.confirmationService.confirm({
+          header: `¿Desea aprobar la Guía de Remisión? N° ${this.selected?.numero_guia}`,
+          message: 'Confirmar la operación.',
+          accept: () => {
+            this.selected!.loading_update = true;
+            this.apiGuiaRemitente.emitirGuiaRemision(this.selected!.id, this.selected!.ruc).subscribe({
+              next: (val: GR_EmitirGuiaRemisionResponseDto) => {
+                if(val.success){
+                  this.alertService.showSwalAlert({
+                    icon: "success",
+                    title: "¡Guía de Remisión Aprobada y Emitida!",
+                    text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
+                  });
+                  this.selected!.loading_update = false;
+                  this.reload();
+                }else{
+                  this.alertService.showSwalAlert({
+                    icon: "error",
+                    text: "Ocurrio un error al emitir la guía"
+                  });
+                }
+              },
+              error: (err: HttpErrorResponse) => {
+                  this.alertService.showSwalAlert({
+                    icon: "error",
+                    title: err.error.error,
+                    text: err.error.detalle
+                  });
+                  this.selected!.loading_update = false;
+                  this.cd.detectChanges();
+              }
+            });
           },
-          error: (err: any) => {
-              this.alertService.showSwalAlert({
-                icon: "error",
-                title: err.error.error,
-                text: err.error.detalle
-              });
-              this.selected!.loading_update = false;
-              this.cd.detectChanges();
-          }
+          reject: () => {
+            
+          },
         });
     }
 
@@ -367,9 +379,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       }
 
       this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
-          saveAs(blob, 'reporte.xlsx'); // 👈 descarga el archivo
+        saveAs(blob, 'reporte.xlsx');
         this.loadingDownload.next(false);
-        }, (error) => {
+      }, (error: HttpErrorResponse) => {
         this.loadingDownload.next(false);
         this.alertService.showToast({
           position: 'bottom-end',

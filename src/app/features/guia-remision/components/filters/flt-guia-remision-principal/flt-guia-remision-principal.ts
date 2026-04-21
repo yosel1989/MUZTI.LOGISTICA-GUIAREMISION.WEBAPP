@@ -67,7 +67,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     tiposTraslado: SelectTipoTraslado[] = [ 
         { label: 'VENTA', value: GuiaRemisionTipoTrasladoEnum.venta }, 
         { label: 'COMPRA', value: GuiaRemisionTipoTrasladoEnum.compra },
-        { label: 'TRASLADO', value: GuiaRemisionTipoTrasladoEnum.traslado }, 
+        { label: 'TRASLADO', value: GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa }, 
     ];
 
     tiposTransporte: {label: string, value: string | null}[] = [ 

@@ -39,6 +39,7 @@ import { ProveedorDto, ProveedorSugeridoDto } from '@features/proveedor/models/p
 export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDestroy{
 
   @Output() OnSelect: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
+  @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   data = signal<ProveedorSugeridoDto[]>([]);
   selected: ProveedorSugeridoDto | undefined;
@@ -115,6 +116,11 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
         this.ldSelected.set(false);
       }
     });
+  }
+
+  // events
+  evtOnClose(): void{
+    this.OnClose.emit(true);
   }
 
 }

@@ -282,7 +282,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Editar Empresa Transportista',
+        header: 'Editar Transportista',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
