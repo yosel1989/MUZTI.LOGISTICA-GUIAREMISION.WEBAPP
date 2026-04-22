@@ -6,6 +6,7 @@ import { SelectModule } from 'primeng/select';
 export interface SelectTipoGuia{
     label: string;
     value: string;
+    disabled: boolean;
 }
 
 @Component({
@@ -29,8 +30,8 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
     frmCtrlTipoGuia = new FormControl(this.tipoGuiaSelected, Validators.required);
 
     data: SelectTipoGuia[] = [ 
-        { label: 'Guía Remitente', value: TipoGuiaRemisionEnum.remitente }, 
-        { label: 'Guía Transportista', value: TipoGuiaRemisionEnum.transportista }
+        { label: 'Guía Remitente', value: TipoGuiaRemisionEnum.remitente, disabled: false }, 
+        { label: 'Guía Transportista', value: TipoGuiaRemisionEnum.transportista, disabled: true }
     ];
 
     constructor() {

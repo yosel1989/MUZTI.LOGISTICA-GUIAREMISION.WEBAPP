@@ -40,6 +40,7 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
 export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy{
 
   @Output() OnSelect: EventEmitter<UnidadTransporteDto> = new EventEmitter<UnidadTransporteDto>();
+  @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   data = signal<UnidadTransporteSugeridoDto[]>([]);
   selected: UnidadTransporteSugeridoDto | undefined;
@@ -116,6 +117,13 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
         this.ldSelected.set(false);
       }
     });
+  }
+
+
+  // events
+
+  evtOnClose(): void{
+    this.OnClose.emit(true);
   }
 
 }

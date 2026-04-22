@@ -25,7 +25,7 @@
             <p-tabpanel value="0">
                 <div [formGroup]="formDatosEnvio" class="flex flex-col gap-4">
                     
-                    @if( tipoGuia != 'TRANSPORTISTA'){
+                    @if( tipoGuia === 'REMITENTE'){
                         <div class="flex items-center gap-1">
                             <label for="" class="text-[14px] font-semibold text-primary uppercase">TIPO DE TRANSPORTE:</label>
                             <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-3.25!" pTooltip="Privado: Cuando el transporte de bienes es realizado por el propietario con vehículos propios. Público: Cuando se contrata a un transportista para que traslade los bienes." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
@@ -36,42 +36,41 @@
                                 size="small" 
                                 styleClass="text-md! py-1! font-normal!" 
                                 class="text-xs! font-normal!" 
-                                (onClick)="evtOnChangeTipoTransporte('PRIVADO')" 
+                                (click)="formDatosEnvio.get('tipo_transporte')?.setValue('PRIVADO')"
                                 label="Privado" 
-                                [raised]="f_datosEnvio.tipo_transporte.value === 'PRIVADO'"
-                                [severity]="f_datosEnvio.tipo_transporte.value == 'PRIVADO' ? 'primary' : 'secondary'"></p-button>
+                                [raised]="esTransportePrivado"
+                                [severity]="esTransportePrivado ? 'primary' : 'secondary'"></p-button>
                                 <p-button 
                                 size="small" 
                                 styleClass="text-md! py-1! font-normal!" 
                                 class="text-xs!" 
-                                (onClick)="evtOnChangeTipoTransporte('PUBLICO')" 
+                                (click)="formDatosEnvio.get('tipo_transporte')?.setValue('PUBLICO')"
                                 label="Público" 
-                                [raised]="f_datosEnvio.tipo_transporte.value === 'PUBLICO'"
-                                [severity]="f_datosEnvio.tipo_transporte.value == 'PUBLICO' ? 'primary' : 'secondary'"></p-button>
+                                [raised]="!esTransportePrivado"
+                                [severity]="!esTransportePrivado ? 'primary' : 'secondary'"></p-button>
                             </div>
                         </div>
                     }
 
                     <div class="grid grid-cols-1 lg:grid-cols-6 gap-2">
-                        @if(
-                            f_datosEnvio.tipo_transporte.value == 'PRIVADO' ||  
-                            (f_datosEnvio.tipo_transporte.value == 'PUBLICO' && f_datosEnvio.traslado_vehiculo_categoria.value)
-                        ){
+                        @if(esTransportePrivado){
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Fecha de inicio de traslado *</label>
                                 <p-datepicker 
-                                size="small" 
-                                fluid
-                                placeholder="dd/mm/aaaa"
-                                class="text-xs! min-h-9!"
-                                formControlName="fecha_inicio_traslado"
-                                [iconDisplay]="'input'" 
-                                appendTo="body"
-                                panelStyleClass="text-xs-panel"
-                                readonlyInput="true"
-                                [showButtonBar]="true"
-                                [invalid]="f_datosEnvio.fecha_inicio_traslado?.invalid && (f_datosEnvio.fecha_inicio_traslado?.touched || submitted)" 
-                                [showIcon]="true" />
+                                    size="small" 
+                                    fluid
+                                    placeholder="dd/mm/aaaa"
+                                    class="text-xs! min-h-9!"
+                                    formControlName="fecha_inicio_traslado"
+                                    [iconDisplay]="'input'" 
+                                    appendTo="body"
+                                    panelStyleClass="text-xs-panel"
+                                    readonlyInput="true"
+                                    [showButtonBar]="true"
+                                    [invalid]="f_datosEnvio.fecha_inicio_traslado?.invalid && (f_datosEnvio.fecha_inicio_traslado?.touched || submitted)" 
+                                    [showIcon]="true" 
+                                    [minDate]="minFechaEntregaTraslado"
+                                />
                                 @if (
                                     f_datosEnvio.fecha_inicio_traslado?.invalid && 
                                     (f_datosEnvio.fecha_inicio_traslado?.touched || submitted)
@@ -96,6 +95,7 @@
                                 appendTo="body" 
                                 [showIcon]="true" 
                                 [showButtonBar]="true"
+                                [minDate]="minFechaEntregaTraslado"
                                 />
                                 @if (f_datosEnvio.fecha_entrega_transportista?.invalid && (f_datosEnvio.fecha_entrega_transportista?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
@@ -170,6 +170,46 @@
                         
                     </div>
 
+                    @if(tieneDatosContenedor){
+                        <div class="grid grid-cols-1 lg:grid-cols-6 gap-2">
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Número de bultos *</label>
+                                <input 
+                                placeholder="" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                formControlName="numero_bultos" 
+                                [class]="f_datosEnvio.numero_bultos.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_bultos.invalid && submitted" />
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500">N° de contenedor</label>
+                                <input 
+                                placeholder="" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                formControlName="numero_contenedor" 
+                                [class]="f_datosEnvio.numero_contenedor.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_contenedor.invalid && submitted" />
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="text-[11px]! h-4.5! text-gray-500">N° de precinto</label>
+                                <input 
+                                placeholder="" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                formControlName="numero_precinto" 
+                                [class]="f_datosEnvio.numero_precinto.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_precinto.invalid && submitted" />
+                            </div>
+                        </div>
+                    }
+
                     <div class="grid grid-cols-4 gap-4">
                         @if(f_datosEnvio.pagador_flete.value == 'SUBCONTRATADOR'){
                             <div class="flex flex-col">
@@ -222,91 +262,6 @@
                         <label for="traslado_vehiculo_categoria" class="text-xs! font-semibold cursor-pointer">Traslado en vehículos de categoría M1 o L</label>
                     </div>
 
-                    @if(
-                        f_datosEnvio.tipo_transporte.value === 'PUBLICO' && 
-                        !f_datosEnvio.traslado_vehiculo_categoria.value
-                    ){
-
-                        <div class="flex flex-col gap-4">
-
-                            <label for="" class="text-md font-semibold text-primary">Datos del transportista</label>
-
-                            @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
-                                <div class="flex flex-wrap gap-x-2">
-                                    <p-button 
-                                        size="small"
-                                        icon="fa-duotone fa-light fa-angle-down"
-                                        label="Seleccionar transportista"
-                                        iconPos="right"
-                                        outlined="true"
-                                        (click)="evtOnShowListaUnidadTransporte()"
-                                    >
-                                    </p-button>
-
-                                    <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
-
-                                </div>
-                            }
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                                <div class="flex flex-col">
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">RUC *</label>
-                                    <input 
-                                    placeholder="" 
-                                    pSize="small" 
-                                    fluid 
-                                    pInputText 
-                                    formControlName="ruc_transportista" 
-                                    [class]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted) ? 'text-xs! shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted)" />
-                                    @if (f_datosEnvio.ruc_transportista?.invalid && (f_datosEnvio.ruc_transportista?.touched || submitted)) {
-                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                    }
-                                </div>
-                                <div class="flex flex-col">
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Razón social o denominación *</label>
-                                    <input 
-                                    pSize="small" 
-                                    fluid 
-                                    pInputText 
-                                    formControlName="rsocial_transportista" 
-                                    [class]="f_datosEnvio.rsocial_transportista.invalid && (submitted || f_datosEnvio.rsocial_transportista.touched) ? 'text-xs!  shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosEnvio.rsocial_transportista.invalid && (submitted || f_datosEnvio.rsocial_transportista.touched)" />
-                                    @if (f_datosEnvio.rsocial_transportista?.invalid && (f_datosEnvio.rsocial_transportista?.touched || submitted)) {
-                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                    }
-                                </div>
-                                <div class="flex flex-col">
-                                    <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500">N° de registro MTC<ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el código de registro del Ministerio de Transportes y Comunicaciones que tenga actualmente el vehículo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
-
-                                    <input 
-                                    pSize="small" 
-                                    fluid 
-                                    pInputText 
-                                    formControlName="num_mtc_transportista" 
-                                    class="text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
-                                </div>
-                                <div class="flex flex-col">
-                                    <label class="text-[11px]! h-4.5! text-gray-500">E-mail del Transportista</label>
-                                    <input 
-                                    pSize="small" 
-                                    fluid 
-                                    pInputText 
-                                    formControlName="email_transportista" 
-                                    class="text-xs! min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
-                                </div>
-                            </div>
-
-                            @if(!f_datosEnvio.traslado_vehiculo_categoria.value){
-                                <div class="flex items-center gap-2">
-                                    <p-checkbox formControlName="registrar_vehiculos_conductores" inputId="registrar_vehiculos_conductores" size="large" [binary]="true"/>
-                                    <label for="registrar_vehiculos_conductores" class="text-xs! font-semibold cursor-pointer">Registrar vehículos y conductores del transportista</label>
-                                </div>
-                            }
-
-                        </div>
-                        
-                    }
 
                     @if(f_datosEnvio.traslado_vehiculo_categoria.value){
                         <div class="flex flex-col gap-4">
@@ -579,6 +534,168 @@
                                 </div>
                             }
                         </div>
+                    }
+
+                    @if(
+                        motivoTraslado === 'TRASLADO'
+                    ){
+                        <p-divider class="my-0!"></p-divider>
+                        <div class="flex flex-col gap-4">
+
+                            <label for="" class="text-md font-semibold text-primary">Datos de establecimiento</label>
+
+                            <div class="grid grid-cols-4 gap-2">
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Establec. Punto Partida *</label>
+                                    <input 
+                                        onlyNumber
+                                        formControlName="cod_establecimiento_origen"
+                                        placeholder="" 
+                                        pSize="small" 
+                                        fluid 
+                                        pInputText 
+                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                                        [invalid]="f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted)"
+                                    />
+                                    @if (f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]!">
+                                            El código debe tener 4 digitos
+                                        </span></p-message>
+                                    }
+                                </div>
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Ruc. del establecimiento *</label>
+                                    <input 
+                                        formControlName="ruc_establecimiento_origen"
+                                        placeholder="" 
+                                        pSize="small" 
+                                        fluid 
+                                        pInputText 
+                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-4 gap-2">
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Establec. Punto Llegada *</label>
+                                    <input 
+                                        onlyNumber
+                                        formControlName="cod_establecimiento_destino"
+                                        placeholder="" 
+                                        pSize="small" 
+                                        fluid 
+                                        pInputText 
+                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                        [invalid]="f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted)"
+                                    />
+                                    @if (f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                            El código debe tener 4 digitos
+                                        </span></p-message>
+                                    }
+                                </div>
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Ruc. del establecimiento *</label>
+                                    <input 
+                                        formControlName="ruc_establecimiento_destino"
+                                        placeholder="" 
+                                        pSize="small" 
+                                        fluid 
+                                        pInputText 
+                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                    }
+
+                    @if(
+                        f_datosEnvio.tipo_transporte.value === 'PUBLICO' && 
+                        !f_datosEnvio.traslado_vehiculo_categoria.value
+                    ){
+                        <p-divider class="my-0!"></p-divider>
+
+                        <div class="flex flex-col gap-4">
+
+                            <label for="" class="text-md font-semibold text-primary">Datos del transportista</label>
+
+                            @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+                                <div class="flex flex-wrap gap-x-2">
+                                    <p-button 
+                                        size="small"
+                                        icon="fa-duotone fa-light fa-angle-down"
+                                        label="Seleccionar transportista"
+                                        iconPos="right"
+                                        outlined="true"
+                                        (click)="evtOnShowListaUnidadTransporte()"
+                                    >
+                                    </p-button>
+
+                                    <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+
+                                </div>
+                            }
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                                <div class="flex flex-col">
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">RUC *</label>
+                                    <input 
+                                    placeholder="" 
+                                    pSize="small" 
+                                    fluid 
+                                    pInputText 
+                                    formControlName="ruc_transportista" 
+                                    [class]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted) ? 'text-xs! shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    [invalid]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted)" />
+                                    @if (f_datosEnvio.ruc_transportista?.invalid && (f_datosEnvio.ruc_transportista?.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                    }
+                                </div>
+                                <div class="flex flex-col">
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Razón social o denominación *</label>
+                                    <input 
+                                    pSize="small" 
+                                    fluid 
+                                    pInputText 
+                                    formControlName="rsocial_transportista" 
+                                    [class]="f_datosEnvio.rsocial_transportista.invalid && (submitted || f_datosEnvio.rsocial_transportista.touched) ? 'text-xs!  shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    [invalid]="f_datosEnvio.rsocial_transportista.invalid && (submitted || f_datosEnvio.rsocial_transportista.touched)" />
+                                    @if (f_datosEnvio.rsocial_transportista?.invalid && (f_datosEnvio.rsocial_transportista?.touched || submitted)) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                    }
+                                </div>
+                                <div class="flex flex-col">
+                                    <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500">N° de registro MTC<ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el código de registro del Ministerio de Transportes y Comunicaciones que tenga actualmente el vehículo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
+
+                                    <input 
+                                    pSize="small" 
+                                    fluid 
+                                    pInputText 
+                                    formControlName="num_mtc_transportista" 
+                                    class="text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
+                                </div>
+                                <div class="flex flex-col">
+                                    <label class="text-[11px]! h-4.5! text-gray-500">E-mail del Transportista</label>
+                                    <input 
+                                    pSize="small" 
+                                    fluid 
+                                    pInputText 
+                                    formControlName="email_transportista" 
+                                    class="text-xs! min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
+                                </div>
+                            </div>
+
+                            @if(!f_datosEnvio.traslado_vehiculo_categoria.value){
+                                <div class="flex items-center gap-2">
+                                    <p-checkbox formControlName="registrar_vehiculos_conductores" inputId="registrar_vehiculos_conductores" size="large" [binary]="true"/>
+                                    <label for="registrar_vehiculos_conductores" class="text-xs! font-semibold cursor-pointer">Registrar vehículos y conductores del transportista</label>
+                                </div>
+                            }
+
+                        </div>
+                        
                     }
 
                     <p-fieldset [toggleable]="true" collapsed="true">

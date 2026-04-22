@@ -1,7 +1,7 @@
 <form [formGroup]="frm" (ngSubmit)="evtOnSubmit()">
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-10">
-        <div style="background-image: url('assets/media/bg/bg-registrar-remitente.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+        <div style="background-image: url('assets/media/bg/bg-registrar-empresa-transportista.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
         </div>
         <div class="col-span-2"> 
             <p-divider class="my-0!"></p-divider>
@@ -22,7 +22,7 @@
                         @if (f.numero_documento.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.numero_documento.hasError('maxlength') || f.ruc.hasError('maxlength')) {
+                        @else if (f.numero_documento.hasError('minlength') || f.numero_documento.hasError('maxlength')) {
                             El número de documento debe tener 11 caracteres
                         }
                         </span></p-message>
@@ -44,7 +44,7 @@
                         @if (f.razon_social.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.razon_social.hasError('maxlength')) {
+                        @else if (f.razon_social.hasError('maxlength')) {
                             La descripción no debe exceder los 200 caracteres.
                         }</span>
                         </p-message>
@@ -109,7 +109,7 @@
                         @if (f.direccion.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.direccion.hasError('maxlength')) {
+                        @else if (f.direccion.hasError('maxlength')) {
                             La dirección no debe exceder los 250 caracteres.
                         }</span>
                         </p-message>
@@ -130,11 +130,11 @@
                     [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)"/>
                     @if (frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.email.hasError('required')) {
-                            Este campo es requerido.
+                        @if (f.email.hasError('email')) {
+                            El correo no tiene un formato válido.
                         }
-                        @if (f.email.hasError('maxlength')) {
-                            La dirección no debe exceder los 100 caracteres.
+                        @else if (f.email.hasError('maxlength')) {
+                            El correo no debe exceder los 100 caracteres.
                         }</span>
                         </p-message>
                     }

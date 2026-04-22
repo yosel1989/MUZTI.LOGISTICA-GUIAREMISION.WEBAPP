@@ -78,7 +78,7 @@
 </div>
 
 <div class="flex gap-2 justify-end pt-6">
-    <p-button size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
+    <p-button (click)="evtOnClose()" size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
     <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldSelected()" [disabled]="!selected" size="small" [label]="!ldSelected() ? 'Seleccionar' : ''" severity="primary"></p-button>
 </div>
 

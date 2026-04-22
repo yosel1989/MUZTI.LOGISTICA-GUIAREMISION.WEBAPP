@@ -46,6 +46,7 @@ import { AlertService } from 'app/core/services/alert.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
 import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -119,51 +120,40 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   hands = signal<boolean>(false);
 
-  constructor(
-    public dialogService: DialogService,
-    private alertService: AlertService,
-    private api: GuiaRemisionApiService,
-    private apiGuiaRemitente: GuiaRemitenteApiService,
-    private cd: ChangeDetectorRef,
-    public util: UtilService,
-    public documentoApi: DocumentoApiService,
-  ) {
-    this.cols = [
-      { field: 'select', header: '', sort: false, sticky: false },
-      { field: 'cod', header: '#', sort: false, sticky: false },
-      { field: 'id', header: 'Código', sort: false, sticky: false },
-      { field: 'empresa', header: 'Empresa', sort: false, sticky: false },
-      { field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
-      { field: 'razon_remitente', header: 'Remitente / Local', sort: false, sticky: false },
-      { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
-      { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
-      { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
-      { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
-      { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
-      { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
-      {
-        field: 'razon_destinatario',
-        header: 'Destinatario',
-        sort: false,
-        sticky: false,
-        className: 'w-[100px]',
-      },
-      {
-        field: 'nro_documento_destinatario',
-        header: 'N° Doc. Destinatario',
-        sort: false,
-        sticky: false,
-      },
-      { field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
-      { field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
-      { field: 'estado', header: 'Estado', sort: false, sticky: false },
-      { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
-      { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
-      { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
-      { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
-      { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
-    ];
-  }
+    constructor(
+      public dialogService: DialogService,
+      private alertService: AlertService,
+      private api: GuiaRemisionApiService,
+      private apiGuiaRemitente: GuiaRemitenteApiService,
+      private cd: ChangeDetectorRef,
+      public util: UtilService,
+      public documentoApi: DocumentoApiService
+    ){
+        this.cols = [
+          { field: 'select', header: '', sort: false, sticky: false  },
+          { field: 'cod', header: '#', sort: false, sticky: false  },
+          { field: 'id', header: 'Código', sort: false, sticky: false },
+          { field: 'empresa', header: 'Empresa', sort: false, sticky: false },
+          { field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
+          { field: 'razon_remitente', header: 'Remitente / Local', sort: false, sticky: false },
+          { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
+          { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
+          { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
+          { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
+          { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
+          { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
+          { field: 'razon_destinatario', header: 'Destinatario', sort: false, sticky: false, className: 'w-[100px]' },
+          { field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
+          { field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
+          { field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
+          { field: 'estado', header: 'Estado', sort: false, sticky: false },
+          { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
+          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
+        ];
+    }
 
   ngOnInit(): void {}
 
@@ -224,19 +214,19 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           return x;
         });
 
-        this.pageNumber = res.page_number;
-        this.pageSize = res.page_size;
-        this.first = (this.pageNumber - 1) * this.pageSize;
-        this.totalRecords = res.total_records;
-        this.ldData.next(false);
-        this.cd.detectChanges();
-        this.loading = false;
-      },
-      error: (e) => {
-        console.log(e);
-        this.ldData.next(false);
-        this.loading = false;
-        this.data = [];
+          this.pageNumber = res.page_number;
+          this.pageSize = res.page_size;
+          this.first = (this.pageNumber - 1) * this.pageSize;
+          this.totalRecords = res.total_records;
+          this.ldData.next(false);
+          this.cd.detectChanges();
+          this.loading = false;
+        },
+        error: (e) => {
+          console.log(e);
+          this.ldData.next(false);
+          this.loading = false;
+          this.data = [];
 
         this.alertService.showToast({
           position: 'bottom-end',
@@ -308,43 +298,43 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
-  evtEmitInvoice(): void {
-    if (!this.selected) {
-      this.alertService.showSwalAlert({
-        text: 'Debe seleccionar una guía',
-        icon: 'warning',
-      });
-      return;
-    }
-    this.selected.loading_update = true;
-    this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.ruc).subscribe({
-      next: (val: GR_EmitirGuiaRemisionResponseDto) => {
-        if (val.success) {
+    evtEmitInvoice(): void{
+        if(!this.selected){
           this.alertService.showSwalAlert({
-            icon: 'success',
-            title: '¡Guía de Remisión Emitida!',
-            text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`,
+            text: "Debe seleccionar una guía",
+            icon: "warning"
           });
-          this.selected!.loading_update = false;
-          this.reload();
-        } else {
-          this.alertService.showSwalAlert({
-            icon: 'error',
-            text: 'Ocurrio un error al emitir la guía',
-          });
+          return;
         }
-      },
-      error: (err: any) => {
-        this.alertService.showSwalAlert({
-          icon: 'error',
-          title: err.error.error,
-          text: err.error.detalle,
+        this.selected.loading_update = true;
+        this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.ruc).subscribe({
+          next: (val: GR_EmitirGuiaRemisionResponseDto) => {
+            if(val.success){
+              this.alertService.showSwalAlert({
+                icon: "success",
+                title: "¡Guía de Remisión Emitida!",
+                text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
+              });
+              this.selected!.loading_update = false;
+              this.reload();
+            }else{
+              this.alertService.showSwalAlert({
+                icon: "error",
+                text: "Ocurrio un error al emitir la guía"
+              });
+            }
+          },
+          error: (err: any) => {
+              this.alertService.showSwalAlert({
+                icon: "error",
+                title: err.error.error,
+                text: err.error.detalle
+              });
+              this.selected!.loading_update = false;
+              this.cd.detectChanges();
+          }
         });
-        this.selected!.loading_update = false;
-        this.cd.detectChanges();
-      },
-    });
-  }
+    }
 
   evtOnShowFilters(): void {
     this.OnShowFilter.emit(true);
@@ -384,12 +374,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       });
     }
 
-    this.subData = this.api.exportarTodo(this.filters).subscribe(
-      (blob) => {
-        saveAs(blob, 'reporte.xlsx'); // 👈 descarga el archivo
+      this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
+          saveAs(blob, 'reporte.xlsx'); // 👈 descarga el archivo
         this.loadingDownload.next(false);
-      },
-      (error) => {
+        }, (error) => {
         this.loadingDownload.next(false);
         this.alertService.showToast({
           position: 'bottom-end',

@@ -39,6 +39,7 @@ import { ConductorApiService } from '@features/conductor/services/conductor-api.
 export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDestroy{
 
   @Output() OnSelect: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
+  @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   data = signal<ConductorSugeridoDto[]>([]);
   selected: ConductorSugeridoDto | undefined;
@@ -117,6 +118,13 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
         this.ldSelected.set(false);
       }
     });
+  }
+
+
+  // events
+
+  evtOnClose(): void{
+    this.OnClose.emit(true);
   }
 
 }

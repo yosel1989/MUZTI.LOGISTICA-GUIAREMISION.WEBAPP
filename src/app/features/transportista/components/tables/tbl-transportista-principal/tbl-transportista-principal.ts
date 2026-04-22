@@ -107,19 +107,19 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'tipo_documento', header: 'Tipo Doc.', sort: true, sticky: false },
-          { field: 'numero_documento', header: 'N° Doc.', sort: true, sticky: false },
-          { field: 'razon_social', header: 'Razón Social', sort: true, sticky: false },
-          { field: 'departamento', header: 'Departamento', sort: true, sticky: false },
-          { field: 'provincia', header: 'Provincia', sort: true, sticky: false },
-          { field: 'distrito', header: 'Distrito', sort: true, sticky: false },
-          { field: 'direccion', header: 'Dirección', sort: true, sticky: false },
-          { field: 'codigo_sunat', header: 'Cod. Sunat', sort: true, sticky: false },
-          { field: 'estado', header: 'Estado', sort: true, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: true, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: true, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: true, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: true, sticky: false },
+          { field: 'tipo_documento', header: 'Tipo Doc.', sort: false, sticky: false },
+          { field: 'numero_documento', header: 'N° Doc.', sort: false, sticky: false },
+          { field: 'razon_social', header: 'Razón Social', sort: false, sticky: false },
+          { field: 'departamento', header: 'Departamento', sort: false, sticky: false },
+          { field: 'provincia', header: 'Provincia', sort: false, sticky: false },
+          { field: 'distrito', header: 'Distrito', sort: false, sticky: false },
+          { field: 'direccion', header: 'Dirección', sort: false, sticky: false },
+          { field: 'codigo_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
+          { field: 'estado', header: 'Estado', sort: false, sticky: false },
+          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
@@ -318,7 +318,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
     evtOnDelete(): void{
       this.confirmationService.confirm({
-          header: '¿Eliminar transportista?',
+          header: '¿Eliminar Empresa Transportista?',
           message: 'Confirmar la operación.',
           accept: () => {
 

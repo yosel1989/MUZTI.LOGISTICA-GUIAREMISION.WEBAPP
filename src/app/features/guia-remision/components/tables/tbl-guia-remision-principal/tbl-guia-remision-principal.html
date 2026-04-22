@@ -378,13 +378,13 @@
 <div class="card flex justify-center">
     <p-confirmdialog #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-            <div class="flex flex-col items-center p-8 rounded-xl">
+            <div class="flex flex-col items-center p-8 rounded-xl max-w-[450px]!">
                 <div
                     class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
                 >
                     <i class="pi pi-question text-5xl!"></i>
                 </div>
-                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <span class="font-semibold text-2xl block mb-2 mt-6 text-center">{{ message.header }}</span>
                 <p class="mb-0">{{ message.message }}</p>
                 <div class="flex items-center gap-2 mt-6">
                     <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>

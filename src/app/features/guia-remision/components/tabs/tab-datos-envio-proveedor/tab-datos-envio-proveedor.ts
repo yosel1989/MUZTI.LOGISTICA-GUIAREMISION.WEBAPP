@@ -13,7 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { GrossWeightUnit } from 'app/features/items/models/gross-weight-unit';
 import { FAKE_GROSS_WEIGHT_UNIT } from 'app/fake/items/data/fakeGrossWeightUnit';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
+import { GuiaRemisionTipoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { FAKE_FREIGHT_PAYER } from 'app/fake/items/data/fakeFreightPayer';
 import { FreightPayer, IssuingEntity } from 'app/features/items/models/freight-payer';
 import { EnumPagadorFlete } from 'app/features/guia-remision/enums/pagador-flete.enum';
@@ -40,6 +40,8 @@ import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { RemitenteToSelect } from '@features/remitente/models/remitente';
+import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -64,7 +66,8 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
     CheckboxModule,
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
-    SelectDistritoComponent
+    SelectDistritoComponent,
+    OnlyNumberDirective
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle, heroArrowTurnDownLeftMini })],
   providers: [ConfirmationService, MessageService]
@@ -78,7 +81,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @ViewChild('distritoProveedor') distritoProveedor: SelectDistritoComponent | undefined;
 
     @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
-    @Input() motivoTraslado: string | 'VENTA' | 'TRASLADO' | 'COMPRA' | null = null;
+    @Input() motivoTraslado!: GuiaRemisionTipoTrasladoEnum;
+    @Input() emisora: RemitenteToSelect | undefined;
 
     formDatosEnvio: FormGroup = new FormGroup({});
     formDatosProveedor: FormGroup = new FormGroup({});
@@ -93,6 +97,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     subs = new Subscription();
 
+    minFechaEntregaTraslado = new Date();
+
     constructor(
       private fb: FormBuilder,
       private cdr: ChangeDetectorRef,
@@ -101,6 +107,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       private conductorService: ConductorApiService,
       private dialogService: DialogService
     ){
+
         this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
           fecha_inicio_traslado: new FormControl(null, Validators.required),
@@ -109,6 +116,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           unidad_peso_bruto: new FormControl('KGM', Validators.required),
           peso_bruto_total: new FormControl(null, Validators.required),
           pagador_flete: new FormControl(EnumPagadorFlete.remitente),
+
+          numero_bultos: new FormControl(null, Validators.required),
+          numero_contenedor: new FormControl(null),
+          numero_precinto: new FormControl(null),
+
           ruc_subcontratador: new FormControl(null),
           nombre_rsocial_subcontratador: new FormControl(null),
           tipo_documento_tercero: new FormControl(null),
@@ -128,6 +140,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           vehiculos: this.fb.array([], Validators.minLength(1)),
           conductores: this.fb.array([], Validators.minLength(1)),
 
+          cod_establecimiento_origen: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
+          ruc_establecimiento_origen: new FormControl({value: null, disabled: true}),
+          cod_establecimiento_destino: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
+          ruc_establecimiento_destino: new FormControl({value: null, disabled: true}),
+
           num_autoriza_especial_adicional: new FormControl(null),
           ent_emisora_especial_adicional: new FormControl(null),
           indic_retorno_vehiculo_envase_adicional: new FormControl(false),
@@ -145,6 +162,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           idProvincia : new FormControl({value: null, disabled: true}),
           idDistrito : new FormControl({value: null, disabled: true})
         });
+
+        this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
     }
 
     // getters
@@ -190,6 +209,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
           registrar_vehiculos_conductores: this.f_datosEnvio.registrar_vehiculos_conductores.value,
 
+          cod_establecimiento_origen: this.f_datosEnvio.cod_establecimiento_origen.value,
+          ruc_establecimiento_origen: this.f_datosEnvio.ruc_establecimiento_origen.value,
+          cod_establecimiento_destino: this.f_datosEnvio.cod_establecimiento_destino.value,
+          ruc_establecimiento_destino: this.f_datosEnvio.ruc_establecimiento_destino.value,
+
           vehiculos: (this.vehiculos.controls as FormGroup[]).map(group => ({ 
             id: group.get('id')?.value, 
             placa_vehiculo: group.get('placa_vehiculo')?.value, 
@@ -226,6 +250,19 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       };
     }
 
+    get esTransportePrivado(){
+      return this.f_datosEnvio.tipo_transporte.value === 'PRIVADO';
+    }
+
+    get tieneDatosContenedor(): boolean{
+      const motivosTraslado = [
+        GuiaRemisionTipoTrasladoEnum.importacion,
+        GuiaRemisionTipoTrasladoEnum.exportacion,
+        GuiaRemisionTipoTrasladoEnum.traslado_mercancia_extranjera
+      ];
+      return motivosTraslado.includes(this.motivoTraslado); 
+    }
+
     ngOnInit(): void {
       this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
 
@@ -233,7 +270,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.evtChangeValueTipoTransporte(res);
       });
 
-      this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((res: boolean) => {
+      /*this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((res: boolean) => {
         this.f_datosEnvio.registrar_vehiculos_conductores.setValue(false);
         if(this.f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
           this.f_datosEnvio.fecha_inicio_traslado.setValue(null);
@@ -248,7 +285,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           }
           this.cdr.markForCheck();
         }
-      });
+      });*/
     }
 
     ngAfterViewInit(): void {
@@ -257,11 +294,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+
       if(changes['tipoGuia']){
         if(this.tipoGuia === 'TRANSPORTISTA'){
           this.f_datosEnvio.tipo_transporte.setValue('PRIVADO');
         }
-
         this.cdr.markForCheck();
       }
     }
@@ -347,16 +384,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     evtChangeValueTipoTransporte = (tipo: 'PRIVADO' | 'PUBLICO') => {
-      /*this.formDatosEnvio.markAsUntouched();
-      Object.values(this.formDatosEnvio.controls).forEach(control => {
-        control.markAsUntouched();
-      });
 
-      this.vehiculos.clear();
-      this.conductores.clear();
-      this.f_datosEnvio.traslado_vehiculo_categoria.setValue(false);
-      this.f_datosEnvio.num_autoriza_especial_adicional.setValue(null);
-      this.f_datosEnvio.ent_emisora_especial_adicional.setValue(null);*/
+      this.resetDatosEnvio();
 
       const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
       const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
@@ -366,7 +395,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
         const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
 
-        this.formDatosEnvio = this.fb.group({
+        /*this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
           fecha_inicio_traslado: new FormControl(null, Validators.required),
           fecha_entrega_transportista: new FormControl(null),
@@ -398,7 +427,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_envase_adicional: new FormControl(false),
           transbordo_programado_adicional: new FormControl(false),
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
-        });
+        });*/
 
         //this.evtAddVehiculo();
         //this.evtAddConductor();
@@ -409,7 +438,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.f_datosEnvio.ruc_transportista.clearValidators();
         this.f_datosEnvio.rsocial_transportista.clearValidators();*/
       }else{
-        this.formDatosEnvio = this.fb.group({
+        /*this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PUBLICO', Validators.required),
           fecha_inicio_traslado: new FormControl(null),
           fecha_entrega_transportista: new FormControl(null, Validators.required),
@@ -441,7 +470,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_envase_adicional: new FormControl(false),
           transbordo_programado_adicional: new FormControl(false),
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
-        });
+        });*/
       }
 
       this.cdr.markForCheck();
@@ -461,35 +490,69 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     evtOnChangeTipoTransporte(tipoTrasnporte: 'PRIVADO' | 'PUBLICO'): void{
       this.f_datosEnvio.tipo_transporte.setValue(tipoTrasnporte);
-      this.evtChangeValueTipoTransporte(tipoTrasnporte);
     }
 
     evtOnChangeMotivoTraslado(motivoTraslado: 'VENTA' | 'TRASLADO' | 'COMPRA' | null): void{
-      if(motivoTraslado === 'COMPRA' && this.tipoGuia === TipoGuiaRemisionEnum.remitente){
-        this.formDatosProveedor = this.fb.group({
-          tipo_documento_proveedor: new FormControl(null, Validators.required),
-          numero_documento_proveedor: new FormControl(null, Validators.required),
-          nombre_rsocial_proveedor: new FormControl(null, Validators.required),
-          direccion_proveedor: new FormControl(null),
-          idDepartamento : new FormControl(null),
-          idProvincia : new FormControl(null),
-          idDistrito : new FormControl(null)
-        });
-        this.formDatosProveedor.markAsUntouched();
-        this.cdr.markForCheck();
-      }else{
-        this.formDatosProveedor = this.fb.group({
-          tipo_documento_proveedor: new FormControl(null),
-          numero_documento_proveedor: new FormControl(null),
-          nombre_rsocial_proveedor: new FormControl(null),
-          direccion_proveedor: new FormControl(null),
-          idDepartamento : new FormControl(null),
-          idProvincia : new FormControl(null),
-          idDistrito : new FormControl(null)
-        });
-        this.formDatosProveedor.markAsUntouched();
-        this.cdr.markForCheck();
+
+      // Limpiar los campos antes de manejarlos
+      this.formDatosProveedor = this.fb.group({
+        tipo_documento_proveedor: new FormControl(null, Validators.required),
+        numero_documento_proveedor: new FormControl(null, Validators.required),
+        nombre_rsocial_proveedor: new FormControl(null, Validators.required),
+        direccion_proveedor: new FormControl(null),
+        idDepartamento : new FormControl(null),
+        idProvincia : new FormControl(null),
+        idDistrito : new FormControl(null)
+      });
+      this.formDatosProveedor = this.fb.group({
+        tipo_documento_proveedor: new FormControl(null),
+        numero_documento_proveedor: new FormControl(null),
+        nombre_rsocial_proveedor: new FormControl(null),
+        direccion_proveedor: new FormControl(null),
+        idDepartamento : new FormControl(null),
+        idProvincia : new FormControl(null),
+        idDistrito : new FormControl(null)
+      });
+      this.formDatosProveedor.markAsUntouched();
+      this.cdr.markForCheck();
+
+
+      switch(this.tipoGuia){
+
+        case TipoGuiaRemisionEnum.remitente:
+
+          switch(motivoTraslado){
+            case 'COMPRA':
+                this.formDatosProveedor = this.fb.group({
+                  tipo_documento_proveedor: new FormControl(null, Validators.required),
+                  numero_documento_proveedor: new FormControl(null, Validators.required),
+                  nombre_rsocial_proveedor: new FormControl(null, Validators.required),
+                  direccion_proveedor: new FormControl(null),
+                  idDepartamento : new FormControl(null),
+                  idProvincia : new FormControl(null),
+                  idDistrito : new FormControl(null)
+                });
+                this.formDatosProveedor.markAsUntouched();
+                this.cdr.markForCheck();
+              break;
+            
+            case 'TRASLADO':
+                this.formDatosProveedor = this.fb.group({
+                  cod_establecimiento_origen: new FormControl()
+                });
+                this.formDatosProveedor.markAsUntouched();
+                this.cdr.markForCheck();
+              break;
+
+            default:
+              break;
+          }
+
+          break;
+        default:
+          break;
       }
+
     }
 
     evtOnSubmit(): void {
@@ -569,11 +632,15 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 }else{
                   this.evtAddVehiculo(s);
                 }
-
+                this.modalRef?.close();
+            });
+            const sub3 = cmp?.OnClose.subscribe(_ => {
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
+            this.subs.add(sub3);
         });
+
 
         this.subs.add(sub);
     }
@@ -608,13 +675,18 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 }
                 this.modalRef?.close();
             });
+            const sub3 = cmp?.OnClose.subscribe(_ => {
+                this.modalRef?.close();
+            });
             this.subs.add(sub2);
+            this.subs.add(sub3);
         });
 
         this.subs.add(sub);
     }
 
     evtOnShowListaProveedor(): void{
+
         this.modalRef = this.dialogService.open(MdlListaProveedorComponent, {
             width: '1000px',
             keepInViewport: false,
@@ -656,11 +728,29 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
                 this.modalRef?.close();
             });
+
+            const sub3 = cmp?.OnClose.subscribe(_ => {
+            this.modalRef?.close();
+        });
+            
             this.subs.add(sub2);
+            this.subs.add(sub3);
         });
 
         this.subs.add(sub);
     }
+
+    resetDatosEnvio(): void{
+      this.formDatosEnvio.reset({
+        tipo_transporte: this.f_datosEnvio.tipo_transporte.value,
+        descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
+        peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
+        unidad_peso_bruto: this.f_datosEnvio.unidad_peso_bruto.value
+      });
+      (this.formDatosEnvio.get('vehiculos') as FormArray).clear();
+      (this.formDatosEnvio.get('conductores') as FormArray).clear();
+    }
+
     // handlers
 
     handlerConfirmDialog(callback: () => void, header: string, message: string): void{

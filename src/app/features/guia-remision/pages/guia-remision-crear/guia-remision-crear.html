@@ -33,7 +33,7 @@
 
                     @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
                         <div>
-                            <app-select-motivo-traslado [control]="f.tipo_traslado" classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-motivo-traslado>
+                            <app-select-motivo-traslado [control]="f.motivo_traslado" classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-motivo-traslado>
                         </div>
                     }
 
@@ -226,7 +226,7 @@
                         )
                     ){
 
-                        @if(!(selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente && f.tipo_traslado.value === 'TRASLADO')){
+                        @if(mostrarSeleccionarDestinatario){
 
                             <div class="flex flex-wrap gap-x-2">
                                 <p-button 
@@ -452,6 +452,7 @@
                                 showButtonBar="true"
                                 inputId="icondisplay" 
                                 [minDate]="minFechaEmision"
+                                [maxDate]="maxFechaEmision"
                             />
                         </div>
                         
@@ -533,7 +534,8 @@
         <div class="flex flex-col gap-4">
             <app-tab-datos-envio-proveedor 
             [tipoGuia]="selectTipoGuiaComponent?.tipoGuiaSelected!" 
-            [motivoTraslado]="f.tipo_traslado.value" 
+            [motivoTraslado]="f.motivo_traslado.value"
+            [emisora]="selectEmpresaRemitente.selected"
             #tabDatosEnvioProveedor></app-tab-datos-envio-proveedor>
 
             <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
