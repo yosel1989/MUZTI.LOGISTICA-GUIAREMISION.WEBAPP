@@ -44,6 +44,7 @@
                         )
                     ){
                         <div>
+                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del remitente</label>
                             <div class="grid grid-cols-2 gap-y-3 gap-x-3">
                                 <div class="flex flex-col">
                                     <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
@@ -226,12 +227,16 @@
                         )
                     ){
 
+                        <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del destinatario</label>
+
                         @if(mostrarSeleccionarDestinatario){
 
                             <div class="flex flex-wrap gap-x-2">
                                 <p-button 
-                                    size="small"
-                                    icon="fa-duotone fa-light fa-angle-down"
+                                    size="small" 
+                                    styleClass="text-xs!" 
+                                    class="text-xs!" 
+                                    icon="fa-duotone fa-light fa-angle-down text-xs"
                                     label="Seleccionar destinatario"
                                     iconPos="right"
                                     (click)="evtOnShowDestinatarios()"
@@ -239,7 +244,14 @@
                                 >
                                 </p-button>
 
-                                <a href="/admin/remitente" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+                                <a 
+                                    pTooltip="Administrar destinatarios"
+                                    tooltipPosition="center"
+                                    tooltipStyleClass="text-xs! text-center"
+                                    href="/admin/remitente" 
+                                    target="_blank" 
+                                    class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium text-xs!"
+                                >Administrar</a>
 
                             </div>
 

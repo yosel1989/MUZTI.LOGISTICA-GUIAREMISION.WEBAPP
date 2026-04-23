@@ -29,6 +29,7 @@ import { AlertService } from 'app/core/services/alert.service';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { GR_ProductoRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { CardModule } from 'primeng/card';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -53,7 +54,8 @@ import { CardModule } from 'primeng/card';
     DividerModule,
     TextareaModule,
     SelectModule,
-    CardModule
+    CardModule,
+    OnlyUpperDirective
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService]
@@ -143,7 +145,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   ngOnInit(): void {
     this.unitOfMeasures = unitofMeasures;
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
-    this.evtAddItem();
+    this.initItems(5);
   }
 
   ngAfterViewInit(): void {
@@ -207,6 +209,37 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       this.items.push(row);
     }
     this.cdr.markForCheck();
+  }
+
+  initItems(numItems: number): void{
+    let count = 1;
+    while( count <= numItems ){
+      const row = this.newItem();
+
+      row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => { 
+        row.get('codigo_subnacional')?.setValue(null);
+        row.get('codigo_sunat')?.setValue(null);
+
+        if (value) { 
+          //row.get('codigo_sunat')?.disable(); 
+          row.get('codigo_subnacional')?.addValidators(Validators.required);
+          row.get('codigo_sunat')?.addValidators(Validators.required);
+        } 
+        else { 
+          //row.get('codigo_sunat')?.enable();
+          row.get('codigo_subnacional')?.clearValidators();
+          row.get('codigo_sunat')?.clearValidators();
+        }
+
+        row.get('codigo_subnacional')?.updateValueAndValidity();
+        row.get('codigo_sunat')?.updateValueAndValidity();
+
+        this.cdr.markForCheck(); 
+      });
+
+      this.items.push(row);
+      count ++;
+    }
   }
 
 

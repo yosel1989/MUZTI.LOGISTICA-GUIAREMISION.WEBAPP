@@ -46,6 +46,7 @@ import { AlertService } from 'app/core/services/alert.service';
 import { Router } from '@angular/router';
 import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
 import { DestinatarioDto } from '@features/destinatario/models/destinatario';
+import { DividerModule } from 'primeng/divider';
 
 interface Type {
     name: string;
@@ -86,7 +87,8 @@ interface Type {
     SelectEmpresaRemitenteComponent,
     GuiaSectionCabeceraComponent,
     AsyncPipe,
-    AutoCompleteModule
+    AutoCompleteModule,
+    DividerModule
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -162,7 +164,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             distrito_remitente: new FormControl(null),
             contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
-            id_destinatario: new FormControl(null, Validators.required),
+            destinatario_id: new FormControl(null, Validators.required),
             tipo_documento_destinatario: new FormControl('RUC'),
             numero_documento_destinatario: new FormControl({value: null, disabled: true}),
             razon_social_destinatario: new FormControl({value: null, disabled: true}),
@@ -187,7 +189,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             // bloquear campos superiores
             if(!this.mostrarSeleccionarDestinatario){
-                console.log('rellena ');
                 this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
                 this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
                 this.formGroup.get('tipo_documento_remitente')?.disable();
@@ -357,7 +358,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
-        console.log(this.tabDatosEnvioProveedor?.data.datosEnvio.registrar_vehiculos_conductores);
+        console.log('proveedor', this.tabDatosEnvioProveedor?.data.proveedor);
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             tipo_traslado: this.f.motivo_traslado.value,
@@ -378,6 +379,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             }) : null,
 
             remitente: {
+                remitente_id: this.f.remitente_id.value,
                 ruc: (this.f.motivo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ruc : this.f.numero_documento_remitente.value,
                 descripcion: this.selectEmpresaRemitente!.selected!.descripcion,
                 nombre_empresa: this.selectEmpresaRemitente!.selected!.nombre_empresa,
@@ -389,7 +391,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             },
 
             destinatario: {
-                destinatario_id: this.f.id_destinatario.value,
+                destinatario_id: this.f.destinatario_id.value,
                 tipo_documento: this.f.tipo_documento_destinatario.value,
                 numero_documento: this.f.numero_documento_destinatario.value,
                 razon_social: this.f.tipo_documento_destinatario.value === 'RUC' ? this.f.razon_social_destinatario.value : this.f.nombres_apellidos_destinatario.value,
@@ -401,8 +403,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 email_destinatario: this.destinatarioContactos.length ? this.destinatarioContactos : null,
             },
 
-            proveedor: this.f.motivo_traslado.value !== "COMPRA" ? null : {
-                proveedor_id: this.tabDatosEnvioProveedor?.data.proveedor.id,
+            proveedor: (!this.mostrarProveedor) ? null : {
+                proveedor_id: this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
                 tipo_documento: this.tabDatosEnvioProveedor?.data.proveedor.tipo_documento_proveedor,
                 numero_documento: this.tabDatosEnvioProveedor?.data.proveedor.numero_documento_proveedor,
                 razon_social: this.tabDatosEnvioProveedor?.data.proveedor.nombre_rsocial_proveedor,
@@ -464,14 +466,30 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         return !motivos_traslado.includes(this.f.motivo_traslado.value);
     }
 
+    get mostrarProveedor(): boolean{
+      const motivosTraslado = [
+        GuiaRemisionTipoTrasladoEnum.compra,
+        GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados,
+        GuiaRemisionTipoTrasladoEnum.otros
+      ];
+      return motivosTraslado.includes(this.f.motivo_traslado.value);
+    }
+
+
     // Events
     evtOnSubmit(): void{
+
+        console.log('envio_proveedor_invalid', this.tabDatosEnvioProveedor?.invalid);
 
         this.tabDatosEnvioProveedor?.evtOnSubmit();
         this.tabOrigenDestino?.evtOnSubmit();
         this.sectionProductoListadoComponent?.evtOnSubmit();
 
-        if(this.sectionProductoListadoComponent?.invalid){
+        if(
+            this.tabDatosEnvioProveedor?.invalid ||
+            this.tabOrigenDestino?.invalid ||
+            this.sectionProductoListadoComponent?.invalid
+        ){
             return;
         }
 
@@ -618,7 +636,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             const sub2 = cmp?.OnSelect.subscribe(( s: DestinatarioDto) => {
 
                 this.formGroup.patchValue({
-                    id_destinatario: s.id,
+                    destinatario_id: s.id,
                     tipo_documento_destinatario: s.tipo_documento,
                     numero_documento_destinatario: s.numero_documento,
                     razon_social_destinatario: s.razon_social,
@@ -735,7 +753,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     resetDestinatarioForm(): void{
         this.formGroup.patchValue({
-            id_destinatario: null,
+            destinatario_id: null,
             tipo_documento_destinatario: 'RUC',
             numero_documento_destinatario: null,
             razon_social_destinatario: null,

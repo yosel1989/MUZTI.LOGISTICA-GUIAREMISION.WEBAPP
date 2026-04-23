@@ -6,7 +6,7 @@
         <div class="col-span-2">
             <p-divider class="my-0!"></p-divider>
             <div class="grid grid-cols-2 gap-3 py-10!">
-                <div class="flex flex-col">
+                <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código</label>
                     @if(!($ldData | async)){
                     <input 
@@ -21,32 +21,33 @@
                     }
                 </div>
 
-                <div class="flex flex-col">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° RUC *</label>
-                    @if(!($ldData | async)){
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="ruc"
-                        [invalid]="frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || submitted)"/>
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Empresa *</label>
+                    @if(!ldEmpresa()){
+                    <p-select 
+                        fluid
+                        size="small"
+                        [inputSize]="2"
+                        panelStyleClass="text-[.875rem]!"
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
+                        [options]="empresas" 
+                        placeholder="Seleccionar..." 
+                        optionValue="ruc" 
+                        optionLabel="empresa" 
+                        appendTo="body"
+                        formControlName="ruc"
+                        [invalid]="frm.get('ruc')?.invalid && ( frm.get('ruc')?.touched || isSubmitted)"
+                    />
                     }@else{
                     <p-skeleton width="100%" height="32px"></p-skeleton>
                     }
-                    
-                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                        @if (f.ruc.hasError('required')) {
-                            Este campo es requerido.
-                        }
-                        @if (f.ruc.hasError('maxlength') || f.ruc.hasError('maxlength')) {
-                            El ruc debe tener 11 caracteres
-                        }
-                        </span></p-message>
+                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || isSubmitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
+
                 <div class="col-span-2">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre / Razón Social *</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
                     @if(!($ldData | async)){
                     <input 
                     fluid 
@@ -71,6 +72,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                     @if(!($ldData | async)){
@@ -89,6 +91,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
                     @if(!($ldData | async)){
@@ -109,6 +112,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
                     @if(!($ldData | async)){
@@ -157,6 +161,7 @@
                         </p-message>
                     }
                 </div>
+                
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">Email</label>
                     @if(!($ldData | async)){

@@ -3,7 +3,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    //"moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
+
     "strict": true,
+
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -14,13 +20,17 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    
+
 
     "baseUrl": "src",
     "paths": {
       "@assets/*": ["assets/*"],
-      "@features/*": ["app/features/*"]
-    }
+      "@features/*": ["app/features/*"],
+      "@core/*": ["app/core/*"]
+    },
+
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -37,5 +47,6 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "include": ["src"]
 }

@@ -117,7 +117,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           peso_bruto_total: new FormControl(null, Validators.required),
           pagador_flete: new FormControl(EnumPagadorFlete.remitente),
 
-          numero_bultos: new FormControl(null, Validators.required),
+          numero_bultos: new FormControl(null),
           numero_contenedor: new FormControl(null),
           numero_precinto: new FormControl(null),
 
@@ -153,7 +153,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         });
 
         this.formDatosProveedor = this.fb.group({
-          id: new FormControl({value: null, disabled: true}, Validators.required),
+          proveedor_id: new FormControl({value: null, disabled: true}, Validators.required),
           tipo_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
           numero_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
           nombre_rsocial_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
@@ -235,10 +235,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           ent_emisora_especial_adicional: this.f_datosEnvio.ent_emisora_especial_adicional.value,
           indic_retorno_vehiculo_envase_adicional: this.f_datosEnvio.indic_retorno_vehiculo_envase_adicional.value,
           transbordo_programado_adicional: this.f_datosEnvio.transbordo_programado_adicional.value,
-          indic_retorno_vehiculo_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_vacio_adicional.value,
+          indic_retorno_vehiculo_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_vacio_adicional.value
         },
         proveedor: {
-          id: this.f_datosProveedor.id.value,
+          proveedor_id: this.f_datosProveedor.proveedor_id.value,
           tipo_documento_proveedor: this.f_datosProveedor.tipo_documento_proveedor.value,
           numero_documento_proveedor: this.f_datosProveedor.numero_documento_proveedor.value,
           nombre_rsocial_proveedor: this.f_datosProveedor.nombre_rsocial_proveedor.value,
@@ -261,6 +261,23 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         GuiaRemisionTipoTrasladoEnum.traslado_mercancia_extranjera
       ];
       return motivosTraslado.includes(this.motivoTraslado); 
+    }
+
+    get mostrarProveedor(): boolean{
+      const motivosTraslado = [
+        GuiaRemisionTipoTrasladoEnum.compra,
+        GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados,
+        GuiaRemisionTipoTrasladoEnum.otros
+      ];
+      return motivosTraslado.includes(this.motivoTraslado);
+    }
+
+    get valid(): boolean{
+      return this.formDatosEnvio.valid && this.formDatosProveedor.valid;
+    }
+
+    get invalid(): boolean{
+      return this.formDatosEnvio.invalid || this.formDatosProveedor.invalid;
     }
 
     ngOnInit(): void {
@@ -300,6 +317,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           this.f_datosEnvio.tipo_transporte.setValue('PRIVADO');
         }
         this.cdr.markForCheck();
+      }
+
+      if(changes['motivoTraslado']){
+        console.log('motivo-traslado-cambio', changes['motivoTraslado'].currentValue);
+        this.evtOnChangeMotivoTraslado(changes['motivoTraslado'].currentValue);
       }
     }
 
@@ -492,19 +514,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.f_datosEnvio.tipo_transporte.setValue(tipoTrasnporte);
     }
 
-    evtOnChangeMotivoTraslado(motivoTraslado: 'VENTA' | 'TRASLADO' | 'COMPRA' | null): void{
+    evtOnChangeMotivoTraslado(motivoTraslado: GuiaRemisionTipoTrasladoEnum): void{
 
       // Limpiar los campos antes de manejarlos
       this.formDatosProveedor = this.fb.group({
-        tipo_documento_proveedor: new FormControl(null, Validators.required),
-        numero_documento_proveedor: new FormControl(null, Validators.required),
-        nombre_rsocial_proveedor: new FormControl(null, Validators.required),
-        direccion_proveedor: new FormControl(null),
-        idDepartamento : new FormControl(null),
-        idProvincia : new FormControl(null),
-        idDistrito : new FormControl(null)
-      });
-      this.formDatosProveedor = this.fb.group({
+        proveedor_id: new FormControl(null),
         tipo_documento_proveedor: new FormControl(null),
         numero_documento_proveedor: new FormControl(null),
         nombre_rsocial_proveedor: new FormControl(null),
@@ -513,41 +527,33 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         idProvincia : new FormControl(null),
         idDistrito : new FormControl(null)
       });
+      this.formDatosProveedor.disable();
       this.formDatosProveedor.markAsUntouched();
       this.cdr.markForCheck();
 
-
-      switch(this.tipoGuia){
-
-        case TipoGuiaRemisionEnum.remitente:
-
-          switch(motivoTraslado){
-            case 'COMPRA':
-                this.formDatosProveedor = this.fb.group({
-                  tipo_documento_proveedor: new FormControl(null, Validators.required),
-                  numero_documento_proveedor: new FormControl(null, Validators.required),
-                  nombre_rsocial_proveedor: new FormControl(null, Validators.required),
-                  direccion_proveedor: new FormControl(null),
-                  idDepartamento : new FormControl(null),
-                  idProvincia : new FormControl(null),
-                  idDistrito : new FormControl(null)
-                });
-                this.formDatosProveedor.markAsUntouched();
-                this.cdr.markForCheck();
-              break;
-            
-            case 'TRASLADO':
-                this.formDatosProveedor = this.fb.group({
-                  cod_establecimiento_origen: new FormControl()
-                });
-                this.formDatosProveedor.markAsUntouched();
-                this.cdr.markForCheck();
-              break;
-
-            default:
-              break;
-          }
-
+      switch(this.mostrarProveedor){
+        case true:
+          this.formDatosProveedor = this.fb.group({
+            proveedor_id: new FormControl(null, Validators.required),
+            tipo_documento_proveedor: new FormControl(null, Validators.required),
+            numero_documento_proveedor: new FormControl(null, Validators.required),
+            nombre_rsocial_proveedor: new FormControl(null, Validators.required),
+            direccion_proveedor: new FormControl(null, Validators.required),
+            idDepartamento : new FormControl(null, Validators.required),
+            idProvincia : new FormControl(null, Validators.required),
+            idDistrito : new FormControl(null, Validators.required)
+          });
+          this.formDatosProveedor.disable();
+          this.formDatosProveedor.markAsUntouched();
+          this.cdr.markForCheck();
+          break;
+        case false:
+          this.formDatosProveedor.reset();
+          this.formDatosEnvio.get('proveedor_id')?.clearValidators();
+          this.formDatosEnvio.get('tipo_documento_proveedor')?.clearValidators();
+          this.formDatosEnvio.get('numero_documento_proveedor')?.clearValidators();
+          this.formDatosEnvio.get('nombre_rsocial_proveedor')?.clearValidators();
+          this.formDatosProveedor.disable();
           break;
         default:
           break;
@@ -570,7 +576,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        if(this.formDatosProveedor.invalid && this.motivoTraslado === 'COMPRA' && this.tipoGuia === TipoGuiaRemisionEnum.remitente){
+        if(this.mostrarProveedor && this.formDatosProveedor.invalid){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
@@ -707,7 +713,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             const sub2 = cmp?.OnSelect.subscribe(( c: ProveedorDto) => {
 
                 this.formDatosProveedor.patchValue({
-                  id: c.id,
+                  proveedor_id: c.id,
                   tipo_documento_proveedor: c.tipo_documento,
                   numero_documento_proveedor: c.numero_documento,
                   nombre_rsocial_proveedor: c.razon_social,

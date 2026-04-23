@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -25,6 +25,8 @@ import { EditarRemitenteRequestDto, EditarRemitenteResponseDto, RemitenteDto } f
 import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
+import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { EmpresaDto } from '@features/empresa/models/empresa.model';
 
 @Component({
   selector: 'app-mdl-editar-remitente',
@@ -81,12 +83,16 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   $ldData = this.ldData.asObservable();
   data: RemitenteDto | undefined;
 
+  ldEmpresa = signal(false);
+  empresas: EmpresaDto[] = [];
+
   constructor(
     private fb: FormBuilder,
     public config: DynamicDialogConfig,
     private api: RemitenteApiService,
     private confirmationService: ConfirmationService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private empresaApiService: EmpresaApiService
 	) {
     this.frm = this.fb.group({
       codigo: new FormControl({value:null, disabled: true}),
@@ -108,6 +114,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
 
   ngOnInit(): void {
     this.loadData();
+    this.loadEmpresas();
   }
 
   ngAfterViewInit(): void {
@@ -236,6 +243,35 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
       }
     });
     this.subs.add(sub);
+  }
+
+
+  loadEmpresas(): void{
+    this.ldEmpresa.set(true);
+    this.subs.add(
+      this.empresaApiService.obtenerTodo().subscribe({
+        next: (value: EmpresaDto[]) => {
+          this.empresas = value;
+          this.ldEmpresa.set(false);
+        },
+        error: (err) => {
+          console.error(err);
+          this.alertService.showToast({
+            position: 'bottom-end',
+            icon: "error",
+            title: err.error.detalle,
+            showCloseButton: true,
+            timerProgressBar: true,
+            timer: 4000,
+            customClass: {
+              container: 'z-[9999]!',
+              popup: 'z-[9999]!'
+            }
+          });
+          this.ldEmpresa.set(false);
+        },
+      })
+    )
   }
 
 
