@@ -243,7 +243,7 @@
 
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" [disabled]="isLoading"/>
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" [disabled]="isLoading"/>
     </div>
 
 </form>

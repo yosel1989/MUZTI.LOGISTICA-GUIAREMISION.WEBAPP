@@ -16,7 +16,7 @@
             <div class="grid grid-cols-3 gap-4">
                 <div class="col-span-2 flex flex-col gap-3">
 
-                    @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista){
+                    @if(1 == 1){
                         <p-tabs (valueChange)="evtSelectDestEmi($event)" value="0">
                             <p-tablist>
                                 <p-tab value="0">Remitente</p-tab>
@@ -38,13 +38,36 @@
                     }
 
                     @if(
-                        selectTipoGuiaComponent && 
-                        selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista && (
+                       
                             (tabRemitenteDestinatario | async) === 0
-                        )
+                        
                     ){
+                        <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del remitente</label>
+
+                        <div class="flex flex-wrap gap-x-2 pb-2">
+                            <p-button 
+                              
+                                styleClass="text-[12px]!" 
+                                icon="fa-duotone fa-light fa-angle-down"
+                                label="Seleccionar origen"
+                                iconPos="right"
+                                (click)="evtOnShowDestinatarios()"
+                                
+                            >
+                            </p-button>
+
+                            <a 
+                                pTooltip="Administrar establecimiento"
+                                tooltipPosition="center"
+                                tooltipStyleClass="text-xs! text-center"
+                                href="/admin/remitente" 
+                                target="_blank" 
+                                class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium text-xs!"
+                            >Administrar</a>
+
+                        </div>
+
                         <div>
-                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del remitente</label>
                             <div class="grid grid-cols-2 gap-y-3 gap-x-3">
                                 <div class="flex flex-col">
                                     <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
@@ -220,27 +243,22 @@
                     }
 
                     @if(selectTipoGuiaComponent && 
-                        (
-                            (selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.transportista && 
-                            (tabRemitenteDestinatario | async) === 1) ||
-                            selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente
-                        )
+                        
+                            (tabRemitenteDestinatario | async) === 1
+                        
                     ){
 
                         <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del destinatario</label>
 
                         @if(mostrarSeleccionarDestinatario){
 
-                            <div class="flex flex-wrap gap-x-2">
+                            <div class="flex flex-wrap gap-x-2 pb-2">
                                 <p-button 
-                                    size="small" 
-                                    styleClass="text-xs!" 
-                                    class="text-xs!" 
-                                    icon="fa-duotone fa-light fa-angle-down text-xs"
+                                    styleClass="text-[12px]!" 
+                                    icon="fa-duotone fa-light fa-angle-down"
                                     label="Seleccionar destinatario"
                                     iconPos="right"
                                     (click)="evtOnShowDestinatarios()"
-                                    outlined="true"
                                 >
                                 </p-button>
 

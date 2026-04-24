@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -22,6 +22,9 @@ import { RemitenteApiService } from '@features/remitente/services/remitente-api.
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
+import { EmpresaDto } from '@features/empresa/models/empresa.model';
+import { SkeletonModule } from 'primeng/skeleton';
+import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
 
 @Component({
   selector: 'app-mdl-registrar-remitente',
@@ -41,7 +44,8 @@ import { DividerModule } from 'primeng/divider';
     SelectDistritoComponent,
     OnlyNumberDirective,
     OnlyUpperDirective,
-    DividerModule
+    DividerModule,
+    SkeletonModule
   ],
   templateUrl: './mdl-registrar-remitente.component.html',
   styleUrl: './mdl-registrar-remitente.component.scss',
@@ -53,11 +57,10 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
+  isSubmitted = signal(false);
   ldSubmit: boolean = false;
 
   private subs = new Subscription();
-  submitted: boolean = false;
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
@@ -65,12 +68,16 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
     {id: 1, label: 'Activo'}
   ];
 
+  ldEmpresa = signal(false);
+  empresas: EmpresaDto[] = [];
+
   constructor(
     private fb: FormBuilder,
     public config: DynamicDialogConfig,
     private api: RemitenteApiService,
     private confirmationService: ConfirmationService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private empresaApiService: EmpresaApiService
 	) {
     this.frm = this.fb.group({
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
@@ -82,14 +89,14 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
       email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       serie: new FormControl(null, [Validators.minLength(3), Validators.maxLength(3)]),
-      codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)])
+      codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)])
     });
 
     this.headerValue = this.config.header ?? '';
   }
 
   ngOnInit(): void {
-
+    this.loadEmpresas();
   }
 
   ngAfterViewInit(): void {
@@ -124,8 +131,9 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
+      console.log(this.frm);
       return;
     }
 
@@ -181,6 +189,35 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
 
   evtOnClose(): void{
     this.OnCanceled.emit(true);
+  }
+
+  // Data
+  loadEmpresas(): void{
+    this.ldEmpresa.set(true);
+    this.subs.add(
+      this.empresaApiService.obtenerTodo().subscribe({
+        next: (value: EmpresaDto[]) => {
+          this.empresas = value;
+          this.ldEmpresa.set(false);
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.alertService.showToast({
+            position: 'bottom-end',
+            icon: "error",
+            title: err.error.detalle,
+            showCloseButton: true,
+            timerProgressBar: true,
+            timer: 4000,
+            customClass: {
+              container: 'z-[9999]!',
+              popup: 'z-[9999]!'
+            }
+          });
+          this.ldEmpresa.set(false);
+        },
+      })
+    )
   }
 
 }

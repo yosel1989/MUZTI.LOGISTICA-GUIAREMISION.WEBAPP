@@ -21,7 +21,7 @@ import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
-import { EditarRemitenteRequestDto, EditarRemitenteResponseDto, RemitenteDto } from '@features/remitente/models/remitente';
+import { EditarRemitenteRequestDto, RemitenteDto } from '@features/remitente/models/remitente';
 import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
@@ -65,7 +65,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
 
   frm: FormGroup = new FormGroup({});
   isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
@@ -152,7 +152,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   }
 
   get isLoading(): boolean{
-    return this.ldSubmit || 
+    return this.ldSubmit() || 
     this.ldData.getValue() ||
     (this.ctrlDepartamento?.isLoading ?? false) || 
     (this.ctrlProvincia?.isLoading ?? false) || 
@@ -172,11 +172,11 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const sub = this.api.editar(this.data!.id, this.request).subscribe({
               next: (res: RemitenteDto) => {
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'bottom-end',
@@ -190,7 +190,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",
@@ -283,7 +283,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
       ruc: res.ruc,
       descripcion: res.descripcion.toUpperCase(),
       direccion: res.direccion.toUpperCase(),
-      email: res.email.toUpperCase(),
+      email: res.email?.toUpperCase(),
       pais: res.pais,
       serie: res.serie,
       codigo_sunat: res.codigo_sunat,

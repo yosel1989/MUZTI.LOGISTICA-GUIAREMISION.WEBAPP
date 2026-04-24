@@ -6,27 +6,31 @@
         <div class="col-span-2"> 
             <p-divider class="my-0!"></p-divider>
             <div class="grid grid-cols-2 gap-3 py-10!">
-                <div class="flex flex-col">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° RUC *</label>
-                    <input 
-                        pSize="small" 
-                        onlyNumber
-                        fluid 
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="ruc"
-                        [invalid]="frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || submitted)"/>
-                    
-                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                        @if (f.ruc.hasError('required')) {
-                            Este campo es requerido.
-                        }
-                        @if (f.ruc.hasError('maxlength') || f.ruc.hasError('maxlength')) {
-                            El ruc debe tener 11 caracteres
-                        }
-                        </span></p-message>
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Empresa *</label>
+                    @if(!ldEmpresa()){
+                    <p-select 
+                        fluid
+                        size="small"
+                        [inputSize]="2"
+                        panelStyleClass="text-[.875rem]!"
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
+                        [options]="empresas" 
+                        placeholder="Seleccionar..." 
+                        optionValue="ruc" 
+                        optionLabel="empresa" 
+                        appendTo="body"
+                        formControlName="ruc"
+                        [invalid]="frm.get('ruc')?.invalid && ( frm.get('ruc')?.touched || isSubmitted())"
+                    />
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
+                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
+
                 <div class="col-span-2">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
                     <input 
@@ -37,8 +41,8 @@
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="descripcion" 
-                    [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)"/>
-                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)) {
+                    [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || isSubmitted())"/>
+                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.descripcion.hasError('required')) {
                             Este campo es requerido.
@@ -56,7 +60,7 @@
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     label="Departamento *"
                     ></app-select-departamento>
-                    @if (frm.get('departamento')?.invalid && (frm.get('departamento')?.touched || submitted)) {
+                    @if (frm.get('departamento')?.invalid && (frm.get('departamento')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
                         </p-message>
@@ -70,7 +74,7 @@
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
                     label="Provincia *"
                     ></app-select-provincia>
-                    @if (frm.get('provincia')?.invalid && (frm.get('provincia')?.touched || submitted)) {
+                    @if (frm.get('provincia')?.invalid && (frm.get('provincia')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
                         </p-message>
@@ -84,7 +88,7 @@
                     [idUbigeoProvincia]="f.provincia.value" 
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     ></app-select-distrito>
-                    @if (frm.get('distrito')?.invalid && (frm.get('distrito')?.touched || submitted)) {
+                    @if (frm.get('distrito')?.invalid && (frm.get('distrito')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
                         </p-message>
@@ -102,8 +106,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="direccion" 
                     autofocus="true"
-                    [invalid]="frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted)"/>
-                    @if (frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted)) {
+                    [invalid]="frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || isSubmitted())"/>
+                    @if (frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.direccion.hasError('required')) {
                             Este campo es requerido.
@@ -126,8 +130,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="email" 
                     autofocus="true"
-                    [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)"/>
-                    @if (frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)) {
+                    [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || isSubmitted())"/>
+                    @if (frm.get('email')?.invalid && (frm.get('email')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.email.hasError('required')) {
                             Este campo es requerido.
@@ -143,15 +147,15 @@
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie *</label>
                     <input 
                     fluid 
-                    onlyUpper
+                    onlyNumber
                     pInputText 
                     type="serie" 
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="serie" 
                     autofocus="true"
-                    [invalid]="frm.get('serie')?.invalid && (frm.get('serie')?.touched || submitted)"/>
-                    @if (frm.get('serie')?.invalid && (frm.get('serie')?.touched || submitted)) {
+                    [invalid]="frm.get('serie')?.invalid && (frm.get('serie')?.touched || isSubmitted())"/>
+                    @if (frm.get('serie')?.invalid && (frm.get('serie')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                             La serie debe tener 3 caracteres.
                         </span></p-message>
@@ -159,7 +163,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 ">Cod. Sunat</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Sunat *</label>
                     <input 
                     fluid 
                     onlyNumber
@@ -169,10 +173,15 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="codigo_sunat" 
                     autofocus="true"
-                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)"/>
-                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)) {
+                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || isSubmitted())"/>
+                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                            La código debe tener 4 caracteres.
+                            @if (f.codigo_sunat.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @else{
+                               La código debe tener 4 caracteres.
+                            }
                         </span></p-message>
                     }
                 </div>
