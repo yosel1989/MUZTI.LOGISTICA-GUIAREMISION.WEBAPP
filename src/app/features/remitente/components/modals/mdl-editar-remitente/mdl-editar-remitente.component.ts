@@ -26,7 +26,7 @@ import { RemitenteApiService } from '@features/remitente/services/remitente-api.
 import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
-import { EmpresaDto } from '@features/empresa/models/empresa.model';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 
 @Component({
   selector: 'app-mdl-editar-remitente',
@@ -84,7 +84,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   data: RemitenteDto | undefined;
 
   ldEmpresa = signal(false);
-  empresas: EmpresaDto[] = [];
+  empresas: EmpresaToSelectDto[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -249,12 +249,12 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   loadEmpresas(): void{
     this.ldEmpresa.set(true);
     this.subs.add(
-      this.empresaApiService.obtenerTodo().subscribe({
-        next: (value: EmpresaDto[]) => {
+      this.empresaApiService.loadAllToSelect().subscribe({
+        next: (value: EmpresaToSelectDto[]) => {
           this.empresas = value;
           this.ldEmpresa.set(false);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error(err);
           this.alertService.showToast({
             position: 'bottom-end',

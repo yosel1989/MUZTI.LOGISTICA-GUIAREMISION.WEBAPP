@@ -22,7 +22,7 @@ import { RemitenteApiService } from '@features/remitente/services/remitente-api.
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
-import { EmpresaDto } from '@features/empresa/models/empresa.model';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
 
@@ -69,7 +69,7 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
   ];
 
   ldEmpresa = signal(false);
-  empresas: EmpresaDto[] = [];
+  empresas: EmpresaToSelectDto[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -195,8 +195,8 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
   loadEmpresas(): void{
     this.ldEmpresa.set(true);
     this.subs.add(
-      this.empresaApiService.obtenerTodo().subscribe({
-        next: (value: EmpresaDto[]) => {
+      this.empresaApiService.loadAllToSelect().subscribe({
+        next: (value: EmpresaToSelectDto[]) => {
           this.empresas = value;
           this.ldEmpresa.set(false);
         },

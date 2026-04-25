@@ -29,7 +29,6 @@ import { TableModule } from "primeng/table";
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
-import { SelectEmpresaRemitenteComponent } from 'app/features/guia-remision/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
 import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
@@ -47,6 +46,7 @@ import { Router } from '@angular/router';
 import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
 import { DestinatarioDto } from '@features/destinatario/models/destinatario';
 import { DividerModule } from 'primeng/divider';
+import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 
 interface Type {
     name: string;
@@ -189,31 +189,31 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             // bloquear campos superiores
             if(!this.mostrarSeleccionarDestinatario){
-                this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
+                //this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected()?.id);
                 this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
                 this.formGroup.get('tipo_documento_remitente')?.disable();
-                this.formGroup.get('numero_documento_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                this.formGroup.get('razon_social_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
+                this.formGroup.get('numero_documento_remitente')?.setValue(this.selectEmpresaRemitente?.selected()?.ruc);
+                //this.formGroup.get('razon_social_remitente')?.setValue(this.selectEmpresaRemitente?.selected()?.nombre);
                 this.formGroup.get('numero_documento_remitente')?.disable();
 
-                this.formGroup.get('destinatario_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
+                //this.formGroup.get('destinatario_id')?.setValue(this.selectEmpresaRemitente?.selected()?.id);
                 this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
+                this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ruc);
+                this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.empresa);
 
-                this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.direccion);
-                this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,2));
+                //this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.direccion);
+                //this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ubigeo_id.substring(0,2));
 
-                this.provinciaDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id!.substring(0,4);
+                /*this.provinciaDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id!.substring(0,4);
                 const subProvincia = this.provinciaDestinatario?.loading.subscribe(res => {
-                    this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,4));
+                    this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ubigeo_id.substring(0,4));
                 });
-                this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id;
+                this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id;
                 const subDistrito = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                    this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id);
+                    this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ubigeo_id);
                 });
                 subProvincia?.unsubscribe();
-                subDistrito?.unsubscribe();
+                subDistrito?.unsubscribe();*/
             }
 
             /*
@@ -380,13 +380,13 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             remitente: {
                 remitente_id: this.f.remitente_id.value,
-                ruc: (this.f.motivo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected?.ruc : this.f.numero_documento_remitente.value,
-                descripcion: this.selectEmpresaRemitente!.selected!.descripcion,
-                nombre_empresa: this.selectEmpresaRemitente!.selected!.nombre_empresa,
-                direccion: this.selectEmpresaRemitente!.selected!.direccion,
-                departamento: this.selectEmpresaRemitente!.selected!.departamento,
-                provincia: this.selectEmpresaRemitente!.selected!.provincia,
-                distrito: this.selectEmpresaRemitente!.selected!.distrito,
+                ruc: (this.f.motivo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected()?.ruc : this.f.numero_documento_remitente.value,
+                descripcion: this.f.remitente_id.value,
+                nombre_empresa: this.f.remitente_id.value,
+                direccion: this.f.remitente_id.value,
+                departamento: this.f.remitente_id.value,
+                provincia: this.f.remitente_id.value,
+                distrito: this.f.remitente_id.value,
                 serie_numero: this.guiaCabecera!.serieNumero
             },
 
@@ -432,6 +432,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.map((d: any) => {
                     return d.id;
                 }) : null
+
             },
 
             origen: {
@@ -454,6 +455,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                     codigo_um: x.codigo_um
                 };
             })
+            
         }
     }
 
@@ -496,7 +498,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         //console.log('request', this.request);
 
         this.loadingSubmit.next(true);
-        this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente?.selected?.ruc! ).subscribe({
+        this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente?.selected()?.ruc! ).subscribe({
             next: (response: GR_EnviarGuiaRemisionResponseDto ) => {
                 this.loadingSubmit.next(false);
                 /*if(response.success && response.respuesta_facturador.codigo === '0'){
@@ -648,7 +650,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
                     this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
                 });
-                this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id;
+                this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id;
                 const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
                     this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
                 });

@@ -1,4 +1,4 @@
-export interface EmpresaDto{
+export interface EmpresaToSelectDto{
     ruc: string;
     empresa: string;
 }
