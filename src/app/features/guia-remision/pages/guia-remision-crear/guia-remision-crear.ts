@@ -47,6 +47,8 @@ import { MdlListaDestinatariosComponent } from '@features/destinatario/component
 import { DestinatarioDto } from '@features/destinatario/models/destinatario';
 import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
+import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
+import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 
 interface Type {
     name: string;
@@ -88,7 +90,8 @@ interface Type {
     GuiaSectionCabeceraComponent,
     AsyncPipe,
     AutoCompleteModule,
-    DividerModule
+    DividerModule,
+
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -103,6 +106,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
     @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
     
+    @ViewChild('departamentoRemitente') departamentoRemitente: SelectDepartamentoComponent | undefined;
+    @ViewChild('provinciaRemitente') provinciaRemitente: SelectProvinciaComponent | undefined;
+    @ViewChild('distritoRemitente') distritoRemitente: SelectDistritoComponent | undefined;
+
     @ViewChild('departamentoDestinatario') departamentoDestinatario: SelectDepartamentoComponent | undefined;
     @ViewChild('provinciaDestinatario') provinciaDestinatario: SelectProvinciaComponent | undefined;
     @ViewChild('distritoDestinatario') distritoDestinatario: SelectDistritoComponent | undefined;
@@ -139,7 +146,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         private cdr: ChangeDetectorRef,
         private confirmationService: ConfirmationService,
         private api: GuiaRemitenteApiService,
-        private documentApi: DocumentoService,
         private ls: LayoutService,
         private alertService: AlertService,
         private router: Router
@@ -154,14 +160,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             motivo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
 
-            tipo_documento_remitente: new FormControl('RUC', Validators.required),
-            numero_documento_remitente: new FormControl(null, Validators.required),
-            razon_social_remitente: new FormControl(null, Validators.required),
-            nombres_apellidos_remitente: new FormControl(null),
-            direccion_remitente: new FormControl(null),
-            departamento_remitente: new FormControl(null),
-            provincia_remitente: new FormControl(null),
-            distrito_remitente: new FormControl(null),
+            tipo_documento_remitente: new FormControl({value: 'RUC', disabled: true}, Validators.required),
+            numero_documento_remitente: new FormControl({value: null, disabled: true}, Validators.required),
+            razon_social_remitente: new FormControl({value: null, disabled: true}, Validators.required),
+            nombres_apellidos_remitente: new FormControl({value: null, disabled: true}),
+            direccion_remitente: new FormControl({value: null, disabled: true}),
+            departamento_remitente: new FormControl({value: null, disabled: true}),
+            provincia_remitente: new FormControl({value: null, disabled: true}),
+            distrito_remitente: new FormControl({value: null, disabled: true}),
             contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
             destinatario_id: new FormControl(null, Validators.required),
@@ -617,6 +623,89 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
       }, '¿Desea remover el comprobante de referencia seleccionado?', 'Confirmar la operación.');
     }
 
+
+    evtOnShowEstablecimiento( to: string ): void{
+        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Lista de establecimientos registrados`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+                'padding': "0 !important"
+            },
+            appendTo: 'body',
+            inputValues: {
+                ruc: this.selectEmpresaRemitente?.selected()?.ruc
+            }
+        });
+
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+            const sub2 = cmp?.OnSelected.subscribe(( s: EstablecimientoDTO) => {
+
+                if(to === 'remitente'){
+                    this.formGroup.patchValue({
+                        remitente_id: s.id,
+                        tipo_documento_remitente: 'RUC',
+                        numero_documento_remitente: s.ruc,
+                        razon_social_remitente: `${s.razonSocial} (${s.descripcion})`,
+                        nombres_apellidos_remitente: s.razonSocial,
+                        direccion_remitente: s.direccion,
+                        departamento_remitente: s.ubigeoId.substring(0, 2)
+                    });
+                    this.provinciaRemitente!.valueEdit = s.ubigeoId!.substring(0,4);
+                    const subProvincia1 = this.provinciaRemitente?.loading.subscribe(res => {
+                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeoId.substring(0,4));
+                    });
+                    this.distritoRemitente!.valueEdit = s.ubigeoId;
+                    const subDistrito1 = this.distritoRemitente?.loading.subscribe((res: any) => {
+                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeoId);
+                    });
+                    subProvincia1?.unsubscribe();
+                    subDistrito1?.unsubscribe();
+                }else{
+                    this.formGroup.patchValue({
+                        destinatario_id: s.id,
+                        tipo_documento_destinatario: 'RUC',
+                        numero_documento_destinatario: s.ruc,
+                        razon_social_destinatario: `${s.razonSocial} (${s.descripcion})`,
+                        nombres_apellidos_destinatario: s.razonSocial,
+                        direccion_destinatario: s.direccion,
+                        departamento_destinatario: s.ubigeoId.substring(0, 2)
+                    });
+                    this.provinciaDestinatario!.valueEdit = s.ubigeoId!.substring(0,4);
+                    const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
+                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeoId.substring(0,4));
+                    });
+                    this.distritoDestinatario!.valueEdit = s.ubigeoId;
+                    const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
+                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeoId);
+                    });
+                    subProvincia1?.unsubscribe();
+                    subDistrito1?.unsubscribe();
+                }
+
+                this.modalRef?.close();
+            });
+
+            const sub3 = cmp?.OnClose.subscribe(_ => {
+                this.modalRef?.close();
+            });
+            this.subs.add(sub2);
+            this.subs.add(sub3);
+        });
+
+
+        this.subs.add(sub);
+    }
+
+
+
     evtOnShowDestinatarios(): void{
         this.modalRef = this.dialogService.open(MdlListaDestinatariosComponent, {
             width: '1000px',
@@ -650,12 +739,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
                     this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
                 });
-                this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id;
+                /*this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id;
                 const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
                     this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
-                });
+                });*/
                 subProvincia1?.unsubscribe();
-                subDistrito1?.unsubscribe();
+                //subDistrito1?.unsubscribe();
 
                 this.modalRef?.close();
             });

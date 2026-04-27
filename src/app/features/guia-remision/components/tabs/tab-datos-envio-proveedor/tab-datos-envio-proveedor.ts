@@ -42,6 +42,7 @@ import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/se
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { RemitenteToSelect } from '@features/remitente/models/remitente';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -82,7 +83,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
     @Input() motivoTraslado!: GuiaRemisionTipoTrasladoEnum;
-    @Input() emisora: RemitenteToSelect | undefined;
+    @Input() emisora: EmpresaToSelectDto | undefined;
 
     formDatosEnvio: FormGroup = new FormGroup({});
     formDatosProveedor: FormGroup = new FormGroup({});
