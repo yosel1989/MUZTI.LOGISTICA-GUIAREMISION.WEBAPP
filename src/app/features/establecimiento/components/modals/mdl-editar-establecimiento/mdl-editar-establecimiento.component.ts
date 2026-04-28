@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,63 +10,78 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
-import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
+import { DocumentEntityType } from '@features/items/models/document-entity-type';
+import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
-import { RegistrarRemitenteRequestDto, RegistrarRemitenteResponseDto } from '@features/remitente/models/remitente';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
-import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
-import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
-import { DividerModule } from 'primeng/divider';
-import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SkeletonModule } from 'primeng/skeleton';
+import { AsyncPipe } from '@angular/common';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { EditarRemitenteRequestDto, RemitenteDto } from '@features/remitente/models/remitente';
+import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
+import { DividerModule } from 'primeng/divider';
+import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 
 @Component({
-  selector: 'app-mdl-registrar-remitente',
+  selector: 'app-mdl-editar-establecimiento',
   imports: [
-    FormsModule, 
+    FormsModule,
     InputNumberModule,
-    InputTextModule, 
-    TextareaModule, 
-    ButtonModule, 
-    EditorModule, 
-    ReactiveFormsModule, 
-    MessageModule, 
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    EditorModule,
+    ReactiveFormsModule,
+    MessageModule,
     ConfirmDialog,
     SelectModule,
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
     SelectDistritoComponent,
-    OnlyNumberDirective,
-    OnlyUpperDirective,
+    SkeletonModule,
+    AsyncPipe,
     DividerModule,
-    SkeletonModule
-  ],
-  templateUrl: './mdl-registrar-remitente.component.html',
-  styleUrl: './mdl-registrar-remitente.component.scss',
+    OnlyNumberDirective
+],
+  templateUrl: './mdl-editar-establecimiento.component.html',
+  styleUrl: './mdl-editar-establecimiento.component.scss',
   providers: [ConfirmationService]
 })
-export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() id!: number;
+  @Output() OnCreated: EventEmitter<RemitenteDto> = new EventEmitter<RemitenteDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+  @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
+  @ViewChild('provincia') ctrlProvincia: SelectProvinciaComponent | undefined;
+  @ViewChild('distrito') ctrlDistrito: SelectDistritoComponent | undefined;
+
   frm: FormGroup = new FormGroup({});
-  isSubmitted = signal(false);
-  ldSubmit: boolean = false;
+  isSubmitted: boolean = false;
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
+  
+  documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
+  submitted: boolean = false;
+
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
     {id: 0, label: 'Inactivo'},
     {id: 1, label: 'Activo'}
   ];
+
+  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  $ldData = this.ldData.asObservable();
+  data: RemitenteDto | undefined;
 
   ldEmpresa = signal(false);
   empresas: EmpresaToSelectDto[] = [];
@@ -80,6 +95,7 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
     private empresaApiService: EmpresaApiService
 	) {
     this.frm = this.fb.group({
+      codigo: new FormControl({value:null, disabled: true}),
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       descripcion: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       departamento: new FormControl(null, Validators.required),
@@ -89,18 +105,24 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
       email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       serie: new FormControl(null, [Validators.minLength(3), Validators.maxLength(3)]),
-      codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)])
+      codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
     });
+    this.f.codigo.disable();
 
     this.headerValue = this.config.header ?? '';
   }
 
   ngOnInit(): void {
+    this.loadData();
     this.loadEmpresas();
   }
 
   ngAfterViewInit(): void {
-    
+  }
+
+  ngAfterViewChecked(): void{
+    this.ctrlProvincia?.isLoaded.subscribe(val => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4)); });
+    this.ctrlDistrito?.isLoaded.subscribe(val => { this.f.distrito.setValue(this.data?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -112,7 +134,7 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
     return this.frm.controls;
   }
 
-  get request(): RegistrarRemitenteRequestDto {
+  get request(): EditarRemitenteRequestDto {
     const form = this.frm.value;
 
     return {
@@ -124,46 +146,51 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
       pais: form.pais,
       serie: form.serie,
       codigo_sunat: form.codigo_sunat,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      empleado_id_edicion: 1,
+      empleado_nombre_edicion: 'SA'
     };
+  }
+
+  get isLoading(): boolean{
+    return this.ldSubmit() || 
+    this.ldData.getValue() ||
+    (this.ctrlDepartamento?.isLoading ?? false) || 
+    (this.ctrlProvincia?.isLoading ?? false) || 
+    (this.ctrlDistrito?.isLoading ?? false);
   }
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted.set(true);
+    this.isSubmitted = true;
     if(this.frm.invalid){
       console.log(this.frm);
       return;
     }
 
     this.confirmationService.confirm({
-        header: '¿Registrar remitente?',
+        header: 'Editar remitente?',
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
-            const subs = this.api.registrar(this.request).subscribe({
-              next: (res: RegistrarRemitenteResponseDto) => {
-                this.frm.enable();
-                this.ldSubmit = false;
+            const sub = this.api.editar(this.data!.id, this.request).subscribe({
+              next: (res: RemitenteDto) => {
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "success",
-                  title: "Se registro el remitente con éxito",
+                  title: "Se edito el proveedor con éxito",
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",
@@ -178,7 +205,7 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
                 });
               }
             });
-            this.subs.add(subs);
+            this.subs.add(sub);
            
         },
         reject: () => {
@@ -191,7 +218,34 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
     this.OnCanceled.emit(true);
   }
 
-  // Data
+  // data
+  loadData(): void{
+    this.ldData.next(true);
+    const sub = this.api.obtener(this.id).subscribe({
+      next: (res: RemitenteDto) => {
+        this.handlerLoadData(res);
+        this.ldData.next(false);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.ldData.next(false);
+        this.alertService.showToast({
+          position: 'bottom-end',
+          icon: "error",
+          title: err.error.error,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
+      }
+    });
+    this.subs.add(sub);
+  }
+
+
   loadEmpresas(): void{
     this.ldEmpresa.set(true);
     this.subs.add(
@@ -219,5 +273,23 @@ export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, On
       })
     )
   }
+
+
+  // handlers
+  handlerLoadData(res: RemitenteDto): void{
+    this.data = res;
+    this.frm.patchValue({
+      codigo: 'COD-' + res.id.toString().padStart(4,'0'),
+      ruc: res.ruc,
+      descripcion: res.descripcion.toUpperCase(),
+      direccion: res.direccion.toUpperCase(),
+      email: res.email?.toUpperCase(),
+      pais: res.pais,
+      serie: res.serie,
+      codigo_sunat: res.codigo_sunat,
+      departamento: res.ubigeo_id.substring(0,2),
+    });
+  }
+
 
 }

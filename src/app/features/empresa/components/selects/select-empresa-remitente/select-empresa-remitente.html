@@ -1,0 +1,34 @@
+<div class="flex flex-col">
+    @if(loading()){
+        <p-skeleton class="w-full" height="105px"></p-skeleton>
+    }@else{
+        <p-select 
+        [loading]="loading()" 
+        fluid 
+        (onChange)="onSelectItem($event)"
+        [options]="data" 
+        [formControl]="control" 
+        [invalid]="invalid" 
+        optionLabel="empresa"
+        optionValue="ruc" 
+        filterBy="ruc,empresa"
+        [class]="invalid ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400! rounded-lg!' : 'min-h-[105px]! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! rounded-lg!' " 
+        [placeholder]="loading() ? placeholderLoading : placeholder" 
+        [filter]="true" 
+        appendTo="body"
+        [inputId]="inputId">
+            <ng-template #selectedItem let-selectedOption>
+                <div class="p-4 text-left">
+                    <p class="font-semibold">{{ selectedOption.empresa }}</p>
+                    <p class="uppercase">{{ selectedOption.ruc }}</p>
+                </div>
+            </ng-template>
+            <ng-template let-item #item>
+                <div class="flex flex-col">
+                    <p class="font-semibold">{{ item.empresa }}</p>
+                    <p class="uppercase">{{ item.ruc }}</p>
+                </div>
+            </ng-template>
+        </p-select>
+    }
+</div>

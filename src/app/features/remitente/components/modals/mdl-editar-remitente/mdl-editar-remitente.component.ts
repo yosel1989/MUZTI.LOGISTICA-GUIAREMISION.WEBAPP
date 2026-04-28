@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,10 +21,12 @@ import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
-import { EditarRemitenteRequestDto, EditarRemitenteResponseDto, RemitenteDto } from '@features/remitente/models/remitente';
+import { EditarRemitenteRequestDto, RemitenteDto } from '@features/remitente/models/remitente';
 import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
+import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 
 @Component({
   selector: 'app-mdl-editar-remitente',
@@ -63,7 +65,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
 
   frm: FormGroup = new FormGroup({});
   isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
@@ -81,12 +83,16 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   $ldData = this.ldData.asObservable();
   data: RemitenteDto | undefined;
 
+  ldEmpresa = signal(false);
+  empresas: EmpresaToSelectDto[] = [];
+
   constructor(
     private fb: FormBuilder,
     public config: DynamicDialogConfig,
     private api: RemitenteApiService,
     private confirmationService: ConfirmationService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private empresaApiService: EmpresaApiService
 	) {
     this.frm = this.fb.group({
       codigo: new FormControl({value:null, disabled: true}),
@@ -108,6 +114,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
 
   ngOnInit(): void {
     this.loadData();
+    this.loadEmpresas();
   }
 
   ngAfterViewInit(): void {
@@ -145,7 +152,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   }
 
   get isLoading(): boolean{
-    return this.ldSubmit || 
+    return this.ldSubmit() || 
     this.ldData.getValue() ||
     (this.ctrlDepartamento?.isLoading ?? false) || 
     (this.ctrlProvincia?.isLoading ?? false) || 
@@ -165,11 +172,11 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const sub = this.api.editar(this.data!.id, this.request).subscribe({
               next: (res: RemitenteDto) => {
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'bottom-end',
@@ -183,7 +190,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",
@@ -239,6 +246,35 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
   }
 
 
+  loadEmpresas(): void{
+    this.ldEmpresa.set(true);
+    this.subs.add(
+      this.empresaApiService.loadAllToSelect().subscribe({
+        next: (value: EmpresaToSelectDto[]) => {
+          this.empresas = value;
+          this.ldEmpresa.set(false);
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.alertService.showToast({
+            position: 'bottom-end',
+            icon: "error",
+            title: err.error.detalle,
+            showCloseButton: true,
+            timerProgressBar: true,
+            timer: 4000,
+            customClass: {
+              container: 'z-[9999]!',
+              popup: 'z-[9999]!'
+            }
+          });
+          this.ldEmpresa.set(false);
+        },
+      })
+    )
+  }
+
+
   // handlers
   handlerLoadData(res: RemitenteDto): void{
     this.data = res;
@@ -247,7 +283,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
       ruc: res.ruc,
       descripcion: res.descripcion.toUpperCase(),
       direccion: res.direccion.toUpperCase(),
-      email: res.email.toUpperCase(),
+      email: res.email?.toUpperCase(),
       pais: res.pais,
       serie: res.serie,
       codigo_sunat: res.codigo_sunat,

@@ -88,7 +88,7 @@
                             <input class="min-h-9 shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo" pInputText />
                         </td>
                         <td class="px-1!">
-                            <input [class]=" row.get('descripcion')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="descripcion" pInputText />
+                            <input onlyUpper [class]=" row.get('descripcion')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="descripcion" pInputText />
                         </td>
                         <td class="px-1! w-35!">
                             <input [class]=" row.get('codigo_sunat')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="codigo_sunat" pInputText [readOnly]="row.get('bien_normalizado')?.value"/>
@@ -123,22 +123,8 @@
                         </td>
                         <td class="px-1! w-12.5">
                             <div class="flex flex-row gap-1 justify-end">
-
-                                @if(items.length > 1){
-                                  <p-button
-                                    pTooltip="Quitar producto"
-                                    tooltipStyleClass="text-[10px]! "
-                                    tooltipPosition="left"
-                                    class="text-xs! w-6! h-6!"
-                                    size="small"
-                                    icon="pi pi-times font-semibold!"
-                                    styleClass="w-6! h-6!"
-                                    (click)="evtRemoveItems(i)"
-                                    rounded="true"
-                                    severity="primary"
-                                  />
-                                  <!--<p-button pTooltip="Quitar producto" tooltipStyleClass="text-[10px]! " tooltipPosition="left" class="text-xs! w-6! h-6!" size="small" icon="pi pi-trash text-xs! font-semibold!" styleClass="w-6! h-6!" (click)="evtRemoveItems(i)" rounded="true" severity="secondary"/>-->
-                                }
+                                @if(i == items.length -1){<p-button pTooltip="Agregar producto" tooltipPosition="left" tooltipStyleClass="text-[10px]!" class="text-xs! w-6! h-6!" size="small" icon="pi pi-plus text-xs! font-semibold!" styleClass="w-6! h-6!" (click)="evtAddItem(true)" rounded="true" />}@else{<div></div>}
+                                @if(items.length > 1){<p-button pTooltip="Quitar producto" tooltipStyleClass="text-[10px]! " tooltipPosition="left" class="text-xs! w-6! h-6!" size="small" icon="pi pi-trash text-xs! font-semibold!" styleClass="w-6! h-6!" (click)="evtRemoveItems(i)" rounded="true" severity="secondary"/>}
                             </div>
                         </td>
                     </tr>
@@ -147,20 +133,19 @@
             </p-table>
         </div>
 
-
-
-        <div class="flex">
+        <!--<div>
             <p-button
+            [raised]="true"
+            (onClick)="evtShowList()"
             size="small"
-            outlined="true"
-            (onClick)="evtAddItem(true)"
-            class="ml-auto"
-            icon="pi pi-plus"
+            styleClass="text-xs!"
+            class="text-xs!"
+            icon="pi pi-plus text-xs!"
             severity="primary"
-            label="Agregar item"></p-button>
+            label="Agregar lista de items"></p-button>
         </div>
 
-        <!--<p-divider />-->
+        <p-divider />-->
 
         <div>
             <div class="flex flex-col mt-8">

@@ -1,4 +1,11 @@
+@reference "tailwindcss";
+
 :host ::ng-deep .p-autocomplete-input,
 :host ::ng-deep  .p-chip-label{
     font-size: 12px !important;
+}
+:host ::ng-deep .tabRemitDesti{
+    .p-tabpanels{
+        @apply px-0! mt-2!
+    }
 }

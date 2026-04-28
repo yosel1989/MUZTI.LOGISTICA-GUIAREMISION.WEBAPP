@@ -16,14 +16,14 @@ import { BehaviorSubject, Subscription } from "rxjs";
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { SelectTipoTraslado } from "../../selects/select-motivo-traslado/select-motivo-traslado";
 import { FltDateComponent } from "app/core/components/filters/flt-date/flt-date";
-import { DestinatarioBusqueda, DestinatarioSugeridoDto } from "@features/destinatario/models/destinatario";
+import { DestinatarioSugeridoDto } from "@features/destinatario/models/destinatario";
 import { DestinatarioApiService } from "@features/destinatario/services/destinatario-api.service";
 import { AsyncPipe, NgClass } from "@angular/common";
 import { ColumnsFilterDto } from "app/core/models/filter";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { heroQuestionMarkCircleMini } from "@ng-icons/heroicons/mini";
 import { EmpresaApiService } from "@features/empresa/services/empresa-api.service";
-import { EmpresaDto } from "@features/empresa/models/empresa.model";
+import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
 
 
 @Component({
@@ -83,7 +83,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     remitentes: RemitenteNombre[] = [];
     ldRemitentes: boolean = false;
 
-    empresas = new BehaviorSubject<EmpresaDto[]>([]);
+    empresas = new BehaviorSubject<EmpresaToSelectDto[]>([]);
     ldEmpresas: boolean = false;
 
     private subs = new Subscription();
@@ -224,8 +224,8 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
 
     loadEmpresas(): void{
         this.ldEmpresas = false;
-        const sub = this.empresaApiService.obtenerTodo().subscribe({
-            next: (value: EmpresaDto[]) => {
+        const sub = this.empresaApiService.loadAllToSelect().subscribe({
+            next: (value: EmpresaToSelectDto[]) => {
                 this.empresas.next(value);
                 this.ldEmpresas = false;
             },

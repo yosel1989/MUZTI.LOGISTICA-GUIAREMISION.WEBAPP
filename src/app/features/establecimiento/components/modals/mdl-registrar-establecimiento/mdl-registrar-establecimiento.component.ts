@@ -27,7 +27,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
 
 @Component({
-  selector: 'app-mdl-registrar-remitente',
+  selector: 'app-mdl-registrar-establecimiento',
   imports: [
     FormsModule, 
     InputNumberModule,
@@ -47,11 +47,11 @@ import { EmpresaApiService } from '@features/empresa/services/empresa-api.servic
     DividerModule,
     SkeletonModule
   ],
-  templateUrl: './mdl-registrar-remitente.component.html',
-  styleUrl: './mdl-registrar-remitente.component.scss',
+  templateUrl: './mdl-registrar-establecimiento.component.html',
+  styleUrl: './mdl-registrar-establecimiento.component.scss',
   providers: [ConfirmationService]
 })
-export class MdlRegistrarRemitenteComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();

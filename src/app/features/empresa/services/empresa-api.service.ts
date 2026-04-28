@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EmpresaDto } from "../models/empresa.model";
+import { EmpresaToSelectDto } from "../models/empresa.model";
 
 @Injectable({
     providedIn: "root"
@@ -17,10 +17,10 @@ export class EmpresaApiService{
         this.baseUrl = `${environment.apiUrl}/Empresa`;
     }
 
-    obtenerTodo(): Observable<EmpresaDto[]>{
+    loadAllToSelect(): Observable<EmpresaToSelectDto[]>{
         return this.http.get(`${this.baseUrl}`).pipe(
             map((res) => {
-                return res as EmpresaDto[];
+                return res as EmpresaToSelectDto[];
             }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);

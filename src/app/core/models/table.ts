@@ -3,6 +3,7 @@ export interface TableColumn{
     header: string;
 	sort?: boolean;
 	sticky?: boolean;
+    className?: string;
 }
 
 export interface TableData<T>{

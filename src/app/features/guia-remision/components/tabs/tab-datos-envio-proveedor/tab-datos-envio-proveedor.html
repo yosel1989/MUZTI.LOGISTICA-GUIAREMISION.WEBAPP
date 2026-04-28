@@ -10,10 +10,10 @@
                     }
                 </div>
             </p-tab>
-            @if(motivoTraslado === 'COMPRA' && tipoGuia === 'REMITENTE'){
+            @if(mostrarProveedor){
                 <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
                     <div class="flex items-center gap-2">
-                        <label for="" class="text-[12px] pointer-events-none">Datos del proveedor</label>
+                        <label for="" class="text-[12px] pointer-events-none ">Datos del proveedor</label>
                         @if(formDatosProveedor.invalid && (formDatosProveedor.touched || submitted)) {
                             <ng-icon name="tablerAlertCircle" />
                         }
@@ -210,6 +210,7 @@
                         </div>
                     }
 
+                  
                     <div class="grid grid-cols-4 gap-4">
                         @if(f_datosEnvio.pagador_flete.value == 'SUBCONTRATADOR'){
                             <div class="flex flex-col">
@@ -265,7 +266,7 @@
 
                     @if(f_datosEnvio.traslado_vehiculo_categoria.value){
                         <div class="flex flex-col gap-4">
-                            <label for="" class="text-md font-semibold text-primary">Datos del vehículo</label>
+                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del vehículo</label>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Placa</label>
@@ -287,114 +288,124 @@
                         f_datosEnvio.registrar_vehiculos_conductores.value
                     ){
                         <div class="flex flex-col gap-4">
-                            <label for="" class="text-md font-semibold text-primary">Datos del vehículo</label>
+                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del vehículo</label>
 
-                            <div formArrayName="vehiculos" class="flex flex-col gap-0">
-                                @for (vehiculo of vehiculos.controls; ; track vehiculo; let i = $index) {
-                                    <p-fieldset styleClass="text-xs!" [toggleable]="false" [collapsed]="true" [legend]="'Vehículo #' + ($index+1)">
-                                        <div  class="flex flex-row items-center" [formGroupName]="$index">
-                                            <div class="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
-                                                <div class="flex flex-col">
-                                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">{{ $index == 0 ? 'Placa principal *' : 'Placa secundaria *' }}</label>
-                                                    <input 
-                                                    placeholder="" 
-                                                    pSize="small" 
-                                                    fluid 
-                                                    pInputText 
-                                                    class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="placa_vehiculo" 
-                                                    />
-                                                    @if (vehiculo.get('placa_vehiculo')?.invalid && (vehiculo.get('placa_vehiculo')?.touched || submitted)) {
-                                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                                    }
-                                                </div>
-                                                @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+                            @if(vehiculos.controls.length > 0){
+                                <div formArrayName="vehiculos" class="flex flex-col gap-0">
+                                    @for (vehiculo of vehiculos.controls; ; track vehiculo; let i = $index) {
+                                        <p-fieldset styleClass="text-xs!" [toggleable]="false" [collapsed]="true" [legend]="'Vehículo #' + ($index+1)">
+                                            <div  class="flex flex-row items-center" [formGroupName]="$index">
+                                                <div class="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                                     <div class="flex flex-col">
-                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">TUCE o Cert. de habilitación vehicular *</label>
+                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">{{ $index == 0 ? 'Placa principal *' : 'Placa secundaria *' }}</label>
                                                         <input 
                                                         placeholder="" 
                                                         pSize="small" 
                                                         fluid 
                                                         pInputText 
-                                                        class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="cert_habilitacion_vehiculo" 
-                                                        [invalid]="vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)"/>
-                                                        @if (vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)) {
+                                                        class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="placa_vehiculo" 
+                                                        />
+                                                        @if (vehiculo.get('placa_vehiculo')?.invalid && (vehiculo.get('placa_vehiculo')?.touched || submitted)) {
                                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                         }
                                                     </div>
-                                                }
-                                                <div class="flex flex-col">
-                                                    <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >Entidad emisora de la autorización vahícular (opcional)</label>
-                                                    <div class="cursor-not-allowed">
-                                                        <p-select 
-                                                        fluid
-                                                        size="small" 
-                                                        [inputSize]="2" 
-                                                        
-                                                        panelStyleClass="text-[.875rem]!"
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                                                        [options]="ussuingEntities" 
-                                                        placeholder="Seleccionar..." 
-                                                        optionValue="value" 
-                                                        optionLabel="description" 
-                                                        appendTo="body"
-                                                        [showClear]="true"
-                                                        formControlName="entidad_emisora_autoriza_vehiculo"
-                                                        pTooltip="Entidad emisora de la autorización vahícular (opcional)"
-                                                        tooltipPosition="top"
-                                                        tooltipStyleClass="text-xs!"
+                                                    @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+                                                        <div class="flex flex-col">
+                                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">TUCE o Cert. de habilitación vehicular *</label>
+                                                            <input 
+                                                            placeholder="" 
+                                                            pSize="small" 
+                                                            fluid 
+                                                            pInputText 
+                                                            class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="cert_habilitacion_vehiculo" 
+                                                            [invalid]="vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)"/>
+                                                            @if (vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)) {
+                                                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                                            }
+                                                        </div>
+                                                    }
+                                                    <div class="flex flex-col">
+                                                        <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >Entidad emisora de la autorización vahícular (opcional)</label>
+                                                        <div class="cursor-not-allowed">
+                                                            <p-select 
+                                                            fluid
+                                                            size="small" 
+                                                            [inputSize]="2" 
+                                                            
+                                                            panelStyleClass="text-[.875rem]!"
+                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                                                            [options]="ussuingEntities" 
+                                                            placeholder="Seleccionar..." 
+                                                            optionValue="value" 
+                                                            optionLabel="description" 
+                                                            appendTo="body"
+                                                            [showClear]="true"
+                                                            formControlName="entidad_emisora_autoriza_vehiculo"
+                                                            pTooltip="Entidad emisora de la autorización vahícular (opcional)"
+                                                            tooltipPosition="top"
+                                                            tooltipStyleClass="text-xs!"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >N° de autorización vehícular (opcional)</label>
+                                                        <input 
+                                                        pSize="small" 
+                                                        fluid 
+                                                        pInputText 
+                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_autoriza_vehicular_vehiculo"
                                                         />
                                                     </div>
                                                 </div>
-                                                <div class="flex flex-col">
-                                                    <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >N° de autorización vehícular (opcional)</label>
-                                                    <input 
-                                                    pSize="small" 
-                                                    fluid 
-                                                    pInputText 
-                                                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_autoriza_vehicular_vehiculo"
-                                                    />
-                                                </div>
+                                                
+                                                    <div class="w-12.5 text-end">
+                                                        
+                                                            <p-button 
+                                                            pTooltip="Quitar vehiculo" 
+                                                            tooltipStyleClass="text-[10px]! " 
+                                                            tooltipPosition="left" 
+                                                            class="text-xs! w-6! h-6!" 
+                                                            size="small" 
+                                                            icon="pi pi-times font-semibold!" 
+                                                            styleClass="w-6! h-6!" 
+                                                            (click)="evtRemoveVehiculo($index)" 
+                                                            rounded="true" 
+                                                            severity="primary"/>
+                                                        
+                                                    </div>
+                                                
                                             </div>
-                                            
-                                                <div class="w-12.5 text-end">
-                                                    
-                                                        <p-button 
-                                                        pTooltip="Quitar vehiculo" 
-                                                        tooltipStyleClass="text-[10px]! " 
-                                                        tooltipPosition="left" 
-                                                        class="text-xs! w-6! h-6!" 
-                                                        size="small" 
-                                                        icon="pi pi-times font-semibold!" 
-                                                        styleClass="w-6! h-6!" 
-                                                        (click)="evtRemoveVehiculo($index)" 
-                                                        rounded="true" 
-                                                        severity="primary"/>
-                                                    
-                                                </div>
-                                            
-                                        </div>
-                                    </p-fieldset>
-                                }
-                            </div>
+                                        </p-fieldset>
+                                    }
+                                </div>
+                            }
                             
                             @if(vehiculos.length < 3){
                                 <div class="flex flex-wrap gap-x-2">
                                     <p-button 
-                                        size="small"
-                                        icon="fa-duotone fa-light fa-angle-down"
+                                        icon="fa-duotone fa-light fa-angle-down text-xs"
                                         label="Seleccionar vehiculo"
+                                        size="small" 
+                                        styleClass="text-xs! w-[162px]!" 
+                                        class="text-xs!" 
                                         iconPos="right"
                                         outlined="true"
                                         (click)="evtOnShowListaUnidadTransporte()"
                                     >
                                     </p-button>
 
-                                    <a href="/admin/unidad-transporte" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+                                    <a 
+                                        pTooltip="Administrar unidades de transporte"
+                                        tooltipStyleClass="text-xs! text-center"
+                                        tooltipPosition="top"
+                                        href="/admin/unidad-transporte" 
+                                        target="_blank" 
+                                        class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium text-xs!"
+                                    >Administrar</a>
 
                                 </div>
                             }
                         </div>
-                        <p-divider class="my-0!"></p-divider>
                     }
                     
                     @if(
@@ -403,133 +414,138 @@
                         f_datosEnvio.registrar_vehiculos_conductores.value
                     ){
                         <div class="flex flex-col gap-4">
-                            <label for="" class="text-md font-semibold text-primary">Datos del conductor</label>
-                            <div formArrayName="conductores" class="flex flex-col gap-0">
-                                @for (conductor of conductores.controls; track conductor; let i = $index) {
-                                    <p-fieldset styleClass="text-xs!" [toggleable]="true" [collapsed]="false" [legend]="'Conductor #' + ($index+1)">
-                                        <div  class="flex flex-row items-center" [formGroupName]="$index">
-                                            <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
-                                                    <div>
-                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
-                                                        <p-select 
-                                                        fluid
-                                                        size="small"
-                                                        [inputSize]="2"
-                                                        panelStyleClass="text-[.875rem]!"
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
-                                                        
-                                                        [options]="documentEntityTypes" 
-                                                        placeholder="Seleccionar..." 
-                                                        optionValue="value" 
-                                                        optionLabel="description" 
-                                                        appendTo="body"
-                                                        formControlName="tipo_documento_conductor"
-                                                        [invalid]="conductor.get('tipo_documento_conductor')?.invalid && ( conductor.get('tipo_documento_conductor')?.touched || submitted)"
-                                                        />
-                                                        @if (conductor.get('tipo_documento_conductor')?.invalid && (conductor.get('tipo_documento_conductor')?.touched || submitted)) {
-                                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                                        }
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
-                                                        <div class="relative">
-                                                           <input 
+                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del conductor</label>
+
+                            @if(conductores.controls.length > 0){
+                                <div formArrayName="conductores" class="flex flex-col gap-0">
+                                    @for (conductor of conductores.controls; track conductor; let i = $index) {
+                                        <p-fieldset styleClass="text-xs!" [toggleable]="true" [collapsed]="false" [legend]="'Conductor #' + ($index+1)">
+                                            <div  class="flex flex-row items-center" [formGroupName]="$index">
+                                                <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
+                                                        <div>
+                                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
+                                                            <p-select 
+                                                            fluid
+                                                            size="small"
+                                                            [inputSize]="2"
+                                                            panelStyleClass="text-[.875rem]!"
+                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
+                                                            
+                                                            [options]="documentEntityTypes" 
+                                                            placeholder="Seleccionar..." 
+                                                            optionValue="value" 
+                                                            optionLabel="description" 
+                                                            appendTo="body"
+                                                            formControlName="tipo_documento_conductor"
+                                                            [invalid]="conductor.get('tipo_documento_conductor')?.invalid && ( conductor.get('tipo_documento_conductor')?.touched || submitted)"
+                                                            />
+                                                            @if (conductor.get('tipo_documento_conductor')?.invalid && (conductor.get('tipo_documento_conductor')?.touched || submitted)) {
+                                                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
+                                                            <div class="relative">
+                                                            <input 
+                                                                pSize="small" 
+                                                                fluid 
+                                                                pInputText 
+                                                                (keydown.enter)="evtOnSearchConductor(conductor, $event)"
+                                                                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento_conductor"
+                                                                [invalid]="conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)"/>
+                                                                <span class="absolute w-[20px]! h-[20px]! text-[14px] rounded-md bg-gray-200 right-[5px] top-0 bottom-0 my-auto text-center flex items-center">
+                                                                    @if(conductor.get('loading')?.value === false){
+                                                                        <ng-icon class="m-auto stroke-gray-300" name="heroArrowTurnDownLeftMini" />
+                                                                    }@else{
+                                                                        <i class="pi pi-spin pi-spinner-dotted m-auto animate-duration-1000 text-primary"></i>
+                                                                    }
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                            
+                                                            @if (conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)) {
+                                                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° de licencia o brevete *</label>
+                                                            <input 
                                                             pSize="small" 
                                                             fluid 
                                                             pInputText 
-                                                            (keydown.enter)="evtOnSearchConductor(conductor, $event)"
-                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento_conductor"
-                                                            [invalid]="conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)"/>
-                                                            <span class="absolute w-[20px]! h-[20px]! text-[14px] rounded-md bg-gray-200 right-[5px] top-0 bottom-0 my-auto text-center flex items-center">
-                                                                @if(conductor.get('loading')?.value === false){
-                                                                    <ng-icon class="m-auto stroke-gray-300" name="heroArrowTurnDownLeftMini" />
-                                                                }@else{
-                                                                    <i class="pi pi-spin pi-spinner-dotted m-auto animate-duration-1000 text-primary"></i>
-                                                                }
-                                                                
-                                                            </span>
+                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_licencia_brevete_conductor"
+                                                            [invalid]="conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted)"
+                                                            />
+                                                            @if (conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted)) {
+                                                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                                            }
                                                         </div>
-                                                        
-                                                        @if (conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)) {
-                                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                                        }
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° de licencia o brevete *</label>
-                                                        <input 
-                                                        pSize="small" 
-                                                        fluid 
-                                                        pInputText 
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_licencia_brevete_conductor"
-                                                        [invalid]="conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted)"
-                                                        />
-                                                        @if (conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted)) {
-                                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                                        }
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre del conductor *</label>
-                                                        <input 
-                                                        pSize="small" 
-                                                        fluid 
-                                                        pInputText 
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="nombre_conductor"
-                                                        [invalid]="conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted)"/>
-                                                        @if (conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted)) {
-                                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                                        }
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Apellido del conductor *</label>
-                                                        <input 
-                                                        pSize="small" 
-                                                        fluid 
-                                                        pInputText 
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="apellido_conductor"
-                                                        [invalid]="conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted)"
-                                                        />
-                                                        @if (conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted)) {
-                                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                                        }
-                                                    </div>
-                                                
-                                            </div>
-                                            
-                                                <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
-                                                    
-                                                        <p-button 
-                                                            pTooltip="Quitar conductor" 
-                                                            tooltipStyleClass="text-[10px]! " 
-                                                            tooltipPosition="left" 
-                                                            class="text-xs! w-6! h-6!" 
-                                                            size="small" 
-                                                            icon="pi pi-times font-semibold!" 
-                                                            styleClass="w-6! h-6!" 
-                                                            (click)="evtRemoveCoductor($index)" 
-                                                            rounded="true" 
-                                                            severity="primary" 
-                                                        />
+                                                        <div>
+                                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre del conductor *</label>
+                                                            <input 
+                                                            pSize="small" 
+                                                            fluid 
+                                                            pInputText 
+                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="nombre_conductor"
+                                                            [invalid]="conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted)"/>
+                                                            @if (conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted)) {
+                                                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Apellido del conductor *</label>
+                                                            <input 
+                                                            pSize="small" 
+                                                            fluid 
+                                                            pInputText 
+                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="apellido_conductor"
+                                                            [invalid]="conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted)"
+                                                            />
+                                                            @if (conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted)) {
+                                                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                                            }
+                                                        </div>
                                                     
                                                 </div>
-                                            
-                                            
-                                        </div>
-                                    </p-fieldset>
-                                }
-                            </div>
+                                                
+                                                    <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
+                                                        
+                                                            <p-button 
+                                                                pTooltip="Quitar conductor" 
+                                                                tooltipStyleClass="text-[10px]! " 
+                                                                tooltipPosition="left" 
+                                                                class="text-xs! w-6! h-6!" 
+                                                                size="small" 
+                                                                icon="pi pi-times font-semibold!" 
+                                                                styleClass="w-6! h-6!" 
+                                                                (click)="evtRemoveCoductor($index)" 
+                                                                rounded="true" 
+                                                                severity="primary" 
+                                                            />
+                                                        
+                                                    </div>
+                                                
+                                                
+                                            </div>
+                                        </p-fieldset>
+                                    }
+                                </div>
+                            }
                             @if(conductores.length < 3){
                                 <div class="flex flex-wrap gap-x-2">
                                     <p-button 
-                                        size="small"
                                         icon="fa-duotone fa-light fa-angle-down"
                                         label="Seleccionar conductor"
+                                        size="small" 
+                                        styleClass="text-xs! w-[162px]!" 
+                                        class="text-xs!" 
                                         iconPos="right"
                                         outlined="true"
                                         (click)="evtOnShowListaConductor()"
                                     >
                                     </p-button>
 
-                                    <a href="/admin/conductor" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
+                                    <a href="/admin/conductor" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium text-xs!">Administrar</a>
 
                                 </div>
                             }
@@ -539,10 +555,9 @@
                     @if(
                         motivoTraslado === 'TRASLADO'
                     ){
-                        <p-divider class="my-0!"></p-divider>
                         <div class="flex flex-col gap-4">
 
-                            <label for="" class="text-md font-semibold text-primary">Datos de establecimiento</label>
+                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-2">Datos de establecimiento</label>
 
                             <div class="grid grid-cols-4 gap-2">
                                 <div>
@@ -608,18 +623,15 @@
                                 </div>
                             </div>
                         </div>
-                        
                     }
 
                     @if(
                         f_datosEnvio.tipo_transporte.value === 'PUBLICO' && 
                         !f_datosEnvio.traslado_vehiculo_categoria.value
                     ){
-                        <p-divider class="my-0!"></p-divider>
-
                         <div class="flex flex-col gap-4">
 
-                            <label for="" class="text-md font-semibold text-primary">Datos del transportista</label>
+                            <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del transportista</label>
 
                             @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
                                 <div class="flex flex-wrap gap-x-2">
