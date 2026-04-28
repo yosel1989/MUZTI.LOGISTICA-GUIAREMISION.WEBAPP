@@ -8,18 +8,13 @@
         </div>
     </ng-template>
     <ng-template #end>
-        <div class="flex items-center gap-4">
-            <div>
-                <p-overlay-badge value="4" severity="danger" class="inline-flex font-normal!" styleClass="font-normal!" >
-                    <p-avatar pRipple icon="pi pi-bell" size="normal" class="cursor-pointer"/>
-                </p-overlay-badge> 
-            </div>
-            
-            <p-avatar class="cursor-pointer h-7.75! w-7.75!" (click)="evtShowMenu($event)" image="https://www.personasnetwork.com/images/empleados/peru/PE09049905F.jpg" shape="circle"  style="background-color: #ece9fc; color: #2a1261"/>
+        <div class="flex items-center gap-1">
+            <p-avatar pRipple icon="pi pi-bell" size="normal" class="cursor-pointer"/>
+            <span class="text-xs">Hola, {{user!.firstName}}</span>
+            <p-avatar [label]="user!.firstName[0]" size="normal" class="cursor-pointer bg-primary-500! text-white!" (click)="evtShowMenu($event)" />
         </div>
     </ng-template>
 </p-toolbar>
-
 
 <p-toolbar class="rounded-none! sticky top-0 z-10 w-full border-x-0! border-t! shadow-md">
     <ng-template #start>

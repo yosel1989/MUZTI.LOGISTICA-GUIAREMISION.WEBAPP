@@ -57,6 +57,7 @@ export interface RemitenteDto {
   id_estado: number;
   ldEstado: boolean;
   ldUpdate: boolean;
+  tipo: string;
 }
 
 export interface RegistrarRemitenteRequestDto{

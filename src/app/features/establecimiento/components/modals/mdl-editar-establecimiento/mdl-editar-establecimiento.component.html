@@ -41,7 +41,7 @@
                     }@else{
                     <p-skeleton width="100%" height="32px"></p-skeleton>
                     }
-                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || isSubmitted)) {
+                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
@@ -234,6 +234,31 @@
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                             La código debe tener 4 caracteres.
                         </span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo Establecimiento *</label>
+                    @if(!ldTipoEstablecimiento()){
+                        <p-select 
+                            fluid
+                            size="small"
+                            [inputSize]="2"
+                            panelStyleClass="text-[.875rem]!"
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
+                            [options]="tiposEstablecimiento" 
+                            placeholder="Seleccionar..." 
+                            optionValue="codigo" 
+                            optionLabel="tipo" 
+                            appendTo="body"
+                            formControlName="tipo"
+                            [invalid]="frm.get('tipo')?.invalid && ( frm.get('tipo')?.touched || isSubmitted())"
+                        />
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
+                    @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
             </div>

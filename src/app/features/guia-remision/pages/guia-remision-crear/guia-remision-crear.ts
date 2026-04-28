@@ -653,18 +653,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         remitente_id: s.id,
                         tipo_documento_remitente: 'RUC',
                         numero_documento_remitente: s.ruc,
-                        razon_social_remitente: `${s.razonSocial} (${s.descripcion})`,
-                        nombres_apellidos_remitente: s.razonSocial,
+                        razon_social_remitente: `${s.razon_social} (${s.descripcion})`,
+                        nombres_apellidos_remitente: s.razon_social,
                         direccion_remitente: s.direccion,
-                        departamento_remitente: s.ubigeoId.substring(0, 2)
+                        departamento_remitente: s.ubigeo_id.substring(0, 2)
                     });
-                    this.provinciaRemitente!.valueEdit = s.ubigeoId!.substring(0,4);
+                    this.provinciaRemitente!.valueEdit = s.ubigeo_id!.substring(0,4);
                     const subProvincia1 = this.provinciaRemitente?.loading.subscribe(res => {
-                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeoId.substring(0,4));
+                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
                     });
-                    this.distritoRemitente!.valueEdit = s.ubigeoId;
+                    this.distritoRemitente!.valueEdit = s.ubigeo_id;
                     const subDistrito1 = this.distritoRemitente?.loading.subscribe((res: any) => {
-                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeoId);
+                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
                     });
                     subProvincia1?.unsubscribe();
                     subDistrito1?.unsubscribe();
@@ -673,18 +673,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         destinatario_id: s.id,
                         tipo_documento_destinatario: 'RUC',
                         numero_documento_destinatario: s.ruc,
-                        razon_social_destinatario: `${s.razonSocial} (${s.descripcion})`,
-                        nombres_apellidos_destinatario: s.razonSocial,
+                        razon_social_destinatario: `${s.razon_social} (${s.descripcion})`,
+                        nombres_apellidos_destinatario: s.razon_social,
                         direccion_destinatario: s.direccion,
-                        departamento_destinatario: s.ubigeoId.substring(0, 2)
+                        departamento_destinatario: s.ubigeo_id.substring(0, 2)
                     });
-                    this.provinciaDestinatario!.valueEdit = s.ubigeoId!.substring(0,4);
+                    this.provinciaDestinatario!.valueEdit = s.ubigeo_id!.substring(0,4);
                     const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
-                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeoId.substring(0,4));
+                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
                     });
-                    this.distritoDestinatario!.valueEdit = s.ubigeoId;
+                    this.distritoDestinatario!.valueEdit = s.ubigeo_id;
                     const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeoId);
+                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
                     });
                     subProvincia1?.unsubscribe();
                     subDistrito1?.unsubscribe();
