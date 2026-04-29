@@ -21,7 +21,6 @@ import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
@@ -148,6 +147,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     const form = this.frm.value;
 
     return {
+      establecimiento_id: this.id,
       ruc: form.ruc,
       descripcion: form.descripcion,
       ubigeo_id: form.distrito,

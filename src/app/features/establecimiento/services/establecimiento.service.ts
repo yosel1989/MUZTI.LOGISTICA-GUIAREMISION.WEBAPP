@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoEstablecimientoRequestDTO, ActualizarEstadoEstablecimientoResponseDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
+import { ActualizarEstadoEstablecimientoRequestDTO, ActualizarEstadoEstablecimientoResponseDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
 
@@ -97,6 +97,12 @@ export class EstablecimientoApiService{
             catchError((error: HttpErrorResponse) => {
             return throwError(() => error);
             })
+        );
+    }
+
+    getByIdToGuia(idEstablecimiento: number, tipoGuia: 'TRANSPORTISTA' | 'REMITENTE' | string): Observable<EstablecimientoRemitenteGuiaDTO> {
+        return this.http.get<any>(`${this.baseUrl}/buscar-por-id-para-guia/${idEstablecimiento}/${tipoGuia}`).pipe(
+            map(response =>{ return response as EstablecimientoRemitenteGuiaDTO})
         );
     }
 }

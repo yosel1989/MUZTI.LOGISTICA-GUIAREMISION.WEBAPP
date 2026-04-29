@@ -66,6 +66,7 @@ export interface RegistrarEstablecimientoRequestDTO{
 }
 
 export interface EditarEstablecimientoRequestDTO{
+    establecimiento_id: number;
     ruc: string;
     descripcion: string;
     ubigeo_id: string;
@@ -78,3 +79,21 @@ export interface EditarEstablecimientoRequestDTO{
     empleado_nombre_edicion: string | null;
     tipo: string;
 }
+
+export interface EstablecimientoRemitenteGuiaDTO{
+  id: number;              
+  razon_social: string;            
+  ruc: string;                       
+  descripcion: string;               
+  ubigeo_id: string;                 
+  departamento: string;              
+  provincia: string;                 
+  distrito: string;                  
+  direccion: string;                 
+  email: string;                     
+  pais: string;                      
+  serie: string | null;              
+  nueva_serie: string | null;        
+  nuevo_correlativo: number | null;  
+  nuevo_numero_guia: string | null;           
+} 

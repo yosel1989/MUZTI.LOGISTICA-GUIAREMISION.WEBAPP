@@ -42,11 +42,12 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                             <app-select-departamento 
-                            #departamentoOrigen
-                            [control]="f_origen.idDepartamento" 
-                            classLabel="text-[11px]! text-gray-500 font-semibold" 
-                            [invalid]="f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)"
-                            label="Departamento *"
+                                #departamentoOrigen
+                                [control]="f_origen.idDepartamento" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold" 
+                                [invalid]="f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)"
+                                label="Departamento *"
+                                class="cursor-not-allowed"
                             ></app-select-departamento>
                             @if (f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
@@ -55,11 +56,13 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
                             <app-select-provincia 
-                            #provinciaOrigen
-                            [control]="f_origen.idProvincia" 
-                            [idUbigeoDepartamento]="f_origen.idDepartamento.value" 
-                            [invalid]="f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold"
-                            label="Provincia *"
+                                #provinciaOrigen
+                                [control]="f_origen.idProvincia" 
+                                [idUbigeoDepartamento]="f_origen.idDepartamento.value" 
+                                [invalid]="f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold"
+                                label="Provincia *"
+                                class="cursor-not-allowed"
                             ></app-select-provincia>
                             @if (f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
@@ -68,12 +71,13 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
                             <app-select-distrito 
-                            #distritoOrigen
-                            label="Distrito *"
-                            [control]="f_origen.idDistrito" 
-                            [idUbigeoProvincia]="f_origen.idProvincia.value" 
-                            [invalid]="f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold" 
-                            
+                                #distritoOrigen
+                                label="Distrito *"
+                                [control]="f_origen.idDistrito" 
+                                [idUbigeoProvincia]="f_origen.idProvincia.value" 
+                                [invalid]="f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold" 
+                                class="cursor-not-allowed"
                             ></app-select-distrito>
                             @if (f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
@@ -104,11 +108,12 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                             <app-select-departamento 
-                            #departamentoDestino
-                            [control]="f_destino.idDepartamento" 
-                            classLabel="text-[11px]! text-gray-500 font-semibold" 
-                            [invalid]="f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)"
-                            label="Departamento *"
+                                #departamentoDestino
+                                [control]="f_destino.idDepartamento" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold" 
+                                [invalid]="f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)"
+                                label="Departamento *"
+                                class="cursor-not-allowed"
                             ></app-select-departamento>
                             @if (f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
@@ -117,11 +122,13 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
                             <app-select-provincia 
-                            #provinciaDestino
-                            [control]="f_destino.idProvincia" 
-                            [idUbigeoDepartamento]="f_destino.idDepartamento.value" 
-                            [invalid]="f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold"
-                            label="Provincia *"
+                                #provinciaDestino
+                                [control]="f_destino.idProvincia" 
+                                [idUbigeoDepartamento]="f_destino.idDepartamento.value" 
+                                [invalid]="f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold"
+                                label="Provincia *"
+                                class="cursor-not-allowed"
                             ></app-select-provincia>
                             @if (f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
@@ -130,10 +137,12 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
                             <app-select-distrito 
-                            [control]="f_destino.idDistrito" 
-                            [idUbigeoProvincia]="f_destino.idProvincia.value" 
-                            [invalid]="f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)" classLabel="text-[11px]! text-gray-500 font-semibold"
-                            label="Distrito *"
+                                [control]="f_destino.idDistrito" 
+                                [idUbigeoProvincia]="f_destino.idProvincia.value" 
+                                [invalid]="f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold"
+                                label="Distrito *"
+                                class="cursor-not-allowed"
                             ></app-select-distrito>
                             @if (f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>

@@ -7,7 +7,7 @@
                     <app-select-empresa-remitente #selectEmpresaRemitente [control]="f.remitente_id"></app-select-empresa-remitente>
                 </div>
                 <div class="col">
-                   <app-guia-section-cabecera #guiaCabecera [idRemitente]="f.remitente_id.value" [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"></app-guia-section-cabecera>   
+                   <app-guia-section-cabecera #guiaCabecera [idEstablecimiento]="remitente() ? remitente()!.id : null" [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"></app-guia-section-cabecera>   
                 </div>
             </div>
         </p-card>
@@ -61,11 +61,10 @@
                                 <div class="flex flex-col gap-3">
                                     <div class="flex flex-wrap gap-x-2 pb-2">
                                         <p-button 
-                                        
                                             styleClass="text-[12px]!" 
-                                            icon="fa-duotone fa-light fa-angle-down"
+                                            icon="fa-duotone fa-regular fa-magnifying-glass"
                                             label="Seleccionar remitente"
-                                            iconPos="right"
+                                            iconPos="left"
                                             (click)="evtOnShowEstablecimiento('remitente')"
                                             
                                         >
@@ -246,9 +245,9 @@
                                     <div class="flex flex-wrap gap-x-2 pb-2">
                                         <p-button 
                                             styleClass="text-[12px]!" 
-                                            icon="fa-duotone fa-light fa-angle-down"
+                                            icon="fa-duotone fa-regular fa-magnifying-glass"
                                             label="Seleccionar destinatario"
-                                            iconPos="right"
+                                            iconPos="left"
                                             (click)="evtOnShowEstablecimiento('destinatario')"
                                         >
                                         </p-button>
@@ -533,7 +532,11 @@
             [emisora]="selectEmpresaRemitente.selected()"
             #tabDatosEnvioProveedor></app-tab-datos-envio-proveedor>
 
-            <app-tab-origen-destino #tabOrigenDestino></app-tab-origen-destino>
+            <app-tab-origen-destino 
+                #tabOrigenDestino
+                [remitente]="remitente()"
+                [destinatario]="destinatario()"
+            ></app-tab-origen-destino>
 
             <app-section-producto-listado #sectionProductoListado></app-section-producto-listado>
         </div>

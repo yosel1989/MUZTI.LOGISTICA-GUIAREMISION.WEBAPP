@@ -67,6 +67,9 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
 
     // Events
     onSelectItem(evt: any): void{
-        this.selected.set( this.data.find(x => x.ruc === evt.value) );
+        const found = this.data.find(x => x.ruc === evt.value);
+        if (found) {
+            this.selected.set(found);
+        }
     }
 }
