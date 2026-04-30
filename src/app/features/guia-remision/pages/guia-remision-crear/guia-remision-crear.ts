@@ -10,7 +10,6 @@ import { TabsModule } from 'primeng/tabs';
 import { SelectMotivoTrasladoComponent } from 'app/features/guia-remision/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
 import { TipoGuiaRemisionEnum, GuiaRemisionTipoTrasladoEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
-import { SelectTipoDocumentoComponent } from 'app/features/guia-remision/components/selects/select-tipo-documento/select-tipo-documento';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
@@ -48,6 +47,8 @@ import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 
 interface Type {
     name: string;
@@ -139,6 +140,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     minFechaEmision = new Date();
     maxFechaEmision = new Date();
 
+    empresa = signal<EmpresaToSelectDto | null>(null);
     remitente = signal<EstablecimientoDTO | null>(null);
     destinatario = signal<EstablecimientoDTO | null>(null);
 
@@ -158,10 +160,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         this.formGroup = this.formBuilder.group({
 
-            remitente_id: new FormControl(null, Validators.required),
+            empresa_id: new FormControl(null, Validators.required),
 
             motivo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
 
+            remitente_id: new FormControl(null, Validators.required),
             tipo_documento_remitente: new FormControl({value: 'RUC', disabled: true}, Validators.required),
             numero_documento_remitente: new FormControl({value: null, disabled: true}, Validators.required),
             razon_social_remitente: new FormControl({value: null, disabled: true}, Validators.required),
@@ -173,7 +176,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
             destinatario_id: new FormControl(null, Validators.required),
-            tipo_documento_destinatario: new FormControl('RUC'),
+            tipo_documento_destinatario: new FormControl({value: 'RUC', disabled: true}, Validators.required),
             numero_documento_destinatario: new FormControl({value: null, disabled: true}),
             razon_social_destinatario: new FormControl({value: null, disabled: true}),
             nombres_apellidos_destinatario: new FormControl({value: null, disabled: true}),
@@ -243,6 +246,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngAfterViewInit(): void{
+        this.selectEmpresaRemitente?.onChange.subscribe((selected: EmpresaToSelectDto | null) => {
+            this.empresa.set(selected);
+        });
     }
 
     ngOnDestroy(): void{
@@ -543,7 +549,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             },
             appendTo: 'body',
             inputValues: {
-                ruc: this.selectEmpresaRemitente?.selected()?.ruc
+                ruc: this.empresa()?.ruc
             }
         });
 

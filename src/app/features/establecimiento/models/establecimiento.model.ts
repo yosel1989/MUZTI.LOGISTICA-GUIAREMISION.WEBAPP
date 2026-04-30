@@ -81,7 +81,7 @@ export interface EditarEstablecimientoRequestDTO{
 }
 
 export interface EstablecimientoRemitenteGuiaDTO{
-  id: number;              
+  establecimiento_id: number;              
   razon_social: string;            
   ruc: string;                       
   descripcion: string;               
@@ -90,7 +90,7 @@ export interface EstablecimientoRemitenteGuiaDTO{
   provincia: string;                 
   distrito: string;                  
   direccion: string;                 
-  email: string;                     
+  email: string | null;                     
   pais: string;                      
   serie: string | null;              
   nueva_serie: string | null;        

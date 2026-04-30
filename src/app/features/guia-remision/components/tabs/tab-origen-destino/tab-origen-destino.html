@@ -137,6 +137,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
                             <app-select-distrito 
+                                #distritoDestino
                                 [control]="f_destino.idDistrito" 
                                 [idUbigeoProvincia]="f_destino.idProvincia.value" 
                                 [invalid]="f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)" 

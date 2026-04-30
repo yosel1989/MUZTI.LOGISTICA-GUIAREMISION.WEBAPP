@@ -51,7 +51,7 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
     if(this.idEstablecimiento && this.tipoGuiaRemision){
       this.loading.next(true);
       this.establecimientoApiService.getByIdToGuia(this.idEstablecimiento, this.tipoGuiaRemision).subscribe(res => {
-        //console.log(res);
+  
           this.rucEmpresa = res.ruc;
           this.serieNumero = res.nuevo_numero_guia ?? '';
           this.establecimientoRemitente = res;
