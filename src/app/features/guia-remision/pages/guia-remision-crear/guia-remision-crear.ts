@@ -273,7 +273,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
-        console.log('proveedor', this.tabDatosEnvioProveedor?.data.proveedor);
+        //console.log('proveedor', this.tabDatosEnvioProveedor?.data.proveedor);
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             tipo_traslado: this.f.motivo_traslado.value,
@@ -295,14 +295,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             remitente: {
                 remitente_id: this.f.remitente_id.value,
-                ruc: (this.f.motivo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected()?.ruc : this.f.numero_documento_remitente.value,
-                descripcion: this.f.remitente_id.value,
-                nombre_empresa: this.f.remitente_id.value,
-                direccion: this.f.remitente_id.value,
-                departamento: this.f.remitente_id.value,
-                provincia: this.f.remitente_id.value,
-                distrito: this.f.remitente_id.value,
-                serie_numero: this.guiaCabecera!.serieNumero
+                numero_documento: this.remitente()!.ruc,
+                descripcion: this.remitente()!.descripcion,
+                nombre_empresa: this.remitente()!.razon_social,
+                direccion: this.remitente()!.direccion,
+                departamento: this.remitente()!.departamento,
+                provincia: this.remitente()!.provincia,
+                distrito: this.remitente()!.distrito,
+                serie_numero: "",
             },
 
             destinatario: {

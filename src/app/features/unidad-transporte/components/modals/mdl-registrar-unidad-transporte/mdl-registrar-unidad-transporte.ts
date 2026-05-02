@@ -63,14 +63,10 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
   submitted: boolean = false;
 
   headerValue: string = '';
-  estados: {id: number, label: string}[] = [
-    {id: 0, label: 'Inactivo'},
-    {id: 1, label: 'Activo'}
-  ];
 
-   tipos: {id: string, label: string}[] = [
-    {id: 'INTERNO', label: 'INTERNO'},
-    {id: 'EXTERNO', label: 'EXTERNO'}
+  tipos: {value: string, label: string}[] = [
+    {value: 'INTERNO', label: 'INTERNO'},
+    {value: 'EXTERNO', label: 'EXTERNO'}
   ];
 
   constructor(
@@ -89,9 +85,10 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       cod_emisor_vehicular: new FormControl(null, [Validators.maxLength(2)]),
       emisor_vehicular: new FormControl(null, [Validators.minLength(2), Validators.maxLength(100)]),
       nro_autorizacion: new FormControl(null, [Validators.minLength(3), Validators.maxLength(50)]),
-      //tipo: new FormControl('INTERNO', [Validators.maxLength(20)]),
+      tipo: new FormControl('INTERNO', [Validators.maxLength(20)]),
       empleado_id_creacion: new FormControl(null),
-      empleado_nombre_creacion: new FormControl(null)
+      empleado_nombre_creacion: new FormControl(null),
+      id_estado: new FormControl(1),
     });
 
     this.headerValue = this.config.header ?? '';
@@ -127,7 +124,8 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
       nro_autorizacion: form.nro_autorizacion,
       empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      empleado_nombre_creacion: 'SA',
+      tipo: form.tipo
     };
   }
 

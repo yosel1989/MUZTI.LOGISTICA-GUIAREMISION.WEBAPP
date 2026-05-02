@@ -1,0 +1,13 @@
+<p-select 
+panelStyleClass="text-[.875rem]!"
+size="small" 
+fluid 
+[options]="options" 
+[formControl]="control" 
+[invalid]="invalid" 
+optionLabel="label" 
+optionValue="value" 
+[class]="invalid ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+[filter]="filter" 
+appendTo="body"
+[inputId]="inputId"></p-select>

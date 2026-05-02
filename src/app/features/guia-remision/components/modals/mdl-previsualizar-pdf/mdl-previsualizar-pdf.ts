@@ -95,7 +95,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     {
                       stack: [
                         {
-                          text: `RUC: ${this.data.remitente.ruc}`,
+                          text: `RUC: ${this.data.remitente.numero_documento}`,
                           alignment: 'center',
                           color: '#adadad'
                         },

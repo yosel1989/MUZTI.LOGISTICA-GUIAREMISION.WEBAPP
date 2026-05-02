@@ -30,6 +30,7 @@ export interface RegistrarUnidadTransporteRequestDto{
     nro_autorizacion: string | null;
     empleado_id_creacion: number;
     empleado_nombre_creacion: string;
+    tipo: string;
 }
 
 export interface RegistrarUnidadTransporteResponseDto{
