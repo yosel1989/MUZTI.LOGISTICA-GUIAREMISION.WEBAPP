@@ -1,6 +1,7 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges} from '@angular/core';
-import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
+import { EstablecimientoRemitenteGuiaDTO } from '@features/establecimiento/models/establecimiento.model';
+import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 import { RemitenteApiService } from 'app/features/remitente/services/remitente-api.service';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -20,13 +21,15 @@ import { BehaviorSubject } from 'rxjs';
 
 export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
 
+  private establecimientoApiService = inject(EstablecimientoApiService);
+
   @Input() tipoGuiaRemision!: 'TRANSPORTISTA' | 'REMITENTE' | string | undefined;
-  @Input() idRemitente: number | null = null;
+  @Input() idEstablecimiento: number | null = null;
 
   rucEmpresa: string  = '00000000000';
   serieNumero: string = '0000-00000000';
 
-  remitente: RemitenteByIdToGuia | undefined;
+  establecimientoRemitente: EstablecimientoRemitenteGuiaDTO | undefined;
   loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   $loading = this.loading.asObservable();
 
@@ -45,13 +48,13 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(this.idRemitente && this.tipoGuiaRemision){
+    if(this.idEstablecimiento && this.tipoGuiaRemision){
       this.loading.next(true);
-      this.remitenteService.getByIdToGuia(this.idRemitente, this.tipoGuiaRemision).subscribe(res => {
-        //console.log(res);
+      this.establecimientoApiService.getByIdToGuia(this.idEstablecimiento, this.tipoGuiaRemision).subscribe(res => {
+  
           this.rucEmpresa = res.ruc;
           this.serieNumero = res.nuevo_numero_guia ?? '';
-          this.remitente = res;
+          this.establecimientoRemitente = res;
           this.loading.next(false);
       });
     }

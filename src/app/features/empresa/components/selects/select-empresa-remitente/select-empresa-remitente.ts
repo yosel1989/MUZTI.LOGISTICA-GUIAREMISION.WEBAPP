@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, signal, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
@@ -26,8 +26,10 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
 
+    @Output() onChange = new EventEmitter<EmpresaToSelectDto | null>();
+
     data: EmpresaToSelectDto[] = [];
-    selected = signal<EmpresaToSelectDto | undefined>(undefined);
+    selected = signal<EmpresaToSelectDto | null>(null);
     loading = signal(false);
 
     constructor(
@@ -37,7 +39,8 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
     ngOnInit(): void {
         this.loadData();
         this.control.valueChanges.subscribe((res: string | null) => {
-            this.selected.set( res ? this.data.find(x => x.ruc === res) : undefined );
+            this.selected.set( res ? this.data.find(x => x.ruc === res)! : null );
+            console.log('Empresa seleccionada', this.selected());
         });
     }
 
@@ -50,13 +53,14 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
     }
 
     // Data
+
     loadData(): void {
         this.loading.set(true);
         this.empresaApiService.loadAllToSelect().subscribe({
             next: (response) => {
-                console.log('data empresas', response);
                 this.data = response;
                 this.control.setValue(this.data.length ? this.data[0].ruc : null);
+                this.onChange.emit(this.data.length ? this.data[0] : null);
                 this.loading.set(false);
             },
             error: (error) => {
@@ -66,7 +70,12 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
     }
 
     // Events
+
     onSelectItem(evt: any): void{
-        this.selected.set( this.data.find(x => x.ruc === evt.value) );
+        const found = this.data.find(x => x.ruc === evt.value);
+        if (found) {
+            this.selected.set(found);
+            this.onChange.emit(found);
+        }
     }
 }

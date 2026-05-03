@@ -8,3 +8,8 @@ export interface EmisorVehicularDto{
     nombre: string;
     abreviatura: string;
 }
+
+export interface TipoEstablecimientoDTO{
+    tipo: string;
+    codigo: string;
+}

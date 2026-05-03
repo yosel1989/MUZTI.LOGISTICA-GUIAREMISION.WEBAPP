@@ -256,7 +256,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                             }
                             @case('cod'){
                                 <td class="cursor-pointer py-2! px-4!" >
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData.ld_update){
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         {{ (rowIndex) }}
@@ -269,7 +269,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="cursor-pointer py-2! px-2!" >
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData.ld_update){
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         COD-{{ rowData[col.field].toString().padStart(4,'0') }}
@@ -278,7 +278,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                             }
                             @case('fecha_creacion'){
                                 <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData.ld_update){
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
@@ -287,7 +287,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                             }
                             @case('fecha_ultima_edicion'){
                                 <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData.ld_update){
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
@@ -296,7 +296,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                             }
                             @case('estado'){
                                 <td class="text-nowrap py-1! font-light!"> 
-                                    @if(rowData['ldEstado'] || rowData.ldUpdate){
+                                    @if(rowData['ld_estado'] || rowData.ld_update){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
                                         @if(rowData['id_estado']){
@@ -317,7 +317,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="text-nowrap py-1! font-light!">
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData.ld_update){
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         {{rowData[col.field]}}

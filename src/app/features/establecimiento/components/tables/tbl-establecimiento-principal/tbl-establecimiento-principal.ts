@@ -1,6 +1,5 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -24,7 +23,10 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
-import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { ActualizarEstadoEstablecimientoRequestDTO, ActualizarEstadoEstablecimientoResponseDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
+import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
+import { MdlEditarEstablecimientoComponent } from '../../modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
 
 @Component({
   selector: 'app-tbl-establecimiento-principal',
@@ -53,6 +55,12 @@ import { EstablecimientoDTO } from '@features/establecimiento/models/establecimi
 })
 
 export class TableEstablecimientoPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+
+    public dialogService = inject(DialogService);
+    private api = inject(EstablecimientoApiService);
+    public util = inject(UtilService);
+    private confirmationService = inject(ConfirmationService);
+    private alertService = inject(AlertService);
 
     cols: Column[] = [];
 
@@ -89,18 +97,13 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     ctrlSearch = new FormControl(null);
 
     constructor(
-      public dialogService: DialogService,
-      private api: RemitenteApiService,
-      private cd: ChangeDetectorRef,
-      public util: UtilService,
-      private confirmationService: ConfirmationService,
-      private alertService: AlertService
+      private cd: ChangeDetectorRef
     ){
         this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'nombre_empresa', header: 'Empresa', sort: false, sticky: false },
+          { field: 'razon_social', header: 'Empresa', sort: false, sticky: false },
           { field: 'ruc', header: 'RUC', sort: false, sticky: false },
           { field: 'descripcion', header: 'Descripción', sort: false, sticky: false },
           { field: 'departamento', header: 'Departamento', sort: false, sticky: false },
@@ -108,7 +111,6 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           { field: 'distrito', header: 'Distrito', sort: false, sticky: false },
           { field: 'direccion', header: 'Dirección', sort: false, sticky: false },
           { field: 'email', header: 'Correo', sort: false, sticky: false },
-          { field: 'emailFacturador', header: 'Correo Factura', sort: false, sticky: false },
           { field: 'pais', header: 'País', sort: false, sticky: false },
           { field: 'serie', header: 'Serie', sort: false, sticky: false },
           { field: 'codigo_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
@@ -168,20 +170,14 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
         this.first = 0;
       }
 
-      this.filters =  this.search ? [{
-        data: 'search',
-        search: {
-          value: this.search
-        }
-      }] : [];
 
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
+      this.subData = this.api.getAll(this.pageNumber, this.pageSize, this.search).subscribe({
         next: (res: TableData<EstablecimientoDTO[]>) => {
           
           this.data = res.data.map(x => {
             x.fecha_creacion = new Date(x.fecha_creacion);
-            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_creacion) : x.fecha_ultima_edicion;
-            x.ldEstado = false;
+            x.fecha_edicion = x.fecha_edicion ? new Date(x.fecha_creacion) : x.fecha_edicion;
+            x.ld_estado = false;
             return x;
           });
 
@@ -247,19 +243,19 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlRegistrarRemitenteComponent,  {
+      this.ref = this.dialogService.open(MdlRegistrarEstablecimientoComponent,  {
         width: '1000px',
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Registrar Remitente',
+        header: 'Registrar Establecimiento',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body'
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarRemitenteComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarRemitenteComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarEstablecimientoComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarEstablecimientoComponent) => {
           this.evtOnReload();
           this.ref?.close();
         });
@@ -274,12 +270,12 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     }
 
     evtOnEdit(): void{
-      this.ref = this.dialogService.open(MdlEditarRemitenteComponent,  {
+      this.ref = this.dialogService.open(MdlEditarEstablecimientoComponent,  {
         width: '1000px',
         closable: true,
         modal: true,
         position: 'top',
-        header: 'Editar Remitente',
+        header: 'Editar Establecimiento',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -288,16 +284,16 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarRemitenteComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarEstablecimientoComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: EstablecimientoDTO) => {
           console.log(this.selected);
-          this.selected!.ldUpdate = true;
+          this.selected!.ld_update = true;
           this.cd.detectChanges();
 
           setTimeout(() => {
             const idx = this.data.findIndex(x => x.id === this.selected!.id);
             if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
+              this.data[idx] = { ...this.selected!, ...s, ld_update: false };
             }
             this.cd.detectChanges();
           }, 1000);
@@ -315,12 +311,12 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
 
     evtOnDelete(): void{
       this.confirmationService.confirm({
-          header: '¿Eliminar remitente?',
+          header: '¿Eliminar establecimiento?',
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const subs = this.api.eliminar(this.selected!.id).subscribe({
-                next: (res: EliminarRemitenteResponseDto) => {
+              const subs = this.api.delete(this.selected!.id).subscribe({
+                next: (res: EliminarEstablecimientoResponseDTO) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -360,21 +356,21 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
 
     evtOnUpdateStatus(status: number): void{
       this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el remitente?' : '¿Activar el remitente?',
+          header: !status ? '¿Desactivar el establecimiento?' : '¿Activar el establecimiento?',
           message: 'Confirmar la operación.',
           accept: () => {
 
-              this.selected!.ldEstado = true;
+              this.selected!.ld_estado = true;
               this.cd.detectChanges();
 
               const request = {
                 id_estado: status,
                 edited_employee_id: 1,
                 edited_employee_name: 'SA'
-              } as ActualizarEstadoRemitenteRequestDto;
+              } as ActualizarEstadoEstablecimientoRequestDTO;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoRemitenteResponseDto) => {
+                next: (res: ActualizarEstadoEstablecimientoResponseDTO) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -385,16 +381,16 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                     timer: 4000
                   });
 
-                  this.selected!.ldEstado = false;
+                  this.selected!.ld_estado = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
                   this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
-                  this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
+                  this.selected!.fecha_edicion = res.fecha_edicion;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.selected!.ldEstado = false;
+                  this.selected!.ld_estado = false;
                   this.cd.detectChanges();
 
                   this.alertService.showToast({

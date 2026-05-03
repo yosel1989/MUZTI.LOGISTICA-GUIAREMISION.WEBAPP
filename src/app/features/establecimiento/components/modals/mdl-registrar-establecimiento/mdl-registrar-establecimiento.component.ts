@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -25,6 +25,10 @@ import { DividerModule } from 'primeng/divider';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
+import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/models/establecimiento.model';
+import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 
 @Component({
   selector: 'app-mdl-registrar-establecimiento',
@@ -53,6 +57,12 @@ import { EmpresaApiService } from '@features/empresa/services/empresa-api.servic
 })
 export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private api = inject(EstablecimientoApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+  private empresaApiService = inject(EmpresaApiService);
+  private catalogoApiService = inject(CatalogoApiService);
+
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -71,13 +81,12 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   ldEmpresa = signal(false);
   empresas: EmpresaToSelectDto[] = [];
 
+  tiposEstablecimiento: TipoEstablecimientoDTO[] = [];
+  ldTipoEstablecimiento = signal(false);
+
   constructor(
     private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: RemitenteApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService,
-    private empresaApiService: EmpresaApiService
+    public config: DynamicDialogConfig
 	) {
     this.frm = this.fb.group({
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
@@ -89,7 +98,8 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       serie: new FormControl(null, [Validators.minLength(3), Validators.maxLength(3)]),
-      codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)])
+      codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
+      tipo: new FormControl(null, Validators.required),
     });
 
     this.headerValue = this.config.header ?? '';
@@ -97,6 +107,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
 
   ngOnInit(): void {
     this.loadEmpresas();
+    this.loadTiposEstablecimiento();
   }
 
   ngAfterViewInit(): void {
@@ -112,7 +123,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     return this.frm.controls;
   }
 
-  get request(): RegistrarRemitenteRequestDto {
+  get request(): RegistrarEstablecimientoRequestDTO {
     const form = this.frm.value;
 
     return {
@@ -125,7 +136,8 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       serie: form.serie,
       codigo_sunat: form.codigo_sunat,
       empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      empleado_nombre_creacion: 'SA',
+      tipo: form.tipo
     };
   }
 
@@ -138,7 +150,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     }
 
     this.confirmationService.confirm({
-        header: '¿Registrar remitente?',
+        header: '¿Registrar establecimiento?',
         message: 'Confirmar la operación.',
         accept: () => {
 
@@ -146,14 +158,14 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
             this.ldSubmit = true;
             
             const subs = this.api.registrar(this.request).subscribe({
-              next: (res: RegistrarRemitenteResponseDto) => {
+              next: (res: RegistrarEstablecimientoRequestDTO) => {
                 this.frm.enable();
                 this.ldSubmit = false;
 
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "success",
-                  title: "Se registro el remitente con éxito",
+                  title: "Se registro el establecimiento con éxito",
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
@@ -215,6 +227,34 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
             }
           });
           this.ldEmpresa.set(false);
+        },
+      })
+    )
+  }
+
+  loadTiposEstablecimiento(): void{
+    this.ldTipoEstablecimiento.set(true);
+    this.subs.add(
+      this.catalogoApiService.getTipoEstablecimiento().subscribe({
+        next: (value: TipoEstablecimientoDTO[]) => {
+          this.tiposEstablecimiento = value;
+          this.ldTipoEstablecimiento.set(false);
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.alertService.showToast({
+            position: 'bottom-end',
+            icon: "error",
+            title: err.error.detalle,
+            showCloseButton: true,
+            timerProgressBar: true,
+            timer: 4000,
+            customClass: {
+              container: 'z-[9999]!',
+              popup: 'z-[9999]!'
+            }
+          });
+          this.ldTipoEstablecimiento.set(false);
         },
       })
     )

@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
@@ -10,7 +10,6 @@ import { TabsModule } from 'primeng/tabs';
 import { SelectMotivoTrasladoComponent } from 'app/features/guia-remision/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
 import { TipoGuiaRemisionEnum, GuiaRemisionTipoTrasladoEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
-import { SelectTipoDocumentoComponent } from 'app/features/guia-remision/components/selects/select-tipo-documento/select-tipo-documento';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
@@ -33,7 +32,6 @@ import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
 import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
-import { DocumentoService } from 'app/features/documento/service/DocumentoService';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -49,6 +47,8 @@ import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 
 interface Type {
     name: string;
@@ -140,6 +140,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     minFechaEmision = new Date();
     maxFechaEmision = new Date();
 
+    empresa = signal<EmpresaToSelectDto | null>(null);
+    remitente = signal<EstablecimientoDTO | null>(null);
+    destinatario = signal<EstablecimientoDTO | null>(null);
+
     constructor(
         private formBuilder: FormBuilder,
         public dialogService: DialogService,
@@ -156,10 +160,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         this.formGroup = this.formBuilder.group({
 
-            remitente_id: new FormControl(null, Validators.required),
+            empresa_id: new FormControl(null, Validators.required),
 
             motivo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
 
+            remitente_id: new FormControl(null, Validators.required),
             tipo_documento_remitente: new FormControl({value: 'RUC', disabled: true}, Validators.required),
             numero_documento_remitente: new FormControl({value: null, disabled: true}, Validators.required),
             razon_social_remitente: new FormControl({value: null, disabled: true}, Validators.required),
@@ -171,7 +176,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
             destinatario_id: new FormControl(null, Validators.required),
-            tipo_documento_destinatario: new FormControl('RUC'),
+            tipo_documento_destinatario: new FormControl({value: 'RUC', disabled: true}, Validators.required),
             numero_documento_destinatario: new FormControl({value: null, disabled: true}),
             razon_social_destinatario: new FormControl({value: null, disabled: true}),
             nombres_apellidos_destinatario: new FormControl({value: null, disabled: true}),
@@ -190,116 +195,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         // detectar el cambio en motivo traslado
         this.formGroup.get('motivo_traslado')?.valueChanges.subscribe(value => {
-
-            this.resetDestinatarioForm();
-
-            // bloquear campos superiores
-            if(!this.mostrarSeleccionarDestinatario){
-                //this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected()?.id);
-                this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
-                this.formGroup.get('tipo_documento_remitente')?.disable();
-                this.formGroup.get('numero_documento_remitente')?.setValue(this.selectEmpresaRemitente?.selected()?.ruc);
-                //this.formGroup.get('razon_social_remitente')?.setValue(this.selectEmpresaRemitente?.selected()?.nombre);
-                this.formGroup.get('numero_documento_remitente')?.disable();
-
-                //this.formGroup.get('destinatario_id')?.setValue(this.selectEmpresaRemitente?.selected()?.id);
-                this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ruc);
-                this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.empresa);
-
-                //this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.direccion);
-                //this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ubigeo_id.substring(0,2));
-
-                /*this.provinciaDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id!.substring(0,4);
-                const subProvincia = this.provinciaDestinatario?.loading.subscribe(res => {
-                    this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ubigeo_id.substring(0,4));
-                });
-                this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id;
-                const subDistrito = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                    this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected()?.ubigeo_id);
-                });
-                subProvincia?.unsubscribe();
-                subDistrito?.unsubscribe();*/
-            }
-
-            /*
-            switch(value){
-                // Venta
-                case GuiaRemisionTipoTrasladoEnum.venta:
-                        this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
-                        this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
-                        this.formGroup.get('tipo_documento_remitente')?.enable();
-                        this.formGroup.get('numero_documento_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                        this.formGroup.get('razon_social_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-                        this.formGroup.get('numero_documento_remitente')?.enable();
-
-                        this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                        this.formGroup.get('numero_documento_destinatario')?.setValue(null);
-                        this.formGroup.get('razon_social_destinatario')?.setValue(null);
-
-                        this.formGroup.get('contactos_destinatario')?.setValue([]);
-                        this.formGroup.get('contactos_destinatario')?.clearAsyncValidators();
-                        this.formGroup.get('contactos_destinatario')?.addValidators(this.maxEmailsValidator(1));
-                    break;
-
-                // Traslado entre establecimientos de la misma empresa
-                case GuiaRemisionTipoTrasladoEnum.traslado_bienes_misma_empresa: 
-                        this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
-                        this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
-                        this.formGroup.get('tipo_documento_remitente')?.disable();
-                        this.formGroup.get('numero_documento_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                        this.formGroup.get('razon_social_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-                        this.formGroup.get('numero_documento_remitente')?.disable();
-
-                        this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                        this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                        this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-
-                        this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.direccion);
-                        this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,2));
-
-                        this.provinciaDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id!.substring(0,4);
-                        const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
-                            this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,4));
-                        });
-                        this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id;
-                        const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                            this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id);
-                        });
-                        subProvincia1?.unsubscribe();
-                        subDistrito1?.unsubscribe();
-                    break;
-
-                // Compra
-                case 'COMPRA':
-                        this.formGroup.get('remitente_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
-                        this.formGroup.get('tipo_documento_remitente')?.setValue('RUC');
-                        this.formGroup.get('tipo_documento_remitente')?.disable();
-                        this.formGroup.get('numero_documento_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                        this.formGroup.get('razon_social_remitente')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-                        this.formGroup.get('numero_documento_remitente')?.disable();
-
-                        this.formGroup.get('destinatario_id')?.setValue(this.selectEmpresaRemitente?.selected?.id);
-                        this.formGroup.get('tipo_documento_destinatario')?.setValue('RUC');
-                        this.formGroup.get('numero_documento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ruc);
-                        this.formGroup.get('numero_documento_destinatario')?.disable();
-                        this.formGroup.get('razon_social_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.nombre_empresa);
-                        this.formGroup.get('direccion_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.direccion);
-                        this.formGroup.get('departamento_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,2));
-
-                        this.provinciaDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id!.substring(0,4);
-                        const subProvincia = this.provinciaDestinatario?.loading.subscribe(res => {
-                            this.formGroup.get('provincia_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id.substring(0,4));
-                        });
-                        this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected!.ubigeo_id;
-                        const subDistrito = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                            this.formGroup.get('distrito_destinatario')?.setValue(this.selectEmpresaRemitente?.selected?.ubigeo_id);
-                        });
-                        subProvincia?.unsubscribe();
-                        subDistrito?.unsubscribe();
-                    break; 
-            }
-            */
+            this.tabRemitenteDestinatario.next(0);
+            this.remitente.set(null);
+            this.destinatario.set(null);
         });
 
         this.formGroup.get('tipo_documento_remitente')?.valueChanges.subscribe((value: string) => { 
@@ -333,13 +231,24 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             this.cdr.markForCheck();
         });
 
-        /*this.firstContactRemitente();*/
+        effect(() => {
+            const remitente = this.remitente();
+            this.handlerValueRemitente(remitente);
+        });
+
+        effect(() => {
+            const destinatario = this.destinatario();
+            this.handlerValueDestinatario(destinatario);
+        });
     }
 
     ngOnInit(): void{
     }
 
     ngAfterViewInit(): void{
+        this.selectEmpresaRemitente?.onChange.subscribe((selected: EmpresaToSelectDto | null) => {
+            this.empresa.set(selected);
+        });
     }
 
     ngOnDestroy(): void{
@@ -364,7 +273,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
-        console.log('proveedor', this.tabDatosEnvioProveedor?.data.proveedor);
+        //console.log('proveedor', this.tabDatosEnvioProveedor?.data.proveedor);
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             tipo_traslado: this.f.motivo_traslado.value,
@@ -386,14 +295,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             remitente: {
                 remitente_id: this.f.remitente_id.value,
-                ruc: (this.f.motivo_traslado.value === 'VENTA' && this.selectTipoGuiaComponent?.tipoGuiaSelected === TipoGuiaRemisionEnum.remitente) ? this.selectEmpresaRemitente?.selected()?.ruc : this.f.numero_documento_remitente.value,
-                descripcion: this.f.remitente_id.value,
-                nombre_empresa: this.f.remitente_id.value,
-                direccion: this.f.remitente_id.value,
-                departamento: this.f.remitente_id.value,
-                provincia: this.f.remitente_id.value,
-                distrito: this.f.remitente_id.value,
-                serie_numero: this.guiaCabecera!.serieNumero
+                numero_documento: this.remitente()!.ruc,
+                descripcion: this.remitente()!.descripcion,
+                nombre_empresa: this.remitente()!.razon_social,
+                direccion: this.remitente()!.direccion,
+                departamento: this.remitente()!.departamento,
+                provincia: this.remitente()!.provincia,
+                distrito: this.remitente()!.distrito,
+                serie_numero: "",
             },
 
             destinatario: {
@@ -640,60 +549,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             },
             appendTo: 'body',
             inputValues: {
-                ruc: this.selectEmpresaRemitente?.selected()?.ruc
+                ruc: this.empresa()?.ruc
             }
         });
 
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
             const sub2 = cmp?.OnSelected.subscribe(( s: EstablecimientoDTO) => {
-
-                if(to === 'remitente'){
-                    this.formGroup.patchValue({
-                        remitente_id: s.id,
-                        tipo_documento_remitente: 'RUC',
-                        numero_documento_remitente: s.ruc,
-                        razon_social_remitente: `${s.razonSocial} (${s.descripcion})`,
-                        nombres_apellidos_remitente: s.razonSocial,
-                        direccion_remitente: s.direccion,
-                        departamento_remitente: s.ubigeoId.substring(0, 2)
-                    });
-                    this.provinciaRemitente!.valueEdit = s.ubigeoId!.substring(0,4);
-                    const subProvincia1 = this.provinciaRemitente?.loading.subscribe(res => {
-                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeoId.substring(0,4));
-                    });
-                    this.distritoRemitente!.valueEdit = s.ubigeoId;
-                    const subDistrito1 = this.distritoRemitente?.loading.subscribe((res: any) => {
-                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeoId);
-                    });
-                    subProvincia1?.unsubscribe();
-                    subDistrito1?.unsubscribe();
-                }else{
-                    this.formGroup.patchValue({
-                        destinatario_id: s.id,
-                        tipo_documento_destinatario: 'RUC',
-                        numero_documento_destinatario: s.ruc,
-                        razon_social_destinatario: `${s.razonSocial} (${s.descripcion})`,
-                        nombres_apellidos_destinatario: s.razonSocial,
-                        direccion_destinatario: s.direccion,
-                        departamento_destinatario: s.ubigeoId.substring(0, 2)
-                    });
-                    this.provinciaDestinatario!.valueEdit = s.ubigeoId!.substring(0,4);
-                    const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
-                        this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeoId.substring(0,4));
-                    });
-                    this.distritoDestinatario!.valueEdit = s.ubigeoId;
-                    const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
-                        this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeoId);
-                    });
-                    subProvincia1?.unsubscribe();
-                    subDistrito1?.unsubscribe();
-                }
-
+                (to === 'remitente' ? this.remitente : this.destinatario).set(s);
                 this.modalRef?.close();
             });
 
-            const sub3 = cmp?.OnClose.subscribe(_ => {
+            const sub3 = cmp?.OnClose.subscribe((_: any) => {
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -789,7 +656,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     evtPreview(): void{
-        console.log('remitente', this.selectEmpresaRemitente!.selected!);
         this.modalRef = this.dialogService.open(MdlPrevisualizarPdfComponent,  {
             width: '1200px',
             height: '90vh',
@@ -826,6 +692,60 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
       });
     }
 
+    handlerValueRemitente(s: EstablecimientoDTO | null): void{
+        if(!s){
+            this.resetRemitenteForm();
+            return;
+        }
+
+        this.formGroup.patchValue({
+            remitente_id: s.id,
+            tipo_documento_remitente: 'RUC',
+            numero_documento_remitente: s.ruc,
+            razon_social_remitente: `${s.razon_social} (${s.descripcion})`,
+            nombres_apellidos_remitente: s.razon_social,
+            direccion_remitente: s.direccion,
+            departamento_remitente: s.ubigeo_id.substring(0, 2)
+        });
+        this.provinciaRemitente!.valueEdit = s.ubigeo_id!.substring(0,4);
+        const subProvincia1 = this.provinciaRemitente?.loading.subscribe(res => {
+            this.formGroup.get('provincia_remitente')?.setValue(s.ubigeo_id.substring(0,4));
+        });
+        this.distritoRemitente!.valueEdit = s.ubigeo_id;
+        const subDistrito1 = this.distritoRemitente?.loading.subscribe((res: any) => {
+            this.formGroup.get('distrito_remitente')?.setValue(s.ubigeo_id);
+        });
+        subProvincia1?.unsubscribe();
+        subDistrito1?.unsubscribe();
+    }
+
+    handlerValueDestinatario(s: EstablecimientoDTO | null): void{
+        if(!s){
+            this.resetDestinatarioForm();
+            return;
+        }
+
+        this.formGroup.patchValue({
+            destinatario_id: s.id,
+            tipo_documento_destinatario: 'RUC',
+            numero_documento_destinatario: s.ruc,
+            razon_social_destinatario: `${s.razon_social} (${s.descripcion})`,
+            nombres_apellidos_destinatario: s.razon_social,
+            direccion_destinatario: s.direccion,
+            departamento_destinatario: s.ubigeo_id.substring(0, 2)
+        });
+        this.provinciaDestinatario!.valueEdit = s.ubigeo_id!.substring(0,4);
+        const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
+            this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
+        });
+        this.distritoDestinatario!.valueEdit = s.ubigeo_id;
+        const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
+            this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
+        });
+        subProvincia1?.unsubscribe();
+        subDistrito1?.unsubscribe();
+    }
+
     // functions
 
     newDocRef(data: any): FormGroup { 
@@ -855,7 +775,23 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             distrito_destinatario: null,
             contactos_destinatario: [],
         });
-        (this.formGroup.get('docs_ref') as FormArray).clear();
+        //(this.formGroup.get('docs_ref') as FormArray).clear();
+    }
+
+    resetRemitenteForm(): void{
+        this.formGroup.patchValue({
+            remitente_id: null,
+            tipo_documento_remitente: 'RUC',
+            numero_documento_remitente: null,
+            razon_social_remitente: null,
+            nombres_apellidos_remitente: null,
+            direccion_remitente: null,
+            departamento_remitente: null,
+            provincia_remitente: null,
+            distrito_remitente: null,
+            contactos_remitente: [],
+        });
+        //(this.formGroup.get('docs_ref') as FormArray).clear();
     }
 
     /*firstContactRemitente(): void{

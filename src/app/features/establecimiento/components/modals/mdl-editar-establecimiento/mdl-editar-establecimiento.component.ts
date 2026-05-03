@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, signal } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,12 +21,14 @@ import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
-import { EditarRemitenteRequestDto, RemitenteDto } from '@features/remitente/models/remitente';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
+import { EditarEstablecimientoRequestDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 
 @Component({
   selector: 'app-mdl-editar-establecimiento',
@@ -55,8 +57,14 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 })
 export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
+  private api = inject(EstablecimientoApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+  private empresaApiService = inject(EmpresaApiService);
+  private catalogoApiService = inject(CatalogoApiService);
+
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<RemitenteDto> = new EventEmitter<RemitenteDto>();
+  @Output() OnCreated: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
@@ -64,7 +72,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   @ViewChild('distrito') ctrlDistrito: SelectDistritoComponent | undefined;
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
+  isSubmitted = signal(false);
   ldSubmit = signal(false);
 
   private subs = new Subscription();
@@ -81,18 +89,17 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
   ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   $ldData = this.ldData.asObservable();
-  data: RemitenteDto | undefined;
+  data: EstablecimientoDTO | undefined;
 
   ldEmpresa = signal(false);
   empresas: EmpresaToSelectDto[] = [];
 
+  tiposEstablecimiento: TipoEstablecimientoDTO[] = [];
+  ldTipoEstablecimiento = signal(false);
+
   constructor(
     private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: RemitenteApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService,
-    private empresaApiService: EmpresaApiService
+    public config: DynamicDialogConfig
 	) {
     this.frm = this.fb.group({
       codigo: new FormControl({value:null, disabled: true}),
@@ -106,6 +113,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       serie: new FormControl(null, [Validators.minLength(3), Validators.maxLength(3)]),
       codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
+      tipo: new FormControl(null, Validators.required),
     });
     this.f.codigo.disable();
 
@@ -115,6 +123,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   ngOnInit(): void {
     this.loadData();
     this.loadEmpresas();
+    this.loadTiposEstablecimiento();
   }
 
   ngAfterViewInit(): void {
@@ -134,10 +143,11 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     return this.frm.controls;
   }
 
-  get request(): EditarRemitenteRequestDto {
+  get request(): EditarEstablecimientoRequestDTO {
     const form = this.frm.value;
 
     return {
+      establecimiento_id: this.id,
       ruc: form.ruc,
       descripcion: form.descripcion,
       ubigeo_id: form.distrito,
@@ -147,7 +157,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       serie: form.serie,
       codigo_sunat: form.codigo_sunat,
       empleado_id_edicion: 1,
-      empleado_nombre_edicion: 'SA'
+      empleado_nombre_edicion: 'SA',
+      tipo: form.tipo
     };
   }
 
@@ -161,27 +172,27 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       console.log(this.frm);
       return;
     }
 
     this.confirmationService.confirm({
-        header: 'Editar remitente?',
+        header: 'Editar establecimiento?',
         message: 'Confirmar la operación.',
         accept: () => {
 
             this.ldSubmit.set(true);
             
             const sub = this.api.editar(this.data!.id, this.request).subscribe({
-              next: (res: RemitenteDto) => {
+              next: (res: EstablecimientoDTO) => {
                 this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "success",
-                  title: "Se edito el proveedor con éxito",
+                  title: "Se edito el establecimiento con éxito",
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
@@ -221,8 +232,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   // data
   loadData(): void{
     this.ldData.next(true);
-    const sub = this.api.obtener(this.id).subscribe({
-      next: (res: RemitenteDto) => {
+    const sub = this.api.getById(this.id).subscribe({
+      next: (res: EstablecimientoDTO) => {
         this.handlerLoadData(res);
         this.ldData.next(false);
       },
@@ -274,9 +285,37 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     )
   }
 
+  loadTiposEstablecimiento(): void{
+    this.ldTipoEstablecimiento.set(true);
+    this.subs.add(
+      this.catalogoApiService.getTipoEstablecimiento().subscribe({
+        next: (value: TipoEstablecimientoDTO[]) => {
+          this.tiposEstablecimiento = value;
+          this.ldTipoEstablecimiento.set(false);
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.alertService.showToast({
+            position: 'bottom-end',
+            icon: "error",
+            title: err.error.detalle,
+            showCloseButton: true,
+            timerProgressBar: true,
+            timer: 4000,
+            customClass: {
+              container: 'z-[9999]!',
+              popup: 'z-[9999]!'
+            }
+          });
+          this.ldTipoEstablecimiento.set(false);
+        },
+      })
+    )
+  }
+
 
   // handlers
-  handlerLoadData(res: RemitenteDto): void{
+  handlerLoadData(res: EstablecimientoDTO): void{
     this.data = res;
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
@@ -288,6 +327,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       serie: res.serie,
       codigo_sunat: res.codigo_sunat,
       departamento: res.ubigeo_id.substring(0,2),
+      tipo: res.tipo
     });
   }
 

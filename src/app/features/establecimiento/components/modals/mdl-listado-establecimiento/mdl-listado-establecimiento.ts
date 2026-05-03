@@ -141,6 +141,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.ldDataById.set(true);
         const s = this.api.getById(this.selected?.id!).subscribe({
             next: (value: EstablecimientoDTO) => {
+                console.log('establecimiento seleccionado', value);
                 this.OnSelected.emit(value);
             },
             error: (err) =>  {

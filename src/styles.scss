@@ -90,3 +90,24 @@ p-select{
 .p-select.p-disabled{
   @apply bg-gray-100!;
 }
+
+
+
+.p-select-list-container::-webkit-scrollbar-track
+{
+	background-color: #F5F5F5;
+}
+
+.p-select-list-container::-webkit-scrollbar
+{
+	width: 3px;
+	background-color: #F5F5F5;
+  &:hover{
+    width: 5px !important;
+  }
+}
+
+.p-select-list-container::-webkit-scrollbar-thumb
+{
+	background-color: #909090;
+}

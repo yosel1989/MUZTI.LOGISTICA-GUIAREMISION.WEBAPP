@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -16,6 +16,8 @@ import { LayoutService } from 'app/core/services/layout.service';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AsyncPipe } from '@angular/common';
 import { animate, AnimationBuilder, AnimationPlayer, style } from '@angular/animations';
+import { StorageService } from '@core/services/storage.service';
+import { User } from '@features/auth/services/auth.interface';
 
 @Component({
   selector: 'app-header',
@@ -38,12 +40,16 @@ import { animate, AnimationBuilder, AnimationPlayer, style } from '@angular/anim
   providers: [ConfirmationService]
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
+    private ls = inject(StorageService);
+
     @ViewChild('breadcrumbContainer') breadcrumbContainer: ElementRef | undefined;
     @ViewChild('menuUser') menuUser!: Menu;  
     items: MenuItem[] | undefined;
     breadCrumbItems: Observable<MenuItem[]> | undefined;
     fadeState = 'in';
     private player!: AnimationPlayer;
+
+    public user: User | null = null;
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -52,6 +58,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
         private builder: AnimationBuilder
     ) {
         this.breadCrumbItems = this.layoutService.breadCrumbItems;
+        this.user = this.ls.getUser();
     }
 
     ngOnInit(): void {

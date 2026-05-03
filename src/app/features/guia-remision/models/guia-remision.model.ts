@@ -38,7 +38,7 @@ export interface GR_DocRelacionadoDto{
 
 export interface GR_RemitenteRequestDto {
   remitente_id: number;
-  ruc: string;
+  numero_documento: string;
   descripcion: string;
   nombre_empresa: string;
   direccion: string;

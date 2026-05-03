@@ -83,7 +83,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
     @Input() motivoTraslado!: GuiaRemisionTipoTrasladoEnum;
-    @Input() emisora: EmpresaToSelectDto | undefined;
+    @Input() emisora: EmpresaToSelectDto | null = null;
 
     formDatosEnvio: FormGroup = new FormGroup({});
     formDatosProveedor: FormGroup = new FormGroup({});

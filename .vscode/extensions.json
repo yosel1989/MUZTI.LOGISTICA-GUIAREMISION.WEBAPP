@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "ms-vscode.vscode-typescript-next",
+        "angular.ng-template",
+        "typescriptteam.native-preview",
+        "pmneo.tsimporter"
+    ]
+}

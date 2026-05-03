@@ -138,11 +138,32 @@
                     }
                 </div>
 
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo</label>
+                    <p-select 
+                        panelStyleClass="text-[.875rem]!"
+                        size="small" 
+                        fluid 
+                        [options]="tipos" 
+                        formControlName="tipo" 
+                        [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                        [filter]="false" 
+                        appendTo="body"
+                    ></p-select>
+                    @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            Este campo es requerido
+                        </span></p-message>
+                    }
+                </div>
+
             </div>
         </div>
     </div>
     
-
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
         <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />

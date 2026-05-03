@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
-import { TableRemitentePrincipalComponent } from '@features/remitente/components/tables/tbl-remitente-principal/tbl-remitente-principal';
+import { TableEstablecimientoPrincipalComponent } from '@features/establecimiento/components/tables/tbl-establecimiento-principal/tbl-establecimiento-principal';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MenuItem } from 'primeng/api';
@@ -13,7 +13,7 @@ import { CardModule } from 'primeng/card';
   imports: [
     CommonModule,
     CardModule,
-    TableRemitentePrincipalComponent
+    TableEstablecimientoPrincipalComponent
   ],
   viewProviders: [],
   providers: [],
