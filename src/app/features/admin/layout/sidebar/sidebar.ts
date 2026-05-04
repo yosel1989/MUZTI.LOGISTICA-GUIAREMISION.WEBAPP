@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
 
 
 @Component({
@@ -10,9 +11,9 @@ import { PanelMenuModule } from 'primeng/panelmenu';
   styleUrl: './sidebar.scss',
   imports: [
     PanelMenuModule,
-    RouterModule
-],
-  
+    RouterModule,
+    ScrollPanelModule
+ ],
 })
 export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy{
 

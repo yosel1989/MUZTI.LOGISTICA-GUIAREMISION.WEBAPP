@@ -125,7 +125,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'id', header: 'Código', sort: false, sticky: false },
           { field: 'empresa', header: 'Empresa', sort: false, sticky: false },
           { field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
-          { field: 'razon_remitente', header: 'Remitente / Local', sort: false, sticky: false },
+          { field: 'razon_remitente', header: 'Remitente', sort: false, sticky: false },
           { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
           { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
           { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
@@ -135,7 +135,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'razon_destinatario', header: 'Destinatario', sort: false, sticky: false, className: 'w-[100px]' },
           { field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
           { field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
+          { field: 'direccion_origen', header: 'Dirección Origen', sort: false, sticky: false },
           { field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
+          { field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
           { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
           { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
@@ -363,7 +365,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
     evtToggleHand(): void{
       this.hands.set(!this.hands());
-      console.log(this.hands());
     }
 
     evtExport(): void{

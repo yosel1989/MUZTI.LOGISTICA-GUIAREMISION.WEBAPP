@@ -118,7 +118,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
       allowOutsideClick: false,
       allowEscapeKey: false,
       didClose: () => {
-        this.router.navigate(['/admin/guia-remision']);
+        this.router.navigate(['/administracion/guia-remision']);
       },
     });
   }

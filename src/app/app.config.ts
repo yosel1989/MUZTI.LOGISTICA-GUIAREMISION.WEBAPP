@@ -11,6 +11,8 @@ import { registerLocaleData } from '@angular/common';
 import localeEsPe from '@angular/common/locales/es-PE';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from '@core/interceptors/auth.interceptor';
 
 registerLocaleData(localeEsPe, 'es-PE');
 
@@ -64,6 +66,13 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'top',
         anchorScrolling: 'enabled'
       })
+    ),
+
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([
+        authInterceptor
+      ])
     ),
 
     providePrimeNG({
