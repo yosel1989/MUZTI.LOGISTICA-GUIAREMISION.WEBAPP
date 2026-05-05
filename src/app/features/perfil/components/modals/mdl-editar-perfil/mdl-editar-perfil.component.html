@@ -1,0 +1,116 @@
+<form [formGroup]="frm" (ngSubmit)="evtOnSubmit()">
+
+    <div class="grid grid-cols-1">
+        <div class="flex flex-col gap-3">
+            <p-divider class="my-0!"></p-divider>
+            <div class="grid grid-cols-2 gap-3 py-10!">
+                
+                <div class="col-span-2">
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre</label>
+                    @if(!ldData()){
+                    <input 
+                    fluid 
+                    onlyUpper 
+                    pInputText 
+                    type="text" 
+                    pSize="small" 
+                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                    formControlName="nombre" 
+                    [invalid]="frm.get('nombre')?.invalid && (frm.get('nombre')?.touched || isSubmitted())"/>
+                    }@else{
+                    <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
+                    @if (frm.get('nombre')?.invalid && (frm.get('nombre')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                        @if (f.nombre.hasError('required')) {
+                            Este campo es requerido.
+                        }
+                        @if (f.nombre.hasError('maxlength')) {
+                            El nombre no debe exceder los 75 caracteres.
+                        }</span>
+                        </p-message>
+                    }
+                </div>
+
+                <div class="col-span-2">
+                    <label class="text-[11px]! h-4.5! text-gray-500">Descripción</label>
+                    @if(!ldData()){
+                        <textarea 
+                            fluid
+                            rows="5" 
+                            cols="30" 
+                            pTextarea 
+                            formControlName="descripcion"
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || isSubmitted())"
+                        ></textarea>
+                    }@else{
+                        <p-skeleton width="100%" height="120px"></p-skeleton>
+                    }
+                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                        @if (f.descripcion.hasError('maxlength')) {
+                            La descripción no debe exceder los 150 caracteres.
+                        }</span>
+                        </p-message>
+                    }
+                </div>
+
+                <div class="col-span-2">
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código *</label>
+                    @if(!ldData()){
+                        <p-inputnumber 
+                            size="small"
+                            fluid
+                            formControlName="codigo"
+                            mode="decimal" 
+                            inputId="withoutgrouping" 
+                            [useGrouping]="false" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            [invalid]="frm.get('codigo')?.invalid && (frm.get('codigo')?.touched || isSubmitted())"
+                        />
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
+                    @if (frm.get('codigo')?.invalid && (frm.get('codigo')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                        @if (f.codigo.hasError('required')) {
+                            Este campo es requerido.
+                        }</span>
+                        </p-message>
+                    }
+                </div>
+                
+            </div>
+            <p-divider class="my-0!"></p-divider>
+        </div>
+            
+    </div>
+
+    <div class="flex justify-end gap-2 pt-4">
+        <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" [disabled]="isLoading"/>
+    </div>
+
+</form>
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog #cd>
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>

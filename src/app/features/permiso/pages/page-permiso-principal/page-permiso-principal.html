@@ -1,0 +1,54 @@
+<div class="flex flex-col gap-y-2 p-6">
+    <div class="grid grid-cols-3">
+        <div class="">
+            <label class="font-semibold text-[12px] text-gray-600!">Registrar Guía de Remisión</label>
+        </div> 
+        <div class="col-span-2">
+            <p-multiselect 
+                fluid 
+                size="small" 
+                [options]="cities" 
+                placeholder="Select Cities" 
+                optionLabel="name" 
+                display="chip"
+                [maxSelectedLabels]="999"
+                appentTo="body"
+            >
+                <ng-template #selectedItem let-selectedOption>
+                    <div class="p-4 text-left">
+                        <p class="font-semibold">{{ selectedOption.code.toLowerCase()}}</p>
+                    </div>
+                </ng-template>
+
+                <ng-template let-country #item>
+                    <div class="flex items-center gap-2">
+                        <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" [class]="'flag flag-' + country.code.toLowerCase()" style="width: 18px" />
+                        <div>{{ country.name }}</div>
+                    </div>
+                </ng-template>
+            </p-multiselect>
+        </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <div class="grid grid-cols-3">
+        <div>
+            <label class="font-semibold text-[12px] text-gray-600!">Aprobar Guía de Remisión</label>
+        </div> 
+        <div class="col-span-2">
+            <p-multiselect fluid size="small" [options]="cities"  placeholder="Select Cities" optionLabel="name" display="chip" class="w-full md:w-80" />
+        </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <div class="grid grid-cols-3">
+        <div class="">
+            <label class="font-semibold text-[12px] text-gray-600!">Confirmar Guía de Remisión</label>
+        </div> 
+        <div class="col-span-2">
+            <p-multiselect fluid size="small" [options]="cities"  placeholder="Select Cities" optionLabel="name" display="chip" class="w-full md:w-80" />
+        </div>
+    </div>
+</div>

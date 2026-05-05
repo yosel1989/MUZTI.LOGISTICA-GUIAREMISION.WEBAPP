@@ -9,7 +9,7 @@ export class AuthRedirectGuard implements CanActivate {
   canActivate(): boolean {
     if (this.storageService.hasToken()) {
       // Si ya está logueado, redirige al panel admin
-      this.router.navigate(['/admin']);
+      this.router.navigate(['/administracion']);
       return false;
     }
     // Si no está logueado, permite acceder a /auth

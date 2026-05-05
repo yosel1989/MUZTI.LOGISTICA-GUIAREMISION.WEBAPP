@@ -130,7 +130,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     modalRef: any | undefined;
     private subs = new Subscription();
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/admin/guia-remision",}, { label: 'Nuevo', labelClass: 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/administracion/guia-remision",}, { label: 'Nuevo', labelClass: 'text-[12px]!' }];
 
     tabRemitenteDestinatario = new BehaviorSubject<number>(0);
     tabRemitenteDestinatario$ = this.tabRemitenteDestinatario.asObservable();
@@ -432,7 +432,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 title: "¡Guía de Remisión Registrada!",
                 text: `Se registro la GUÍA DE REMISIÓN ${response.tipo_guia} ELECTRÓNICA\n N° ${response.numero_guia}`
                });
-               this.router.navigate(['/admin/guia-remision']);
+               this.router.navigate(['/administracion/guia-remision']);
             },
             error: (error) => {
                 this.alertService.showToast({

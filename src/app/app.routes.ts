@@ -13,7 +13,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'admin',
+    path: '',
     loadChildren: () => import('./features/admin/layout/layout.module').then(m => m.LayoutModule),
     canActivate: [AuthGuard],
   },

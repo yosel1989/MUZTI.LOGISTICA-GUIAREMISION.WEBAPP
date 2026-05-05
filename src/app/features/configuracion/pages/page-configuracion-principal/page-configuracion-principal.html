@@ -1,0 +1,11 @@
+<div class="container-fluid p-4 relative mx-auto " @fadeDown>
+    <div class="flex flex-col gap-3">
+        <div class="card">
+            <p-menubar [model]="items" />
+        </div>
+
+        <p-card class="py-2 card-body-empty">
+            <router-outlet></router-outlet>
+        </p-card>
+    </div>
+</div>
