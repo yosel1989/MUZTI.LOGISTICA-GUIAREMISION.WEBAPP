@@ -43,7 +43,7 @@ export class AlertService {
       background: 'var(--card)',
       customClass: {
         ...(options.customClass || {}),
-        container: ['z-[9999]!', 'swal-container'],
+        container: ['z-[9999]!', 'swal-container', 'w-auto!', 'max-w-[400px]!'],
         popup: ['bg-white!', 'text-gray-900', 'dark:text-white', 'rounded-xl!', 'px-6', 'py-3!', 'border-2!', 'border-gray-300!'],
         title: ['text-gray-900', 'dark:text-white', 'text-[14px]!', 'font-semibold!'],
         confirmButton: ['bg-blue-600', 'text-gray-900', 'dark:text-white', 'px-4', 'py-2', 'rounded'],

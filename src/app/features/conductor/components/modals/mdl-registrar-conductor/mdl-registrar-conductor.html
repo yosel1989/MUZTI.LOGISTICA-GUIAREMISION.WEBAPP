@@ -31,7 +31,7 @@
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° documento *</label>
                     <input 
-                        placeholder="N° Doc. de identidad *" 
+                        placeholder="" 
                         pSize="small" 
                         onlyNumber
                         fluid 
@@ -43,12 +43,6 @@
                             f.tipo_documento.value === 'DNI' ? 8 : 
                             null
                         "
-                        [maxlength]="
-                            f.tipo_documento.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento.value === 'PASAPORTE' ? 12 : 
-                            f.tipo_documento.value === 'DNI' ? 8 : 
-                            f.tipo_documento.value === 'RUC' ? 11 : 
-                            null
-                        "
                     />
                     
                     @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)) {
@@ -57,7 +51,7 @@
                                 Este campo es requerido.
                             }@else if(f.numero_documento.errors?.['minlength']){
                                 El documento debe tener mínimo 
-                                @switch(f.numero_documento.value){
+                                @switch(f.tipo_documento.value){
                                     @case('DNI'){ 8 }
                                     @case('RUC'){ 11 }    
                                     @default { 11 }
@@ -65,7 +59,7 @@
                                 caracteres.
                             }@else{
                                 El documento debe tener máximo
-                                @switch(f.numero_documento.value){
+                                @switch(f.tipo_documento.value){
                                     @case('DNI'){ 8 }
                                     @case('CARNET DE EXTRANJERIA'){ 12 }
                                     @case('PASAPORTE'){ 12 }    

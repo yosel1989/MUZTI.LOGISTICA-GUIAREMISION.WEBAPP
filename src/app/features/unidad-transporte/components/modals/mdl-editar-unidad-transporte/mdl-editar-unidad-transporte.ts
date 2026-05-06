@@ -10,13 +10,13 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { AsyncPipe } from '@angular/common';
-import { EditarUnidadTransporteRequestDto, EditarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { EditarUnidadTransporteRequestDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
@@ -63,6 +63,11 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
     {id: 1, label: 'Activo'}
   ];
 
+  tipos: {value: string, label: string}[] = [
+    {value: 'interno', label: 'INTERNO'},
+    {value: 'externo', label: 'EXTERNO'}
+  ];
+
   ldUpdate: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   $ldData = this.ldData.asObservable();
@@ -85,9 +90,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       cod_emisor_vehicular: new FormControl(null, [Validators.maxLength(2)]),
       emisor_vehicular: new FormControl(null, [Validators.minLength(2), Validators.maxLength(100)]),
       nro_autorizacion: new FormControl(null, [Validators.minLength(3), Validators.maxLength(50)]),
-      //tipo: new FormControl('INTERNO', [Validators.maxLength(20)]),
-      empleado_id_creacion: new FormControl(null),
-      empleado_nombre_creacion: new FormControl(null)
+      tipo: new FormControl('interno', [Validators.maxLength(20)])
     });
 
     this.headerValue = this.config.header ?? '';
@@ -120,9 +123,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       tarjeta: form.tarjeta,
       cod_emisor_vehicular: form.cod_emisor_vehicular,
       emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
-      nro_autorizacion: form.nro_autorizacion,
-      empleado_id_edicion: 1,
-      empleado_nombre_edicion: 'SA'
+      nro_autorizacion: form.nro_autorizacion
     };
   }
 
@@ -192,19 +193,20 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   loadData(): void{
     this.ldData.next(true);
     this.frm.disable();
-    const sub = this.api.getById(this.id).subscribe({
+    const sub = this.api.getById(this.id)
+    .pipe(finalize(() => {
+      this.ldData.next(false);
+      this.frm.enable();
+    }))
+    .subscribe({
       next: (res: UnidadTransporteDto) => {
         this.handlerLoadData(res);
-        this.ldData.next(false);
-        this.frm.enable();
       },
       error: (err: HttpErrorResponse) => {
-        this.frm.enable();
-        this.ldData.next(false);
         this.alertService.showToast({
           position: 'bottom-end',
           icon: "error",
-          title: err.error.error,
+          title: err.error.detalle,
           showCloseButton: true,
           timerProgressBar: true,
           timer: 4000,
@@ -213,6 +215,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
             popup: 'z-[9999]!'
           }
         });
+        this.OnCanceled.emit(true);
       }
     });
     this.subs.add(sub);

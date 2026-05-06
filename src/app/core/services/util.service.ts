@@ -24,7 +24,6 @@ export class UtilService {
   }
 
   fromArray(numItems: number): Array<any>{
-    console.log(numItems);
     return Array.from({ length: numItems });
   }
 

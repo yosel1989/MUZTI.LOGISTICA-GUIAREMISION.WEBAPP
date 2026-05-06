@@ -602,7 +602,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       evt.preventDefault();
       
       fg.get('loading')?.setValue(true);
-      this.conductorService.getByNumeroDocumento(evt.target.value).subscribe((res) => {
+      this.conductorService.getByNumeroDocumento(evt.target.value).subscribe((res: any) => {
         fg.get('tipo_documento_conductor')?.setValue(res.tipo_documento);
         fg.get('numero_licencia_brevete_conductor')?.setValue(res.licencia);
         fg.get('nombre_conductor')?.setValue(res.nombres);

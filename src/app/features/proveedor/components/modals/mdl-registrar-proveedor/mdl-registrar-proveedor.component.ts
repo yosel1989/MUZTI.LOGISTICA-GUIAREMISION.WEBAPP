@@ -10,19 +10,19 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
-import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 
 @Component({
   selector: 'app-mdl-registrar-proveedor',
@@ -83,7 +83,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
       provincia: new FormControl(null, Validators.required),
       distrito: new FormControl(null, Validators.required),
       direccion: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
-      email: new FormControl(null, [Validators.required, Validators.email, Validators.maxLength(50)]),
+      email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       pais: new FormControl('PE', [Validators.minLength(1), Validators.maxLength(3), Validators.required]),
       codigo_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)]),
       empleado_id_creacion: new FormControl(null),
@@ -93,7 +93,6 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     this.headerValue = this.config.header ?? '';
 
     this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.setValue(null);
       this.frm.get('numero_documento')?.clearValidators();
       switch(value){
           case 'DNI':
@@ -142,9 +141,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
       direccion: form.direccion,
       email: form.email,
       pais: form.pais,
-      codigo_sunat: form.codigo_sunat,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      codigo_sunat: form.codigo_sunat
     };
   }
 
@@ -159,15 +156,17 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
         header: '¿Registrar proveedor?',
         message: 'Confirmar la operación.',
         accept: () => {
-
+            const requestData = this.request;
             this.frm.disable();
             this.ldSubmit = true;
             
-            const subs = this.api.registrar(this.request).subscribe({
+            const subs = this.api.registrar(requestData)
+            .pipe(finalize(() => {
+              this.frm.enable();
+              this.ldSubmit = false;
+            }))
+            .subscribe({
               next: (res: RegistrarProveedorResponseDto) => {
-                this.frm.enable();
-                this.ldSubmit = false;
-
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "success",
@@ -180,8 +179,6 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
-                this.ldSubmit = false;
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",

@@ -13,10 +13,9 @@ export interface PerfilDTO{
     ld_update: boolean;
 }
 
-export interface PerfilListToModalDTO{
+export interface PerfilListToSelectDTO{
     id: number;
-    descripcion: string;
-    codigo_sunat: string;
+    nombre: string;
 }
 
 

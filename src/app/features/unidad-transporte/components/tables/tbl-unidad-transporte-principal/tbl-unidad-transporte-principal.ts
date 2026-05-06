@@ -19,13 +19,14 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ActualizarEstadoUnidadTransporteRequestDto, ActualizarEstadoUnidadTransporteResponseDto, EliminarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { ActualizarEstadoUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { MdlRegistrarUnidadTransporteComponent } from '../../modals/mdl-registrar-unidad-transporte/mdl-registrar-unidad-transporte';
 import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unidad-transporte/mdl-editar-unidad-transporte';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ActualizarEstadoResponseDto } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-tbl-unidad-transporte-principal',
@@ -108,10 +109,10 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           { field: 'emisor_vehicular', header: 'Entidad emisora de la autorización vehícular', sort: false, sticky: false },
           { field: 'nro_autorizacion', header: 'N° Autorización', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
@@ -157,20 +158,13 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         this.first = 0;
       }
 
-      this.filters =  this.search ? [{
-        data: 'search',
-        search: {
-          value: this.search
-        }
-      }] : [];
-
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.search).subscribe({
         next: (res: TableData<UnidadTransporteDto[]>) => {
           this.data = res.data.map(x => {
-            x.fecha_creacion = new Date(x.fecha_creacion);
-            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
-            x.ldStatus = false;
-            x.ldUpdate = false;
+            x.fecha_registro = new Date(x.fecha_registro);
+            x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
+            x.ld_estado = false;
+            x.ld_update = false;
             return x;
           });
 
@@ -191,7 +185,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           this.alertService.showToast({
               position: 'bottom-end',
               icon: "error",
-              title: "Ocurrio un error al obtener los registros",
+              title: e.error.detalle,
               showCloseButton: true,
               timerProgressBar: true,
               timer: 4000,
@@ -278,13 +272,13 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarUnidadTransporteComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: UnidadTransporteDto ) => {
-          this.selected!.ldUpdate = true;
+          this.selected!.ld_update = true;
           this.cd.detectChanges();
 
           setTimeout(() => {
             const idx = this.data.findIndex(x => x.id === this.selected!.id);
             if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
+              this.data[idx] = { ...this.selected!, ...s, ld_update: false };
             }
             this.cd.detectChanges();
           }, 1000);
@@ -351,17 +345,15 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           header: !status ? '¿Desactivar la Unidad de Transporte?' : '¿Activar la Unidad de Transporte',
           message: 'Confirmar la operación.',
           accept: () => {
-              this.selected!.ldStatus = true;
+              this.selected!.ld_estado = true;
               this.cd.detectChanges();
 
               const request = {
-                id_estado: status,
-                edited_employee_id: 1,
-                edited_employee_name: 'SA'
+                id_estado: status
               } as ActualizarEstadoUnidadTransporteRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoUnidadTransporteResponseDto) => {
+                next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -372,22 +364,23 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                     timer: 4000
                   });
 
-                  this.selected!.ldStatus = false;
+                  this.selected!.ld_estado = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
-                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
-                  this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
+                  this.selected!.usuario_modifico = res.usuario_modifico;
+                  this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
+                  this.selected!.fecha_modifico = res.fecha_modifico;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.selected!.ldStatus = false;
+                  this.selected!.ld_estado = false;
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
                     position: 'bottom-end',
                     icon: "error",
-                    title: err.error.error,
+                    title: err.error.detalle,
                     showCloseButton: true,
                     timerProgressBar: true,
                     timer: 4000,

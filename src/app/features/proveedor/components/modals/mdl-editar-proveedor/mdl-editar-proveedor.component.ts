@@ -12,7 +12,7 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
-import { ProveedorDto, EditarProveedorRequestDto, EditarProveedorResponseDto } from '@features/proveedor/models/proveedor';
+import { ProveedorDto, EditarProveedorRequestDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
@@ -54,7 +54,7 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() OnCreated: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
@@ -97,7 +97,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
       provincia: new FormControl(null, Validators.required),
       distrito: new FormControl(null, Validators.required),
       direccion: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
-      email: new FormControl(null, [Validators.required, Validators.email, Validators.maxLength(50)]),
+      email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       pais: new FormControl('PE', [Validators.minLength(1), Validators.maxLength(3), Validators.required]),
       codigo_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)])
     });
@@ -105,7 +105,6 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
     this.headerValue = this.config.header ?? '';
 
     this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.setValue(null);
       this.frm.get('numero_documento')?.clearValidators();
       switch(value){
           case 'DNI':
@@ -160,9 +159,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
       direccion: form.direccion,
       email: form.email,
       pais: form.pais,
-      codigo_sunat: form.codigo_sunat,
-      empleado_id_edicion: 1,
-      empleado_nombre_edicion: 'SA'
+      codigo_sunat: form.codigo_sunat
     };
   }
 
@@ -194,7 +191,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
@@ -240,7 +237,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
         this.alertService.showToast({
           position: 'bottom-end',
           icon: "error",
-          title: err.error.error,
+          title: err.error.detalle,
           showCloseButton: true,
           timerProgressBar: true,
           timer: 4000,
@@ -249,6 +246,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
             popup: 'z-[9999]!'
           }
         });
+        this.OnCanceled.emit(true);
       }
     });
     this.subs.add(sub);

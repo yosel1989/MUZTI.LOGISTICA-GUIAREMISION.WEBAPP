@@ -138,9 +138,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
       direccion: form.direccion,
       email: form.email,
       pais: form.pais,
-      codigo_sunat: form.codigo_sunat,
-      empleado_id_edicion: 1,
-      empleado_nombre_edicion: 'SA'
+      codigo_sunat: form.codigo_sunat
     };
   }
 

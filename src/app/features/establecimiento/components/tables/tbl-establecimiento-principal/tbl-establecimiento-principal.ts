@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -23,10 +23,11 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
-import { ActualizarEstadoEstablecimientoRequestDTO, ActualizarEstadoEstablecimientoResponseDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { ActualizarEstadoEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
 import { MdlEditarEstablecimientoComponent } from '../../modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
+import { ActualizarEstadoResponseDto } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-tbl-establecimiento-principal',
@@ -115,10 +116,10 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           { field: 'serie', header: 'Serie', sort: false, sticky: false },
           { field: 'codigo_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
@@ -171,13 +172,19 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
       }
 
 
-      this.subData = this.api.getAll(this.pageNumber, this.pageSize, this.search).subscribe({
+      this.subData = this.api.getAll(this.pageNumber, this.pageSize, this.search)
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.ldData.next(false);
+      }))
+      .subscribe({
         next: (res: TableData<EstablecimientoDTO[]>) => {
           
           this.data = res.data.map(x => {
-            x.fecha_creacion = new Date(x.fecha_creacion);
-            x.fecha_edicion = x.fecha_edicion ? new Date(x.fecha_creacion) : x.fecha_edicion;
+            x.fecha_registro = new Date(x.fecha_registro);
+            x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : x.fecha_modifico;
             x.ld_estado = false;
+            x.ld_update = false;
             return x;
           });
 
@@ -185,20 +192,16 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           this.pageSize = res.page_size;
           this.first = (this.pageNumber - 1) * this.pageSize;
           this.totalRecords = res.total_records;
-          this.ldData.next(false);
           this.cd.detectChanges();
-          this.loading = false;
         },
-        error: (e) => {
+        error: (e: HttpErrorResponse) => {
           console.log(e);
-          this.ldData.next(false); 
-          this.loading = false; 
           this.data = [];
 
           this.alertService.showToast({
               position: 'bottom-end',
               icon: "error",
-              title: "Ocurrio un error al obtener los registros",
+              title: e.error.detalle,
               showCloseButton: true,
               timerProgressBar: true,
               timer: 4000,
@@ -370,7 +373,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
               } as ActualizarEstadoEstablecimientoRequestDTO;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoEstablecimientoResponseDTO) => {
+                next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -384,8 +387,8 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                   this.selected!.ld_estado = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
-                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
-                  this.selected!.fecha_edicion = res.fecha_edicion;
+                  this.selected!.usuario_modifico = res.usuario_modifico;
+                  this.selected!.fecha_modifico = res.fecha_modifico;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
@@ -396,7 +399,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                   this.alertService.showToast({
                     position: 'bottom-end',
                     icon: "error",
-                    title: err.error.error,
+                    title: err.error.detalle,
                     showCloseButton: true,
                     timerProgressBar: true,
                     timer: 4000,

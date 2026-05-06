@@ -151,6 +151,28 @@
                         </span></p-message>
                     }
                 </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo</label>
+                    <p-select 
+                        panelStyleClass="text-[.875rem]!"
+                        size="small" 
+                        fluid 
+                        [options]="tipos" 
+                        formControlName="tipo" 
+                        [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                        [filter]="false" 
+                        appendTo="body"
+                    ></p-select>
+                    @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            Este campo es requerido
+                        </span></p-message>
+                    }
+                </div>
                 
             </div>
         </div>

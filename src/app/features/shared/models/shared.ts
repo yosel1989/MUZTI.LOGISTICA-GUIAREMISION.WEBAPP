@@ -9,8 +9,9 @@ export interface ActualizarEstadoResponseDto{
   id: number;
   id_estado: number;
   estado: string;
-  fecha_ultima_edicion: Date | null;
-  empleado_nombre_edicion: string | null;
+  fecha_modifico: Date | null;
+  usuario_modifico: string;
+  usuario_modifico_nombre: string;
   detalle: string;
 }
 

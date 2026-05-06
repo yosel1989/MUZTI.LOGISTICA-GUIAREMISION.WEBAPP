@@ -189,7 +189,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Correo *</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 ">Correo</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -206,8 +206,11 @@
                         @if (f.email.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.email.hasError('maxLength')) {
-                            La dirección no debe exceder los 250 caracteres.
+                        @if (f.email.hasError('email')) {
+                            Por favor, ingrese un correo electrónico válido.
+                        }
+                        @if (f.email.hasError('maxlength')) {
+                            El correo no debe exceder los 50 caracteres.
                         }</span>
                         </p-message>
                     }

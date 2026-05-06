@@ -109,21 +109,6 @@
             />
             }
         }
-           
-        <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
-
-        <p-button 
-            icon="pi pi-cloud-download text-[13px]!" 
-            size="small"
-            [outlined]="true"
-            severity="secondary"
-            pTooltip="Descargar"
-            tooltipPosition="top"
-            tooltipStyleClass="text-xs!"
-            placeholder="Top"
-            styleClass="w-9! h-9!"
-            placeholder="Top"
-        />
 
     </div>
     </ng-template>
@@ -235,7 +220,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class="uppercase text-[12px]!" [pContextMenuRow]="rowData">
+            <tr [pSelectableRow]="rowData" class="text-[12px]!" [pContextMenuRow]="rowData">
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
@@ -246,18 +231,26 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                     }@else {
                         @switch(col.field){
                             @case('select'){
-                                <td
-                                class="cursor-pointer py-2! px-2! border-s-0!" >
-                                <p-tableRadioButton
-                                [value]="rowData" 
-                                (click)="evtToggleSelection(rowData)"
-                                class="flex text-center justify-center"/>
+                                <td class="cursor-pointer py-2! px-2! border-s-0!" >
+                                    @if(rowData['ld_update']){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        <p-tableRadioButton
+                                            [value]="rowData" 
+                                            (click)="evtToggleSelection(rowData)"
+                                            class="flex text-center justify-center"
+                                        />
+                                    }
                                 </td>
                             }
                             @case('cod'){
                                 <td
                                 class="cursor-pointer py-2! px-4!" >
-                                    {{ (rowIndex + 1) }}
+                                    @if(rowData['ld_update']){
+                                        <p-skeleton width='100%' height="20px"></p-skeleton>
+                                    }@else{
+                                        {{ (rowIndex + 1) }}
+                                    }
                                 </td>
                             }
                             @case('id'){
@@ -265,25 +258,25 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="cursor-pointer py-2! px-2!" >
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData['ld_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         COD-{{ rowData[col.field].toString().padStart(4,'0') }}
                                     }
                                 </td>
                             }
-                            @case('fecha_creacion'){
+                            @case('fecha_registro'){
                                 <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData['ld_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
                                     }
                                 </td>
                             }
-                            @case('fecha_ultima_edicion'){
+                            @case('fecha_modifico'){
                                 <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData['ld_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
@@ -292,15 +285,15 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                             }
                             @case('estado'){
                                 <td class="text-nowrap py-1! font-light!"> 
-                                    @if(rowData['ldStatus'] || rowData.ldUpdate){
+                                    @if(rowData['ld_estado'] || rowData['ld_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else{
                                         @if(rowData['id_estado']){
-                                            <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                            <span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
                                                 {{rowData[col.field]}}
                                             </span>
                                         }@else{
-                                            <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                            <span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
                                                 {{rowData[col.field]}}
                                             </span>
                                         }
@@ -314,7 +307,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="text-nowrap py-1! font-light!">
-                                    @if(rowData.ldUpdate){
+                                    @if(rowData['ld_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         {{rowData[col.field]}}

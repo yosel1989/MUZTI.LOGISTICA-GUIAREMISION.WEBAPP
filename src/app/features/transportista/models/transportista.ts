@@ -11,14 +11,16 @@ export interface TransportistaDto {
   pais: string | null;
   codigo_sunat: string | null;
   email_remite_transportista: string[] | null;
-  fecha_creacion: Date;
-  empleado_nombre_creacion: string;
-  fecha_ultima_edicion: Date | null;
-  empleado_nombre_edicion: string | null;
-  estado: string | "ACTIVO" | "INACTIVO";
+  fecha_registro: Date;
+  usuario_registro: string;
+  usuario_registro_nombre: string;
+  fecha_modifico: Date | null;
+  usuario_modifico: string | null;
+  usuario_modifico_nombre: string | null;
+  estado: string;
   id_estado: number;
-  ldEstado: boolean;
-  ldUpdate: boolean;
+  ld_estado: boolean;
+  ld_update: boolean;
 }
 
 
@@ -31,8 +33,6 @@ export interface RegistrarTransportistaRequestDto{
   email: string | null;
   pais: string;
   codigo_sunat: string | null;
-  empleado_id_creacion: number | null;
-  empleado_nombre_creacion: string | null;
 }
 
 export interface RegistrarTransportistaResponseDto {
@@ -50,6 +50,4 @@ export interface EditarTransportistaRequestDto{
   email: string | null;
   pais: string;
   codigo_sunat: string | null;
-  empleado_id_edicion: number | null;
-  empleado_nombre_edicion: string | null;
 }

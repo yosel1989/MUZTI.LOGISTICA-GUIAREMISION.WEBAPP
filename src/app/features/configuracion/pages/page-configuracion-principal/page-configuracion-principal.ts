@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { fadeDownAnimation } from "@core/animations/page-animation";
 import { LayoutService } from "@core/services/layout.service";
 import { MenuItem } from "primeng/api";
@@ -13,7 +13,9 @@ import { MenubarModule } from 'primeng/menubar';
     imports: [
         CardModule,
         RouterOutlet,
-        MenubarModule
+        MenubarModule,
+        RouterLinkActive,
+        RouterLink
     ],
     animations: [fadeDownAnimation]
 })

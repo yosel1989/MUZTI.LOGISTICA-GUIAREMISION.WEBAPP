@@ -118,9 +118,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
       direccion: form.direccion,
       email: form.email,
       pais: form.pais,
-      codigo_sunat: form.codigo_sunat,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      codigo_sunat: form.codigo_sunat
     };
   }
 

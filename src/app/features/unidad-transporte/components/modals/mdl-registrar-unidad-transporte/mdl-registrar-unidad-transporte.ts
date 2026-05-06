@@ -65,8 +65,8 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
   headerValue: string = '';
 
   tipos: {value: string, label: string}[] = [
-    {value: 'INTERNO', label: 'INTERNO'},
-    {value: 'EXTERNO', label: 'EXTERNO'}
+    {value: 'interno', label: 'INTERNO'},
+    {value: 'externo', label: 'EXTERNO'}
   ];
 
   constructor(
@@ -85,9 +85,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       cod_emisor_vehicular: new FormControl(null, [Validators.maxLength(2)]),
       emisor_vehicular: new FormControl(null, [Validators.minLength(2), Validators.maxLength(100)]),
       nro_autorizacion: new FormControl(null, [Validators.minLength(3), Validators.maxLength(50)]),
-      tipo: new FormControl('INTERNO', [Validators.maxLength(20)]),
-      empleado_id_creacion: new FormControl(null),
-      empleado_nombre_creacion: new FormControl(null),
+      tipo: new FormControl('interno', [Validators.maxLength(20)]),
       id_estado: new FormControl(1),
     });
 
@@ -123,8 +121,6 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       cod_emisor_vehicular: form.cod_emisor_vehicular,
       emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
       nro_autorizacion: form.nro_autorizacion,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA',
       tipo: form.tipo
     };
   }

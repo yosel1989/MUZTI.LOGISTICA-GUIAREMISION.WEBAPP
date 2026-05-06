@@ -2,9 +2,10 @@ import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EditarProveedorRequestDto, EditarProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { ActualizarEstadoProveedorRequestDto, EditarProveedorRequestDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
 import { ColumnsFilterDto } from "app/core/models/filter";
+import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
 
 @Injectable({
   providedIn: 'root'
@@ -31,10 +32,10 @@ export class ProveedorApiService {
         ...response,
         data: response.data.map((x: ProveedorDto) => ({
           ...x,
-          fecha_creacion: new Date(x.fecha_creacion),
-          fecha_ultima_edicion: x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null,
-          ldStatus: false,
-          ldUpdate: false
+          fecha_registro: new Date(x.fecha_registro),
+          fecha_modifico: x.fecha_modifico ? new Date(x.fecha_modifico) : null,
+          ld_estado: false,
+          ld_update: false
         }))
       }) ),
       catchError((error: HttpErrorResponse) => {
@@ -65,8 +66,8 @@ export class ProveedorApiService {
     return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
       map((response: ProveedorDto) =>({ 
         ...response, 
-        fecha_creacion: new Date(response.fecha_creacion),
-        fecha_ultima_edicion: response.fecha_ultima_edicion ? new Date(response.fecha_ultima_edicion) : null
+        fecha_registro: new Date(response.fecha_registro),
+        fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
       } as ProveedorDto)),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -83,9 +84,9 @@ export class ProveedorApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoProveedorRequestDto ): Observable<ActualizarEstadoProveedorResponseDto> {
+  actualizarEstado(id: number, request: ActualizarEstadoProveedorRequestDto ): Observable<ActualizarEstadoResponseDto> {
     return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-      map(response =>{ return response as ActualizarEstadoProveedorResponseDto }),
+      map(response =>{ return response as ActualizarEstadoResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

@@ -26,6 +26,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ActualizarEstadoResponseDto } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-tbl-proveedor-principal',
@@ -110,10 +111,10 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           { field: 'pais', header: 'País', sort: false, sticky: false },
           { field: 'codigo_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
@@ -174,9 +175,10 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
       this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
         next: (res: TableData<ProveedorDto[]>) => {
           this.data = res.data.map(x => {
-            x.fecha_creacion = new Date(x.fecha_creacion);
-            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
-            x.ldStatus = false;
+            x.fecha_registro = new Date(x.fecha_registro);
+            x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
+            x.ld_estado = false;
+            x.ld_update = false;
             return x;
           });
 
@@ -188,7 +190,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           this.cd.detectChanges();
           this.loading = false;
         },
-        error: (e) => {
+        error: (e: HttpErrorResponse) => {
           console.log(e);
           this.ldData.next(false); 
           this.loading = false; 
@@ -197,7 +199,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           this.alertService.showToast({
               position: 'bottom-end',
               icon: "error",
-              title: "Ocurrio un error al obtener los registros",
+              title: e.error.detalle || 'Ocurrió un error al cargar los datos',
               showCloseButton: true,
               timerProgressBar: true,
               timer: 4000,
@@ -282,13 +284,13 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarProveedorComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: ProveedorDto) => {
-          this.selected!.ldUpdate = true;
+          this.selected!.ld_update = true;
           this.cd.detectChanges();
 
           setTimeout(() => {
             const idx = this.data.findIndex(x => x.id === this.selected!.id);
             if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
+              this.data[idx] = { ...this.selected!, ...s, ld_update: false };
             }
             this.cd.detectChanges();
           }, 1000);
@@ -354,17 +356,15 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           header: !status ? '¿Desactivar el proveedor?' : '¿Activar el proveedor?',
           message: 'Confirmar la operación.',
           accept: () => {
-              this.selected!.ldStatus = true;
+              this.selected!.ld_estado = true;
               this.cd.detectChanges();
 
               const request = {
-                id_estado: status,
-                edited_employee_id: 1,
-                edited_employee_name: 'SA'
+                id_estado: status
               } as ActualizarEstadoProveedorRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoProveedorResponseDto) => {
+                next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -375,22 +375,23 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                     timer: 4000
                   });
 
-                  this.selected!.ldStatus = false;
+                  this.selected!.ld_estado = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
-                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
-                  this.selected!.fecha_ultima_edicion = new Date(res.fecha_ultima_edicion);
+                  this.selected!.usuario_modifico = res.usuario_modifico;
+                  this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
+                  this.selected!.fecha_modifico = res.fecha_modifico ? new Date(res.fecha_modifico) : null;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.selected!.ldStatus = false;
+                  this.selected!.ld_estado = false;
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
                     position: 'bottom-end',
                     icon: "error",
-                    title: err.error.error,
+                    title: err.error.detalle,
                     showCloseButton: true,
                     timerProgressBar: true,
                     timer: 4000,

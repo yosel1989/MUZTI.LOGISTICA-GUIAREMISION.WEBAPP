@@ -1,0 +1,13 @@
+@reference "tailwindcss";
+
+:host ::ng-deep .p-multiselect-label-container {
+    @apply justify-self-start! min-h-20!;
+
+    .p-multiselect-label{
+        @apply flex! flex-wrap!;
+
+        .p-chip{
+            background-color: var(--p-primary-50) !important;
+        }
+    }
+}

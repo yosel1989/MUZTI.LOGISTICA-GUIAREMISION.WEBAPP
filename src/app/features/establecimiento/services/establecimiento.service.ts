@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoEstablecimientoRequestDTO, ActualizarEstadoEstablecimientoResponseDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
+import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
+import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
 
 @Injectable({
     providedIn: "root"
@@ -64,14 +65,14 @@ export class EstablecimientoApiService{
         return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
             map(response =>{ return response as EliminarEstablecimientoResponseDTO }),
             catchError((error: HttpErrorResponse) => {
-            return throwError(() => error);
+                return throwError(() => error);
             })
         );
     }
 
-    actualizarEstado(id: number, request: ActualizarEstadoEstablecimientoRequestDTO ): Observable<ActualizarEstadoEstablecimientoResponseDTO> {
+    actualizarEstado(id: number, request: ActualizarEstadoEstablecimientoRequestDTO ): Observable<ActualizarEstadoResponseDto> {
         return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-            map(response =>{ return response as ActualizarEstadoEstablecimientoResponseDTO }),
+            map(response =>{ return response as ActualizarEstadoResponseDto }),
             catchError((error: HttpErrorResponse) => {
             return throwError(() => error);
             })
@@ -91,11 +92,11 @@ export class EstablecimientoApiService{
         return this.http.put<any>(`${this.baseUrl}/${id}`, request).pipe(
             map(response => ({ 
                 ...response,
-                fecha_creacion: new Date(response.fecha_creacion),
-                fecha_edicion: response.fecha_edicion ? new Date(response.fecha_edicion) : null
+                fecha_registro: new Date(response.fecha_registro),
+                fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
             }) as EstablecimientoDTO ),
             catchError((error: HttpErrorResponse) => {
-            return throwError(() => error);
+                return throwError(() => error);
             })
         );
     }

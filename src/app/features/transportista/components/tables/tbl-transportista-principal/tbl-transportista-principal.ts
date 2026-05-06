@@ -27,7 +27,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TransportistaDto } from '@features/transportista/models/transportista';
 import { TransportistaApiService } from '@features/transportista/services/transportista-api.service';
-import { EliminarResponseDto } from '@features/shared/models/shared';
+import { ActualizarEstadoDto, ActualizarEstadoResponseDto, EliminarResponseDto } from '@features/shared/models/shared';
 import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-transportista/mdl-registrar-transportista.component';
 import { MdlRegistrarRemitenteComponent } from '@features/remitente/components/modals/mdl-registrar-remitente/mdl-registrar-remitente.component';
 import { MdlEditarRemitenteComponent } from '@features/remitente/components/modals/mdl-editar-remitente/mdl-editar-remitente.component';
@@ -182,9 +182,10 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
         next: (res: TableData<TransportistaDto[]>) => {
           
           this.data = res.data.map(x => {
-            x.fecha_creacion = new Date(x.fecha_creacion);
-            x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_creacion) : x.fecha_ultima_edicion;
-            x.ldEstado = false;
+            x.fecha_registro = new Date(x.fecha_registro);
+            x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
+            x.ld_estado = false;
+            x.ld_update = false;
             return x;
           });
 
@@ -294,16 +295,14 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarTransportistaComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: TransportistaDto) => {
           console.log(this.selected);
-          this.selected!.ldUpdate = true;
+          this.selected!.ld_update = true;
           this.cd.detectChanges();
 
-          setTimeout(() => {
-            const idx = this.data.findIndex(x => x.id === this.selected!.id);
-            if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ldUpdate: false };
-            }
-            this.cd.detectChanges();
-          }, 1000);
+          const idx = this.data.findIndex(x => x.id === this.selected!.id);
+          if (idx > -1) {
+            this.data[idx] = s;
+          }
+          this.cd.detectChanges();
           this.ref?.close();
         });
         const sub3 = cmp?.OnCanceled.subscribe(_ => {
@@ -367,7 +366,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           message: 'Confirmar la operación.',
           accept: () => {
 
-              this.selected!.ldEstado = true;
+              this.selected!.ld_estado = true;
               this.cd.detectChanges();
 
               const request = {
@@ -377,7 +376,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
               } as ActualizarEstadoRemitenteRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoRemitenteResponseDto) => {
+                next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'bottom-end',
@@ -388,16 +387,17 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                     timer: 4000
                   });
 
-                  this.selected!.ldEstado = false;
+                  this.selected!.ld_estado = false;
                   this.selected!.id_estado = res.id_estado;
                   this.selected!.estado = res.estado;
-                  this.selected!.empleado_nombre_edicion = res.empleado_nombre_edicion;
-                  this.selected!.fecha_ultima_edicion = res.fecha_ultima_edicion;
+                  this.selected!.usuario_modifico = res.usuario_modifico;
+                  this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
+                  this.selected!.fecha_modifico = res.fecha_modifico;
                   this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.selected!.ldEstado = false;
+                  this.selected!.ld_estado = false;
                   this.cd.detectChanges();
 
                   this.alertService.showToast({

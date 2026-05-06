@@ -135,8 +135,6 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       pais: form.pais,
       serie: form.serie,
       codigo_sunat: form.codigo_sunat,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA',
       tipo: form.tipo
     };
   }

@@ -3,8 +3,9 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
-import { ActualizarEstadoUnidadTransporteRequestDto, ActualizarEstadoUnidadTransporteResponseDto, EditarUnidadTransporteRequestDto, EditarUnidadTransporteResponseDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
+import { ActualizarEstadoUnidadTransporteRequestDto, EditarUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
 import { ColumnsFilterDto } from "app/core/models/filter";
+import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +15,13 @@ export class UnidadTransporteApiService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<UnidadTransporteDto[]>> {
+  obtenerTodo(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<UnidadTransporteDto[]>> {
     
     let httpParams = new HttpParams();
-
-    filters.forEach((col, i) => {
-      httpParams = httpParams
-        .set(`columns[${i}][data]`, col.data)
-        .set(`columns[${i}][search][value]`, col.search.value!);
-        col.search.regex && httpParams.set(`columns[${i}][search][regex]`, col.search.regex.toString());
-        col.search.match && httpParams.set(`columns[${i}][search][match]`, col.search.match ?? '');
-    });
-
+    if (search) {
+      httpParams = httpParams.set('search', search);
+    }
+    
     return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<UnidadTransporteDto[]> }),
       catchError((error: HttpErrorResponse) => {
@@ -48,8 +44,8 @@ export class UnidadTransporteApiService {
       map(response =>{ 
         return {
           ...response,
-          fecha_creacion: new Date(response.fecha_creacion),
-          fecha_ultima_edicion: response.fecha_ultima_edicion ? new Date(response.fecha_ultima_edicion) : null
+          fecha_registro: new Date(response.fecha_registro),
+          fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
         } as UnidadTransporteDto 
       }),
       catchError((error: HttpErrorResponse) => {
@@ -62,10 +58,10 @@ export class UnidadTransporteApiService {
     return this.http.put<any>(`${this.baseUrl}/${id}`, request).pipe(
       map(response =>{ return ({
         ...response,
-        fecha_creacion: new Date(response.fecha_creacion),
-        fecha_ultima_edicion: new Date(response.fecha_ultima_edicion),
-        ldStatus: false,
-        ldUpdate: false
+        fecha_registro: new Date(response.fecha_registro),
+        fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null,
+        ld_estado: false,
+        ld_update: false
       } as UnidadTransporteDto )  }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -82,9 +78,9 @@ export class UnidadTransporteApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoUnidadTransporteRequestDto ): Observable<ActualizarEstadoUnidadTransporteResponseDto> {
+  actualizarEstado(id: number, request: ActualizarEstadoUnidadTransporteRequestDto ): Observable<ActualizarEstadoResponseDto> {
     return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-      map(response =>{ return response as ActualizarEstadoUnidadTransporteResponseDto }),
+      map(response =>{ return response as ActualizarEstadoResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

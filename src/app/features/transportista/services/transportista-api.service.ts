@@ -49,10 +49,10 @@ export class TransportistaApiService {
         ...response,
         data: response.data.map((x: TransportistaDto) => ({
           ...x,
-          fecha_creacion: new Date(x.fecha_creacion),
-          fecha_ultima_edicion: x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null,
-          ldEstado: false,
-          ldUpdate: false
+          fecha_registro: new Date(x.fecha_registro),
+          fecha_modifico: x.fecha_modifico ? new Date(x.fecha_modifico) : null,
+          ld_estado: false,
+          ld_update: false
         }))
       })),
       catchError((error: HttpErrorResponse) => {

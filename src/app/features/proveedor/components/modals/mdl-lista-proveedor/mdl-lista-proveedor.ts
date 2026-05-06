@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +15,7 @@ import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ProveedorDto, ProveedorSugeridoDto } from '@features/proveedor/models/proveedor';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-mdl-lista-proveedor',
@@ -37,6 +38,7 @@ import { ProveedorDto, ProveedorSugeridoDto } from '@features/proveedor/models/p
 })
 
 export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDestroy{
+  private alertService = inject(AlertService);
 
   @Output() OnSelect: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -99,6 +101,18 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
       error: (err: any) => {
         this.data.set([]);
         this.ldData.set(false);
+        this.alertService.showToast({
+          position: 'bottom-end',
+          icon: "error",
+          title: err.error.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
       },
     });
   }
@@ -114,6 +128,18 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
       error: (err: any) => {
         this.ldData.set(false);
         this.ldSelected.set(false);
+        this.alertService.showToast({
+          position: 'bottom-end',
+          icon: "error",
+          title: err.error.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
       }
     });
   }

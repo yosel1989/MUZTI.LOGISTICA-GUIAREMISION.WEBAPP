@@ -3,7 +3,7 @@ import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
-import { ActualizarEstadoPerfilRequestDTO, ActualizarEstadoPerfilResponseDTO, EditarPerfilRequestDTO, EliminarPerfilResponseDTO, PerfilDTO, RegistrarPerfilRequestDTO } from "../models/perfil.model";
+import { ActualizarEstadoPerfilRequestDTO, ActualizarEstadoPerfilResponseDTO, EditarPerfilRequestDTO, EliminarPerfilResponseDTO, PerfilDTO, PerfilListToSelectDTO, RegistrarPerfilRequestDTO } from "../models/perfil.model";
 
 @Injectable({
     providedIn: "root"
@@ -91,4 +91,12 @@ export class PerfilApiService{
         );
     }
 
+    getAllToSelect(): Observable<PerfilListToSelectDTO[]>{
+        return this.http.get<any>(`${this.baseUrl}/listar-para-select`).pipe(
+            map((response: any) => (response as PerfilListToSelectDTO[])),
+            catchError((error: HttpErrorResponse) => {
+                return throwError(() => error);
+            })
+        );
+    }
 }

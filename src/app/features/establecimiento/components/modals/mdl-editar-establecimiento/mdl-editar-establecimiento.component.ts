@@ -156,8 +156,6 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       pais: form.pais,
       serie: form.serie,
       codigo_sunat: form.codigo_sunat,
-      empleado_id_edicion: 1,
-      empleado_nombre_edicion: 'SA',
       tipo: form.tipo
     };
   }
@@ -220,7 +218,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
            
         },
         reject: () => {
-            
+
         },
     });
   }
@@ -242,15 +240,15 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
         this.alertService.showToast({
           position: 'bottom-end',
           icon: "error",
-          title: err.error.error,
+          title: err.error.detalle,
           showCloseButton: true,
           timerProgressBar: true,
           timer: 4000,
           customClass: {
-            container: 'z-[9999]!',
             popup: 'z-[9999]!'
           }
         });
+        this.OnCanceled.emit(true);
       }
     });
     this.subs.add(sub);
@@ -265,7 +263,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
           this.empresas = value;
           this.ldEmpresa.set(false);
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           console.error(err);
           this.alertService.showToast({
             position: 'bottom-end',
@@ -293,7 +291,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
           this.tiposEstablecimiento = value;
           this.ldTipoEstablecimiento.set(false);
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           console.error(err);
           this.alertService.showToast({
             position: 'bottom-end',

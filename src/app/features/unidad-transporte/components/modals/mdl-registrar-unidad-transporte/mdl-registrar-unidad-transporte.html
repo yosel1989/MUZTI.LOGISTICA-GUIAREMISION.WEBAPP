@@ -7,51 +7,6 @@
         <div class="col-span-2">
 
             <div class="flex flex-col gap-3">
-                <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
-                    <input 
-                        pSize="small" 
-                        onlyUpper
-                        fluid 
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="descripcion"
-                        [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)"/>
-                    
-                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La descripción no debe exceder los 50 caracteres.</span></p-message>
-                    }
-                </div>
-
-                <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Marca</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="marca"
-                        [invalid]="frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)"/>
-                    
-                    @if (frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La marca no debe exceder los 20 caracteres.</span></p-message>
-                    }
-                </div>
-
-                <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Modelo</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="modelo"
-                        [invalid]="frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)"/>
-                    @if (frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">El modelo no debe exceder los 20 caracteres.</span></p-message>
-                    }
-                </div>
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold flex gap-x-2 items-center ">
@@ -82,6 +37,53 @@
                     }
                 </div>
 
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Descripción</label>
+                    <input 
+                        pSize="small" 
+                        onlyUpper
+                        fluid 
+                        pInputText 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="descripcion"
+                        [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)"/>
+                    
+                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La descripción no debe exceder los 50 caracteres.</span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Marca</label>
+                    <input 
+                        pSize="small" 
+                        fluid 
+                        onlyUpper
+                        pInputText 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                        formControlName="marca"
+                        [invalid]="frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)"/>
+                    
+                    @if (frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La marca no debe exceder los 20 caracteres.</span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Modelo</label>
+                    <input 
+                        pSize="small" 
+                        fluid 
+                        onlyUpper
+                        pInputText 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                        formControlName="modelo"
+                        [invalid]="frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)"/>
+                    @if (frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">El modelo no debe exceder los 20 caracteres.</span></p-message>
+                    }
+                </div>
+
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">Tarjeta</label>
                     <input 
@@ -102,7 +104,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Entidad emisora de la autorización vehícular</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Entidad emisora de la autorización vehícular</label>
                     <app-select-emisor-vehicular
                         #ctrlEmisorVehicular
                         [control]="f.cod_emisor_vehicular"
@@ -139,7 +141,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo *</label>
                     <p-select 
                         panelStyleClass="text-[.875rem]!"
                         size="small" 

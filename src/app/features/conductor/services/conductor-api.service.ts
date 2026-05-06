@@ -10,21 +10,15 @@ import { ColumnsFilterDto } from "app/core/models/filter";
   providedIn: 'root'
 })
 export class ConductorApiService {
-  private baseUrl = `${environment.apiUrl}/Conductor`;
+  private baseUrl = `${environment.apiUrl}/conductores`;
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<ConductorDto[]>> {
+  obtenerTodo(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<ConductorDto[]>> {
 
     let httpParams = new HttpParams();
-
-    filters.forEach((col, i) => {
-      httpParams = httpParams
-        .set(`columns[${i}][data]`, col.data)
-        .set(`columns[${i}][search][value]`, col.search.value!);
-        col.search.regex && httpParams.set(`columns[${i}][search][regex]`, col.search.regex.toString());
-        col.search.match && httpParams.set(`columns[${i}][search][match]`, col.search.match ?? '');
-    });
+    
+    search && httpParams.set('search', search);
 
     return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<ConductorDto[]> }),
@@ -33,7 +27,7 @@ export class ConductorApiService {
       })
     );
   }
-
+ 
   registrar(request: RegistrarConductorRequestDto): Observable<RegistrarConductorResponseDto> {
     return this.http.post<any>(`${this.baseUrl}`, request).pipe(
       map(response =>{ return response as RegistrarConductorResponseDto }),
@@ -52,9 +46,9 @@ export class ConductorApiService {
     );
   }
 
-  editar(request: EditarConductorRequestDto): Observable<EditarConductorResponseDto> {
+  editar(request: EditarConductorRequestDto): Observable<ConductorDto> {
     return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
-      map(response =>{ return response as EditarConductorResponseDto }),
+      map(response =>{ return response as ConductorDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

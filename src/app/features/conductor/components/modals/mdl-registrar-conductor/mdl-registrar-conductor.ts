@@ -83,7 +83,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
     this.headerValue = this.config.header ?? '';
 
     this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.setValue(null);
+      
       this.frm.get('numero_documento')?.clearValidators();
       switch(value){
           case 'DNI':
@@ -130,9 +130,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
       nombres: form.nombres,
       apellidos: form.apellidos,
       cargo: form.cargo,
-      licencia: form.licencia,
-      empleado_id_creacion: 1,
-      empleado_nombre_creacion: 'SA'
+      licencia: form.licencia
     };
   }
 
@@ -148,10 +146,11 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
         message: 'Confirmar la operación.',
         accept: () => {
 
+            const dataRequest = this.request;
             this.frm.disable();
             this.ldSubmit = true;
             
-            const sub = this.api.registrar(this.request).subscribe({
+            const sub = this.api.registrar(dataRequest).subscribe({
               next: (res: RegistrarConductorResponseDto) => {
                 this.frm.enable();
                 this.ldSubmit = false;

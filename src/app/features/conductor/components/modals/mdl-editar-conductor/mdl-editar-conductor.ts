@@ -10,7 +10,7 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
@@ -47,7 +47,8 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() OnSubmited: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() OnCreated: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
@@ -90,7 +91,6 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
     this.headerValue = this.config.header ?? '';
 
     this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.setValue(null);
       this.frm.get('numero_documento')?.clearValidators();
       switch(value){
           case 'DNI':
@@ -137,9 +137,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
       nombres: form.nombres,
       apellidos: form.apellidos,
       cargo: form.cargo,
-      licencia: form.licencia,
-      empleado_id_edicion: 1,
-      empleado_nombre_edicion: 'SA'
+      licencia: form.licencia
     };
   }
 
@@ -155,28 +153,31 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
         message: 'Confirmar la operación.',
         accept: () => {
 
+            const dataRequest = this.request;
             this.frm.disable();
             this.ldSubmit = true;
+            this.OnSubmited.emit(true);
             
-            const sub = this.api.editar(this.request).subscribe({
-              next: (res: EditarConductorResponseDto) => {
-                this.frm.enable();
-                this.ldSubmit = false;
-
+            const sub = this.api.editar(dataRequest)
+            .pipe(finalize(() => {
+              this.frm.enable();
+              this.ldSubmit = false;
+              this.OnSubmited.emit(false);
+            }))
+            .subscribe({
+              next: (res: ConductorDto) => {
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "success",
-                  title: "Se edito el conductor con éxito",
+                  title: "Se editó el conductor con éxito",
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
-                this.ldSubmit = false;
                 this.alertService.showToast({
                   position: 'bottom-end',
                   icon: "error",

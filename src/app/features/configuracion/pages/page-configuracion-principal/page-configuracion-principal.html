@@ -1,7 +1,18 @@
 <div class="container-fluid p-4 relative mx-auto " @fadeDown>
     <div class="flex flex-col gap-3">
         <div class="card">
-            <p-menubar [model]="items" />
+            <p-menubar [model]="items">
+                <ng-template pTemplate="item" let-item>
+                <a 
+                    [routerLink]="item.routerLink" 
+                    routerLinkActive="actives" 
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    class="{{item.styleClass}}"
+                >
+                    {{ item.label }}
+                </a>
+                </ng-template>
+            </p-menubar>
         </div>
 
         <p-card class="py-2 card-body-empty">

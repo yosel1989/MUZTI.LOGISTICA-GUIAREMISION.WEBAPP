@@ -8,15 +8,17 @@ export interface UnidadTransporteDto{
     cod_emisor_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
-    fecha_creacion: Date;
-    empleado_nombre_creacion: string;
-    fecha_ultima_edicion: Date | null;
-    empleado_nombre_edicion: string | null;
+    fecha_registro: Date;
+    usuario_registro: string;
+    usuario_registro_nombre: string;
+    fecha_modifico: Date | null;
+    usuario_modifico: string | null;
+    usuario_modifico_nombre: string | null;
     tipo: string | null;
     estado: string;
     id_estado: number;
-    ldStatus: boolean;
-    ldUpdate: boolean;
+    ld_estado: boolean;
+    ld_update: boolean;
 }
 
 export interface RegistrarUnidadTransporteRequestDto{
@@ -28,8 +30,6 @@ export interface RegistrarUnidadTransporteRequestDto{
     cod_emisor_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
-    empleado_id_creacion: number;
-    empleado_nombre_creacion: string;
     tipo: string;
 }
 
@@ -47,8 +47,6 @@ export interface EditarUnidadTransporteRequestDto{
     cod_emisor_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
-    empleado_id_edicion: number;
-    empleado_nombre_edicion: string;
 }
 
 export interface EditarUnidadTransporteResponseDto{
@@ -58,13 +56,20 @@ export interface EditarUnidadTransporteResponseDto{
     modelo: string;
     placa: string;
     tarjeta: string;
-    numero_registro_mtc: string | null;
-    fecha_creacion: Date;
-    empleado_nombre_creacion: string;
-    fecha_ultima_edicion: Date | null;
-    empleado_nombre_edicion: string | null;
+    cod_emisor_vehicular: string | null;
+    emisor_vehicular: string | null;
+    nro_autorizacion: string | null;
+    fecha_registro: Date;
+    usuario_registro: string;
+    usuario_registro_nombre: string;
+    fecha_modifico: Date | null;
+    usuario_modifico: string | null;
+    usuario_modifico_nombre: string | null;
+    tipo: string | null;
     estado: string;
     id_estado: number;
+    ld_estado: boolean;
+    ld_update: boolean;
 }
 
 export interface EliminarUnidadTransporteResponseDto{
@@ -76,19 +81,7 @@ export interface EliminarUnidadTransporteResponseDto{
 export interface ActualizarEstadoUnidadTransporteRequestDto{
   id: number;
   id_estado: number;
-  edited_employee_id: number;
-  edited_employee_name: string;
 }
-
-export interface ActualizarEstadoUnidadTransporteResponseDto{
-  id: number;
-  id_estado: number;
-  estado: string;
-  empleado_nombre_edicion: string;
-  fecha_ultima_edicion: Date | null;
-  detalle: string;
-}
-
 
 export interface UnidadTransporteSugeridoDto{
     id: number;
