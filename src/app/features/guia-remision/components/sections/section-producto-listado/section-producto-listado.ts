@@ -72,7 +72,8 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
     DividerModule,
     TextareaModule,
     SelectModule,
-    CardModule
+    CardModule,
+    OnlyUpperDirective
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService],
@@ -135,13 +136,14 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       description: this.f.description.value,
       items: (this.items as FormArray).controls.map((element: any) => {
         return {
-          codigo: element.get('codigo')?.value,
-          descripcion: element.get('descripcion')?.value,
           cantidad: element.get('cantidad')?.value,
           codigo_um: element.get('unidad')?.value,
-          //codigo_sunat: element.get('codigo_sunat')?.value,
-          //codigo_subnacional: element.get('codigo_subnacional')?.value,
-          //bien_normalizado: element.get('bien_normalizado')?.value,
+          codigo: element.get('codigo')?.value,
+          descripcion: element.get('descripcion')?.value,
+          codigo_sunat: element.get('codigo_sunat')?.value,
+          gtin: element.get('gtin')?.value,
+          codigo_subnacional: element.get('codigo_subnacional')?.value,
+          bien_normalizado: element.get('bien_normalizado')?.value,
         };
       }),
     };

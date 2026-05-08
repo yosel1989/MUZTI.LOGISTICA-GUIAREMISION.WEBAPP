@@ -83,8 +83,9 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
       distrito: new FormControl(null, Validators.required),
       direccion: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
       codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
-      email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
-      pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)])
+      email_contacto: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
+      pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
+      registro_mtc: new FormControl(null, [Validators.maxLength(45)])
     });
 
     this.headerValue = this.config.header ?? '';
@@ -116,9 +117,10 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
       direccion: form.direccion,
-      email: form.email,
+      email_contacto: form.email_contacto,
       pais: form.pais,
-      codigo_sunat: form.codigo_sunat
+      codigo_sunat: form.codigo_sunat,
+      registro_mtc: form.registro_mtc
     };
   }
 
@@ -143,7 +145,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
                 this.ldSubmit = false;
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se registro al transportista con éxito",
                   showCloseButton: true,
@@ -157,7 +159,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
                 this.frm.enable();
                 this.ldSubmit = false;
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,

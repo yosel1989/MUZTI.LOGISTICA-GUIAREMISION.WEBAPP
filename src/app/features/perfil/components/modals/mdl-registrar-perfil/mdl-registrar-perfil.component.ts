@@ -121,7 +121,7 @@ export class MdlRegistrarPerfilComponent implements OnInit, AfterViewInit, OnDes
                 this.ldSubmit = false;
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se registro el perfil con éxito",
                   showCloseButton: true,
@@ -135,7 +135,7 @@ export class MdlRegistrarPerfilComponent implements OnInit, AfterViewInit, OnDes
                 this.frm.enable();
                 this.ldSubmit = false;
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,

@@ -102,7 +102,7 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
         this.data.set([]);
         this.ldData.set(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
           title: err.error.detalle,
           showCloseButton: true,
@@ -129,7 +129,7 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
         this.ldData.set(false);
         this.ldSelected.set(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
           title: err.error.detalle,
           showCloseButton: true,

@@ -197,7 +197,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
               title: e.error.detalle || 'Ocurrió un error al cargar los datos',
               showCloseButton: true,
@@ -290,7 +290,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
           setTimeout(() => {
             const idx = this.data.findIndex(x => x.id === this.selected!.id);
             if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ld_update: false };
+              this.data[idx] = s;
+              this.selected = s;
             }
             this.cd.detectChanges();
           }, 1000);
@@ -316,7 +317,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                 next: (res: EliminarProveedorResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -329,7 +330,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.detalle,
                     showCloseButton: true,
@@ -367,7 +368,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                 next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -389,7 +390,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.detalle,
                     showCloseButton: true,

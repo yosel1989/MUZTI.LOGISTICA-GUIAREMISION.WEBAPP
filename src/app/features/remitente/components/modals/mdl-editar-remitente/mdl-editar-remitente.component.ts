@@ -179,7 +179,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
                 this.ldSubmit.set(false);
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se edito el proveedor con éxito",
                   showCloseButton: true,
@@ -192,7 +192,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,
@@ -229,7 +229,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
       error: (err: HttpErrorResponse) => {
         this.ldData.next(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
           title: err.error.error,
           showCloseButton: true,
@@ -257,7 +257,7 @@ export class MdlEditarRemitenteComponent implements OnInit, AfterViewInit, After
         error: (err: any) => {
           console.error(err);
           this.alertService.showToast({
-            position: 'bottom-end',
+            position: 'top-end',
             icon: "error",
             title: err.error.detalle,
             showCloseButton: true,

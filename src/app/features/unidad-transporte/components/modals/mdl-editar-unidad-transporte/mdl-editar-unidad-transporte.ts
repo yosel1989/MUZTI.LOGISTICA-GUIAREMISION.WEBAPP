@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,12 +10,11 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, finalize, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { AsyncPipe } from '@angular/common';
 import { EditarUnidadTransporteRequestDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
@@ -34,7 +33,6 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
     ConfirmDialog,
     SelectModule,
     SkeletonModule,
-    AsyncPipe,
     SelectEmisorVehicularComponent,
     OnlyUpperDirective
   ],
@@ -50,8 +48,8 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  isSubmitted = signal(false);
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
@@ -68,9 +66,8 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
     {value: 'externo', label: 'EXTERNO'}
   ];
 
-  ldUpdate: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  $ldData = this.ldData.asObservable();
+  ldUpdate = signal(false);
+  ldData = signal(false);
   data: UnidadTransporteDto | undefined;
 
   constructor(
@@ -129,7 +126,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -139,16 +136,19 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.ldSubmit = true;
-            this.ldUpdate.next(true);
+            this.ldSubmit.set(true);
+            this.ldUpdate.set(true);
             
-            const subs = this.api.editar(this.data!.id, this.request).subscribe({
+            const subs = this.api.editar(this.data!.id, this.request)
+            .pipe(finalize(() => {
+                this.ldSubmit.set(false);
+                this.ldUpdate.set(false);
+            }))
+            .subscribe({
               next: (res: UnidadTransporteDto) => {
-                this.ldSubmit = false;
-                this.ldUpdate.next(false);
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se edito la unidad de transporte con éxito",
                   showCloseButton: true,
@@ -159,10 +159,8 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldUpdate.next(false);
-                this.ldSubmit = false;
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,
@@ -191,12 +189,13 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
 
   // data
   loadData(): void{
-    this.ldData.next(true);
+    this.ldData.set(true);
     this.frm.disable();
     const sub = this.api.getById(this.id)
     .pipe(finalize(() => {
-      this.ldData.next(false);
+      this.ldData.set(false);
       this.frm.enable();
+      this.f.codigo.disable();
     }))
     .subscribe({
       next: (res: UnidadTransporteDto) => {
@@ -204,7 +203,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       },
       error: (err: HttpErrorResponse) => {
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
           title: err.error.detalle,
           showCloseButton: true,

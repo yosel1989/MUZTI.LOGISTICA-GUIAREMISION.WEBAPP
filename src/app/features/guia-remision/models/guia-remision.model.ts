@@ -13,10 +13,13 @@ export interface GuiaRemisionRemitenteRequestDto {
   doc_relacionado: GR_DocRelacionadoDto[] | null;
   
   remitente: GR_RemitenteRequestDto;
+  remitente_id: number;
 
   destinatario: GR_DestinatarioRequestDto;
+  destinatario_id: number;
 
   proveedor: GR_ProveedorRequestDto | null;
+  proveedor_id: number | null;
 
   datos_envio: GR_DatosEnvioRequestDto;
 
@@ -124,7 +127,11 @@ export interface GR_ProductoRequestDto {
   codigo: string; 
   descripcion: string; 
   cantidad: string; 
-  codigo_um: string; 
+  codigo_um: string;
+  codigo_sunat: string | null;
+  gtin: string | null;
+  codigo_subnacional: string | null;
+  bien_normalizado: boolean; 
 }
 
 export interface GR_EnviarGuiaRemisionResponseDto {

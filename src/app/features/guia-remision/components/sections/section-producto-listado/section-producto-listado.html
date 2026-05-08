@@ -85,34 +85,65 @@
                             </p-select>
                         </td>
                         <td class="px-1! w-30!">
-                            <input class="min-h-9 shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo" pInputText />
+                            <input 
+                            class="min-h-9 shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                            pSize="small" 
+                            fluid 
+                            formControlName="codigo" 
+                            pInputText />
                         </td>
                         <td class="px-1!">
-                            <input onlyUpper [class]=" row.get('descripcion')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="descripcion" pInputText />
+                            <input 
+                                onlyUpper 
+                                [class]=" row.get('descripcion')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                pSize="small" 
+                                fluid 
+                                formControlName="descripcion" 
+                                pInputText 
+                            />
                         </td>
                         <td class="px-1! w-35!">
-                            <input [class]=" row.get('codigo_sunat')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " pSize="small" fluid formControlName="codigo_sunat" pInputText [readOnly]="row.get('bien_normalizado')?.value"/>
+                            <input 
+                                [class]=" row.get('codigo_sunat')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                pSize="small" 
+                                fluid 
+                                formControlName="codigo_sunat" 
+                                pInputText 
+                                [readOnly]="row.get('bien_normalizado')?.value"
+                            />
                         </td>
                         <td class="px-1!">
-                            <input class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="gtin" pInputText />
+                            <input 
+                                class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                                pSize="small" 
+                                fluid 
+                                formControlName="gtin" 
+                                pInputText 
+                            />
                         </td>
                         <td class="px-1! max-w-25">
                             @if(!row.get('bien_normalizado')?.value){
-                                <input class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" pSize="small" fluid formControlName="codigo_subnacional" pInputText />
+                                <input 
+                                    class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                                    pSize="small" 
+                                    fluid 
+                                    formControlName="codigo_subnacional" 
+                                    pInputText 
+                                />
                             }@else {
                                 <p-select
-                                fluid
-                                size="small"
-                                [inputSize]="2"
-                                panelStyleClass="text-[.875rem]!"
-                                [class]=" row.get('codigo_subnacional')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
-                                [options]="subNationalCodes"
-                                formControlName="codigo_subnacional"
-                                placeholder="Seleccionar..."
-                                optionValue="code"
-                                optionLabel="description"
-                                appendTo="body"
-                                (onChange)="evtSelectSubNationalCode($event, row)"
+                                    fluid
+                                    size="small"
+                                    [inputSize]="2"
+                                    panelStyleClass="text-[.875rem]!"
+                                    [class]=" row.get('codigo_subnacional')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                                    [options]="subNationalCodes"
+                                    formControlName="codigo_subnacional"
+                                    placeholder="Seleccionar..."
+                                    optionValue="code"
+                                    optionLabel="description"
+                                    appendTo="body"
+                                    (onChange)="evtSelectSubNationalCode($event, row)"
                                 />
                             }
                         </td>
@@ -145,7 +176,7 @@
             label="Agregar item"></p-button>
         </div>
 
-        <p-divider />-->
+        <p-divider />
 
         <div>
             <div class="flex flex-col mt-8">

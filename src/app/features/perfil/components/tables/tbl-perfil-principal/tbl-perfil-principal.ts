@@ -188,7 +188,7 @@ export class TblPerfilPrincipalComponent implements OnInit, AfterViewInit, OnDes
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
               title: "Ocurrio un error al obtener los registros",
               showCloseButton: true,
@@ -311,7 +311,7 @@ export class TblPerfilPrincipalComponent implements OnInit, AfterViewInit, OnDes
                 next: (res: EliminarPerfilResponseDTO) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -324,7 +324,7 @@ export class TblPerfilPrincipalComponent implements OnInit, AfterViewInit, OnDes
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.error,
                     showCloseButton: true,
@@ -364,7 +364,7 @@ export class TblPerfilPrincipalComponent implements OnInit, AfterViewInit, OnDes
                 next: (res: ActualizarEstadoPerfilResponseDTO) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -385,7 +385,7 @@ export class TblPerfilPrincipalComponent implements OnInit, AfterViewInit, OnDes
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.error,
                     showCloseButton: true,

@@ -133,10 +133,12 @@ export class PagePermisoPrincipalComponent implements OnInit, AfterViewInit, OnD
         .subscribe({
             next: (response) => {
                 this.alertService.showToast({
-                    title: 'Perfiles asignados',
-                    text: 'Los perfiles han sido asignados correctamente al permiso.',
+                    title: 'Se configuró los permisos con éxito',
                     icon: 'success',
-                    position: 'bottom-end',
+                    position: 'top-end',
+                    showCloseButton: true,
+                    timer: 4000,
+                    timerProgressBar: true
                 });
             },
             error: (error) => {

@@ -10,14 +10,13 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
@@ -43,7 +42,6 @@ import { TransportistaApiService } from '@features/transportista/services/transp
     SelectProvinciaComponent,
     SelectDistritoComponent,
     SkeletonModule,
-    AsyncPipe,
     DividerModule,
     OnlyNumberDirective
 ],
@@ -77,8 +75,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     {id: 1, label: 'Activo'}
   ];
 
-  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  $ldData = this.ldData.asObservable();
+  ldData = signal(false);
   data: TransportistaDto | undefined;
 
   constructor(
@@ -100,6 +97,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
       email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
+      registro_mtc: new FormControl(null, [Validators.maxLength(45)]),
     });
     this.f.codigo.disable();
 
@@ -136,15 +134,16 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
       direccion: form.direccion,
-      email: form.email,
+      email_contacto: form.email,
       pais: form.pais,
-      codigo_sunat: form.codigo_sunat
+      codigo_sunat: form.codigo_sunat,
+      registro_mtc: form.registro_mtc
     };
   }
 
   get isLoading(): boolean{
     return this.ldSubmit() || 
-    this.ldData.getValue() ||
+    this.ldData() ||
     (this.ctrlDepartamento?.isLoading ?? false) || 
     (this.ctrlProvincia?.isLoading ?? false) || 
     (this.ctrlDistrito?.isLoading ?? false);
@@ -170,7 +169,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
                 this.ldSubmit.set(false);
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se edito al transportista con éxito",
                   showCloseButton: true,
@@ -183,7 +182,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,
@@ -211,18 +210,18 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
 
   // data
   loadData(): void{
-    this.ldData.next(true);
-    const sub = this.api.obtener(this.id).subscribe({
+    this.ldData.set(true);
+    const sub = this.api.obtener(this.id)
+    .pipe(finalize(() => this.ldData.set(false)))
+    .subscribe({
       next: (res: TransportistaDto) => {
         this.handlerLoadData(res);
-        this.ldData.next(false);
       },
       error: (err: HttpErrorResponse) => {
-        this.ldData.next(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
-          title: err.error.error,
+          title: err.error.detalle,
           showCloseButton: true,
           timerProgressBar: true,
           timer: 4000,
@@ -231,6 +230,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
             popup: 'z-[9999]!'
           }
         });
+        this.OnCanceled.emit(true);
       }
     });
     this.subs.add(sub);

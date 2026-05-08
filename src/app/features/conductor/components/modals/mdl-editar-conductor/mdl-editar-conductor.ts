@@ -167,7 +167,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
             .subscribe({
               next: (res: ConductorDto) => {
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se editó el conductor con éxito",
                   showCloseButton: true,
@@ -179,7 +179,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
               },
               error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,
@@ -220,7 +220,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
         //this.frm.enable();
         this.ldData.next(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
           title: err.error.detalle,
           showCloseButton: true,

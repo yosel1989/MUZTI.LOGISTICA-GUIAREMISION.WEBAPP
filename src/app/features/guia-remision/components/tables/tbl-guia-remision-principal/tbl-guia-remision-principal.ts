@@ -150,10 +150,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
           { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
@@ -224,16 +224,16 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.cd.detectChanges();
           this.loading = false;
         },
-        error: (e) => {
+        error: (e: HttpErrorResponse) => {
           console.log(e);
           this.ldData.next(false);
           this.loading = false;
           this.data = [];
 
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: 'error',
-          title: 'Ocurrio un error al obtener los registros',
+          title: e.error.detalle,
           showCloseButton: true,
           timerProgressBar: true,
           timer: 4000,
@@ -382,7 +382,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         }, (error) => {
         this.loadingDownload.next(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: 'error',
           title: 'Error al descargar el archivo',
           showCloseButton: true,

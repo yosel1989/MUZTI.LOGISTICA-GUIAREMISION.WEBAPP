@@ -747,6 +747,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.subs.add(sub);
     }
 
+    evtOnShowListaTransportista(): void{
+      
+    }
+
     resetDatosEnvio(): void{
       this.formDatosEnvio.reset({
         tipo_transporte: this.f_datosEnvio.tipo_transporte.value,

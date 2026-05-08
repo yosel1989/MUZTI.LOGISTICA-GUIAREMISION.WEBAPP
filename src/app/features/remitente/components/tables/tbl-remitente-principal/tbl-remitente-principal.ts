@@ -202,7 +202,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
               title: "Ocurrio un error al obtener los registros",
               showCloseButton: true,
@@ -325,7 +325,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
                 next: (res: EliminarRemitenteResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -338,7 +338,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.error,
                     showCloseButton: true,
@@ -379,7 +379,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
                 next: (res: ActualizarEstadoRemitenteResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -400,7 +400,7 @@ export class TableRemitentePrincipalComponent implements OnInit, AfterViewInit, 
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.error,
                     showCloseButton: true,

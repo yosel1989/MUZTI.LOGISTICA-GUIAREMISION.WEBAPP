@@ -117,7 +117,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Email</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Email Contacto</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -125,16 +125,16 @@
                     type="email" 
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="email" 
+                    formControlName="email_contacto" 
                     autofocus="true"
-                    [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)"/>
-                    @if (frm.get('email')?.invalid && (frm.get('email')?.touched || submitted)) {
+                    [invalid]="frm.get('email_contacto')?.invalid && (frm.get('email_contacto')?.touched || submitted)"/>
+                    @if (frm.get('email_contacto')?.invalid && (frm.get('email_contacto')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.email.hasError('email')) {
+                        @if (f.email_contacto.hasError('email')) {
                             El correo no tiene un formato válido.
                         }
-                        @else if (f.email.hasError('maxlength')) {
-                            El correo no debe exceder los 100 caracteres.
+                        @else if (f.email_contacto.hasError('maxlength')) {
+                            El correo no debe exceder los 50 caracteres.
                         }</span>
                         </p-message>
                     }
@@ -155,6 +155,26 @@
                     @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                             La código debe tener 4 caracteres.
+                        </span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500">Registro MTC</label>
+                   
+                    <input 
+                        fluid 
+                        pInputText 
+                        type="registro_mtc" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="registro_mtc" 
+                        autofocus="true"
+                        [invalid]="frm.get('registro_mtc')?.invalid && (frm.get('registro_mtc')?.touched || submitted)"
+                    />
+                    @if (frm.get('registro_mtc')?.invalid && (frm.get('registro_mtc')?.touched || submitted)) {
+                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            El registro MTC no debe exceder los 45 caracteres.
                         </span></p-message>
                     }
                 </div>

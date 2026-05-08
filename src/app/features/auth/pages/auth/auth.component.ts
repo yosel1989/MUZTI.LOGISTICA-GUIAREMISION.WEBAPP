@@ -139,7 +139,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
     /*this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe rellenar todos los campos requeridos.', life: 3000 });*/
 
     this.alertService.showToast({
-      position: 'bottom-end',
+      position: 'top-end',
       icon: "error",
       title: mensaje,
       showCloseButton: true,
@@ -149,7 +149,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
 
   handlerOnSubmitFormError(mensaje: string): void {
     this.alertService.showToast({
-      position: 'bottom-end',
+      position: 'top-end',
       icon: "error",
       title: mensaje,
       showCloseButton: true,

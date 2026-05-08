@@ -8,31 +8,32 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <input 
                         pSize="small" 
                         fluid 
                         pInputText 
-                        class="bg-gray-200! font-semibold! shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                        class="font-semibold! shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="codigo"
-                        readonly
-                        [disabled]="true"
                     />
                     }@else{
                     <p-skeleton width="100%" height="32px"></p-skeleton>
                     }
                 </div>
-                
+
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="descripcion"
-                        [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)"/>
-                    
+                    @if(!ldData()){
+                        <input 
+                            pSize="small" 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="descripcion"
+                            [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)"/>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La descripción no debe exceder los 50 caracteres.</span></p-message>
                     }
@@ -40,15 +41,18 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Marca</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="marca"
-                        [invalid]="frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)"/>
-                    
+                    @if(!ldData()){
+                        <input 
+                            pSize="small" 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                            formControlName="marca"
+                            [invalid]="frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)"/>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La marca no debe exceder los 20 caracteres.</span></p-message>
                     }
@@ -56,14 +60,18 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Modelo</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="modelo"
-                        [invalid]="frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)"/>
+                    @if(!ldData()){
+                        <input 
+                            pSize="small" 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                            formControlName="modelo"
+                            [invalid]="frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)"/>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">El modelo no debe exceder los 20 caracteres.</span></p-message>
                     }
@@ -71,15 +79,19 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Placa *</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="placa"
-                        [invalid]="frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)"
-                    />
+                    @if(!ldData()){
+                        <input 
+                            pSize="small" 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                            formControlName="placa"
+                            [invalid]="frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)"
+                        />
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     <span class="text-xs text-gray-400">Formato sin guión</span>
                     @if (frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
@@ -98,14 +110,18 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">Tarjeta</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="tarjeta"
-                        [invalid]="frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)"/>
+                    @if(!ldData()){
+                        <input 
+                            pSize="small" 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                            formControlName="tarjeta"
+                            [invalid]="frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)"/>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }        
                     @if (frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.tarjeta.hasError('maxlength')) {
@@ -117,10 +133,14 @@
 
                 <div class="flex flex-col">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Entidad emisora de la autorización vehícular</label>
-                    <app-select-emisor-vehicular
-                        #ctrlEmisorVehicular
-                        [control]="f.cod_emisor_vehicular"
-                    ></app-select-emisor-vehicular>
+                    @if(!ldData()){
+                        <app-select-emisor-vehicular
+                            #ctrlEmisorVehicular
+                            [control]="f.cod_emisor_vehicular"
+                        ></app-select-emisor-vehicular>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('cod_emisor_vehicular')?.invalid && (frm.get('cod_emisor_vehicular')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.tarjeta.hasError('maxlength')) {
@@ -132,14 +152,18 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">N° de autorización vehícular</label>
-                    <input 
-                        pSize="small" 
-                        fluid 
-                        onlyUpper
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                        formControlName="nro_autorizacion"
-                        [invalid]="frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)"/>
+                    @if(!ldData()){
+                        <input 
+                            pSize="small" 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                            formControlName="nro_autorizacion"
+                            [invalid]="frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)"/>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.nro_autorizacion.hasError('minlength')) {
@@ -154,19 +178,23 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo</label>
-                    <p-select 
-                        panelStyleClass="text-[.875rem]!"
-                        size="small" 
-                        fluid 
-                        [options]="tipos" 
-                        formControlName="tipo" 
-                        [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)" 
-                        optionLabel="label" 
-                        optionValue="value" 
-                        [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
-                        [filter]="false" 
-                        appendTo="body"
-                    ></p-select>
+                    @if(!ldData()){
+                        <p-select 
+                            panelStyleClass="text-[.875rem]!"
+                            size="small" 
+                            fluid 
+                            [options]="tipos" 
+                            formControlName="tipo" 
+                            [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)" 
+                            optionLabel="label" 
+                            optionValue="value" 
+                            [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                            [filter]="false" 
+                            appendTo="body"
+                        ></p-select>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
                     @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                             Este campo es requerido
@@ -181,7 +209,7 @@
 
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" [disabled]="$ldData | async"/>
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" [disabled]="ldData()"/>
     </div>
 
 </form>

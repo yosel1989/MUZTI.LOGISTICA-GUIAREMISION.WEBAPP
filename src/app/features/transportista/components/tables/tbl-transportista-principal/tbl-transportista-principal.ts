@@ -1,7 +1,6 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActualizarEstadoRemitenteRequestDto, ActualizarEstadoRemitenteResponseDto, EliminarRemitenteResponseDto } from '@features/remitente/models/remitente';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
+import { ActualizarEstadoRemitenteRequestDto } from '@features/remitente/models/remitente';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -12,7 +11,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -27,10 +26,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TransportistaDto } from '@features/transportista/models/transportista';
 import { TransportistaApiService } from '@features/transportista/services/transportista-api.service';
-import { ActualizarEstadoDto, ActualizarEstadoResponseDto, EliminarResponseDto } from '@features/shared/models/shared';
+import { ActualizarEstadoResponseDto, EliminarResponseDto } from '@features/shared/models/shared';
 import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-transportista/mdl-registrar-transportista.component';
-import { MdlRegistrarRemitenteComponent } from '@features/remitente/components/modals/mdl-registrar-remitente/mdl-registrar-remitente.component';
-import { MdlEditarRemitenteComponent } from '@features/remitente/components/modals/mdl-editar-remitente/mdl-editar-remitente.component';
 import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transportista/mdl-editar-transportista.component';
 
 @Component({
@@ -115,11 +112,13 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           { field: 'distrito', header: 'Distrito', sort: false, sticky: false },
           { field: 'direccion', header: 'Dirección', sort: false, sticky: false },
           { field: 'codigo_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
+          { field: 'registro_mtc', header: 'Reg. MTC', sort: false, sticky: false },
+          { field: 'email_contacto', header: 'Email Contacto', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_creacion', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'empleado_nombre_creacion', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_ultima_edicion', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'empleado_nombre_edicion', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
         ];
     }
 
@@ -178,7 +177,12 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
         }
       }] : [];
 
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters)
+      .pipe(finalize(() => {
+          this.ldData.next(false); 
+          this.loading = false; 
+      }))
+      .subscribe({
         next: (res: TableData<TransportistaDto[]>) => {
           
           this.data = res.data.map(x => {
@@ -193,20 +197,16 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           this.pageSize = res.page_size;
           this.first = (this.pageNumber - 1) * this.pageSize;
           this.totalRecords = res.total_records;
-          this.ldData.next(false);
           this.cd.detectChanges();
-          this.loading = false;
         },
-        error: (e) => {
-          console.log(e);
-          this.ldData.next(false); 
-          this.loading = false; 
+        error: (e: HttpErrorResponse) => {
+          console.error(e);
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
-              title: "Ocurrio un error al obtener los registros",
+              title: e.error.detalle,
               showCloseButton: true,
               timerProgressBar: true,
               timer: 4000,
@@ -294,15 +294,18 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarTransportistaComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: TransportistaDto) => {
-          console.log(this.selected);
           this.selected!.ld_update = true;
           this.cd.detectChanges();
 
-          const idx = this.data.findIndex(x => x.id === this.selected!.id);
-          if (idx > -1) {
-            this.data[idx] = s;
-          }
-          this.cd.detectChanges();
+          setTimeout(() => {
+            const idx = this.data.findIndex(x => x.id === this.selected!.id);
+            if (idx > -1) {
+              this.data[idx] = s;
+              this.selected = s;
+            }
+            this.cd.detectChanges();
+          }, 1000);
+          
           this.ref?.close();
         });
         const sub3 = cmp?.OnCanceled.subscribe(_ => {
@@ -325,7 +328,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                 next: (res: EliminarResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -338,9 +341,9 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
-                    title: err.error.error,
+                    title: err.error.detalle,
                     showCloseButton: true,
                     timerProgressBar: true,
                     timer: 4000,
@@ -379,7 +382,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                 next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -401,9 +404,9 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
-                    title: err.error.error,
+                    title: err.error.detalle,
                     showCloseButton: true,
                     timerProgressBar: true,
                     timer: 4000,

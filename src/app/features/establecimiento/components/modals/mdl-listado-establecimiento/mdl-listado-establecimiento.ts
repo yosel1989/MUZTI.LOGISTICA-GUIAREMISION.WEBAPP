@@ -12,9 +12,10 @@ import { TableColumn } from "@core/models/table";
 import { EstablecimientoDTO, EstablecimientoListToModalDTO } from "@features/establecimiento/models/establecimiento.model";
 import { SkeletonModule } from "primeng/skeleton";
 import { EstablecimientoApiService } from "@features/establecimiento/services/establecimiento.service";
-import { Subscriber, Subscription } from "rxjs";
+import { finalize, Subscriber, Subscription } from "rxjs";
 import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',
@@ -122,34 +123,39 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.ldData.set(true);
         const ruc = this.ctrlRuc.value!;
         const search = this.ctrlRuc.value;
-        this.sbData = this.api.getAllToModalByRuc(ruc, search).subscribe({
+        this.sbData = this.api.getAllToModalByRuc(ruc, search)
+        .pipe(finalize(() => this.ldData.set(false)))
+        .subscribe({
             next: (value: EstablecimientoListToModalDTO[]) => {
                 this.data.set(value);
-                this.ldData.set(false);
             },
-            error: (err) =>  {
+            error: (err: HttpErrorResponse) =>  {
                 this.alertService.showToast({
                     icon: "error",
-                    title: 'No se puedo obtener los establecimientos',
+                    title: err.error.detalle,
                 });
-                this.ldData.set(false);
+                this.OnClose.emit(true);
             },
         });
     }
 
     loadDataById(): void{
         this.ldDataById.set(true);
-        const s = this.api.getById(this.selected?.id!).subscribe({
+        const s = this.api.getById(this.selected?.id!)
+        .pipe(finalize(() => {
+            this.ldDataById.set(false);
+            this.ldSelected.set(false);
+        }))
+        .subscribe({
             next: (value: EstablecimientoDTO) => {
                 console.log('establecimiento seleccionado', value);
                 this.OnSelected.emit(value);
             },
-            error: (err) =>  {
+            error: (err: HttpErrorResponse) =>  {
                 this.alertService.showToast({
                     icon: "error",
-                    title: 'No se puedo obtener los establecimientos',
+                    title: err.error.detalle
                 });
-                this.ldDataById.set(false);
             },
         });
         this.sb.add(s);
@@ -158,6 +164,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     // events 
     
     evtSelect(): void{
+        this.ldSelected.set(true);
         this.loadDataById();
     }
 

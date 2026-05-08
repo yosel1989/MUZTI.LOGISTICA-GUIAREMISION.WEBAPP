@@ -168,7 +168,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
             .subscribe({
               next: (res: RegistrarProveedorResponseDto) => {
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se registro el proveedor con éxito",
                   showCloseButton: true,
@@ -180,7 +180,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
               },
               error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,

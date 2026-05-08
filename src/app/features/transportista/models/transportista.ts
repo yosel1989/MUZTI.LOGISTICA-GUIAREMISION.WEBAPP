@@ -21,6 +21,8 @@ export interface TransportistaDto {
   id_estado: number;
   ld_estado: boolean;
   ld_update: boolean;
+  registro_mtc: string | null;
+  email_contacto: string | null;
 }
 
 
@@ -30,9 +32,10 @@ export interface RegistrarTransportistaRequestDto{
   razon_social: string;
   ubigeo_id: string;
   direccion: string;
-  email: string | null;
+  email_contacto: string | null;
   pais: string;
   codigo_sunat: string | null;
+  registro_mtc: string | null;
 }
 
 export interface RegistrarTransportistaResponseDto {
@@ -47,7 +50,8 @@ export interface EditarTransportistaRequestDto{
   razon_social: string;
   ubigeo_id: string;
   direccion: string;
-  email: string | null;
   pais: string;
   codigo_sunat: string | null;
+  registro_mtc: string | null;
+  email_contacto: string | null;
 }

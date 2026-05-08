@@ -183,7 +183,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
               title: e.error.detalle,
               showCloseButton: true,
@@ -278,7 +278,8 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           setTimeout(() => {
             const idx = this.data.findIndex(x => x.id === this.selected!.id);
             if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ld_update: false };
+              this.data[idx] = s;
+              this.selected = s;
             }
             this.cd.detectChanges();
           }, 1000);
@@ -305,7 +306,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                 next: (res: EliminarUnidadTransporteResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -318,7 +319,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.detalle,
                     showCloseButton: true,
@@ -356,7 +357,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                 next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -378,7 +379,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.detalle,
                     showCloseButton: true,

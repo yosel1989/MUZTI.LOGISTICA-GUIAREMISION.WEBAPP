@@ -140,7 +140,7 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
                 this.ldSubmit.set(false);
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se edito el perfil con éxito",
                   showCloseButton: true,
@@ -153,7 +153,7 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,
@@ -190,7 +190,7 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
       error: (err: HttpErrorResponse) => {
         this.ldData.set(false);
         this.alertService.showToast({
-          position: 'bottom-end',
+          position: 'top-end',
           icon: "error",
           title: err.error.error,
           showCloseButton: true,

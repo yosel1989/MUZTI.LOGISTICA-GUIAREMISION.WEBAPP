@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
@@ -10,11 +10,13 @@ import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { UnidadTransporteDto, UnidadTransporteSugeridoDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
+import { AlertService } from '@core/services/alert.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-mdl-lista-unidad-transporte',
@@ -38,6 +40,8 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
 
 
 export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy{
+
+  private alertService = inject(AlertService);
 
   @Output() OnSelect: EventEmitter<UnidadTransporteDto> = new EventEmitter<UnidadTransporteDto>();
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -90,15 +94,29 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
       { placa: i.toString() } as UnidadTransporteSugeridoDto
     )) );
     this.sbData?.unsubscribe();
-    this.sbData = this.api.buscar(this.search.value).subscribe({
+    this.sbData = this.api.buscar(this.search.value)
+    .pipe(finalize(() => {
+      this.ldData.set(false);
+    }))
+    .subscribe({
       next: (value: UnidadTransporteSugeridoDto[]) => {
         this.data.set(value);
-        this.ldData.set(false);
-        this.cdr.markForCheck();
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         this.data.set([]);
-        this.ldData.set(false);
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
+        this.OnClose.emit(true);
       },
     });
   }
@@ -106,15 +124,28 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.getById(this.selected!.id).subscribe({
+    this.sbData = this.api.getById(this.selected!.id)
+    .pipe(finalize(() => {
+      this.ldData.set(false);
+      this.ldSelected.set(false);
+    }))
+    .subscribe({
       next: (value: UnidadTransporteDto) => {
         this.OnSelect.emit(value);
-        this.ldSelected.set(false);
       },
-      error: (err: any) => {
-        this.data.set([]);
-        this.ldData.set(false);
-        this.ldSelected.set(false);
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
       }
     });
   }

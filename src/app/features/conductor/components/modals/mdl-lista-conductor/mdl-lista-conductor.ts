@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
@@ -10,11 +10,13 @@ import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConductorDto, ConductorSugeridoDto } from '@features/conductor/models/conductor.model';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
+import { AlertService } from '@core/services/alert.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-mdl-lista-conductor',
@@ -37,6 +39,8 @@ import { ConductorApiService } from '@features/conductor/services/conductor-api.
 })
 
 export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDestroy{
+
+  private alertService = inject(AlertService);
 
   @Output() OnSelect: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -91,15 +95,26 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
       { numero_documento: i.toString() } as ConductorSugeridoDto
     )) );
     this.sbData?.unsubscribe();
-    this.sbData = this.api.buscarSugerido(this.search.value).subscribe({
+    this.sbData = this.api.buscarSugerido(this.search.value)
+    .pipe(finalize(() => this.ldData.set(false)))
+    .subscribe({
       next: (value: ConductorSugeridoDto[]) => {
         this.data.set(value);
-        this.ldData.set(false);
-        this.cdr.markForCheck();
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         this.data.set([]);
-        this.ldData.set(false);
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
       },
     });
   }
@@ -107,15 +122,28 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.buscarPorId(this.selected!.id).subscribe({
+    this.sbData = this.api.buscarPorId(this.selected!.id)
+    .pipe(finalize(() => { 
+      this.ldSelected.set(false);
+      this.ldData.set(false);
+    }))
+    .subscribe({
       next: (value: ConductorDto) => {
         this.OnSelect.emit(value);
-        this.ldSelected.set(false);
       },
-      error: (err: any) => {
-        this.data.set([]);
-        this.ldData.set(false);
-        this.ldSelected.set(false);
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
       }
     });
   }

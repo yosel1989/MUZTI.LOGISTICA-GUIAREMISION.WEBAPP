@@ -273,7 +273,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
-        //console.log('proveedor', this.tabDatosEnvioProveedor?.data.proveedor);
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             tipo_traslado: this.f.motivo_traslado.value,
@@ -304,6 +303,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 distrito: this.remitente()!.distrito,
                 serie_numero: "",
             },
+            remitente_id: this.f.remitente_id.value,
 
             destinatario: {
                 destinatario_id: this.f.destinatario_id.value,
@@ -317,6 +317,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 direccion: this.f.direccion_destinatario.value,
                 email_destinatario: this.destinatarioContactos.length ? this.destinatarioContactos : null,
             },
+            destinatario_id: this.f.destinatario_id.value,
 
             proveedor: (!this.mostrarProveedor) ? null : {
                 proveedor_id: this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
@@ -327,6 +328,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 direccion: this.tabDatosEnvioProveedor?.data.proveedor.direccion_proveedor,
                 email: "sistemas4@carolina-peru.com",
             },
+            proveedor_id: (!this.mostrarProveedor) ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
 
             datos_envio: {
 
@@ -367,7 +369,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                     codigo: x.codigo,
                     descripcion: x.descripcion,
                     cantidad: x.cantidad.toString(),
-                    codigo_um: x.codigo_um
+                    codigo_um: x.codigo_um,
+                    codigo_sunat: x.codigo_sunat,
+                    gtin: x.gtin,
+                    codigo_subnacional: x.codigo_subnacional,
+                    bien_normalizado: x.bien_normalizado
                 };
             })
             
@@ -558,6 +564,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             const sub2 = cmp?.OnSelected.subscribe(( s: EstablecimientoDTO) => {
                 (to === 'remitente' ? this.remitente : this.destinatario).set(s);
                 this.modalRef?.close();
+                this.alertService.showToast({
+                    icon: 'success',
+                    title: `${to === 'remitente' ? 'Remitente' : 'Destinatario' } seleccionado con éxito.`
+                });
             });
 
             const sub3 = cmp?.OnClose.subscribe((_: any) => {

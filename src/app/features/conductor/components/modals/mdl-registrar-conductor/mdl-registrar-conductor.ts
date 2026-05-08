@@ -156,7 +156,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
                 this.ldSubmit = false;
 
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "success",
                   title: "Se registro el conductor con éxito",
                   showCloseButton: true,
@@ -170,7 +170,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
                 this.frm.enable();
                 this.ldSubmit = false;
                 this.alertService.showToast({
-                  position: 'bottom-end',
+                  position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
                   showCloseButton: true,

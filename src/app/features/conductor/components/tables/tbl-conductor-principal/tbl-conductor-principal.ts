@@ -183,7 +183,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
               title: e.error.detalle,
               showCloseButton: true,
@@ -280,6 +280,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           const idx = this.data.findIndex(x => x.id === SELECTED.id);
           if (idx > -1) {
             this.data[idx] = s;
+            this.selected = s;
           }
           this.cd.detectChanges();
         });
@@ -310,7 +311,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                 next: (res: EliminarConductorResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -323,7 +324,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.detalle,
                     showCloseButton: true,
@@ -361,7 +362,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                 next: (res: ActualizarEstadoConductorResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -380,7 +381,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error?.detalle,
                     showCloseButton: true,

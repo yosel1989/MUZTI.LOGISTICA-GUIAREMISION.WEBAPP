@@ -199,7 +199,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           this.data = [];
 
           this.alertService.showToast({
-              position: 'bottom-end',
+              position: 'top-end',
               icon: "error",
               title: e.error.detalle,
               showCloseButton: true,
@@ -322,7 +322,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                 next: (res: EliminarEstablecimientoResponseDTO) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -335,7 +335,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                 error: (err: HttpErrorResponse) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.error,
                     showCloseButton: true,
@@ -376,7 +376,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                 next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "success",
                     title: res.detalle,
                     showCloseButton: true,
@@ -397,7 +397,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                   this.cd.detectChanges();
 
                   this.alertService.showToast({
-                    position: 'bottom-end',
+                    position: 'top-end',
                     icon: "error",
                     title: err.error.detalle,
                     showCloseButton: true,

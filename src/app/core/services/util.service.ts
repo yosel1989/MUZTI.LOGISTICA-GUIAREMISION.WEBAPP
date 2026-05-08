@@ -19,7 +19,7 @@ export class UtilService {
 
   copy(body?: string, message?: string): void{
     navigator.clipboard.writeText(body || '').then(() => {
-      this.alertService.showToast({ icon: 'success', title: message || 'Copiado al portapapeles', position: "bottom-end" });
+      this.alertService.showToast({ icon: 'success', title: message || 'Copiado al portapapeles', position: "top-end" });
     });
   }
 
