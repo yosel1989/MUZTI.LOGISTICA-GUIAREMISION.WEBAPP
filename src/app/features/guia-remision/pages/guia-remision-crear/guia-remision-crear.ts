@@ -292,7 +292,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 };
             }) : null,
 
-            remitente: {
+            remitente: this.remitente()!,
+            /*remitente: {
                 remitente_id: this.f.remitente_id.value,
                 numero_documento: this.remitente()!.ruc,
                 descripcion: this.remitente()!.descripcion,
@@ -302,10 +303,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 provincia: this.remitente()!.provincia,
                 distrito: this.remitente()!.distrito,
                 serie_numero: "",
-            },
+            },*/
             remitente_id: this.f.remitente_id.value,
 
-            destinatario: {
+            destinatario: this.destinatario()!,
+            /*destinatario: {
                 destinatario_id: this.f.destinatario_id.value,
                 tipo_documento: this.f.tipo_documento_destinatario.value,
                 numero_documento: this.f.numero_documento_destinatario.value,
@@ -316,7 +318,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 distrito: this.distritoDestinatario?.labelSelected ?? null,
                 direccion: this.f.direccion_destinatario.value,
                 email_destinatario: this.destinatarioContactos.length ? this.destinatarioContactos : null,
-            },
+            },*/
             destinatario_id: this.f.destinatario_id.value,
 
             proveedor: (!this.mostrarProveedor) ? null : {
@@ -433,17 +435,22 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                         }
                     });
                 }*/
-               this.alertService.showSwalAlert({
-                icon: "success",
-                title: "¡Guía de Remisión Registrada!",
-                text: `Se registro la GUÍA DE REMISIÓN ${response.tipo_guia} ELECTRÓNICA\n N° ${response.numero_guia}`
-               });
-               this.router.navigate(['/administracion/guia-remision']);
+                this.alertService.showSwalAlert({
+                    icon: "success",
+                    title: "¡Guía de Remisión Registrada!",
+                    text: `Se registro la GUÍA DE REMISIÓN ${response.tipo_guia} ELECTRÓNICA\n N° ${response.numero_guia}`,
+                    timer: 3000
+                }).then((result: any) => {
+                    this.router.navigate(['/administracion/guia-remision']);
+                });
+               //this.router.navigate(['/administracion/guia-remision']);
             },
             error: (error) => {
                 this.alertService.showToast({
                     icon: "error",
-                    text: error.error.detalle
+                    text: error.error.detalle,
+                    showCloseButton: true,
+                    timer: 4000
                 });
                 this.loadingSubmit.next(false);
             }
@@ -540,6 +547,15 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
     evtOnShowEstablecimiento( to: string ): void{
+
+        if(to === 'destinatario' && !this.remitente()){
+            this.alertService.showToast({
+                icon: 'warning',
+                title: `Debe seleccionar remitente primero`
+            });
+            return;
+        }
+
         this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
             width: '1000px',
             keepInViewport: false,
@@ -555,7 +571,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             },
             appendTo: 'body',
             inputValues: {
-                ruc: this.empresa()?.ruc
+                ruc: this.empresa()?.ruc,
+                tipo: to
             }
         });
 
@@ -566,7 +583,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 this.modalRef?.close();
                 this.alertService.showToast({
                     icon: 'success',
-                    title: `${to === 'remitente' ? 'Remitente' : 'Destinatario' } seleccionado con éxito.`
+                    title: `${to === 'remitente' ? 'Remitente' : 'Destinatario' } seleccionado con éxito.`,
+                    timer: 4000,
+                    showCloseButton: true
                 });
             });
 

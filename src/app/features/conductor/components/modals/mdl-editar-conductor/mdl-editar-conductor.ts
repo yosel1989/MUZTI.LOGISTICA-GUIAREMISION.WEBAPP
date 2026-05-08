@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,15 +10,14 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, finalize, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { AsyncPipe } from '@angular/common';
-import { ConductorDto, EditarConductorRequestDto, EditarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { ConductorDto, EditarConductorRequestDto } from '@features/conductor/models/conductor.model';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
@@ -36,7 +35,6 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
     ConfirmDialog,
     SelectModule,
     SkeletonModule,
-    AsyncPipe,
     OnlyNumberDirective,
     OnlyUpperDirective
   ],
@@ -67,9 +65,13 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
     {id: 1, label: 'Activo'}
   ];
 
-  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  $ldData = this.ldData.asObservable();
+  ldData = signal(false);
   data: ConductorDto | undefined;
+
+  tipos: {value: string, label: string}[] = [
+    {value: 'interno', label: 'INTERNO'},
+    {value: 'externo', label: 'EXTERNO'}
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -86,6 +88,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
       apellidos: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       cargo: new FormControl(null),
       licencia: new FormControl(null, [Validators.required, Validators.minLength(9), Validators.maxLength(10)]),
+      tipo: new FormControl('interno', [Validators.maxLength(20)])
     });
 
     this.headerValue = this.config.header ?? '';
@@ -137,7 +140,8 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
       nombres: form.nombres,
       apellidos: form.apellidos,
       cargo: form.cargo,
-      licencia: form.licencia
+      licencia: form.licencia,
+      tipo: form.tipo
     };
   }
 
@@ -208,17 +212,14 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
 
   // data
   loadData(): void{
-    this.ldData.next(true);
-    //this.frm.disable();
-    const sub = this.api.buscarPorId(this.id).subscribe({
+    this.ldData.set(true);
+    const sub = this.api.buscarPorId(this.id)
+    .pipe(finalize(() => { this.ldData.set(false); }))
+    .subscribe({
       next: (res: ConductorDto) => {
         this.handlerLoadData(res);
-        this.ldData.next(false);
-        //this.frm.enable();
       },
       error: (err: HttpErrorResponse) => {
-        //this.frm.enable();
-        this.ldData.next(false);
         this.alertService.showToast({
           position: 'top-end',
           icon: "error",
@@ -246,7 +247,8 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
       nombres: res.nombres?.toString().toUpperCase(),
       apellidos: res.apellidos?.toString().toUpperCase(),
       cargo: res.cargo?.toString().toUpperCase(),
-      licencia: res.licencia?.toString().toUpperCase()
+      licencia: res.licencia?.toString().toUpperCase(),
+      tipo: res.tipo
     });
   }
 

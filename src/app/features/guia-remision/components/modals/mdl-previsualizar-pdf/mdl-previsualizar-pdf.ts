@@ -69,7 +69,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 { text: '', border: [false,false,false,false] },
                 { 
                   stack: [
-                    {text: this.data.remitente.nombre_empresa, bold: true, marginBottom: 2},
+                    {text: this.data.remitente.razon_social, bold: true, marginBottom: 2},
                     {text: this.data.remitente.direccion.toUpperCase(), marginBottom:10, color: '#adadad'},
                     {text: `${this.data.remitente.distrito} - ${this.data.remitente.provincia} - ${this.data.remitente.departamento}`, color: '#adadad'},
                   ],
@@ -95,7 +95,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     {
                       stack: [
                         {
-                          text: `RUC: ${this.data.remitente.numero_documento}`,
+                          text: `RUC: ${this.data.remitente.ruc}`,
                           alignment: 'center',
                           color: '#adadad'
                         },
@@ -108,7 +108,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                           marginBottom: 5
                         },
                         {
-                          text: `Nro. ${this.data.remitente.serie_numero}`,
+                          text: `Nro. `,
                           alignment: 'center',
                           color: '#adadad'
                         }
@@ -138,8 +138,8 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 {text: '', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 1}
               ],
               [
-                {text: `${this.data.destinatario.tipo_documento}:`, border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
-                {text: this.data.destinatario.numero_documento, border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
+                {text: `${'RUC'}:`, border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
+                {text: this.data.destinatario.ruc, border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
                 {text: 'Dirección:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
                 {text: this.data.destinatario.direccion ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
               ],

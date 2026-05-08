@@ -296,7 +296,8 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           setTimeout(() => {
             const idx = this.data.findIndex(x => x.id === this.selected!.id);
             if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, ld_update: false };
+              this.data[idx] = s;
+              this.selected = s;
             }
             this.cd.detectChanges();
           }, 1000);

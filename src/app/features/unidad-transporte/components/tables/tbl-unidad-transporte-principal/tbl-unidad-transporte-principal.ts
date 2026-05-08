@@ -108,6 +108,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           { field: 'tarjeta', header: 'TUCE o Cert. de habilitación vehicular', sort: false, sticky: false },
           { field: 'emisor_vehicular', header: 'Entidad emisora de la autorización vehícular', sort: false, sticky: false },
           { field: 'nro_autorizacion', header: 'N° Autorización', sort: false, sticky: false },
+          { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
           { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
           { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },

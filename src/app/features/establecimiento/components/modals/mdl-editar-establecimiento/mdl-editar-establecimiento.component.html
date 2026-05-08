@@ -8,7 +8,7 @@
             <div class="grid grid-cols-2 gap-3 py-10!">
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <input 
                         pSize="small" 
                         fluid 
@@ -48,9 +48,10 @@
 
                 <div class="col-span-2">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                         <input 
                             fluid 
+                            onlyUpper
                             pInputText 
                             type="text" 
                             pSize="small" 
@@ -76,7 +77,7 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <app-select-departamento 
                     [control]="f.departamento" 
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
@@ -95,7 +96,7 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <app-select-provincia 
                     #provincia
                     [control]="f.provincia" 
@@ -116,7 +117,7 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <app-select-distrito 
                     #distrito
                     label="Distrito *"
@@ -137,7 +138,7 @@
                 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección *</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <input 
                     fluid 
                     onlyUpper
@@ -165,7 +166,7 @@
                 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">Email</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <input 
                     fluid 
                     pInputText 
@@ -193,7 +194,7 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie *</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <input 
                     fluid 
                     onlyNumber
@@ -217,7 +218,7 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500">Cod. Sunat</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                     <input 
                     fluid 
                     pInputText 
@@ -240,7 +241,7 @@
 
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo Establecimiento *</label>
-                    @if(!($ldData | async)){
+                    @if(!ldData()){
                         <p-select 
                             fluid
                             size="small"

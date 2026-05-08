@@ -12,7 +12,7 @@ import { TableColumn } from "@core/models/table";
 import { EstablecimientoDTO, EstablecimientoListToModalDTO } from "@features/establecimiento/models/establecimiento.model";
 import { SkeletonModule } from "primeng/skeleton";
 import { EstablecimientoApiService } from "@features/establecimiento/services/establecimiento.service";
-import { finalize, Subscriber, Subscription } from "rxjs";
+import { finalize, Subscription } from "rxjs";
 import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -43,6 +43,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     @Input() ruc: string | null = null;
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
+    @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
 
     empresas: EmpresaToSelectDto[] = [];
     ldEmpresas = signal(false);
@@ -66,7 +67,8 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     placeholder = 'Seleccionar ...';
 
     ngOnInit(): void {
-        this.ctrlRuc.setValue(this.ruc);
+        this.ctrlRuc.patchValue(this.ruc)
+        this.tipo === 'destinatario' && this.ctrlRuc.enable();
         this.ctrlSearch.valueChanges.subscribe((val) => {
             this.loadData();
         });
@@ -77,8 +79,12 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                 className: 'w-[50px]'
             },
             {
+                field: 'entidad',
+                header: 'Entidad'
+            },
+            {
                 field: 'descripcion',
-                header: 'Descripción'
+                header: 'Local'
             },
             {
                 field: 'codigo_sunat',
@@ -107,10 +113,12 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                 this.empresas = value;
                 this.ldEmpresas.set(false);
             },
-            error: (err) => {
+            error: (e: HttpErrorResponse) => {
                 this.alertService.showToast({
                     icon: "error",
-                    title: 'No se puedo obtener el listado de empresas',
+                    title: e.error.detalle,
+                    timer: 4000,
+                    showCloseButton: true
                 });
                 this.ldEmpresas.set(false);
             },
@@ -122,7 +130,8 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.sbData?.unsubscribe();
         this.ldData.set(true);
         const ruc = this.ctrlRuc.value!;
-        const search = this.ctrlRuc.value;
+        const search = this.ctrlSearch.value;
+
         this.sbData = this.api.getAllToModalByRuc(ruc, search)
         .pipe(finalize(() => this.ldData.set(false)))
         .subscribe({
@@ -133,6 +142,8 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                 this.alertService.showToast({
                     icon: "error",
                     title: err.error.detalle,
+                    timer: 4000,
+                    showCloseButton: true
                 });
                 this.OnClose.emit(true);
             },
@@ -154,7 +165,9 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
             error: (err: HttpErrorResponse) =>  {
                 this.alertService.showToast({
                     icon: "error",
-                    title: err.error.detalle
+                    title: err.error.detalle,
+                    showCloseButton: true,
+                    timer: 4000
                 });
             },
         });

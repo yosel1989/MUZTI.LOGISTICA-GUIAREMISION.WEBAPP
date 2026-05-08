@@ -120,7 +120,8 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       tarjeta: form.tarjeta,
       cod_emisor_vehicular: form.cod_emisor_vehicular,
       emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
-      nro_autorizacion: form.nro_autorizacion
+      nro_autorizacion: form.nro_autorizacion,
+      tipo: form.tipo
     };
   }
 

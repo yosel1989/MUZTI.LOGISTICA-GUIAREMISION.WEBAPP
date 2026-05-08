@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
 import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
 
@@ -19,14 +19,12 @@ export class EstablecimientoApiService{
     }
 
     getAllToModalByRuc(ruc: string, search: string | null): Observable<EstablecimientoListToModalDTO[]>{
-        const httpHeaders = new HttpHeaders();
-        if(search){
-            httpHeaders.append('search', search);
+        let httpParams = new HttpParams();
+        if (search) {
+            httpParams = httpParams.set('search', search);
         }
 
-        return this.http.get<any>(`${this.baseUrl}/listar-sugerido/${ruc}`, {
-            headers: httpHeaders
-        }).pipe(
+        return this.http.get<any>(`${this.baseUrl}/listar-sugerido/${ruc}`, { params: httpParams }).pipe(
             map(response =>{ return response as EstablecimientoListToModalDTO[] }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);

@@ -305,6 +305,20 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-0! border
                                     }
                                 </td>
                             }
+                            @case('tipo') {
+                                <td
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    [class.border-e-0!]="(columns.length - 1) === i"
+                                    class="uppercase text-nowrap py-1! font-light! truncate!"
+                                >
+                                    @if(rowData['ld_update']){
+                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                                    }@else {
+                                        {{rowData[col.field]}}
+                                    }
+                                </td>
+                            }
                             @default {
                                 <td
                                     pFrozenColumn 
@@ -319,6 +333,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-0! border
                                     }
                                 </td>
                             }
+
                         }
                     }
                 }

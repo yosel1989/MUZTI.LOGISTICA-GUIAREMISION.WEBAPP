@@ -10,14 +10,13 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
@@ -29,6 +28,7 @@ import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.ser
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
 import { EditarEstablecimientoRequestDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 
 @Component({
   selector: 'app-mdl-editar-establecimiento',
@@ -47,9 +47,9 @@ import { EstablecimientoApiService } from '@features/establecimiento/services/es
     SelectProvinciaComponent,
     SelectDistritoComponent,
     SkeletonModule,
-    AsyncPipe,
     DividerModule,
-    OnlyNumberDirective
+    OnlyNumberDirective,
+    OnlyUpperDirective
 ],
   templateUrl: './mdl-editar-establecimiento.component.html',
   styleUrl: './mdl-editar-establecimiento.component.scss',
@@ -87,8 +87,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     {id: 1, label: 'Activo'}
   ];
 
-  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  $ldData = this.ldData.asObservable();
+  ldData = signal(false);
   data: EstablecimientoDTO | undefined;
 
   ldEmpresa = signal(false);
@@ -162,7 +161,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
   get isLoading(): boolean{
     return this.ldSubmit() || 
-    this.ldData.getValue() ||
+    this.ldData() ||
     (this.ctrlDepartamento?.isLoading ?? false) || 
     (this.ctrlProvincia?.isLoading ?? false) || 
     (this.ctrlDistrito?.isLoading ?? false);
@@ -183,9 +182,10 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
             this.ldSubmit.set(true);
             
-            const sub = this.api.editar(this.data!.id, this.request).subscribe({
+            const sub = this.api.editar(this.data!.id, this.request)
+            .pipe(finalize(() => { this.ldSubmit.set(false) }))
+            .subscribe({
               next: (res: EstablecimientoDTO) => {
-                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -199,7 +199,6 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",
@@ -229,14 +228,14 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
   // data
   loadData(): void{
-    this.ldData.next(true);
-    const sub = this.api.getById(this.id).subscribe({
+    this.ldData.set(true);
+    const sub = this.api.getById(this.id)
+    .pipe(finalize(() => this.ldData.set(false)))
+    .subscribe({
       next: (res: EstablecimientoDTO) => {
         this.handlerLoadData(res);
-        this.ldData.next(false);
       },
       error: (err: HttpErrorResponse) => {
-        this.ldData.next(false);
         this.alertService.showToast({
           position: 'top-end',
           icon: "error",
@@ -258,10 +257,11 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   loadEmpresas(): void{
     this.ldEmpresa.set(true);
     this.subs.add(
-      this.empresaApiService.loadAllToSelect().subscribe({
+      this.empresaApiService.loadAllToSelect()
+      .pipe(finalize(() => { this.ldEmpresa.set(false); }))
+      .subscribe({
         next: (value: EmpresaToSelectDto[]) => {
           this.empresas = value;
-          this.ldEmpresa.set(false);
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
@@ -277,7 +277,6 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
               popup: 'z-[9999]!'
             }
           });
-          this.ldEmpresa.set(false);
         },
       })
     )
@@ -286,10 +285,11 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   loadTiposEstablecimiento(): void{
     this.ldTipoEstablecimiento.set(true);
     this.subs.add(
-      this.catalogoApiService.getTipoEstablecimiento().subscribe({
+      this.catalogoApiService.getTipoEstablecimiento()
+      .pipe(finalize(() => { this.ldTipoEstablecimiento.set(false) }))
+      .subscribe({
         next: (value: TipoEstablecimientoDTO[]) => {
           this.tiposEstablecimiento = value;
-          this.ldTipoEstablecimiento.set(false);
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
@@ -305,7 +305,6 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
               popup: 'z-[9999]!'
             }
           });
-          this.ldTipoEstablecimiento.set(false);
         },
       })
     )

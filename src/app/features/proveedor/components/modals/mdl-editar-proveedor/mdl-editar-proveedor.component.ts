@@ -10,7 +10,7 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ProveedorDto, EditarProveedorRequestDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
@@ -178,9 +178,10 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
             this.ldSubmit.set(true);
             
-            const sub = this.api.editar(this.request).subscribe({
+            const sub = this.api.editar(this.request)
+            .pipe(finalize(() => { this.ldSubmit.set(false) }))
+            .subscribe({
               next: (res: ProveedorDto) => {
-                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -194,8 +195,6 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldSubmit.set(false);
-                console.log(this.ldSubmit);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",
@@ -227,13 +226,13 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
   loadData(): void{
     this.ldData.next(true);
-    const sub = this.api.obtenerPorId(this.id).subscribe({
+    const sub = this.api.obtenerPorId(this.id)
+    .pipe(finalize(() => { this.ldData.next(false) }))
+    .subscribe({
       next: (res: ProveedorDto) => {
         this.handlerLoadData(res);
-        this.ldData.next(false);
       },
       error: (err: HttpErrorResponse) => {
-        this.ldData.next(false);
         this.alertService.showToast({
           position: 'top-end',
           icon: "error",

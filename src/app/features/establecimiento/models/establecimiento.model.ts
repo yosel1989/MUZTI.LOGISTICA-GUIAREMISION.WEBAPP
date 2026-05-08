@@ -2,6 +2,7 @@ export interface EstablecimientoListToModalDTO{
     id: number;
     descripcion: string;
     codigo_sunat: string;
+    entidad: string;
 }
 
 export interface EstablecimientoDTO{

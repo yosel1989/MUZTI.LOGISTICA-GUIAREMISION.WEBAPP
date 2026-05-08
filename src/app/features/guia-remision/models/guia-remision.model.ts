@@ -1,3 +1,5 @@
+import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
+
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
@@ -12,10 +14,10 @@ export interface GuiaRemisionRemitenteRequestDto {
 
   doc_relacionado: GR_DocRelacionadoDto[] | null;
   
-  remitente: GR_RemitenteRequestDto;
+  remitente: EstablecimientoDTO;
   remitente_id: number;
 
-  destinatario: GR_DestinatarioRequestDto;
+  destinatario: EstablecimientoDTO;
   destinatario_id: number;
 
   proveedor: GR_ProveedorRequestDto | null;
@@ -150,25 +152,28 @@ export interface GR_EmitirGuiaRemisionResponseDto {
 
 export interface GuiaRemisionDto {
   id: number;
-  empresa: string;
-  ruc: string; 
-  razon_remitente: string;
-  tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
+  entidad_remitente: string;
+  numero_documento_remitente: string; 
   numero_guia: string;
+  serie: string; 
+  numero: string; 
+  establecimiento_remitente: string;
+  tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
   tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
   fecha_emision: Date;
   hora_emision: string; 
   respuesta_ticket: string | null;
-  razon_destinatario: string;
-  nro_documento_destinatario: string;
+  entidad_destinatario: string;
+  establecimiento_destinatario: string;
+  numero_documento_destinatario: string;
   distrito_origen: string;
   distrito_destino: string;
   fecha_creacion: Date;
   empleado_nombre_creacion: string;
   fecha_ultima_edicion: Date | null;
   empleado_nombre_edicion: string | null;
-  estado: string;
+  estado: string | 'registrado' | 'editado' | 'rechazado' | 'aprobado' | 'enviado';
   id_estado: number;
   loading_update: boolean;
 }

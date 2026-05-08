@@ -191,7 +191,9 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         }, (error: any) => {
             this.alertService.showToast({
                 title: 'No se pudo obtener los remitentes',
-                icon: 'error'
+                icon: 'error',
+                showCloseButton: true,
+                timer: 4000
             });
             this.ldRemitentes = false;
             this.cd.detectChanges();
@@ -214,7 +216,9 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
                 error: () => {
                     this.alertService.showToast({
                         title: 'No se pudo obtener los remitentes',
-                        icon: 'error'
+                        icon: 'error',
+                        showCloseButton: true,
+                        timer: 4000
                     });
                     this.ldDestinatarios = false;
                 }
@@ -232,7 +236,9 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
             error: () => {
                 this.alertService.showToast({
                     title: 'No se pudo obtener los remitentes',
-                    icon: 'error'
+                    icon: 'error',
+                    timer: 4000,
+                    showCloseButton: true
                 });
                 this.ldEmpresas = false;
             }

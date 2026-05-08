@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
@@ -92,15 +92,17 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
       { numero_documento: i.toString() } as ProveedorSugeridoDto
     )) );
     this.sbData?.unsubscribe();
-    this.sbData = this.api.buscarSugerido(this.search.value).subscribe({
-      next: (value: ProveedorSugeridoDto[]) => {
-        this.data.set(value);
+    this.sbData = this.api.buscarSugerido(this.search.value)
+    .pipe(finalize(() => { 
         this.ldData.set(false);
         this.cdr.markForCheck();
+     }))
+    .subscribe({
+      next: (value: ProveedorSugeridoDto[]) => {
+        this.data.set(value);
       },
       error: (err: any) => {
         this.data.set([]);
-        this.ldData.set(false);
         this.alertService.showToast({
           position: 'top-end',
           icon: "error",
@@ -120,14 +122,16 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.obtenerPorId(this.selected!.id).subscribe({
-      next: (value: ProveedorDto) => {
-        this.OnSelect.emit(value);
-        this.ldSelected.set(false);
-      },
-      error: (err: any) => {
+    this.sbData = this.api.obtenerPorId(this.selected!.id)
+    .pipe(finalize(() => { 
         this.ldData.set(false);
         this.ldSelected.set(false);
+     }))
+    .subscribe({
+      next: (value: ProveedorDto) => {
+        this.OnSelect.emit(value);
+      },
+      error: (err: any) => {
         this.alertService.showToast({
           position: 'top-end',
           icon: "error",

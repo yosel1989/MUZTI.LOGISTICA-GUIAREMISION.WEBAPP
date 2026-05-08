@@ -133,21 +133,24 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'empresa', header: 'Empresa', sort: false, sticky: false },
-          { field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
-          { field: 'razon_remitente', header: 'Remitente', sort: false, sticky: false },
           { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
           { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
+          { field: 'serie', header: 'Serie', sort: false, sticky: false },
+          { field: 'numero', header: 'Número', sort: false, sticky: false },
+          { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
+          //{ field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
+          { field: 'establecimiento_remitente', header: 'Origen', sort: false, sticky: false },
+          //{ field: 'direccion_origen', header: 'Dirección Origen', sort: false, sticky: false },
+          //{ field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
+          { field: 'entidad_destinatario', header: 'Destinatario', sort: false, sticky: false, },
+          { field: 'establecimiento_destinatario', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' },
+          //{ field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
+          //{ field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
+          //{ field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
           { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
           { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
           { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
           { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
-          { field: 'razon_destinatario', header: 'Destinatario', sort: false, sticky: false, className: 'w-[100px]' },
-          { field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
-          { field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
-          { field: 'direccion_origen', header: 'Dirección Origen', sort: false, sticky: false },
-          { field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
-          { field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
           { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
           { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
@@ -302,14 +305,16 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
     evtEmitInvoice(): void{
         if(!this.selected){
-          this.alertService.showSwalAlert({
+          this.alertService.showToast({
             text: "Debe seleccionar una guía",
-            icon: "warning"
+            icon: "warning",
+            timer: 4000,
+            showCloseButton: true
           });
           return;
         }
         this.selected.loading_update = true;
-        this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.ruc).subscribe({
+        this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.numero_documento_remitente).subscribe({
           next: (val: GR_EmitirGuiaRemisionResponseDto) => {
             if(val.success){
               this.alertService.showSwalAlert({
@@ -320,17 +325,20 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
               this.selected!.loading_update = false;
               this.reload();
             }else{
-              this.alertService.showSwalAlert({
+              this.alertService.showToast({
                 icon: "error",
-                text: "Ocurrio un error al emitir la guía"
+                title: "Ocurrio un error al emitir la guía",
+                timer: 4000,
+                showCloseButton: true
               });
             }
           },
-          error: (err: any) => {
-              this.alertService.showSwalAlert({
+          error: (err: HttpErrorResponse) => {
+              this.alertService.showToast({
                 icon: "error",
-                title: err.error.error,
-                text: err.error.detalle
+                title: err.error.detalle,
+                timer: 4000,
+                showCloseButton: true
               });
               this.selected!.loading_update = false;
               this.cd.detectChanges();
@@ -415,15 +423,23 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
-        visible: selected?.estado === 'ENVIADO',
+        visible: selected?.estado === 'enviado',
       },
       {
-        label: 'Aprobar',
-        icon: 'pi pi-check-circle text-green-500!',
+        label: 'Aprobar y Emitir',
+        icon: 'pi pi-send text-green-500!',
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'REGISTRADO',
+        visible: selected?.estado === 'registrado' || selected?.estado === 'error',
+      },
+      {
+        label: 'Confirmar',
+        icon: 'pi pi-check-circle text-green-500!',
+        command: () => {
+          
+        },
+        visible: selected?.estado === 'registrado' || selected?.estado === 'error',
       },
       {
         label: 'Rechazar',
@@ -431,7 +447,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'REGISTRADO',
+        visible: selected?.estado === 'registrado' || selected?.estado === 'error',
       },
     ];
   }

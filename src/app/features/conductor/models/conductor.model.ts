@@ -14,6 +14,7 @@ export interface ConductorDto{
     usuario_modifico: string | null;
     usuario_modifico_nombre: string | null;
     estado: string;
+    tipo: string | 'interno' | 'externo';
     id_estado: number;
     ld_estado: boolean;
     ld_update: boolean;
@@ -37,6 +38,7 @@ export interface RegistrarConductorRequestDto{
   apellidos: string;
   cargo: string | null;
   licencia: string;
+  tipo: string | 'interno' | 'externo';
 }
 
 export interface RegistrarConductorResponseDto {
@@ -53,6 +55,7 @@ export interface EditarConductorRequestDto{
   apellidos: string;
   cargo: string;
   licencia: string | null;
+  tipo: string | 'interno' | 'externo';
 }
 
 export interface EditarConductorResponseDto{

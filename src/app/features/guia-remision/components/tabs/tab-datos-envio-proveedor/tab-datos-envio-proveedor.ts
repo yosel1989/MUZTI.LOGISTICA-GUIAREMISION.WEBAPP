@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild, signal, effect } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
@@ -43,6 +43,7 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 import { RemitenteToSelect } from '@features/remitente/models/remitente';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -84,6 +85,19 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
     @Input() motivoTraslado!: GuiaRemisionTipoTrasladoEnum;
     @Input() emisora: EmpresaToSelectDto | null = null;
+
+    private _remitente = signal<EstablecimientoDTO | null>(null);
+    private _destinatario = signal<EstablecimientoDTO | null>(null);
+    @Input() set remitente(value: EstablecimientoDTO | null) {
+        if (this._remitente() !== value) {
+            this._remitente.set(value);
+        }
+    }
+    @Input() set destinatario(value: EstablecimientoDTO | null) {
+        if (this._destinatario() !== value) {
+            this._destinatario.set(value);
+        }
+    }
 
     formDatosEnvio: FormGroup = new FormGroup({});
     formDatosProveedor: FormGroup = new FormGroup({});
@@ -141,9 +155,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           vehiculos: this.fb.array([], Validators.minLength(1)),
           conductores: this.fb.array([], Validators.minLength(1)),
 
-          cod_establecimiento_origen: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
+          cod_establecimiento_origen: new FormControl({value: null, disabled: true}, [Validators.minLength(4), Validators.maxLength(4)]),
           ruc_establecimiento_origen: new FormControl({value: null, disabled: true}),
-          cod_establecimiento_destino: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
+          cod_establecimiento_destino: new FormControl({value: null, disabled: true}, [Validators.minLength(4), Validators.maxLength(4)]),
           ruc_establecimiento_destino: new FormControl({value: null, disabled: true}),
 
           num_autoriza_especial_adicional: new FormControl(null),
@@ -165,6 +179,16 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         });
 
         this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
+
+        effect(() => {
+            const remitente = this._remitente();
+            this.handlerValueRemitente(remitente);
+        });
+
+        effect(() => {
+            const destinatario = this._destinatario();
+            this.handlerValueDestinatario(destinatario);
+        });
     }
 
     // getters
@@ -633,8 +657,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 const existe = this.vehiculos.controls.some(ctrl => ctrl.get('id')?.value === s.id);
                 if(existe){
                   this.alertService.showToast({
-                    text: "El vehiculo ya se encuentra seleccionado",
-                    icon: "warning"
+                    title: "El vehiculo ya se encuentra seleccionado",
+                    icon: "warning",
+                    timer: 4000,
+                    showCloseButton: true
                   });
                 }else{
                   this.evtAddVehiculo(s);
@@ -675,7 +701,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 if(existe){
                   this.alertService.showToast({
                     text: "El conductor ya se encuentra seleccionado",
-                    icon: "warning"
+                    icon: "warning",
+                    timer: 4000,
+                    showCloseButton: true
                   });
                 }else{
                   this.evtAddConductor(c);
@@ -777,4 +805,31 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       });
     }
 
+    handlerValueRemitente(s: EstablecimientoDTO | null): void{
+        if(!s){
+            //this.resetOrigenForm();
+            return;
+        }
+
+        if(this.motivoTraslado === 'TRASLADO'){
+          this.formDatosEnvio.patchValue({
+              cod_establecimiento_origen: s.codigo_sunat,
+              ruc_establecimiento_origen: s.ruc
+          });
+        }
+    }
+
+    handlerValueDestinatario(s: EstablecimientoDTO | null): void{
+        if(!s){
+            //this.resetDestinoForm();
+            return;
+        }
+
+        if(this.motivoTraslado === 'TRASLADO'){
+          this.formDatosEnvio.patchValue({
+              cod_establecimiento_destino: s.codigo_sunat,
+              ruc_establecimiento_destino: s.ruc
+          });
+        }
+    }
 }

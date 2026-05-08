@@ -47,6 +47,7 @@ export interface EditarUnidadTransporteRequestDto{
     cod_emisor_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
+    tipo: string | 'interno' | 'externo';
 }
 
 export interface EditarUnidadTransporteResponseDto{

@@ -58,6 +58,9 @@
                                 @case('id'){
                                     <td class="text-nowrap font-light! truncate" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
                                 }
+                                @case('tipo'){
+                                    <td class="uppercase text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
+                                }
                                 @default {
                                     <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
                                 }

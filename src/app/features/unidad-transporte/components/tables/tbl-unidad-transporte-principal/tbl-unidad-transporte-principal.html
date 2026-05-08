@@ -278,6 +278,11 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
                                     }
                                 </td>
                             }
+                            @case('tipo'){
+                                <td class="uppercase text-nowrap py-1! font-light!">
+                                    {{ rowData[col.field] }}
+                                </td>
+                            }
                             @case('estado'){
                                 <td class="text-nowrap py-1! font-light!"> 
                                     @if(rowData['ld_estado'] || rowData['ld_update']){

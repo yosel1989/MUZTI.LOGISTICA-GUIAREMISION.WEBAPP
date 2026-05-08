@@ -22,9 +22,9 @@
                     optionLabel="description" 
                     appendTo="body"
                     formControlName="tipo_documento"
-                    [invalid]="frm.get('tipo_documento')?.invalid && ( frm.get('tipo_documento')?.touched || submitted)"
+                    [invalid]="frm.get('tipo_documento')?.invalid && ( frm.get('tipo_documento')?.touched || submitted())"
                     />
-                    @if (frm.get('tipo_documento')?.invalid && (frm.get('tipo_documento')?.touched || submitted)) {
+                    @if (frm.get('tipo_documento')?.invalid && (frm.get('tipo_documento')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
                 </div>
@@ -37,7 +37,7 @@
                         fluid 
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento"
-                        [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)"
+                        [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted())"
                         [minlength]="
                             f.tipo_documento.value === 'RUC' ? 11 : 
                             f.tipo_documento.value === 'DNI' ? 8 : 
@@ -45,7 +45,7 @@
                         "
                     />
                     
-                    @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)) {
+                    @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                             @if(f.numero_documento.errors?.['required']){
                                 Este campo es requerido.
@@ -81,8 +81,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="nombres" 
                     autofocus="true"
-                    [invalid]="frm.get('nombres')?.invalid && (frm.get('nombres')?.touched || submitted)"/>
-                    @if (frm.get('nombres')?.invalid && (frm.get('nombres')?.touched || submitted)) {
+                    [invalid]="frm.get('nombres')?.invalid && (frm.get('nombres')?.touched || submitted())"/>
+                    @if (frm.get('nombres')?.invalid && (frm.get('nombres')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.nombres.hasError('required')) {
                             Este campo es requerido.
@@ -104,8 +104,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="apellidos" 
                     autofocus="true"
-                    [invalid]="frm.get('apellidos')?.invalid && (frm.get('apellidos')?.touched || submitted)"/>
-                    @if (frm.get('apellidos')?.invalid && (frm.get('apellidos')?.touched || submitted)) {
+                    [invalid]="frm.get('apellidos')?.invalid && (frm.get('apellidos')?.touched || submitted())"/>
+                    @if (frm.get('apellidos')?.invalid && (frm.get('apellidos')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.apellidos.hasError('required')) {
                             Este campo es requerido.
@@ -127,8 +127,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="cargo" 
                     autofocus="true"
-                    [invalid]="frm.get('cargo')?.invalid && (frm.get('cargo')?.touched || submitted)"/>
-                    @if (frm.get('cargo')?.invalid && (frm.get('cargo')?.touched || submitted)) {
+                    [invalid]="frm.get('cargo')?.invalid && (frm.get('cargo')?.touched || submitted())"/>
+                    @if (frm.get('cargo')?.invalid && (frm.get('cargo')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.cargo.hasError('maxlength')) {
                             El nombre no debe exceder los 100 caracteres.
@@ -136,6 +136,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Licencia / Brevete *</label>
                     <input 
@@ -147,8 +148,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="licencia" 
                     autofocus="true"
-                    [invalid]="frm.get('licencia')?.invalid && (frm.get('licencia')?.touched || submitted)"/>
-                    @if (frm.get('licencia')?.invalid && (frm.get('licencia')?.touched || submitted)) {
+                    [invalid]="frm.get('licencia')?.invalid && (frm.get('licencia')?.touched || submitted())"/>
+                    @if (frm.get('licencia')?.invalid && (frm.get('licencia')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.licencia.hasError('required')) {
                             Este campo es requerido.
@@ -163,6 +164,29 @@
                         </p-message>
                     }
                 </div>
+
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo</label>
+                    <p-select 
+                        panelStyleClass="text-[.875rem]!"
+                        size="small" 
+                        fluid 
+                        [options]="tipos" 
+                        formControlName="tipo" 
+                        [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted())" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted()) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                        [filter]="false" 
+                        appendTo="body"
+                    ></p-select>
+                    
+                    @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            Este campo es requerido
+                        </span></p-message>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -170,7 +194,7 @@
 
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" />
     </div>
 
 </form>

@@ -65,7 +65,9 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
           console.log(e);
           this.alertService.showToast({
               icon: "error",
-              title: e.error.detalle
+              title: e.error.detalle,
+              showCloseButton: true,
+              timer: 4000
           });
         } 
       });

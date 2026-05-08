@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,7 +10,7 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PERSON } from 'app/fake/items/data/fakeDocumenType';
@@ -47,13 +47,13 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  isSubmitted = signal(false);
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
   documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PERSON;
-  submitted: boolean = false;
+  submitted = signal(false);
 
 
   headerValue: string = '';
@@ -61,6 +61,12 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
     {id: 0, label: 'Inactivo'},
     {id: 1, label: 'Activo'}
   ];
+
+  tipos: {value: string, label: string}[] = [
+    {value: 'interno', label: 'INTERNO'},
+    {value: 'externo', label: 'EXTERNO'}
+  ];
+
 
   constructor(
     private fb: FormBuilder,
@@ -77,7 +83,8 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
       cargo: new FormControl(null, [Validators.maxLength(100)]),
       licencia: new FormControl(null, [Validators.required, Validators.minLength(9), Validators.maxLength(10)]),
       empleado_id_creacion: new FormControl(null),
-      empleado_nombre_creacion: new FormControl(null)
+      empleado_nombre_creacion: new FormControl(null),
+      tipo: new FormControl('interno', [Validators.maxLength(20)])
     });
 
     this.headerValue = this.config.header ?? '';
@@ -130,13 +137,14 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
       nombres: form.nombres,
       apellidos: form.apellidos,
       cargo: form.cargo,
-      licencia: form.licencia
+      licencia: form.licencia,
+      tipo: form.tipo
     };
   }
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -148,12 +156,15 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
 
             const dataRequest = this.request;
             this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
-            const sub = this.api.registrar(dataRequest).subscribe({
-              next: (res: RegistrarConductorResponseDto) => {
+            const sub = this.api.registrar(dataRequest)
+            .pipe(finalize(() => { 
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
+             }))
+            .subscribe({
+              next: (res: RegistrarConductorResponseDto) => {
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -167,8 +178,6 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
-                this.ldSubmit = false;
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",

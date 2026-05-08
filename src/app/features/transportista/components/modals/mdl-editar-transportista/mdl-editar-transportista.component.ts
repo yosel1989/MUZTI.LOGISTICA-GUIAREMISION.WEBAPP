@@ -94,7 +94,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
       provincia: new FormControl(null, Validators.required),
       distrito: new FormControl(null, Validators.required),
       direccion: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
-      email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
+      email_contacto: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
       registro_mtc: new FormControl(null, [Validators.maxLength(45)]),
@@ -134,7 +134,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
       direccion: form.direccion,
-      email_contacto: form.email,
+      email_contacto: form.email_contacto,
       pais: form.pais,
       codigo_sunat: form.codigo_sunat,
       registro_mtc: form.registro_mtc
@@ -247,6 +247,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
       razon_social: res.razon_social?.toUpperCase(),
       direccion: res.direccion?.toUpperCase(),
       pais: res.pais,
+      email_contacto: res.email_contacto,
       codigo_sunat: res.codigo_sunat,
       departamento: res.ubigeo_id?.substring(0,2),
     });

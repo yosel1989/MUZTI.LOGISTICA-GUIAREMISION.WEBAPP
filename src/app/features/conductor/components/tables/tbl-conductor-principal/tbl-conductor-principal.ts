@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -109,6 +109,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           { field: 'apellidos', header: 'Apellidos', sort: false, sticky: false },
           { field: 'cargo', header: 'Cargo', sort: false, sticky: false },
           { field: 'licencia', header: 'Distrito', sort: false, sticky: false },
+          { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
           { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
           { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
@@ -358,7 +359,9 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                 id_estado: status
               } as ActualizarEstadoConductorRequestDto;
 
-              const sub = this.api.actualizarEstado(this.selected!.id, request).subscribe({
+              const sub = this.api.actualizarEstado(this.selected!.id, request)
+              .pipe(finalize(() => { this.cd.detectChanges() }))
+              .subscribe({
                 next: (res: ActualizarEstadoConductorResponseDto) => {
 
                   this.alertService.showToast({
@@ -376,7 +379,6 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                   this.selected!.fecha_modifico = res.fecha_modifico;
                   this.selected!.usuario_modifico = res.usuario_modifico;
                   this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
-                  this.cd.detectChanges();
                 },
                 error: (err: HttpErrorResponse) => {
 
@@ -393,15 +395,11 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                     }
                   });
                   this.selected!.ld_estado = false;
-                  this.cd.detectChanges();
                 }
               });
               this.subs.add(sub);
             
-          },
-          reject: () => {
-              
-          },
+          }
       });
     }
 
