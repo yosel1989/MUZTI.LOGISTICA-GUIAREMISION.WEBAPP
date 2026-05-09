@@ -11,6 +11,7 @@ import {
   ViewChild,
   ElementRef,
   signal,
+  inject,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -22,7 +23,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -77,6 +78,9 @@ import { HttpErrorResponse } from '@angular/common/http';
   providers: [DialogService, ConfirmationService],
 })
 export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private confirmationService = inject(ConfirmationService);
+
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
   @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
   @Output() OnShowFilter: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -367,10 +371,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.setSelected(event.data);
   }
 
-    evtToggleHand(): void{
-      this.hands.set(!this.hands());
-      console.log(this.hands());
-    }
+  evtToggleHand(): void{
+    this.hands.set(!this.hands());
+    console.log(this.hands());
+  }
 
   evtExport(): void {
     this.loadingDownload.next(true);
@@ -385,7 +389,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     }
 
       this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
-          saveAs(blob, 'reporte.xlsx'); // 👈 descarga el archivo
+          saveAs(blob, 'reporte.xlsx');
         this.loadingDownload.next(false);
         }, (error) => {
         this.loadingDownload.next(false);
@@ -399,6 +403,59 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         });
       },
     );
+  }
+
+  evtOnConfirm(): void{
+    this.validateSelected();
+
+    this.confirmationService.confirm({
+        header: `Desea confirmar la guía de Remisión N° ${this.selected!.numero_guia}`,
+        message: 'Confirmar la operación.',
+        accept: () => {
+            this.selected!.loading_update = true;
+            this.cd.detectChanges();
+
+            const sub = this.api.confirmar(this.selected!.id)
+            .pipe(finalize(() => { this.cd.detectChanges() }))
+            .subscribe({
+              next: (res: GuiaRemisionDto) => {
+
+                this.alertService.showToast({
+                  position: 'top-end',
+                  icon: "success",
+                  title: "Se actualizó con éxito",
+                  showCloseButton: true,
+                  timerProgressBar: true,
+                  timer: 4000
+                });
+                
+                const idx = this.data.findIndex(x => x.id === this.selected!.id);
+                if (idx > -1) {
+                  this.data[idx] = res;
+                  this.selected = res;
+                }
+              },
+              error: (err: HttpErrorResponse) => {
+
+                this.alertService.showToast({
+                  position: 'top-end',
+                  icon: "error",
+                  title: err.error?.detalle,
+                  showCloseButton: true,
+                  timerProgressBar: true,
+                  timer: 4000,
+                  customClass: {
+                    container: 'z-[9999]!',
+                    popup: 'z-[9999]!'
+                  }
+                });
+                this.selected!.loading_update = false;
+              }
+            });
+            this.subs.add(sub);
+          
+        }
+    });
   }
 
   //functions
@@ -423,7 +480,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
-        visible: selected?.estado === 'enviado',
+        visible: selected?.estado === 'enviada',
       },
       {
         label: 'Aprobar y Emitir',
@@ -431,15 +488,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'registrado' || selected?.estado === 'error',
+        visible: selected?.estado === 'registrada' || selected?.estado === 'error',
       },
       {
         label: 'Confirmar',
         icon: 'pi pi-check-circle text-green-500!',
         command: () => {
-          
+          this.evtOnConfirm();
         },
-        visible: selected?.estado === 'registrado' || selected?.estado === 'error',
+        visible: selected?.estado === 'registrada' || selected?.estado === 'error',
       },
       {
         label: 'Rechazar',
@@ -447,8 +504,24 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'registrado' || selected?.estado === 'error',
+        visible: selected?.estado === 'registrada' || selected?.estado === 'error',
       },
     ];
+  }
+
+
+  // handlers
+
+  validateSelected(): void{
+    if(!this.selected){
+      this.alertService.showToast({
+        title: "Debe seleccionar una guía",
+        icon: "error",
+        showCloseButton: true,
+        timer: 4000
+      });
+
+      return;
+    }
   }
 }

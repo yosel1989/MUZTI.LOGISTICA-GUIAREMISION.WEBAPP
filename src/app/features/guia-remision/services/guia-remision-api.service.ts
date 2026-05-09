@@ -53,4 +53,12 @@ export class GuiaRemisionApiService {
 
   }
 
+  confirmar(id: number): Observable<GuiaRemisionDto> {
+    return this.http.put<any>(`${this.baseUrl}/${id}/confirmar`,{}).pipe(
+      map(response =>{ return response as GuiaRemisionDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
 }
