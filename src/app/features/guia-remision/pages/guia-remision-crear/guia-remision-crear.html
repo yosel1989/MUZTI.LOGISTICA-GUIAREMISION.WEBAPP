@@ -16,15 +16,6 @@
             <div class="p-3! grid grid-cols-3 gap-6">
                 <div class="col-span-2 flex flex-col gap-3">
 
-                    @if(1 > 1){
-                        <p-tabs (valueChange)="evtSelectDestEmi($event)" value="0">
-                            <p-tablist>
-                                <p-tab value="0">Remitente</p-tab>
-                                <p-tab value="1">Destinatario</p-tab>
-                            </p-tablist>
-                        </p-tabs>
-                    }
-
                     <div class="grid grid-cols-2 gap-x-3">
                         <div>
                             <app-select-tipo-guia #selectTipoGuia classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-tipo-guia>
@@ -47,12 +38,18 @@
                             <p-tab 
                                 value="0" 
                                 class="rounded-t-xl! text-md! py-2!"
-                                [ngClass]="{ 'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 0 }"
+                                [ngClass]="{ 
+                                    'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 0,
+                                    'bg-gray-50!': (tabRemitenteDestinatario$ | async) !== 0
+                                }"
                             >Remitente</p-tab>
                             <p-tab 
                                 value="1"
                                 class="rounded-t-xl! text-md! py-2!"
-                                [ngClass]="{ 'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 1 }"
+                                [ngClass]="{ 
+                                    'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 1 ,
+                                    'bg-gray-50!': (tabRemitenteDestinatario$ | async) !== 1
+                                }"
                             >Destinatario</p-tab>
                         </p-tablist>
                         <p-tabpanels>
@@ -60,14 +57,15 @@
                                 <div class="flex flex-col gap-3">
                                     <div class="flex flex-wrap gap-x-2 pb-2">
                                         <p-button 
-                                            styleClass="text-[12px]!" 
-                                            icon="fa-duotone fa-regular fa-magnifying-glass"
+                                            [outlined]="true"
+                                            (onClick)="evtOnShowEstablecimiento('remitente')" 
+                                            size="small" 
+                                            styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                            class="text-xs!" 
+                                            icon="pi pi-search text-xs!" 
+                                            severity="primary" 
                                             label="Seleccionar remitente"
-                                            iconPos="left"
-                                            (click)="evtOnShowEstablecimiento('remitente')"
-                                            
-                                        >
-                                        </p-button>
+                                        ></p-button>
 
                                         <a 
                                             pTooltip="Administrar establecimiento"
@@ -243,13 +241,15 @@
                                 <div class="flex flex-col gap-3">
                                     <div class="flex flex-wrap gap-x-2 pb-2">
                                         <p-button 
-                                            styleClass="text-[12px]!" 
-                                            icon="fa-duotone fa-regular fa-magnifying-glass"
+                                            [outlined]="true"
+                                            (onClick)="evtOnShowEstablecimiento('destinatario')" 
+                                            size="small" 
+                                            styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                            class="text-xs!" 
+                                            icon="pi pi-search text-xs!" 
+                                            severity="primary" 
                                             label="Seleccionar destinatario"
-                                            iconPos="left"
-                                            (click)="evtOnShowEstablecimiento('destinatario')"
-                                        >
-                                        </p-button>
+                                        ></p-button>
 
                                         <a 
                                             pTooltip="Administrar destinatarios"
@@ -508,15 +508,17 @@
                                 }
                             </div>
                         }
-                        
+
                         <p-button 
-                            [raised]="true"
+                            [outlined]="true"
                             (onClick)="evtShowAddDocRef()" 
                             size="small" 
-                            styleClass="text-xs!" 
+                            styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
                             class="text-xs!" 
+                            icon="pi pi-plus text-xs!" 
                             severity="primary" 
-                            label="Agregar"></p-button>
+                            label="Agregar"
+                        ></p-button>
                     </div>
                 </div>
             </div>

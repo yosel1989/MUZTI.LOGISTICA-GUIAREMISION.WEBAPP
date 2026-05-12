@@ -154,8 +154,36 @@
                         </td>
                         <td class="px-1! w-12.5">
                             <div class="flex flex-row gap-1 justify-end">
-                                @if(i == items.length -1){<p-button pTooltip="Agregar producto" tooltipPosition="left" tooltipStyleClass="text-[10px]!" class="text-xs! w-6! h-6!" size="small" icon="pi pi-plus text-xs! font-semibold!" styleClass="w-6! h-6!" (click)="evtAddItem(true)" rounded="true" />}@else{<div></div>}
-                                @if(items.length > 1){<p-button pTooltip="Quitar producto" tooltipStyleClass="text-[10px]! " tooltipPosition="left" class="text-xs! w-6! h-6!" size="small" icon="pi pi-trash text-xs! font-semibold!" styleClass="w-6! h-6!" (click)="evtRemoveItems(i)" rounded="true" severity="secondary"/>}
+                                @if(i == items.length -1){
+                                    <p-button 
+                                        [outlined]="true"
+                                        pTooltip="Agregar producto" 
+                                        tooltipPosition="left" 
+                                        tooltipStyleClass="text-[10px]!" 
+                                        class="text-xs!" 
+                                        size="small" 
+                                        icon="pi pi-plus text-xs! font-semibold!" 
+                                        styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                        (click)="evtAddItem(true)" 
+                                        rounded="true" 
+                                    />
+                                }@else{
+                                        <div></div>
+                                    }
+                                @if(items.length > 1){
+                                    <p-button 
+                                        [outlined]="true"
+                                        pTooltip="Quitar producto" 
+                                        tooltipPosition="left" 
+                                        tooltipStyleClass="text-[10px]!" 
+                                        class="text-xs!" 
+                                        size="small" 
+                                        icon="pi pi-trash text-xs! font-semibold!" 
+                                        styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                        (click)="evtRemoveItems(i)"  
+                                        rounded="true" 
+                                    />
+                                }
                             </div>
                         </td>
                     </tr>
@@ -169,7 +197,7 @@
             [outlined]="true"
             (onClick)="evtAddItem(true)" 
             size="small" 
-            styleClass="text-xs!" 
+            styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
             class="text-xs!" 
             icon="pi pi-plus text-xs!" 
             severity="primary" 

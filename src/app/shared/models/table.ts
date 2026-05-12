@@ -4,4 +4,5 @@ interface Column {
 	sort?: boolean;
 	sticky?: boolean;
     className?: string;
+    tdClassName?: string;
 }

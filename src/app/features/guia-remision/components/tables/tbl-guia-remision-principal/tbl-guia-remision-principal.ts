@@ -139,7 +139,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'id', header: 'Código', sort: false, sticky: false },
           { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
           { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
-          { field: 'serie', header: 'Serie', sort: false, sticky: false },
+          { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: "text-center" },
           { field: 'numero', header: 'Número', sort: false, sticky: false },
           { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
           //{ field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
@@ -155,8 +155,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
           { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
           { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
-          { field: 'estado', header: 'Estado', sort: false, sticky: false },
-          { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false },
+          { field: 'estado', header: 'Estado', sort: false, sticky: false, className: 'text-center!' },
+          { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false, className: 'text-center!' },
           { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
           { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
           { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
@@ -473,7 +473,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   private buildMenuItems(selected: GuiaRemisionDto | undefined): MenuItem[] {
     return [
-      //{ label: 'Ver Detalle', icon: 'pi pi-eye text-blue-500!', command: () => { this.evtOnShowDetail(); }},
       {
         label: 'Ver PDF',
         icon: 'pi pi-file-pdf text-gray-500!',
@@ -488,11 +487,12 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'registrada' || selected?.estado === 'error',
+        visible: selected?.estado === 'confirmada',
       },
       {
         label: 'Confirmar',
         icon: 'pi pi-check-circle text-green-500!',
+        
         command: () => {
           this.evtOnConfirm();
         },
@@ -504,7 +504,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'registrada' || selected?.estado === 'error',
+        visible: selected?.estado !== 'emitida',
       },
     ];
   }

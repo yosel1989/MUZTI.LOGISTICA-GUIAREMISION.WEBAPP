@@ -4,9 +4,7 @@ import {
   OnInit,
   AfterViewInit,
   ViewChild,
-  ChangeDetectorRef,
-  Output,
-  EventEmitter,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   AbstractControl,
@@ -160,7 +158,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   ngOnInit(): void {
     this.unitOfMeasures = unitofMeasures;
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
-    this.evtAddItem();
+    this.init(5);
   }
 
   ngAfterViewInit(): void {}
@@ -304,5 +302,39 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   evtSelectSubNationalCode(event: any, form: any): void {
     const fg = form as FormGroup;
     fg.get('codigo_sunat')?.setValue(event.value);
+  }
+
+  // handlers
+
+  init(num_items: number): void{
+    let count = 0;
+    while(count < num_items){
+
+      const row = this.newItem();
+
+      row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => {
+        row.get('codigo_subnacional')?.setValue(null);
+        row.get('codigo_sunat')?.setValue(null);
+
+        if (value) {
+          //row.get('codigo_sunat')?.disable();
+          row.get('codigo_subnacional')?.addValidators(Validators.required);
+          row.get('codigo_sunat')?.addValidators(Validators.required);
+        } else {
+          //row.get('codigo_sunat')?.enable();
+          row.get('codigo_subnacional')?.clearValidators();
+          row.get('codigo_sunat')?.clearValidators();
+        }
+
+        row.get('codigo_subnacional')?.updateValueAndValidity();
+        row.get('codigo_sunat')?.updateValueAndValidity();
+
+        this.cdr.markForCheck();
+      });
+
+      this.items.push(row);
+
+      count++;
+    }
   }
 }

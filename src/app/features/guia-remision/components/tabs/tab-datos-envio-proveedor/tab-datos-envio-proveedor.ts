@@ -40,7 +40,6 @@ import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
-import { RemitenteToSelect } from '@features/remitente/models/remitente';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';

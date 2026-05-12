@@ -137,7 +137,7 @@
                 badgeClass="font-normal!"
                 (click)="evtOnShowFilters()"
             />
-            <p-iconfield iconPosition="left" class="w-[190px]!">
+            <p-iconfield iconPosition="left" class="w-47.5!">
                 <p-inputicon class="pi pi-search" />
                 <input 
                 #inputFilter 
@@ -233,10 +233,10 @@
                             [pSortableColumn]="col.sort ? col.field : undefined" 
                             class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!"
                             [ngClass]="col.className">
-                                <div class="flex items-center gap-2">
+                                
                                     {{ col.header }}
                                     @if(col.sort){<p-sortIcon [field]="col.field" />}
-                                </div>
+                                
                             </th>
                         }
                     }
@@ -249,7 +249,10 @@
             @if($ldData | async) {
                 <tr>
                     @for (col of columns; let i = $index; track $index) {
-                        <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
+                        <td 
+                            [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')"
+                            [ngClass]="col.tdClassName"
+                        >
                             <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                         </td>
                     }
@@ -260,32 +263,39 @@
                     @for (col of columns; let i = $index; track $index) {
                         @if(rowData.__empty) {
                             <td 
-                            pFrozenColumn
-                            [frozen]="col.sticky ?? false" 
-                            [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
+                                pFrozenColumn
+                                [frozen]="col.sticky ?? false" 
+                                [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
+                                [ngClass]="col.tdClassName"
                             >—</td>
                         }@else {
                             @switch(col.field){
                                 @case('select'){
                                     <td
-                                    class="cursor-pointer py-2! px-2! border-s-0!" >
-                                    <p-tableRadioButton
-                                    [value]="rowData" 
-                                    (click)="evtToggleSelection(rowData)"
-                                    class="flex text-center justify-center"/>
+                                        class="cursor-pointer py-2! px-2! border-s-0!" 
+                                        [ngClass]="col.tdClassName"
+                                    >
+                                        <p-tableRadioButton
+                                        [value]="rowData" 
+                                        (click)="evtToggleSelection(rowData)"
+                                        class="flex text-center justify-center"/>
                                     </td>
                                 }
                                 @case('cod'){
                                     <td
-                                    class="cursor-pointer py-2! px-4!" >
+                                        class="cursor-pointer py-2! px-4!" 
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         {{ (rowIndex + 1) }}
                                     </td>
                                 }
                                 @case('id'){
                                     <td 
-                                    pFrozenColumn 
-                                    [frozen]="col.sticky ?? false"
-                                    class="cursor-pointer py-2! px-2! truncate" >
+                                        pFrozenColumn 
+                                        [frozen]="col.sticky ?? false"
+                                        class="cursor-pointer py-2! px-2! truncate" 
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -294,7 +304,10 @@
                                     </td> 
                                 }
                                 @case('fecha_registro'){
-                                    <td class="text-nowrap py-1! font-light! truncate">
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate"
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -303,7 +316,10 @@
                                     </td>
                                 }
                                 @case('entidad_remitente'){
-                                    <td class="text-nowrap py-1! font-light! truncate">
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate"
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -313,7 +329,10 @@
                                     </td>
                                 }
                                 @case('entidad_destinatario'){
-                                    <td class="text-nowrap py-1! font-light! truncate">
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate"
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -323,7 +342,10 @@
                                     </td>
                                 }
                                 @case('establecimiento_destinatario'){
-                                    <td class="text-nowrap py-1! font-light! truncate">
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate"
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -333,7 +355,10 @@
                                     </td>
                                 }
                                 @case('establecimiento_remitente'){
-                                    <td class="text-nowrap py-1! font-light! truncate">
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate"
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -343,7 +368,10 @@
                                     </td>
                                 }
                                 @case('fecha_modifico'){
-                                    <td class="text-nowrap py-1! font-light! truncate">
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate"
+                                        [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
@@ -352,18 +380,21 @@
                                     </td>
                                 }
                                 @case('estado'){
-                                    <td class="text-nowrap py-1! font-light! truncate text-center"> 
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate text-center"
+                                        [ngClass]="col.tdClassName"
+                                    > 
 
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
 
                                             @if(rowData['id_estado']){
-                                                <span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                <span class="uppercase font-medium w-35 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }@else{
-                                                <span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                <span class="uppercase font-medium w-35 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }
@@ -371,17 +402,20 @@
                                     </td>
                                 }
                                 @case('estado_sunat'){
-                                    <td class="text-nowrap py-1! font-light! truncate text-center"> 
+                                    <td 
+                                        class="text-nowrap py-1! font-light! truncate text-center"
+                                        [ngClass]="col.tdClassName"
+                                    > 
 
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
                                             @if(rowData['id_estado_sunat']){
-                                                <span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 mx-auto">
+                                                <span class="uppercase w-25 font-medium text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 mx-auto">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }@else{
-                                                <span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 mx-auto">
+                                                <span class="uppercase w-25 font-medium text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 mx-auto">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }
@@ -392,7 +426,9 @@
                                     <td
                                     pFrozenColumn 
                                     [frozen]="col.sticky ?? false"
-                                    class="text-nowrap py-1! font-light! truncate">
+                                    class="text-nowrap py-1! font-light! truncate"
+                                    [ngClass]="col.tdClassName"
+                                    >
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else {
@@ -416,7 +452,7 @@
 <div class="card flex justify-center">
     <p-confirmdialog #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-            <div class="flex flex-col items-center p-8 rounded-xl max-w-[450px]!">
+            <div class="flex flex-col items-center p-8 rounded-xl max-w-112.5!">
                 <div
                     class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
                 >
