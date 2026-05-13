@@ -61,4 +61,22 @@ export class GuiaRemisionApiService {
       })
     );
   }
+
+  rechazar(id: number, descripcion: string | null): Observable<GuiaRemisionDto> {
+    return this.http.put<any>(`${this.baseUrl}/${id}/rechazar`,{id, descripcion}).pipe(
+      map(response =>{ return response as GuiaRemisionDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  anular(id: number, descripcion: string | null): Observable<GuiaRemisionDto> {
+    return this.http.put<any>(`${this.baseUrl}/${id}/anular`,{id, descripcion}).pipe(
+      map(response =>{ return response as GuiaRemisionDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
 }

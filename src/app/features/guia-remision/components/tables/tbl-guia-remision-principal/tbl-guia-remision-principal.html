@@ -323,7 +323,7 @@
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
-                                            <span class="block w-full font-semibold">{{ rowData[col.field] }}</span>
+                                            <span class="block w-full font-medium">{{ rowData[col.field] }}</span>
                                             <span class="block w-full">{{ rowData['numero_documento_remitente'] }}</span>
                                         }
                                     </td>
@@ -336,7 +336,7 @@
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
-                                            <span class="block w-full font-semibold">{{ rowData[col.field] }}</span>
+                                            <span class="block w-full font-medium">{{ rowData[col.field] }}</span>
                                             <span class="block w-full">{{ rowData['numero_documento_destinatario'] }}</span>
                                         }
                                     </td>
@@ -349,7 +349,7 @@
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
-                                            <span class="block w-full font-semibold">{{ rowData[col.field] }}</span>
+                                            <span class="block w-full font-medium">{{ rowData[col.field] }}</span>
                                             <span class="block w-full">{{ rowData['direccion_destino'] }} - {{ rowData['distrito_destino'] }}</span>
                                         }
                                     </td>
@@ -362,7 +362,7 @@
                                         @if(rowData['loading_update']){
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
-                                            <span class="block w-full font-semibold">{{ rowData[col.field] }}</span>
+                                            <span class="block w-full font-medium">{{ rowData[col.field] }}</span>
                                             <span class="block w-full">{{ rowData['direccion_origen'] }} - {{ rowData['distrito_origen'] }}</span>
                                         }
                                     </td>
@@ -450,7 +450,7 @@
 <p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
 
 <div class="card flex justify-center">
-    <p-confirmdialog #cd appendTo="body">
+    <p-confirmdialog appendTo="body" [closable]="false">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
             <div class="flex flex-col items-center p-8 rounded-xl max-w-112.5!">
                 <div
@@ -460,8 +460,13 @@
                 </div>
                 <span class="font-semibold text-2xl block mb-2 mt-6 text-center">{{ message.header }}</span>
                 <p class="mb-0">{{ message.message }}</p>
+                @if(showInputAlert()){
+                    <div class="w-full mt-6">
+                        <textarea pSize="small" pTextarea rows="6" fluid [formControl]="ctrlDescripcion" placeholder="Ingresar motivo o descripción"></textarea>
+                    </div>
+                }
                 <div class="flex items-center gap-2 mt-6">
-                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Aceptar" (onClick)="handleAccept(onAccept)" styleClass="w-32"></p-button>
                     <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
                 </div>
             </div>
@@ -469,12 +474,56 @@
     </p-confirmdialog>
 </div>
 
-
-
-<p-drawer header="Filtrar" [(visible)]="visibleFilters" position="right" appendTo="body">
-    <div class="grid grid-cols-1">
-        <div>
-            
+<p-drawer 
+    [visible]="showHistory()" 
+    (onShow)="loadHistory()"
+    (onHide)="evtHideHistory()" 
+    position="right" 
+    appendTo="body"
+    styleClass="!w-full md:!w-80 lg:!w-[30rem]"
+>
+    <ng-template #header>
+        <div class="flex items-center gap-2">
+            <p-avatar icon="pi pi-file" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+            <span class="font-semibold text-primary! flex flex-col">
+                <span>Guía de Remisión</span>
+                <span>{{ selected?.numero_guia }}</span>
+            </span>
         </div>
+    </ng-template>
+    <div class="flex flex-col gap-y-4 p-0">
+        @if(ldHistory()){
+            <div class="flex flex-col gap-y-6">
+                @for (item of util.fromArray(5); track $index) {
+                    <div class="flex flex-row gap-x-4">
+                        <div>
+                            <p-skeleton class="rounded-[100px]! w-[50px]! h-[50px]!"></p-skeleton>
+                        </div>
+                        <div class="flex flex-col gap-y-3 w-full">
+                            <p-skeleton width="100%"></p-skeleton>
+                            <p-skeleton width="50%"></p-skeleton>
+                        </div>
+                    </div>
+                }
+            </div>
+        }@else{
+            <div class="history flex flex-col gap-y-10 border rounded-[15px] border-gray-100 p-4 mt-6">
+                @for (h of history(); track $index) {
+                    <div class="group flex flex-row gap-x-4">
+                        <div>
+                            <p-avatar icon="pi pi-history" size="normal" shape="circle" class="p-6 relative z-10 group-hover:bg-primary-100! group-hover:text-primary-500!"></p-avatar>
+                        </div>
+                        <div class="w-full">
+                            <p class="font-semibold group-hover:text-primary-500! mb-2">{{ h.motivo }}</p>
+                            <p class="text-xs! text-gray-500 font-semibold bg-gray-100 px-3 rounded-md py-1 inline-block! w-auto! mb-2 group-hover:text-primary-500! group-hover:bg-primary-100!">Contabilidad</p>
+                            <p class="text-xs! text-gray-500">{{ h.fecha_registro | date: "dd/MM/yyyy HH:mm:ss a" }}  |  {{ h.usuario_registro_nombre }}</p>
+                            @if(h.descripcion){
+                                <p class="text-sm! text-gray-700 mt-2 text-justify">{{h.descripcion}}</p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
 </p-drawer>

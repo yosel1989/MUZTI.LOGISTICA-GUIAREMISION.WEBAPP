@@ -2,3 +2,19 @@
   cursor: grabbing;
   user-select: none;
 }
+
+.history{
+  > div{
+    position: relative;
+    &:not(:last-child)::after{
+      content: "";
+      height: calc(100% + 40px);
+      width: 3px;
+      position: absolute;
+      top: 30px;
+      bottom: 0;
+      left: 20px;
+      background-color: var(--p-surface-100);
+    }
+  }
+}

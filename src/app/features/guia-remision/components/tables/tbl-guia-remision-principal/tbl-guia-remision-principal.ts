@@ -44,10 +44,14 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
 import saveAs from 'file-saver';
 import { AlertService } from 'app/core/services/alert.service';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
 import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AvatarModule } from 'primeng/avatar';
+import { GuiaRemisionHistorialApiService } from '@features/guia-remision/services/guia-remision-historial-api.service';
+import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/guia-remision-historial.model';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -74,12 +78,16 @@ import { HttpErrorResponse } from '@angular/common/http';
     NgClass,
     ReactiveFormsModule,
     DragScrollDirective,
+    AvatarModule,
+    TextareaModule
   ],
   providers: [DialogService, ConfirmationService],
 })
 export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private guiaRemisionHistorialApiService = inject(GuiaRemisionHistorialApiService);
   private confirmationService = inject(ConfirmationService);
+  
 
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
   @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
@@ -123,46 +131,52 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   ctrlSearch = new FormControl(null);
 
   hands = signal<boolean>(false);
+  showHistory = signal(false);
+  ldHistory = signal(false);
+  history = signal<GuiaRemisionHistorialListDTO[]>([]);
+  showInputAlert = signal(false);
+  confirmAction = signal("");
+  ctrlDescripcion = new FormControl(null, Validators.required);
 
-    constructor(
-      public dialogService: DialogService,
-      private alertService: AlertService,
-      private api: GuiaRemisionApiService,
-      private apiGuiaRemitente: GuiaRemitenteApiService,
-      private cd: ChangeDetectorRef,
-      public util: UtilService,
-      public documentoApi: DocumentoApiService
-    ){
-        this.cols = [
-          { field: 'select', header: '', sort: false, sticky: false  },
-          { field: 'cod', header: '#', sort: false, sticky: false  },
-          { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
-          { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
-          { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: "text-center" },
-          { field: 'numero', header: 'Número', sort: false, sticky: false },
-          { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
-          //{ field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
-          { field: 'establecimiento_remitente', header: 'Origen', sort: false, sticky: false },
-          //{ field: 'direccion_origen', header: 'Dirección Origen', sort: false, sticky: false },
-          //{ field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
-          { field: 'entidad_destinatario', header: 'Destinatario', sort: false, sticky: false, },
-          { field: 'establecimiento_destinatario', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' },
-          //{ field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
-          //{ field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
-          //{ field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
-          { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
-          { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
-          { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
-          { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
-          { field: 'estado', header: 'Estado', sort: false, sticky: false, className: 'text-center!' },
-          { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false, className: 'text-center!' },
-          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
-        ];
-    }
+  constructor(
+    public dialogService: DialogService,
+    private alertService: AlertService,
+    private api: GuiaRemisionApiService,
+    private apiGuiaRemitente: GuiaRemitenteApiService,
+    private cd: ChangeDetectorRef,
+    public util: UtilService,
+    public documentoApi: DocumentoApiService
+  ){
+      this.cols = [
+        { field: 'select', header: '', sort: false, sticky: false  },
+        { field: 'cod', header: '#', sort: false, sticky: false  },
+        { field: 'id', header: 'Código', sort: false, sticky: false },
+        { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
+        { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
+        { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: "text-center" },
+        { field: 'numero', header: 'Número', sort: false, sticky: false },
+        { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
+        //{ field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
+        { field: 'establecimiento_remitente', header: 'Origen', sort: false, sticky: false },
+        //{ field: 'direccion_origen', header: 'Dirección Origen', sort: false, sticky: false },
+        //{ field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
+        { field: 'entidad_destinatario', header: 'Destinatario', sort: false, sticky: false, },
+        { field: 'establecimiento_destinatario', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' },
+        //{ field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
+        //{ field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
+        //{ field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
+        { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
+        { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
+        { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
+        { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
+        { field: 'estado', header: 'Estado', sort: false, sticky: false, className: 'text-center!' },
+        { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false, className: 'text-center!' },
+        { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+        { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+        { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+        { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+      ];
+  }
 
   ngOnInit(): void {}
 
@@ -194,6 +208,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   // data
+  
   loadData(reload: boolean = false): void {
     this.subData?.unsubscribe();
     this.selected = undefined;
@@ -253,7 +268,29 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
+  loadHistory(): void{
+    this.ldHistory.set(true);
+    const s = this.guiaRemisionHistorialApiService.obtenerTodoPorGuia(this.selected!.id)
+    .pipe(finalize(() => {this.ldHistory.set(false)}))
+    .subscribe({
+      next : (value: GuiaRemisionHistorialListDTO[]) => {
+        this.history.set(value);
+      },
+      error : (err: HttpErrorResponse) => {
+        this.alertService.showToast({
+          title: err.error.detalle,
+          icon: 'error',
+          timer: 4000,
+          showCloseButton: true,
+          timerProgressBar: true
+        })
+      },
+    });
+    this.subs.add(s);
+  }
+
   //events
+
   evtToggleSelection(row: GuiaRemisionDto): void {
     if (this.selected === row) {
       this.setSelected(undefined);
@@ -407,55 +444,39 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   evtOnConfirm(): void{
     this.validateSelected();
-
+    this.confirmAction.set('confirmarGuia');
     this.confirmationService.confirm({
         header: `Desea confirmar la guía de Remisión N° ${this.selected!.numero_guia}`,
-        message: 'Confirmar la operación.',
-        accept: () => {
-            this.selected!.loading_update = true;
-            this.cd.detectChanges();
-
-            const sub = this.api.confirmar(this.selected!.id)
-            .pipe(finalize(() => { this.cd.detectChanges() }))
-            .subscribe({
-              next: (res: GuiaRemisionDto) => {
-
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se actualizó con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
-                
-                const idx = this.data.findIndex(x => x.id === this.selected!.id);
-                if (idx > -1) {
-                  this.data[idx] = res;
-                  this.selected = res;
-                }
-              },
-              error: (err: HttpErrorResponse) => {
-
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error?.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
-                this.selected!.loading_update = false;
-              }
-            });
-            this.subs.add(sub);
-          
-        }
+        message: 'Confirmar la operación.'
     });
+  }
+
+  evtOnRechazar(): void{
+    this.validateSelected();
+    this.showInputAlert.set(true);
+    this.confirmAction.set('rechazarGuia');
+    this.confirmationService.confirm({
+        header: `Desea rechazar la guía de Remisión N° ${this.selected!.numero_guia}`,
+        message: '¿Confirmar la operación?',
+    });
+  }
+
+  evtOnAnular(): void{
+    this.validateSelected();
+    this.showInputAlert.set(true);
+    this.confirmAction.set('anularGuia');
+    this.confirmationService.confirm({
+        header: `Desea anular la guía de Remisión N° ${this.selected!.numero_guia}`,
+        message: '¿Confirmar la operación?'
+    });
+  }
+
+  evtShowHistory(): void{
+    this.showHistory.set(true);
+  }
+
+  evtHideHistory(): void{
+    this.showHistory.set(false);
   }
 
   //functions
@@ -492,7 +513,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       {
         label: 'Confirmar',
         icon: 'pi pi-check-circle text-green-500!',
-        
         command: () => {
           this.evtOnConfirm();
         },
@@ -500,17 +520,202 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       {
         label: 'Rechazar',
+        icon: 'pi pi-times-circle text-red-300!',
+        command: () => {
+          this.evtOnRechazar();
+        },
+        visible: selected?.estado !== 'emitida' && selected?.estado !== 'anulada' && selected?.estado !== 'rechazada',
+      },
+      {
+        label: 'Editar',
+        icon: 'pi pi-pencil text-yellow-500!',
+        command: () => {
+          
+        },
+        visible: selected?.estado === 'registrada' || selected?.estado === 'rechazada',
+      },
+      {
+        label: 'Anular',
         icon: 'pi pi-ban text-red-500!',
         command: () => {
-          this.evtEmitInvoice();
+          this.evtOnAnular();
         },
-        visible: selected?.estado !== 'emitida',
+        visible: selected?.estado !== 'emitida' && selected?.estado !== 'anulada',
+      },
+      {
+        label: 'Historial',
+        icon: 'pi pi-history',
+        command: () => {
+          this.evtShowHistory();
+        }
+      },
+      {
+        label: 'Ver PDF',
+        icon: 'pi pi-file-pdf',
+        command: () => {
+          
+        }
       },
     ];
   }
 
-
   // handlers
+
+  handleAccept(onAccept: Function): void{
+    if(this.showInputAlert() && this.ctrlDescripcion.invalid){
+      this.alertService.showToast({
+        title: "Debe ingresar el motivo o descripción",
+        icon: "error",
+        timer: 4000,
+        showCloseButton: true,
+        timerProgressBar: true
+      });
+      return;
+    }
+
+    this.selected!.loading_update = true;
+    this.cd.detectChanges();
+
+    switch(this.confirmAction()){
+      case 'confirmarGuia':
+          this.handleAcceptConfirmar();break;
+
+      case 'anularGuia':
+          this.handleAcceptAnular();break;
+
+      case 'rechazarGuia':
+          this.handleAcceptRechazar();break;
+
+      default: break;
+    }
+    onAccept();
+  }
+
+  handleAcceptAnular(): void{
+    const sub = this.api.anular(this.selected!.id, this.ctrlDescripcion.value)
+    .pipe(finalize(() => { 
+      this.cd.detectChanges();
+      this.showInputAlert.set(false);
+    }))
+    .subscribe({
+      next: (res: GuiaRemisionDto) => {
+
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "success",
+          title: "Se anuló la guía con éxito",
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000
+        });
+        
+        const idx = this.data.findIndex(x => x.id === this.selected!.id);
+        if (idx > -1) {
+          this.data[idx] = res;
+          this.selected = res;
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error?.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
+        this.selected!.loading_update = false;
+      }
+    });
+    this.subs.add(sub);
+  }
+
+  handleAcceptRechazar(): void{
+    const sub = this.api.rechazar(this.selected!.id, this.ctrlDescripcion.value)
+    .pipe(finalize(() => { this.cd.detectChanges() }))
+    .subscribe({
+      next: (res: GuiaRemisionDto) => {
+
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "success",
+          title: "Se rechazó la guía con éxito",
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000
+        });
+        
+        const idx = this.data.findIndex(x => x.id === this.selected!.id);
+        if (idx > -1) {
+          this.data[idx] = res;
+          this.selected = res;
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error?.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
+        this.selected!.loading_update = false;
+      }
+    });
+    this.subs.add(sub);
+  }
+
+  handleAcceptConfirmar(): void{
+    const sub = this.api.confirmar(this.selected!.id)
+    .pipe(finalize(() => { this.cd.detectChanges() }))
+    .subscribe({
+      next: (res: GuiaRemisionDto) => {
+
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "success",
+          title: "Se confirmó la guía con éxito",
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000
+        });
+        
+        const idx = this.data.findIndex(x => x.id === this.selected!.id);
+        if (idx > -1) {
+          this.data[idx] = res;
+          this.selected = res;
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+
+        this.alertService.showToast({
+          position: 'top-end',
+          icon: "error",
+          title: err.error?.detalle,
+          showCloseButton: true,
+          timerProgressBar: true,
+          timer: 4000,
+          customClass: {
+            container: 'z-[9999]!',
+            popup: 'z-[9999]!'
+          }
+        });
+        this.selected!.loading_update = false;
+      }
+    });
+    this.subs.add(sub);
+  }
 
   validateSelected(): void{
     if(!this.selected){
