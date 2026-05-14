@@ -2,33 +2,32 @@
 
     <form [formGroup]="form" (ngSubmit)="evtOnSubmit()" >
 
-        <h2 class="text-lg font-semibold text-gray-700! mb-6">Configuración de permisos</h2>
+        <h2 class="text-lg font-semibold text-gray-700! mb-6">Configuración de estados</h2>
         <p-divider class="mb-16!"></p-divider>   
 
-        @if(!ldPermisos()){
-            @for(permiso of permisos(); track permiso.id; let i = $index){
+        @if(!ldEstadosWithPermisos()){
+            @for(estado of estadosWithPermisos(); track estado.id; let i = $index){
                 <div class="grid sm:grid-cols-1 lg:grid-cols-3 gap-3">
                     <div class="">
-                        <label class="font-semibold  text-gray-700!">{{ permiso.nombre }}</label>
-                        @if(permiso.descripcion){
-                            <p class="text-[12px] text-gray-500!">{{ permiso.descripcion }}</p>
+                        <label class="font-semibold  text-gray-700!">{{ estado.nombre }}</label>
+                        @if(estado.descripcion){
+                            <p class="text-[12px] text-gray-500!">{{ estado.descripcion }}</p>
                         }
-                        <code class="text-xs rounded p-1 px-3 bg-gray-700 text-gray-50 w-full! block">[ {{ permiso.codigo }} ]</code>
                     </div>  
                     <div class="col-span-2">
-                        <label for="perfiles_{{ permiso.id }}" class="text-[12px]! font-medium text-gray-500!">Perfiles asignados</label>
+                        <label for="permisos_{{ estado.id }}" class="text-[12px]! font-medium text-gray-500!">Estados permitidos</label>
                         <p-multiselect 
-                            [formControlName]="`perfiles_${permiso.id}`"
+                            [formControlName]="`permisos_${estado.id}`"
                             fluid 
                             size="small" 
-                            [options]="perfiles" 
-                            placeholder="Seleccionar perfiles" 
+                            [options]="estados" 
+                            placeholder="Todos" 
                             optionLabel="nombre" 
                             optionValue="id" 
                             display="chip"
                             [maxSelectedLabels]="999"
                             appentTo="body"
-                            [loading]="ldPerfiles()"
+                            [loading]="ldEstados()"
                             panelStyleClass="text-[12px]!"
                             editable="true"
                             showHeader="false"
@@ -38,7 +37,7 @@
                         </p-multiselect>
                     </div>
                 </div>
-                @if(i < permisos().length - 1){
+                @if(i < estadosWithPermisos().length - 1){
                     <p-divider></p-divider>
                 }
             }
@@ -61,7 +60,7 @@
                 type="submit" 
                 [label]="ldSubmit() ? '' : 'Guardar cambios'"
                 icon="pi pi-save" 
-                [disabled]="form.invalid || ldPerfiles() || ldPermisos()"
+                [disabled]="form.invalid || ldEstados() || ldEstadosWithPermisos()"
                 size="small"
                 [loading]="ldSubmit()"
                 styleClass="min-w-[100px]"

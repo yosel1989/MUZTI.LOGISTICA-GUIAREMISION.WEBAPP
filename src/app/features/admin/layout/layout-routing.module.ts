@@ -50,6 +50,10 @@ const routes: Routes = [
           {
             path: 'permisos',
             loadComponent: () => import('@features/permiso/pages/page-permiso-principal/page-permiso-principal').then(m => m.PagePermisoPrincipalComponent)
+          },
+          {
+            path: 'estados',
+            loadComponent: () => import('@features/guia-remision-estado/pages/page-guia-remision-estado-principal/page-guia-remision-estado-principal').then(m => m.PageGuiaRemisionEstadoPrincipalComponent)
           }
         ]
       }

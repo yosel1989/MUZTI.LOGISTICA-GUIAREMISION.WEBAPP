@@ -500,7 +500,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
-        visible: selected?.estado === 'enviada',
       },
       {
         label: 'Aprobar y Emitir',
@@ -508,7 +507,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtEmitInvoice();
         },
-        visible: selected?.estado === 'confirmada',
       },
       {
         label: 'Confirmar',
@@ -516,15 +514,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnConfirm();
         },
-        visible: selected?.estado === 'registrada' || selected?.estado === 'error',
       },
       {
         label: 'Rechazar',
-        icon: 'pi pi-times-circle text-red-300!',
+        icon: 'pi pi-times-circle text-red-500!',
         command: () => {
           this.evtOnRechazar();
-        },
-        visible: selected?.estado !== 'emitida' && selected?.estado !== 'anulada' && selected?.estado !== 'rechazada',
+        }
       },
       {
         label: 'Editar',
@@ -532,7 +528,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           
         },
-        visible: selected?.estado === 'registrada' || selected?.estado === 'rechazada',
       },
       {
         label: 'Anular',
@@ -540,7 +535,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAnular();
         },
-        visible: selected?.estado !== 'emitida' && selected?.estado !== 'anulada',
       },
       {
         label: 'Historial',
@@ -548,14 +542,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtShowHistory();
         }
-      },
-      {
-        label: 'Ver PDF',
-        icon: 'pi pi-file-pdf',
-        command: () => {
-          
-        }
-      },
+      }
     ];
   }
 

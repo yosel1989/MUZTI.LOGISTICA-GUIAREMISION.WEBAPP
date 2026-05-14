@@ -37,6 +37,11 @@ export class PageConfiguracionPrincipalComponent implements OnInit, AfterViewIni
                 label: 'Permisos',
                 styleClass: 'text-[12px]! font-semibold text-primary!',
                 routerLink: 'permisos'
+            },
+            {
+                label: 'Estados de la Guía de Remisión',
+                styleClass: 'text-[12px]! font-semibold text-primary!',
+                routerLink: 'estados'
             }
         ];
     }
