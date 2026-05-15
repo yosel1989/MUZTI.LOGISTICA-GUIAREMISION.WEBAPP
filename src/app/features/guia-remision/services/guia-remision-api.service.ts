@@ -34,6 +34,14 @@ export class GuiaRemisionApiService {
     );
   }
 
+  buscarPorUuid(uuid: string): Observable<GuiaRemisionDto> {
+    return this.http.get<any>(`${this.baseUrl}/buscar-por-uuid/${uuid}`).pipe(
+      map(response =>{ return response as GuiaRemisionDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
 
   exportarTodo(filters: ColumnsFilterDto[]): Observable<Blob> {
     let httpParams = new HttpParams();

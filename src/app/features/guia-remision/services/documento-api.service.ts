@@ -40,4 +40,32 @@ export class DocumentoApiService {
     );
   }
 
+  obtenerPdf(ruc: string, tipoGuia: string | 'TRANSPORTISTA' | 'REMITENTE', numeroGuia: string): Observable<{ blob: Blob; filename?: string }> {
+    return this.http.get(`${this.baseUrl}/pdf/${ruc}/${tipoGuia}/${numeroGuia}`, {
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map(res => {
+
+        const contentDisposition = res.headers.get('content-disposition');
+        let filename: string | undefined;
+
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/);
+          if (match && match[1]) {
+            filename = decodeURIComponent(match[1].trim());
+          }
+        }
+
+        return {
+          blob: res.body as Blob,
+          filename
+        };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
 }

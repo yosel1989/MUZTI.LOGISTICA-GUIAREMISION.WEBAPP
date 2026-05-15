@@ -152,6 +152,7 @@ export interface GR_EmitirGuiaRemisionResponseDto {
 
 export interface GuiaRemisionDto {
   id: number;
+  uuid: string;
   entidad_remitente: string;
   numero_documento_remitente: string; 
   numero_guia: string;
@@ -169,11 +170,17 @@ export interface GuiaRemisionDto {
   numero_documento_destinatario: string;
   distrito_origen: string;
   distrito_destino: string;
-  fecha_creacion: Date;
-  empleado_nombre_creacion: string;
-  fecha_ultima_edicion: Date | null;
-  empleado_nombre_edicion: string | null;
+  fecha_registro: Date;
+  usuario_registro: string;
+  usuario_registro_nombre: string;
+  fecha_modifico: Date | null;
+  usuario_modifico: string | null;
+  usuario_modifico_nombre: string | null;
   estado: string | 'registrado' | 'editado' | 'rechazado' | 'aprobado' | 'enviado';
   id_estado: number;
+  estado_sunat: string;
+  id_estado_sunat: number;
   loading_update: boolean;
+  area: string | null;
+  area_id: string | null;
 }

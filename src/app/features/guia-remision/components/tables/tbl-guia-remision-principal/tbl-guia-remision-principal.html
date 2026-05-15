@@ -3,85 +3,146 @@
     <ng-template #start>
     <div class="flex items-center gap-1">
         <p-button 
-        size="small"
-        icon="pi pi-angle-left text-[13px]!" 
-        size="small" 
-        [disabled]="isFirstPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Anterior"
-        tooltipPosition="bottom"
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtPrev()"
-        />
-        <p-button icon="pi pi-refresh text-[13px]!" 
-        size="small"  
-        severity="secondary" 
-        [outlined]="true"
-        pTooltip="Actualizar" 
-        tooltipPosition="bottom" 
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="reload()"
+            size="small"
+            icon="pi pi-angle-left text-[13px]!" 
+            size="small" 
+            [disabled]="isFirstPage()"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Anterior"
+            tooltipPosition="bottom"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtPrev()"
         />
         <p-button 
-        icon="pi pi-angle-right text-[13px]!" 
-        size="small" 
-        [disabled]="isLastPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Siguiente"
-        tooltipPosition="bottom"
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtNext()"
+            icon="pi pi-refresh text-[13px]!" 
+            size="small"  
+            severity="secondary" 
+            [outlined]="true"
+            pTooltip="Actualizar" 
+            tooltipPosition="bottom" 
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="reload()"
+        />
+        <p-button 
+            icon="pi pi-angle-right text-[13px]!" 
+            size="small" 
+            [disabled]="isLastPage()"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Siguiente"
+            tooltipPosition="bottom"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtNext()"
         />
         
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
         
         <p-button 
-        icon="pi pi-plus text-[13px]!"  
-        size="small" 
-        severity="info" 
-        [outlined]="true"
-        pTooltip="Emitir Nueva Guía" 
-        tooltipPosition="bottom"
-        tooltipStyleClass="text-xs! text-center"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        routerLink="nuevo"
+            icon="pi pi-plus text-[13px]!"  
+            size="small" 
+            severity="info" 
+            [outlined]="true"
+            pTooltip="Emitir Nueva Guía" 
+            tooltipPosition="bottom"
+            tooltipStyleClass="text-xs! text-center"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            routerLink="nuevo"
         />
 
         @if(selected){
             <p-button 
-                icon="pi pi-eye text-[13px]!"  
-                size="small" 
-                severity="secondary" 
+                icon="pi pi-send text-green-500! text-[13px]!"
+                size="small"
+                severity="secondary"
                 [outlined]="true"
-                pTooltip="Ver detalle" 
+                pTooltip="Aprobar y Emitir"
                 tooltipPosition="bottom"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
-                styleClass="w-9! h-9!"
-          
+                styleClass="w-9! h-9! border-green-200!"
+                (onClick)="evtOnAprobarGuia()"
             />
-            @if(selected.estado === 'ENVIADO'){
             <p-button 
-                icon="pi pi-file-pdf text-[13px]!"  
-                size="small" 
-                severity="secondary" 
+                icon="pi pi-check-circle text-green-500! text-[13px]!"
+                size="small"
+                severity="secondary"
                 [outlined]="true"
-                pTooltip="Ver PDF" 
+                pTooltip="Confirmar"
+                tooltipPosition="bottom"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9! border-green-200!"
+                (click)="evtOnConfirmarGuia()"
+            />
+            <p-button 
+                icon="pi pi-times-circle text-red-500! text-[13px]!"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                pTooltip="Rechazar"
+                tooltipPosition="bottom"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9! border-red-200!"
+                (click)="evtOnRechazarGuia()"
+            />
+            <p-button 
+                icon="pi pi-pencil text-yellow-500! text-[13px]!"
+                size="small"
+                severity="warn"
+                [outlined]="true"
+                pTooltip="Editar"
                 tooltipPosition="bottom"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="w-9! h-9!"
-                (click)="evtOnShowPdf()"
+                (click)="evtOnEditarGuia()"
             />
+            <p-button 
+                icon="pi pi-ban text-red-500! text-[13px]!"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                pTooltip="Anular"
+                tooltipPosition="bottom"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9! border-red-200!"
+                (click)="evtOnAnularGuia()"
+            />
+            <p-button 
+                icon="pi pi-history text-[13px]!"  
+                size="small" 
+                severity="secondary" 
+                [outlined]="true"
+                pTooltip="Historial" 
+                tooltipPosition="bottom"
+                tooltipStyleClass="text-xs!"
+                placeholder="Top"
+                styleClass="w-9! h-9!"
+                (click)="evtShowHistory()"
+            />
+            @if(selected.estado_sunat === 'ENVIADO'){
+                <p-button 
+                    icon="pi pi-file-pdf text-[13px]!"  
+                    size="small" 
+                    severity="secondary" 
+                    [outlined]="true"
+                    pTooltip="Ver PDF" 
+                    tooltipPosition="bottom"
+                    tooltipStyleClass="text-xs!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9!"
+                    (click)="evtOnShowPdf()"
+                />
             }
         }
            
@@ -390,11 +451,21 @@
                                         }@else{
 
                                             @if(rowData['id_estado']){
-                                                <span class="uppercase font-medium w-35 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                                <span 
+                                                    [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
+                                                    tooltipPosition="top"
+                                                    tooltipStyleClass="text-xs!" 
+                                                    class="uppercase font-medium w-35 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2"
+                                                    >
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }@else{
-                                                <span class="uppercase font-medium w-35 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                                <span 
+                                                    class="uppercase font-medium w-35 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2"
+                                                    [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
+                                                    tooltipPosition="top"
+                                                    tooltipStyleClass="text-xs!"
+                                                >
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }
@@ -475,9 +546,10 @@
 </div>
 
 <p-drawer 
+    #historys
     [visible]="showHistory()" 
-    (onShow)="loadHistory()"
-    (onHide)="evtHideHistory()" 
+    (onShow)="loadHistory(historys)"
+    (onHide)="evtHideHistory($event)" 
     position="right" 
     appendTo="body"
     styleClass="!w-full md:!w-80 lg:!w-[30rem]"

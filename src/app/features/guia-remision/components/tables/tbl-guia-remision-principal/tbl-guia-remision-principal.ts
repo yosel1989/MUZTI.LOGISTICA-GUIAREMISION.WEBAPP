@@ -39,7 +39,7 @@ import { DocumentoApiService } from '@features/guia-remision/services/documento-
 import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
 import { LayoutRoutingModule } from '@features/admin/layout/layout-routing.module';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
-import { DrawerModule } from 'primeng/drawer';
+import { Drawer, DrawerModule } from 'primeng/drawer';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
 import saveAs from 'file-saver';
@@ -52,6 +52,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { GuiaRemisionHistorialApiService } from '@features/guia-remision/services/guia-remision-historial-api.service';
 import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/guia-remision-historial.model';
 import { TextareaModule } from 'primeng/textarea';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -87,6 +88,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   private guiaRemisionHistorialApiService = inject(GuiaRemisionHistorialApiService);
   private confirmationService = inject(ConfirmationService);
+  private router = inject(Router);
   
 
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
@@ -233,8 +235,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
       next: (res: TableData<GuiaRemisionDto[]>) => {
         this.data = res.data.map((x) => {
-          x.fecha_creacion = new Date(x.fecha_creacion);
-          x.fecha_ultima_edicion = x.fecha_ultima_edicion ? new Date(x.fecha_ultima_edicion) : null;
+          x.fecha_registro = new Date(x.fecha_registro);
+          x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
           return x;
         });
 
@@ -268,7 +270,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
-  loadHistory(): void{
+  loadHistory(drawer: Drawer): void{
     this.ldHistory.set(true);
     const s = this.guiaRemisionHistorialApiService.obtenerTodoPorGuia(this.selected!.id)
     .pipe(finalize(() => {this.ldHistory.set(false)}))
@@ -283,7 +285,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           timer: 4000,
           showCloseButton: true,
           timerProgressBar: true
-        })
+        });
+        this.showHistory.set(false);
+        drawer.hide();
       },
     });
     this.subs.add(s);
@@ -344,49 +348,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
-    evtEmitInvoice(): void{
-        if(!this.selected){
-          this.alertService.showToast({
-            text: "Debe seleccionar una guía",
-            icon: "warning",
-            timer: 4000,
-            showCloseButton: true
-          });
-          return;
-        }
-        this.selected.loading_update = true;
-        this.apiGuiaRemitente.emitirGuiaRemision(this.selected.id, this.selected.numero_documento_remitente).subscribe({
-          next: (val: GR_EmitirGuiaRemisionResponseDto) => {
-            if(val.success){
-              this.alertService.showSwalAlert({
-                icon: "success",
-                title: "¡Guía de Remisión Emitida!",
-                text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
-              });
-              this.selected!.loading_update = false;
-              this.reload();
-            }else{
-              this.alertService.showToast({
-                icon: "error",
-                title: "Ocurrio un error al emitir la guía",
-                timer: 4000,
-                showCloseButton: true
-              });
-            }
-          },
-          error: (err: HttpErrorResponse) => {
-              this.alertService.showToast({
-                icon: "error",
-                title: err.error.detalle,
-                timer: 4000,
-                showCloseButton: true
-              });
-              this.selected!.loading_update = false;
-              this.cd.detectChanges();
-          }
-        });
-    }
-
   evtOnShowFilters(): void {
     this.OnShowFilter.emit(true);
   }
@@ -442,7 +403,16 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     );
   }
 
-  evtOnConfirm(): void{
+  evtOnAprobarGuia(): void{
+    this.validateSelected();
+    this.confirmAction.set('aprobarGuia');
+    this.confirmationService.confirm({
+        header: `Desea aprobar la guía de Remisión N° ${this.selected!.numero_guia}`,
+        message: 'Confirmar la operación.'
+    });
+  }
+
+  evtOnConfirmarGuia(): void{
     this.validateSelected();
     this.confirmAction.set('confirmarGuia');
     this.confirmationService.confirm({
@@ -451,7 +421,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
-  evtOnRechazar(): void{
+  evtOnRechazarGuia(): void{
     this.validateSelected();
     this.showInputAlert.set(true);
     this.confirmAction.set('rechazarGuia');
@@ -461,7 +431,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
-  evtOnAnular(): void{
+  evtOnAnularGuia(): void{
     this.validateSelected();
     this.showInputAlert.set(true);
     this.confirmAction.set('anularGuia');
@@ -471,11 +441,17 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     });
   }
 
+  evtOnEditarGuia(): void{
+    this.router.navigateByUrl(`/administracion/guia-remision/editar/${this.selected?.uuid}`);
+
+  }
+
   evtShowHistory(): void{
     this.showHistory.set(true);
   }
 
-  evtHideHistory(): void{
+  evtHideHistory(history: any): void{
+    console.log('drawer', history);
     this.showHistory.set(false);
   }
 
@@ -500,40 +476,41 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
+        visible: selected?.estado_sunat === 'ENVIADO'
       },
       {
         label: 'Aprobar y Emitir',
         icon: 'pi pi-send text-green-500!',
         command: () => {
-          this.evtEmitInvoice();
+          this.evtOnAprobarGuia();
         },
       },
       {
         label: 'Confirmar',
         icon: 'pi pi-check-circle text-green-500!',
         command: () => {
-          this.evtOnConfirm();
+          this.evtOnConfirmarGuia();
         },
       },
       {
         label: 'Rechazar',
         icon: 'pi pi-times-circle text-red-500!',
         command: () => {
-          this.evtOnRechazar();
+          this.evtOnRechazarGuia();
         }
       },
       {
         label: 'Editar',
         icon: 'pi pi-pencil text-yellow-500!',
         command: () => {
-          
+          this.evtOnEditarGuia();
         },
       },
       {
         label: 'Anular',
         icon: 'pi pi-ban text-red-500!',
         command: () => {
-          this.evtOnAnular();
+          this.evtOnAnularGuia();
         },
       },
       {
@@ -564,21 +541,24 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.cd.detectChanges();
 
     switch(this.confirmAction()){
+      case 'aprobarGuia':
+        this.handleAcceptAprobarGuia(); break;
+
       case 'confirmarGuia':
-          this.handleAcceptConfirmar();break;
+          this.handleAcceptConfirmarGuia();break;
 
       case 'anularGuia':
-          this.handleAcceptAnular();break;
+          this.handleAcceptAnularGuia();break;
 
       case 'rechazarGuia':
-          this.handleAcceptRechazar();break;
+          this.handleAcceptRechazarGuia();break;
 
       default: break;
     }
     onAccept();
   }
 
-  handleAcceptAnular(): void{
+  handleAcceptAnularGuia(): void{
     const sub = this.api.anular(this.selected!.id, this.ctrlDescripcion.value)
     .pipe(finalize(() => { 
       this.cd.detectChanges();
@@ -601,6 +581,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.data[idx] = res;
           this.selected = res;
         }
+
+        this.ctrlDescripcion.setValue(null);
       },
       error: (err: HttpErrorResponse) => {
 
@@ -622,12 +604,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.subs.add(sub);
   }
 
-  handleAcceptRechazar(): void{
+  handleAcceptRechazarGuia(): void{
     const sub = this.api.rechazar(this.selected!.id, this.ctrlDescripcion.value)
-    .pipe(finalize(() => { this.cd.detectChanges() }))
+    .pipe(finalize(() => { 
+      this.cd.detectChanges();
+      this.showInputAlert.set(false);
+    }))
     .subscribe({
       next: (res: GuiaRemisionDto) => {
-
+        
         this.alertService.showToast({
           position: 'top-end',
           icon: "success",
@@ -642,6 +627,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.data[idx] = res;
           this.selected = res;
         }
+
+        this.ctrlDescripcion.setValue(null);
       },
       error: (err: HttpErrorResponse) => {
 
@@ -663,9 +650,45 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.subs.add(sub);
   }
 
-  handleAcceptConfirmar(): void{
+  handleAcceptAprobarGuia(): void{
+    this.apiGuiaRemitente.emitirGuiaRemision(this.selected!.id, this.selected!.numero_documento_remitente).subscribe({
+      next: (val: GR_EmitirGuiaRemisionResponseDto) => {
+        if(val.success){
+          this.alertService.showSwalAlert({
+            icon: "success",
+            title: "¡Guía de Remisión Emitida!",
+            text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
+          });
+          this.selected!.loading_update = false;
+          this.reload();
+        }else{
+          this.alertService.showToast({
+            icon: "error",
+            title: "Ocurrio un error al emitir la guía",
+            timer: 4000,
+            showCloseButton: true
+          });
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+          this.alertService.showToast({
+            icon: "error",
+            title: err.error.detalle,
+            timer: 4000,
+            showCloseButton: true
+          });
+          this.selected!.loading_update = false;
+          this.cd.detectChanges();
+      }
+    });
+  }
+
+  handleAcceptConfirmarGuia(): void{
     const sub = this.api.confirmar(this.selected!.id)
-    .pipe(finalize(() => { this.cd.detectChanges() }))
+    .pipe(finalize(() => { 
+      this.cd.detectChanges();
+      this.showInputAlert.set(false);
+    }))
     .subscribe({
       next: (res: GuiaRemisionDto) => {
 
@@ -683,6 +706,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.data[idx] = res;
           this.selected = res;
         }
+        this.ctrlDescripcion.setValue(null);
       },
       error: (err: HttpErrorResponse) => {
 

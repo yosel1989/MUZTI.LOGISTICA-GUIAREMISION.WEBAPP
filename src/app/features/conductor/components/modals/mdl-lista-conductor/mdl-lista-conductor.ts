@@ -115,6 +115,7 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
             popup: 'z-[9999]!'
           }
         });
+        this.OnClose.emit();
       },
     });
   }

@@ -16,6 +16,7 @@ import { finalize, Subscription } from "rxjs";
 import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
+import { GuiaRemisionTipoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',
@@ -44,6 +45,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
+    @Input() motivoTraslado: GuiaRemisionTipoTrasladoEnum | undefined;
 
     empresas: EmpresaToSelectDto[] = [];
     ldEmpresas = signal(false);
@@ -67,8 +69,31 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     placeholder = 'Seleccionar ...';
 
     ngOnInit(): void {
-        this.ctrlRuc.patchValue(this.ruc)
-        this.tipo === 'destinatario' && this.ctrlRuc.enable();
+        this.ctrlRuc.patchValue(this.ruc);
+
+        if(this.tipo === 'destinatario'){
+            switch(this.motivoTraslado){
+                case GuiaRemisionTipoTrasladoEnum.venta: 
+                    this.ctrlRuc.enable();
+                    break;
+                case GuiaRemisionTipoTrasladoEnum.compra: break;
+                case GuiaRemisionTipoTrasladoEnum.venta_entrega_terceros: break;
+                case GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa: break;
+                case GuiaRemisionTipoTrasladoEnum.consignacion: break;
+                case GuiaRemisionTipoTrasladoEnum.devolucion: break;
+                case GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados: break;
+                case GuiaRemisionTipoTrasladoEnum.importacion: break;
+                case GuiaRemisionTipoTrasladoEnum.exportacion: break;
+                case GuiaRemisionTipoTrasladoEnum.otros: break;
+                case GuiaRemisionTipoTrasladoEnum.venta_sujeta_confirmacion_comprador: break;
+                case GuiaRemisionTipoTrasladoEnum.traslado_bienes_transformacion: break;
+                case GuiaRemisionTipoTrasladoEnum.traslado_emisor_itinerante_CP: break;
+                case GuiaRemisionTipoTrasladoEnum.traslado_mercancia_extranjera: break;
+                default: this.ctrlRuc.disable(); break;
+            }
+
+        }
+
         this.ctrlSearch.valueChanges.subscribe((val) => {
             this.loadData();
         });

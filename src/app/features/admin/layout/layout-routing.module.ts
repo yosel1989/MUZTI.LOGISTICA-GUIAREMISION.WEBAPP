@@ -32,6 +32,10 @@ const routes: Routes = [
         loadComponent: () => import('@features/guia-remision/pages/guia-remision-crear/guia-remision-crear').then(m => m.GuiaRemisionCrearComponent)
       },
       {
+        path: 'administracion/guia-remision/editar/:uuid',
+        loadComponent: () => import('@features/guia-remision/pages/guia-remision-editar/guia-remision-editar').then(m => m.GuiaRemisionEditarComponent)
+      },
+      {
         path: 'administracion/transportista',
         loadComponent: () => import('@features/transportista/pages/page-transportista-principal/page-transportista-principal').then(m => m.PageTransportistaPrincipalComponent)
       },

@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
@@ -30,7 +30,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
 import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
-import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
@@ -40,7 +40,7 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 import { AlertService } from 'app/core/services/alert.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
 import { DestinatarioDto } from '@features/destinatario/models/destinatario';
 import { DividerModule } from 'primeng/divider';
@@ -49,6 +49,8 @@ import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/co
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface Type {
     name: string;
@@ -56,9 +58,9 @@ interface Type {
 }
 
 @Component({
-  selector: 'page-guia-remision-crear',
-  templateUrl: './guia-remision-crear.html',
-  styleUrl: './guia-remision-crear.scss',
+  selector: 'page-guia-remision-editar',
+  templateUrl: './guia-remision-editar.html',
+  styleUrl: './guia-remision-editar.scss',
   imports: [
     CommonModule,
     SelectModule,
@@ -98,7 +100,11 @@ interface Type {
   animations: [fadeDownAnimation]
 })
 
-export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
+export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDestroy{
+
+    private route = inject(ActivatedRoute);
+    private guiaRemisionApiService = inject(GuiaRemisionApiService);
+    guiaRemisionUuid!: string;
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
@@ -130,7 +136,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     modalRef: any | undefined;
     private subs = new Subscription();
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/administracion/guia-remision",}, { label: 'Nuevo', labelClass: 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/administracion/guia-remision",}, { label: 'Editar', labelClass: 'text-[12px]!' }];
 
     tabRemitenteDestinatario = new BehaviorSubject<number>(0);
     tabRemitenteDestinatario$ = this.tabRemitenteDestinatario.asObservable();
@@ -243,6 +249,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngOnInit(): void{
+        this.guiaRemisionUuid = this.route.snapshot.paramMap.get('uuid')!;
+        this.loadData();
     }
 
     ngAfterViewInit(): void{
@@ -876,6 +884,25 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             return null;
         };
+    }
+
+    // Data
+
+    loadData(): void{
+        this.guiaRemisionApiService.buscarPorUuid(this.guiaRemisionUuid).subscribe({
+            next: (value: GuiaRemisionDto) =>  {
+                console.log('guia remision', value);
+            },
+            error: (err: HttpErrorResponse) => {
+                this.alertService.showToast({
+                    title: err.error.detalle,
+                    icon: 'error',
+                    timer: 4000,
+                    showCloseButton: true,
+                    timerProgressBar: true
+                });
+            },
+        });
     }
 
 }

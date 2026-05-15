@@ -359,18 +359,19 @@
                                                 </div>
                                                 
                                                     <div class="w-12.5 text-end">
-                                                        
+
                                                             <p-button 
-                                                            pTooltip="Quitar vehiculo" 
-                                                            tooltipStyleClass="text-[10px]! " 
-                                                            tooltipPosition="left" 
-                                                            class="text-xs! w-6! h-6!" 
-                                                            size="small" 
-                                                            icon="pi pi-times font-semibold!" 
-                                                            styleClass="w-6! h-6!" 
-                                                            (click)="evtRemoveVehiculo($index)" 
-                                                            rounded="true" 
-                                                            severity="primary"/>
+                                                                [outlined]="true"
+                                                                pTooltip="Quitar vehiculo" 
+                                                                tooltipPosition="left" 
+                                                                tooltipStyleClass="text-[10px]!" 
+                                                                class="text-xs! ml-auto" 
+                                                                size="small" 
+                                                                icon="pi pi-times text-xs! font-semibold!" 
+                                                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                                                (click)="evtRemoveVehiculo($index)"  
+                                                                rounded="true" 
+                                                            />
                                                         
                                                     </div>
                                                 
@@ -511,16 +512,16 @@
                                                     <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                                                         
                                                             <p-button 
+                                                                [outlined]="true"
                                                                 pTooltip="Quitar conductor" 
-                                                                tooltipStyleClass="text-[10px]! " 
                                                                 tooltipPosition="left" 
-                                                                class="text-xs! w-6! h-6!" 
+                                                                tooltipStyleClass="text-[10px]!" 
+                                                                class="text-xs! ml-auto" 
                                                                 size="small" 
-                                                                icon="pi pi-times font-semibold!" 
-                                                                styleClass="w-6! h-6!" 
-                                                                (click)="evtRemoveCoductor($index)" 
+                                                                icon="pi pi-times text-xs! font-semibold!" 
+                                                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                                                (click)="evtRemoveCoductor($index)"  
                                                                 rounded="true" 
-                                                                severity="primary" 
                                                             />
                                                         
                                                     </div>

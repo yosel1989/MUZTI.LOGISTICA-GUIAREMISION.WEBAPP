@@ -49,7 +49,7 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
 
   loadPdf(): void{
     this.loading.next(true);
-    this.api.obtenerPdfByTicket(this.ticket).subscribe(
+    this.api.obtenerPdf(this.data.numero_documento_remitente, this.data.tipo_guia, this.data.numero_guia).subscribe(
       (resp: { blob: Blob; filename?: string }) => {
         const blobUrl = URL.createObjectURL(resp.blob);
         this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);

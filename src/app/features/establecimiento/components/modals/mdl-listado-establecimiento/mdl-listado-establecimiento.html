@@ -2,7 +2,7 @@
 <div class="grid grid-cols-3 gap-4">
     <div class="">
         @if(ldEmpresas()){
-            <p-skeleton class="h-[30px]!"></p-skeleton>
+            <p-skeleton class="h-7.5!"></p-skeleton>
         }@else {
             <p-select 
                 panelStyleClass="text-[.875rem]!"
@@ -17,9 +17,8 @@
                 placeholder="--SELECCIONAR--"
                 (onChange)="evtChangeEmpresa()"
                 appendTo="body"
-            ></p-select>  
+            ></p-select>
         }
-             
     </div>
     <div class="">
         <p-iconfield>
