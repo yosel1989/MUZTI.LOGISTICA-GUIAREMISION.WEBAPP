@@ -18,7 +18,11 @@
         selectionMode="single"
         [tableStyle]="{ 'min-width': '100px' }"
         [scrollable]="true"
-        [showLoader]="false"
+        [showLoader]="true"
+        [loading]="ldSelected() || ldDataById()"
+
+        [metaKeySelection]="true"
+        dataKey="id"
     
         [lazy]="true"
         [rowHover]="true"
@@ -47,7 +51,7 @@
                         }
                     </tr>
                 }@else {
-                    <tr [pSelectableRow]="rowData" >
+                    <tr [pSelectableRow]="rowData" (dblclick)="evtSelect()">
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){
@@ -74,6 +78,6 @@
 
 <div class="flex gap-2 justify-end pt-6">
     <p-button (click)="evtOnClose()" size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
-    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldSelected()" [disabled]="!selected" size="small" [label]="!ldSelected() ? 'Seleccionar' : ''" severity="primary"></p-button>
+    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldDataById()" [disabled]="!selected" size="small" [label]="!ldSelected() ? 'Seleccionar' : ''" severity="primary"></p-button>
 </div>
 

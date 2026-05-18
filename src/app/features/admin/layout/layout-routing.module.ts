@@ -58,6 +58,11 @@ const routes: Routes = [
           {
             path: 'estados',
             loadComponent: () => import('@features/guia-remision-estado/pages/page-guia-remision-estado-principal/page-guia-remision-estado-principal').then(m => m.PageGuiaRemisionEstadoPrincipalComponent)
+          },
+          {
+            path: '',
+            redirectTo: 'perfiles',
+            pathMatch: 'full'
           }
         ]
       }

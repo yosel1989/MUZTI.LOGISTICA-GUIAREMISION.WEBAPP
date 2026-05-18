@@ -10,7 +10,7 @@
             [outlined]="true"
             severity="secondary"
             pTooltip="Anterior"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -22,7 +22,7 @@
             severity="secondary" 
             [outlined]="true"
             pTooltip="Actualizar" 
-            tooltipPosition="bottom" 
+            tooltipPosition="top" 
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -35,7 +35,7 @@
             [outlined]="true"
             severity="secondary"
             pTooltip="Siguiente"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -50,7 +50,7 @@
             severity="info" 
             [outlined]="true"
             pTooltip="Emitir Nueva Guía" 
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipStyleClass="text-xs! text-center"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -58,6 +58,22 @@
         />
 
         @if(selected){
+            <p-button 
+                icon="pi pi-chevron-down text-[13px]!"  
+                size="small" 
+                severity="info" 
+                [outlined]="true"
+                pTooltip="Emitir Nueva Guía" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs! text-center"
+                placeholder="Top"
+                styleClass="h-9!"
+                label="Acciones"
+                iconPos="right"
+                (click)="evtShowMenuActions($event, menuActions)"
+            />
+
+            <!--
             <p-button 
                 icon="pi pi-send text-green-500! text-[13px]!"
                 size="small"
@@ -143,7 +159,7 @@
                     styleClass="w-9! h-9!"
                     (click)="evtOnShowPdf()"
                 />
-            }
+            }-->
         }
            
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
@@ -154,7 +170,7 @@
             [outlined]="true"
             severity="secondary"
             pTooltip="Descargar"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -169,7 +185,7 @@
             [outlined]="true"
             severity="secondary"
             pTooltip="Arrastrar"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipStyleClass="text-xs!"
             placeholder="Top"
             styleClass="w-9! h-9!"
@@ -520,6 +536,8 @@
 
 <p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
 
+<p-menu #menuActions [model]="(items$ | async) ?? []" [popup]="true" target="body" appendTo="body" styleClass="text-[12px]!"></p-menu>
+
 <div class="card flex justify-center">
     <p-confirmdialog appendTo="body" [closable]="false">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
@@ -587,8 +605,8 @@
                         </div>
                         <div class="w-full">
                             <p class="font-semibold group-hover:text-primary-500! mb-2">{{ h.motivo }}</p>
-                            <p class="text-xs! text-gray-500 font-semibold bg-gray-100 px-3 rounded-md py-1 inline-block! w-auto! mb-2 group-hover:text-primary-500! group-hover:bg-primary-100!">Contabilidad</p>
-                            <p class="text-xs! text-gray-500">{{ h.fecha_registro | date: "dd/MM/yyyy HH:mm:ss a" }}  |  {{ h.usuario_registro_nombre }}</p>
+                            <p class="text-xs! text-gray-500 font-semibold bg-gray-100 px-3 rounded-md py-1 inline-block! w-auto! mb-2 group-hover:text-primary-500! group-hover:bg-primary-100!">{{ h.area }}</p>
+                            <p class="text-xs! text-gray-500">{{ h.fecha_registro | date: "dd/MM/yyyy HH:mm:ss a" }}  |  <span class="text-gray-800!">{{ h.usuario_registro_nombre }}</span></p>
                             @if(h.descripcion){
                                 <p class="text-sm! text-gray-700 mt-2 text-justify">{{h.descripcion}}</p>
                             }

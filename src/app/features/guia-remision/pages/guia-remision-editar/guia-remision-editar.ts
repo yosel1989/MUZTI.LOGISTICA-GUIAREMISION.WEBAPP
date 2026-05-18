@@ -330,7 +330,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
             destinatario_id: this.f.destinatario_id.value,
 
             proveedor: (!this.mostrarProveedor) ? null : {
-                proveedor_id: this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
+                id: this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
                 tipo_documento: this.tabDatosEnvioProveedor?.data.proveedor.tipo_documento_proveedor,
                 numero_documento: this.tabDatosEnvioProveedor?.data.proveedor.numero_documento_proveedor,
                 razon_social: this.tabDatosEnvioProveedor?.data.proveedor.nombre_rsocial_proveedor,

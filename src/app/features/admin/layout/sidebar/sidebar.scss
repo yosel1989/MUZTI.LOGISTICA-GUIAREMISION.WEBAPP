@@ -212,7 +212,7 @@ body.collapsed :host ::ng-deep{
   display: none;
 }
 /* Responsive media query code for small screens */
-@media (max-width: 768px) {
+@media (max-width: 991px) {
   .sidebar-menu-button {
     position: fixed;
     left: 20px;
@@ -227,6 +227,13 @@ body.collapsed :host ::ng-deep{
 
   .nav-link{
     pointer-events: all;
+  }
+
+
+  body:not(.collapsed) :host ::ng-deep{
+    .sidebar {
+      width: 0;
+    }
   }
 }
 

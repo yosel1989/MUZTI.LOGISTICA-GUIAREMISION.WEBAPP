@@ -53,6 +53,7 @@ import { GuiaRemisionHistorialApiService } from '@features/guia-remision/service
 import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/guia-remision-historial.model';
 import { TextareaModule } from 'primeng/textarea';
 import { Router } from '@angular/router';
+import { Menu, MenuModule } from 'primeng/menu';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -80,7 +81,8 @@ import { Router } from '@angular/router';
     ReactiveFormsModule,
     DragScrollDirective,
     AvatarModule,
-    TextareaModule
+    TextareaModule,
+    MenuModule
   ],
   providers: [DialogService, ConfirmationService],
 })
@@ -173,6 +175,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
         { field: 'estado', header: 'Estado', sort: false, sticky: false, className: 'text-center!' },
         { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false, className: 'text-center!' },
+        { field: 'area', header: 'Area', sort: false, sticky: false },
         { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
         { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
         { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
@@ -521,6 +524,11 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         }
       }
     ];
+  }
+
+  evtShowMenuActions(event: any, menu: Menu): void{
+    const target = event.currentTarget as HTMLElement;
+    menu?.show({ currentTarget: target });
   }
 
   // handlers

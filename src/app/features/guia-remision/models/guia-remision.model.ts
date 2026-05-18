@@ -67,7 +67,7 @@ export interface GR_DestinatarioRequestDto {
 }
 
 export interface GR_ProveedorRequestDto {
-  proveedor_id: number;
+  id: number;
   tipo_documento: string;
   numero_documento: string;
   razon_social: string;

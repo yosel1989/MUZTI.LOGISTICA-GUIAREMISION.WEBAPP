@@ -13,7 +13,7 @@
         </p-card>
 
         <p-card>
-            <div class="p-3! grid grid-cols-3 gap-6">
+            <div class="p-3! grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="col-span-2 flex flex-col gap-3">
 
                     <div class="grid grid-cols-2 gap-x-3">
@@ -79,7 +79,7 @@
                                     </div>
 
                                     <div>
-                                        <div class="grid grid-cols-2 gap-y-3 gap-x-3">
+                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-3">
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
 
@@ -126,7 +126,7 @@
                                                 }
                                             </div>
                                             @if(f.tipo_documento_remitente.value === 'RUC'){
-                                                <div class="flex flex-col col-span-2">
+                                                <div class="flex flex-col lg:col-span-2">
                                                     <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
                                                     <input 
                                                     formControlName="razon_social_remitente" 
@@ -145,7 +145,7 @@
                                                 </div>
                                             }
                                             @else{
-                                                <div class="flex flex-col col-span-2">
+                                                <div class="flex flex-col lg:col-span-2">
                                                     <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombres y Apellidos *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
                                                     <input 
                                                     formControlName="nombres_apellidos_remitente" 
@@ -176,7 +176,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="grid grid-cols-3 gap-x-3 gap-y-4">
+                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-3 gap-y-4">
                                         <div>
                                             <label class="text-[11px]! h-4.5! text-gray-500">Departamento<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
                                             <app-select-departamento 
@@ -263,7 +263,7 @@
                                     </div>
 
                                     <div>
-                                        <div class="grid grid-cols-2 gap-y-3 gap-x-3">
+                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-3">
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Tipo de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                 <app-select-tipo-documento 
@@ -311,7 +311,7 @@
                                                 }
                                             </div>
                                             @if(f.tipo_documento_destinatario.value === 'RUC'){
-                                                <div class="flex flex-col col-span-2">
+                                                <div class="flex flex-col lg:col-span-2">
                                                     <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                     <input 
                                                         formControlName="razon_social_destinatario" 
@@ -330,7 +330,7 @@
                                                 </div>
                                             }
                                             @else{
-                                                <div class="flex flex-col col-span-2">
+                                                <div class="flex flex-col lg:col-span-2">
                                                     <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombres y Apellidos*</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                     <input 
                                                     formControlName="nombres_apellidos_destinatario" 
@@ -348,7 +348,7 @@
                                                 </div>
                                             }
 
-                                            <div class="flex flex-col md:col-span-2">
+                                            <div class="flex flex-col lg:col-span-2">
                                                 <label class="text-[11px]! h-4.5! text-gray-500">Dirección<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                 <input 
                                                 formControlName="direccion_destinatario"
@@ -359,7 +359,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="grid grid-cols-3 gap-x-3 gap-y-4">
+                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-3 gap-y-4">
                                         <div>
                                             <label class="text-[11px]! h-4.5! text-gray-500">Departamento<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                             <app-select-departamento 

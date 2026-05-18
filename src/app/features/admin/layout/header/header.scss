@@ -12,3 +12,9 @@
 body.collapsed :host{
     padding-left: 85px; 
 }
+
+@media (max-width: 991px) {
+    body:not(.collapsed) :host{
+        padding-left: 0 !important;
+    }
+}

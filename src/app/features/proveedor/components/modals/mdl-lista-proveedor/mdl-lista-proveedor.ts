@@ -48,6 +48,9 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
   cols: TableColumn[] = [];
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
+  ldDataById = signal<boolean>(false);
+
+  sb = new Subscription();
   sbData: Subscription | undefined;
   search = new FormControl(null);
 
@@ -78,10 +81,12 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
 
   ngOnDestroy(): void {
     this.sbData?.unsubscribe();
+    this.sb.unsubscribe();
   }
 
   evtSelect(): void{
-    this.getDataById();
+    this.ldSelected.set(true);
+    this.loadDataById();
   }
 
   // Data
@@ -120,15 +125,16 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
   }
 
 
-  getDataById(): void{
-    this.ldSelected.set(true);
-    this.sbData = this.api.obtenerPorId(this.selected!.id)
+  loadDataById(): void{
+    this.ldDataById.set(true);
+    const s = this.api.obtenerPorId(this.selected!.id)
     .pipe(finalize(() => { 
-        this.ldData.set(false);
+        this.ldDataById.set(false);
         this.ldSelected.set(false);
      }))
     .subscribe({
       next: (value: ProveedorDto) => {
+        console.log('proveedor seleccionado', value);
         this.OnSelect.emit(value);
       },
       error: (err: any) => {
@@ -146,6 +152,7 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
         });
       }
     });
+    this.sb.add(s);
   }
 
   // events

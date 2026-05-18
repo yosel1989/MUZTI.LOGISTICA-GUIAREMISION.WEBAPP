@@ -6,4 +6,5 @@ export interface GuiaRemisionHistorialListDTO {
   fecha_registro: Date;
   usuario_registro: string;
   usuario_registro_nombre: string;
+  area: string;
 }
