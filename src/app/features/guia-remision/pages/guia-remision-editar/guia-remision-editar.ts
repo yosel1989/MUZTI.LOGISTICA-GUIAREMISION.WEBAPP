@@ -51,6 +51,7 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProveedorDto } from '@features/proveedor/models/proveedor';
 
 interface Type {
     name: string;
@@ -149,6 +150,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     empresa = signal<EmpresaToSelectDto | null>(null);
     remitente = signal<EstablecimientoDTO | null>(null);
     destinatario = signal<EstablecimientoDTO | null>(null);
+    proveedor = signal<ProveedorDto | null>(null);
 
     constructor(
         private formBuilder: FormBuilder,
@@ -890,8 +892,16 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
     loadData(): void{
         this.guiaRemisionApiService.buscarPorUuid(this.guiaRemisionUuid).subscribe({
-            next: (value: GuiaRemisionDto) =>  {
-                console.log('guia remision', value);
+            next: (value: any) =>  {
+                this.f.empresa_id.setValue(value.ruc);
+                this.selectTipoGuiaComponent?.frmCtrlTipoGuia.setValue(value.tipo_guia);
+                this.formGroup.patchValue({
+                    empresa_id: value.ruc,
+                    motivo_traslado: value.tipo_traslado
+                });
+                this.remitente.set(value.remitente);
+                this.destinatario.set(value.destinatario);
+                this.proveedor.set(value.proveedor);
             },
             error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({

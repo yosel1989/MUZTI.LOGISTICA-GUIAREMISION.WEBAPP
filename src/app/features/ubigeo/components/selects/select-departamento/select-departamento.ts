@@ -27,6 +27,7 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     @Input() placeholderLoading: string = 'Cargando...';
     @Input() inputId: string = '';
     @Input() invalid: boolean = false;
+    @Input() readonly: boolean = false;
     @Input() control!: FormControl;
     @Input() skeleton: boolean = false;
 

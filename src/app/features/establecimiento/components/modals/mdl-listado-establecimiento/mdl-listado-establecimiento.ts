@@ -46,6 +46,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     @Output() OnSelected: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
     @Input() motivoTraslado: GuiaRemisionTipoTrasladoEnum | undefined;
+    @Input() remitente: EstablecimientoDTO | undefined;
 
     empresas: EmpresaToSelectDto[] = [];
     ldEmpresas = signal(false);
@@ -69,14 +70,21 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     placeholder = 'Seleccionar ...';
 
     ngOnInit(): void {
-        this.ctrlRuc.patchValue(this.ruc);
+
+        if(this.tipo === 'remitente'){
+            this.ctrlRuc.setValue(this.ruc);
+        }
 
         if(this.tipo === 'destinatario'){
+
             switch(this.motivoTraslado){
                 case GuiaRemisionTipoTrasladoEnum.venta: 
+                 
                     this.ctrlRuc.enable();
                     break;
-                case GuiaRemisionTipoTrasladoEnum.compra: break;
+                case GuiaRemisionTipoTrasladoEnum.compra: 
+                    this.ctrlRuc.setValue(this.ruc);
+                    break;
                 case GuiaRemisionTipoTrasladoEnum.venta_entrega_terceros: break;
                 case GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa: break;
                 case GuiaRemisionTipoTrasladoEnum.consignacion: break;
@@ -135,7 +143,10 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.ldEmpresas.set(true);
         const s = this.empresaApiService.loadAllToSelect().subscribe({
             next: (value: EmpresaToSelectDto[]) => {
-                this.empresas = value;
+                this.empresas = value.map(x => ({
+                    ...x,
+                    disabled: (this.motivoTraslado === GuiaRemisionTipoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
+                }));
                 this.ldEmpresas.set(false);
             },
             error: (e: HttpErrorResponse) => {

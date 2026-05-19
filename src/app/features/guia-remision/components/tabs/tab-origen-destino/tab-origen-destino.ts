@@ -69,17 +69,17 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         private alertService: AlertService
     ) {
         this.formGroupOrigen = this.formBuilder.group({
-            idDepartamento : new FormControl({value: null, disabled: true}, Validators.required),
-            idProvincia : new FormControl({value: null, disabled: true}, Validators.required),
-            idDistrito : new FormControl({value: null, disabled: true}, Validators.required),
-            direccion : new FormControl({value: null, disabled: true}, Validators.required),
+            idDepartamento : new FormControl({value: null, disabled: false}, Validators.required),
+            idProvincia : new FormControl({value: null, disabled: false}, Validators.required),
+            idDistrito : new FormControl({value: null, disabled: false}, Validators.required),
+            direccion : new FormControl({value: null, disabled: false}, Validators.required),
             pais : new FormControl('PE', Validators.required)
         });
         this.formGroupDestino = this.formBuilder.group({
-            idDepartamento : new FormControl({value: null, disabled: true}, Validators.required),
-            idProvincia : new FormControl({value: null, disabled: true}, Validators.required),
-            idDistrito : new FormControl({value: null, disabled: true}, Validators.required),
-            direccion : new FormControl({value: null, disabled: true}, Validators.required),
+            idDepartamento : new FormControl({value: null, disabled: false}, Validators.required),
+            idProvincia : new FormControl({value: null, disabled: false}, Validators.required),
+            idDistrito : new FormControl({value: null, disabled: false}, Validators.required),
+            direccion : new FormControl({value: null, disabled: false}, Validators.required),
             pais : new FormControl('PE', Validators.required)
         });
 
@@ -144,7 +144,7 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         }
     }
 
-    evtOnSubmit(): void {
+    evtOnSubmit(): boolean {
         this.submitted = true;
         if(this.formGroupOrigen.invalid){
             this.alertService.showToast({
@@ -155,7 +155,8 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
                 timerProgressBar: true,
                 timer: 4000
             });
-            return;
+            console.log('invalid form origen', this.formGroupOrigen);
+            return false;
         }
 
         if(this.formGroupDestino.invalid){
@@ -167,13 +168,17 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
                 timerProgressBar: true,
                 timer: 4000
             });
+            console.log('invalid form destino', this.formGroupDestino);
+            return false;
         }
+
+        return true;
     }
 
     evtOnReset(): void {
         this.submitted = false;
-        this.formGroupOrigen.reset();
-        this.formGroupDestino.reset();
+        this.resetOrigenForm();
+        this.resetDestinoForm();
     }
 
     // handlers

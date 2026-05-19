@@ -153,6 +153,7 @@ export interface GR_EmitirGuiaRemisionResponseDto {
 export interface GuiaRemisionDto {
   id: number;
   uuid: string;
+  ruc: string;
   entidad_remitente: string;
   numero_documento_remitente: string; 
   numero_guia: string;
@@ -183,4 +184,20 @@ export interface GuiaRemisionDto {
   loading_update: boolean;
   area: string | null;
   area_id: string | null;
+}
+
+
+
+export interface GuiaRemisionDetalleDto{
+  id: number;
+  guia_remision_id: number;
+  cantidad: number;
+  codigo_um: string | null;
+  descripcion_um: string;
+  codigo: string | null;
+  descripcion: string;
+  codigo_sunat: string | null;
+  gtin: string | null;
+  codigo_subnacional: string | null;
+  bien_normalizado: boolean;
 }

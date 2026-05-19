@@ -30,6 +30,7 @@
                                 fluid 
                                 pInputText 
                                 formControlName="direccion" 
+                                [readonly]="true"
                                 [class]="f_origen.direccion.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
                                 [invalid]="f_origen.direccion?.invalid && (f_origen.direccion?.touched || submitted)" />
                                 @if (f_origen.direccion?.invalid && (f_origen.direccion?.touched || submitted)) {
@@ -47,7 +48,8 @@
                                 classLabel="text-[11px]! text-gray-500 font-semibold" 
                                 [invalid]="f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)"
                                 label="Departamento *"
-                                class="cursor-not-allowed"
+                                class="cursor-not-allowed! bg-gray-100!"
+                                [readonly]="true"
                             ></app-select-departamento>
                             @if (f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
@@ -63,6 +65,7 @@
                                 classLabel="text-[11px]! text-gray-500 font-semibold"
                                 label="Provincia *"
                                 class="cursor-not-allowed"
+                                [readonly]="true"
                             ></app-select-provincia>
                             @if (f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
@@ -78,12 +81,14 @@
                                 [invalid]="f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)" 
                                 classLabel="text-[11px]! text-gray-500 font-semibold" 
                                 class="cursor-not-allowed"
+                                [readonly]="true"
                             ></app-select-distrito>
                             @if (f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
                             }
                         </div>
                     </div>
+                    <div class="text-xs! text-gray-500 mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del remitente seleccionado</div>
                 </div>
             </p-tabpanel>
             <p-tabpanel value="1">
@@ -92,12 +97,14 @@
                         <div class="col-span-4 lg:col-span-3!">
                             <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
                             <input 
-                            formControlName="direccion" 
-                            pSize="small" 
-                            fluid 
-                            pInputText 
-                            [class]="f_destino.direccion.invalid && submitted ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                            [invalid]="f_destino.direccion.invalid && (f_destino.direccion.touched || submitted)" />
+                                formControlName="direccion" 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                [class]="f_destino.direccion.invalid && submitted ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_destino.direccion.invalid && (f_destino.direccion.touched || submitted)" 
+                                [readonly]="true"
+                            />
                             @if (f_destino.direccion.invalid && (f_destino.direccion.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Dirección es requerido.</span></p-message>
                             }
@@ -114,6 +121,7 @@
                                 [invalid]="f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)"
                                 label="Departamento *"
                                 class="cursor-not-allowed"
+                                [readonly]="true"
                             ></app-select-departamento>
                             @if (f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
@@ -129,6 +137,7 @@
                                 classLabel="text-[11px]! text-gray-500 font-semibold"
                                 label="Provincia *"
                                 class="cursor-not-allowed"
+                                [readonly]="true"
                             ></app-select-provincia>
                             @if (f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
@@ -144,12 +153,15 @@
                                 classLabel="text-[11px]! text-gray-500 font-semibold"
                                 label="Distrito *"
                                 class="cursor-not-allowed"
+                                [readonly]="true"
                             ></app-select-distrito>
                             @if (f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
                             }
                         </div>
                     </div>
+
+                    <div class="text-xs! text-gray-500 mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del destinatario seleccionado</div>
                 </div>
             </p-tabpanel>
         </p-tabpanels>

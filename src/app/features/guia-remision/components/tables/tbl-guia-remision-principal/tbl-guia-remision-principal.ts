@@ -367,7 +367,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.loadData();
   }
 
-  evtOnRowSelect(event: any) {
+  evtOnRowSelect(event: any, menuActions: Menu) {
+    menuActions.hide();
     this.selected = event.data;
     this.setSelected(event.data);
   }
@@ -568,8 +569,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   handleAcceptAnularGuia(): void{
     const sub = this.api.anular(this.selected!.id, this.ctrlDescripcion.value)
-    .pipe(finalize(() => { 
-      this.cd.detectChanges();
+    .pipe(finalize(() => {
       this.showInputAlert.set(false);
     }))
     .subscribe({
@@ -591,6 +591,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         }
 
         this.ctrlDescripcion.setValue(null);
+        this.cd.detectChanges();
       },
       error: (err: HttpErrorResponse) => {
 
@@ -607,6 +608,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           }
         });
         this.selected!.loading_update = false;
+        this.cd.detectChanges();
       }
     });
     this.subs.add(sub);
@@ -615,7 +617,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   handleAcceptRechazarGuia(): void{
     const sub = this.api.rechazar(this.selected!.id, this.ctrlDescripcion.value)
     .pipe(finalize(() => { 
-      this.cd.detectChanges();
       this.showInputAlert.set(false);
     }))
     .subscribe({
@@ -637,6 +638,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         }
 
         this.ctrlDescripcion.setValue(null);
+        this.cd.detectChanges();
       },
       error: (err: HttpErrorResponse) => {
 
@@ -653,6 +655,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           }
         });
         this.selected!.loading_update = false;
+        this.cd.detectChanges();
       }
     });
     this.subs.add(sub);
@@ -694,7 +697,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   handleAcceptConfirmarGuia(): void{
     const sub = this.api.confirmar(this.selected!.id)
     .pipe(finalize(() => { 
-      this.cd.detectChanges();
       this.showInputAlert.set(false);
     }))
     .subscribe({
@@ -715,6 +717,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.selected = res;
         }
         this.ctrlDescripcion.setValue(null);
+        this.cd.detectChanges();
       },
       error: (err: HttpErrorResponse) => {
 
@@ -731,6 +734,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           }
         });
         this.selected!.loading_update = false;
+        this.cd.detectChanges();
       }
     });
     this.subs.add(sub);

@@ -404,21 +404,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     // Events
     evtOnSubmit(): void{
 
-        console.log('envio_proveedor_invalid', this.tabDatosEnvioProveedor?.invalid);
-
-        this.tabDatosEnvioProveedor?.evtOnSubmit();
-        this.tabOrigenDestino?.evtOnSubmit();
-        this.sectionProductoListadoComponent?.evtOnSubmit();
-
-        if(
-            this.tabDatosEnvioProveedor?.invalid ||
-            this.tabOrigenDestino?.invalid ||
-            this.sectionProductoListadoComponent?.invalid
-        ){
-            return;
-        }
-
-        //console.log('request', this.request);
+        if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return;
+        if(!this.tabOrigenDestino?.evtOnSubmit()) return;
+        if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return;
 
         this.loadingSubmit.next(true);
         this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente?.selected()?.ruc! ).subscribe({
@@ -573,7 +561,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             inputValues: {
                 ruc: this.empresa()?.ruc,
                 tipo: to,
-                motivoTraslado: this.f.motivo_traslado.value
+                motivoTraslado: this.f.motivo_traslado.value,
+                remitente: this.remitente()
             }
         });
 

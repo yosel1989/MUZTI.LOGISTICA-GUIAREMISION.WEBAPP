@@ -1,4 +1,4 @@
-@if(!(loading | async) && pdfUrl){
+@if(!loading() || pdfUrl){
     <embed [src]="urlBlob! | safeUrl" type="application/pdf" class="w-full h-full">
 }@else {
     <div class="relative h-full w-full bg-gray-700">

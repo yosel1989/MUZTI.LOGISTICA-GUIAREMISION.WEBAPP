@@ -9,17 +9,22 @@ export class OnlyUpperDirective {
 
   @HostListener('input', ['$event'])
   onInput(event: any) {
-    let valor: string = event.target.value;
+    const input = event.target as HTMLInputElement;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
 
-    // Convierte a mayúsculas
-    valor = valor.toUpperCase();
-
-    // Actualiza el input visual
-    event.target.value = valor;
+    let valor: string = input.value.toUpperCase();
 
     // Actualiza el FormControl asociado
     if (this.ngControl && this.ngControl.control) {
       this.ngControl.control.setValue(valor, { emitEvent: false });
     }
+
+    // Actualiza el input visual
+    input.value = valor;
+
+    // Restaura la posición del cursor
+    input.setSelectionRange(start, end);
   }
+
 }

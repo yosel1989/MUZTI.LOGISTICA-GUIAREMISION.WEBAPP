@@ -87,6 +87,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     private _remitente = signal<EstablecimientoDTO | null>(null);
     private _destinatario = signal<EstablecimientoDTO | null>(null);
+    private _proveedor = signal<ProveedorDto | null>(null);
     @Input() set remitente(value: EstablecimientoDTO | null) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
@@ -95,6 +96,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() set destinatario(value: EstablecimientoDTO | null) {
         if (this._destinatario() !== value) {
             this._destinatario.set(value);
+        }
+    }
+    @Input() set proveedor(value: ProveedorDto | null) {
+        if (this._proveedor() !== value) {
+            this._proveedor.set(value);
         }
     }
 
@@ -171,10 +177,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           tipo_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
           numero_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
           nombre_rsocial_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
-          direccion_proveedor: new FormControl({value: null, disabled: true}),
-          idDepartamento : new FormControl({value: null, disabled: true}),
-          idProvincia : new FormControl({value: null, disabled: true}),
-          idDistrito : new FormControl({value: null, disabled: true})
+          direccion_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
+          idDepartamento : new FormControl({value: null, disabled: true}, Validators.required),
+          idProvincia : new FormControl({value: null, disabled: true}, Validators.required),
+          idDistrito : new FormControl({value: null, disabled: true}, Validators.required)
         });
 
         this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
@@ -187,6 +193,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         effect(() => {
             const destinatario = this._destinatario();
             this.handlerValueDestinatario(destinatario);
+        });
+
+        effect(() => {
+            const proveedor = this._proveedor();
+            this.handlerValueProveedor(proveedor);
         });
     }
 
@@ -304,6 +315,32 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this.formDatosEnvio.invalid || this.formDatosProveedor.invalid;
     }
 
+    get isInvalid(): boolean{
+      if(this.formDatosEnvio.invalid){
+        this.alertService.showToast({
+          title: "Faltan datos por completar en Datos Envio",
+          icon: "error",
+          timer: 4000,
+          showCloseButton: true,
+          timerProgressBar: true
+        });
+        return true;
+      }
+
+      if(this.formDatosProveedor.invalid){
+        this.alertService.showToast({
+          title: "Faltan datos por completar en Proveedor",
+          icon: "error",
+          timer: 4000,
+          showCloseButton: true,
+          timerProgressBar: true
+        });
+        return true;
+      }
+
+      return false;
+    }
+
     ngOnInit(): void {
       this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
 
@@ -344,7 +381,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }
 
       if(changes['motivoTraslado']){
-        console.log('motivo-traslado-cambio', changes['motivoTraslado'].currentValue);
         this.evtOnChangeMotivoTraslado(changes['motivoTraslado'].currentValue);
       }
     }
@@ -540,6 +576,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     evtOnChangeMotivoTraslado(motivoTraslado: GuiaRemisionTipoTrasladoEnum): void{
 
+      console.log('Cambio el motivo de traslado', motivoTraslado);
+
       // Limpiar los campos antes de manejarlos
       this.formDatosProveedor = this.fb.group({
         proveedor_id: new FormControl(null),
@@ -551,7 +589,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         idProvincia : new FormControl(null),
         idDistrito : new FormControl(null)
       });
-      this.formDatosProveedor.disable();
       this.formDatosProveedor.markAsUntouched();
       this.cdr.markForCheck();
 
@@ -567,7 +604,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             idProvincia : new FormControl(null, Validators.required),
             idDistrito : new FormControl(null, Validators.required)
           });
-          this.formDatosProveedor.disable();
           this.formDatosProveedor.markAsUntouched();
           this.cdr.markForCheck();
           break;
@@ -577,7 +613,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           this.formDatosEnvio.get('tipo_documento_proveedor')?.clearValidators();
           this.formDatosEnvio.get('numero_documento_proveedor')?.clearValidators();
           this.formDatosEnvio.get('nombre_rsocial_proveedor')?.clearValidators();
-          this.formDatosProveedor.disable();
           break;
         default:
           break;
@@ -585,7 +620,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     }
 
-    evtOnSubmit(): void {
+    evtOnSubmit(): boolean {
+
+        console.log(this.formDatosProveedor);
+
         this.submitted = true;
         if(this.formDatosEnvio.invalid){
             this.alertService.showToast({
@@ -596,8 +634,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 timerProgressBar: true,
                 timer: 4000
             });
-            console.log('invalid form', this.formDatosEnvio);
-            return;
+            console.log('invalid form datos-envio', this.formDatosEnvio);
+            return false;
         }
 
         if(this.mostrarProveedor && this.formDatosProveedor.invalid){
@@ -609,9 +647,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 timerProgressBar: true,
                 timer: 4000
             });
-            console.log('invalid form', this.formDatosProveedor);
-            return;
+            console.log('invalid form datos-proveedor', this.formDatosProveedor);
+            return false;
         }
+
+        return true;
     }
 
     evtOnReset(): void {
@@ -740,25 +780,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaProveedorComponent) => {
             const sub2 = cmp?.OnSelect.subscribe(( c: ProveedorDto) => {
 
-                this.formDatosProveedor.patchValue({
-                  proveedor_id: c.id,
-                  tipo_documento_proveedor: c.tipo_documento,
-                  numero_documento_proveedor: c.numero_documento,
-                  nombre_rsocial_proveedor: c.razon_social,
-                  direccion_proveedor: c.direccion,
-                  idDepartamento : c.ubigeo_id?.substring(0,2)
-                });
-                this.provinciaProveedor!.valueEdit = c.ubigeo_id!.substring(0,4);
-                const subProvincia1 = this.provinciaProveedor?.loading.subscribe(res => {
-                    this.formDatosProveedor.get('idProvincia')?.setValue(c.ubigeo_id.substring(0,4));
-                });
-                this.distritoProveedor!.valueEdit = c.ubigeo_id;
-                const subDistrito1 = this.distritoProveedor?.loading.subscribe((res: any) => {
-                    this.formDatosProveedor.get('idDistrito')?.setValue(c.ubigeo_id);
-                });
-
-                subProvincia1?.unsubscribe();
-                subDistrito1?.unsubscribe();
+                this._proveedor.set(c);
 
                 this.modalRef?.close();
             });
@@ -830,5 +852,31 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
               ruc_establecimiento_destino: s.ruc
           });
         }
+    }
+
+    handlerValueProveedor(item: ProveedorDto | null): void{
+        if(!item){
+            return;
+        }
+
+        this.formDatosProveedor.patchValue({
+          proveedor_id: item.id,
+          tipo_documento_proveedor: item.tipo_documento,
+          numero_documento_proveedor: item.numero_documento,
+          nombre_rsocial_proveedor: item.razon_social,
+          direccion_proveedor: item.direccion,
+          idDepartamento : item.ubigeo_id?.substring(0,2)
+        });
+        this.provinciaProveedor!.valueEdit = item.ubigeo_id!.substring(0,4);
+        const subProvincia1 = this.provinciaProveedor?.loading.subscribe(res => {
+            this.formDatosProveedor.get('idProvincia')?.setValue(item.ubigeo_id.substring(0,4));
+        });
+        this.distritoProveedor!.valueEdit = item.ubigeo_id;
+        const subDistrito1 = this.distritoProveedor?.loading.subscribe((res: any) => {
+            this.formDatosProveedor.get('idDistrito')?.setValue(item.ubigeo_id);
+        });
+
+        subProvincia1?.unsubscribe();
+        subDistrito1?.unsubscribe();
     }
 }

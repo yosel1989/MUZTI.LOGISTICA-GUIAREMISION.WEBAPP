@@ -26,6 +26,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Input() placeholder: string = 'Seleccionar...';
     @Input() placeholderLoading: string = 'Cargando...';
     @Input() invalid: boolean = false;
+    @Input() readonly: boolean = false;
     @Input() control!: FormControl;
     @Input() valueEdit: string | null = null;
 

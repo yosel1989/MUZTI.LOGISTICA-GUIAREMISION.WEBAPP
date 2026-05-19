@@ -4,7 +4,10 @@ import {
   OnInit,
   AfterViewInit,
   ViewChild,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  signal,
+  Input,
+  effect
 } from '@angular/core';
 import {
   AbstractControl,
@@ -43,7 +46,7 @@ import { SubNationalCode } from 'app/features/items/models/sub-national-code';
 import { CODIGO_SUBNACIONAL_FAKE } from 'app/fake/items/data/subNationalCode';
 import { AlertService } from 'app/core/services/alert.service';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
-import { GR_ProductoRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_ProductoRequestDto, GuiaRemisionDetalleDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { CardModule } from 'primeng/card';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 
@@ -77,6 +80,14 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
   providers: [DialogService],
 })
 export class SectionProductoListadoComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private _detalle = signal<GuiaRemisionDetalleDto[]>([]);
+  @Input() set detalle(value: GuiaRemisionDetalleDto[]) {
+      if (this._detalle() !== value) {
+          this._detalle.set(value);
+      }
+  }
+
   ref: any | undefined;
 
   @ViewChild('menuUnidadMedida') menuUnidadMedida!: Menu;
@@ -107,6 +118,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   private subs = new Subscription();
 
   submitted = false;
+  
 
   constructor(
     private fb: FormBuilder,
@@ -117,6 +129,12 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     this.form = this.fb.group({
       items: this.fb.array([]),
       description: new FormControl(null),
+    });
+
+
+    effect(() => {
+        const detalle = this._detalle();
+        this.handlerValueDetalle(detalle);
     });
   }
 
@@ -158,7 +176,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   ngOnInit(): void {
     this.unitOfMeasures = unitofMeasures;
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
-    this.init(5);
+    this.handlerInit(5);
   }
 
   ngAfterViewInit(): void {}
@@ -170,8 +188,17 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   }
 
   // functions
-  newItem(): FormGroup {
-    return this.fb.group({
+  newItem(detalle: GuiaRemisionDetalleDto | null = null): FormGroup {
+    return detalle ? this.fb.group({
+      cantidad: [detalle.cantidad, Validators.required],
+      unidad: [detalle.codigo_um, Validators.required],
+      codigo: [detalle.codigo],
+      descripcion: [detalle.descripcion, Validators.required],
+      codigo_sunat: [detalle.codigo_sunat],
+      gtin: [detalle.gtin],
+      codigo_subnacional: [detalle.codigo_subnacional],
+      bien_normalizado: [detalle.bien_normalizado],
+    }) : this.fb.group({
       cantidad: [1, Validators.required],
       unidad: ['NIU', Validators.required],
       codigo: [null],
@@ -256,7 +283,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     this.items.removeAt(index);
   }
 
-  evtOnSubmit(): void {
+  evtOnSubmit(): boolean {
     this.submitted = true;
     if (this.form.invalid) {
       this.alertService.showToast({
@@ -267,7 +294,11 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
         timerProgressBar: true,
         timer: 4000,
       });
+      console.log('invalid form productos', this.form);
+      return false;
     }
+
+    return true;
   }
 
   evtShowList(): void {
@@ -284,6 +315,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       contentStyle: {
         padding: '0 !important',
       },
+
 
       appendTo: 'body',
     });
@@ -306,7 +338,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   // handlers
 
-  init(num_items: number): void{
+  handlerInit(num_items: number): void{
     let count = 0;
     while(count < num_items){
 
@@ -336,5 +368,39 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
       count++;
     }
+  }
+
+
+  handlerValueDetalle(s: GuiaRemisionDetalleDto[]): void{
+      if(!s.length){
+          //this.resetOrigenForm();
+          return;
+      }
+
+      s.forEach(element => {
+        const row = this.newItem(element);
+
+        row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => {
+          row.get('codigo_subnacional')?.setValue(null);
+          row.get('codigo_sunat')?.setValue(null);
+
+          if (value) {
+
+            row.get('codigo_subnacional')?.addValidators(Validators.required);
+            row.get('codigo_sunat')?.addValidators(Validators.required);
+          } else {
+
+            row.get('codigo_subnacional')?.clearValidators();
+            row.get('codigo_sunat')?.clearValidators();
+          }
+
+          row.get('codigo_subnacional')?.updateValueAndValidity();
+          row.get('codigo_sunat')?.updateValueAndValidity();
+
+          this.cdr.markForCheck();
+        });
+
+        this.items.push(row);
+      });
   }
 }

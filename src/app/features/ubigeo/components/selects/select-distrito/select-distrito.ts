@@ -26,6 +26,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() placeholderLoading: string = 'Cargando...';
     @Input() control!: FormControl;
     @Input() invalid: boolean = false;
+    @Input() readonly: boolean = false;
     @Input() inputId: string = '';
     @Input() valueEdit: string | null = null;
 

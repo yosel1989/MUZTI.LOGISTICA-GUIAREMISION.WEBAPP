@@ -282,7 +282,7 @@
         paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
 
         [contextMenu]="cm" 
-        (onContextMenuSelect)="evtOnRowSelect($event)"
+        (onContextMenuSelect)="evtOnRowSelect($event, menuActions)"
 
         metaKeySelection="true" 
         dataKey="id"
@@ -606,7 +606,7 @@
                         <div class="w-full">
                             <p class="font-semibold group-hover:text-primary-500! mb-2">{{ h.motivo }}</p>
                             <p class="text-xs! text-gray-500 font-semibold bg-gray-100 px-3 rounded-md py-1 inline-block! w-auto! mb-2 group-hover:text-primary-500! group-hover:bg-primary-100!">{{ h.area }}</p>
-                            <p class="text-xs! text-gray-500">{{ h.fecha_registro | date: "dd/MM/yyyy HH:mm:ss a" }}  |  <span class="text-gray-800!">{{ h.usuario_registro_nombre }}</span></p>
+                            <p class="text-xs! text-gray-500">{{ h.fecha_registro | date: "dd/MM/yyyy HH:mm:ss a" }}  |  <span class="text-gray-800! font-medium!">{{ h.usuario_registro }}</span>  |  <span class="text-gray-800! font-medium!">{{ h.usuario_registro_nombre }}</span></p>
                             @if(h.descripcion){
                                 <p class="text-sm! text-gray-700 mt-2 text-justify">{{h.descripcion}}</p>
                             }
