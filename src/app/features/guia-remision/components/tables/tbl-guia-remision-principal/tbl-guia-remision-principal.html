@@ -336,7 +336,7 @@
                 </tr>
             }
             @else{
-                <tr [pSelectableRow]="rowData" class="text-[12px]!" [pContextMenuRow]="rowData.__empty ? null : rowData">
+                <tr [pSelectableRow]="rowData" class="text-[12px]!" [class.cursor-grab!]="hands()" [pContextMenuRow]="rowData.__empty ? null : rowData" [class.p-datatable-contextmenu-row-selected]="selected === rowData">
                     @for (col of columns; let i = $index; track $index) {
                         @if(rowData.__empty) {
                             <td 
@@ -470,7 +470,7 @@
                                                 <span 
                                                     [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
                                                     tooltipPosition="top"
-                                                    tooltipStyleClass="text-xs!" 
+                                                    tooltipStyleClass="text-xs! text-center!" 
                                                     class="uppercase font-medium w-35 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2"
                                                     >
                                                     {{rowData[col.field]}}
@@ -480,7 +480,7 @@
                                                     class="uppercase font-medium w-35 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2"
                                                     [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
                                                     tooltipPosition="top"
-                                                    tooltipStyleClass="text-xs!"
+                                                    tooltipStyleClass="text-xs! text-center!"
                                                 >
                                                     {{rowData[col.field]}}
                                                 </span>

@@ -181,7 +181,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                       ],
                       [
                         {text: 'Motivo:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                        {text: this.data.tipo_traslado, border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5, color: '#adadad'}, 
+                        {text: this.data.motivo_traslado?.nombre ?? '', border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5, color: '#adadad'}, 
                         {text: 'Descripción:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
                         {text: '', border: [false, false, true, true], marginLeft:0, marginTop: 2, marginBottom: 5}
                       ]

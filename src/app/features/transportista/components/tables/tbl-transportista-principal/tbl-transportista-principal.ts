@@ -252,7 +252,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarTransportistaComponent,  {
-        width: '1000px',
+        width: '700px',
         closable: true,
         modal: true,
         position: 'top',
@@ -279,7 +279,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
     evtOnEdit(): void{
       this.ref = this.dialogService.open(MdlEditarTransportistaComponent,  {
-        width: '1000px',
+        width: '700px',
         closable: true,
         modal: true,
         position: 'top',

@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { GuiaRemisionTipoTrasladoEnum, TipoGuiaRemisionEnum } from "@features/guia-remision/enums/guia-remision.enum";
+import { TipoGuiaRemisionEnum } from "@features/guia-remision/enums/guia-remision.enum";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { PanelModule } from 'primeng/panel';
@@ -14,7 +14,6 @@ import { RemitenteApiService } from "@features/remitente/services/remitente-api.
 import { AlertService } from "app/core/services/alert.service";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
-import { SelectTipoTraslado } from "../../selects/select-motivo-traslado/select-motivo-traslado";
 import { FltDateComponent } from "app/core/components/filters/flt-date/flt-date";
 import { DestinatarioSugeridoDto } from "@features/destinatario/models/destinatario";
 import { DestinatarioApiService } from "@features/destinatario/services/destinatario-api.service";
@@ -24,6 +23,7 @@ import { NgIcon, provideIcons } from "@ng-icons/core";
 import { heroQuestionMarkCircleMini } from "@ng-icons/heroicons/mini";
 import { EmpresaApiService } from "@features/empresa/services/empresa-api.service";
 import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
+import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 
 
 @Component({
@@ -64,11 +64,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         { label: 'TRANSPORTISTA', value: TipoGuiaRemisionEnum.transportista }
     ];
 
-    tiposTraslado: SelectTipoTraslado[] = [ 
-        { label: 'VENTA', value: GuiaRemisionTipoTrasladoEnum.venta }, 
-        { label: 'COMPRA', value: GuiaRemisionTipoTrasladoEnum.compra },
-        { label: 'TRASLADO', value: GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa }, 
-    ];
+    tiposTraslado: SunatMotivoTrasladoDto[] = [];
 
     tiposTransporte: {label: string, value: string | null}[] = [ 
         { label: 'PUBLICO', value: 'PUBLICO' }, 

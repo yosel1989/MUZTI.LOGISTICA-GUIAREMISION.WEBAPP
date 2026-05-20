@@ -18,13 +18,29 @@
 
                     <div class="grid grid-cols-2 gap-x-3">
                         <div>
-                            <app-select-tipo-guia #selectTipoGuia classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-tipo-guia>
+                            <app-select-tipo-guia 
+                                #selectTipoGuia 
+                                classLabel="text-[11px]! text-gray-500 font-semibold"
+                            ></app-select-tipo-guia>
                         </div>
                     </div>
 
                     @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
                         <div>
-                            <app-select-motivo-traslado [control]="f.motivo_traslado" classLabel="text-[11px]! text-gray-500 font-semibold"></app-select-motivo-traslado>
+                            <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Motivo de traslado *</label>
+                            <app-select-motivo-traslado
+                                #selectMotivoTraslado
+                                [control]="f.motivo_traslado_id" 
+                                classLabel="text-[11px]! text-gray-500 font-semibold"
+                                [invalid]="f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())"
+                            ></app-select-motivo-traslado>
+                            @if (f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                    @if(f.motivo_traslado_id.errors?.['required']){
+                                        Este campo es requerido.
+                                    }
+                                </span></p-message>
+                            }
                         </div>
                     }
 
@@ -42,7 +58,12 @@
                                     'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 0,
                                     'bg-gray-50!': (tabRemitenteDestinatario$ | async) !== 0
                                 }"
-                            >Remitente</p-tab>
+                            >
+                                Remitente 
+                                @if((!remitente() && submitted()) ) {
+                                    <i class="fa-light fa-circle-exclamation"></i>
+                                }
+                            </p-tab>
                             <p-tab 
                                 value="1"
                                 class="rounded-t-xl! text-md! py-2!"
@@ -50,7 +71,12 @@
                                     'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 1 ,
                                     'bg-gray-50!': (tabRemitenteDestinatario$ | async) !== 1
                                 }"
-                            >Destinatario</p-tab>
+                            >
+                                Destinatario
+                                @if((!destinatario() && submitted()) ) {
+                                    <i class="fa-light fa-circle-exclamation"></i>
+                                }
+                            </p-tab>
                         </p-tablist>
                         <p-tabpanels>
                             <p-tabpanel value="0">
@@ -95,12 +121,12 @@
                                                 formControlName="numero_documento_remitente" 
                                                 onlyNumber 
                                                 pSize="small" 
-                                                [invalid]="f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted)"
+                                                [invalid]="f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted())"
                                                 [minlength]="f.tipo_documento_remitente.value === 'RUC' ? 11 : f.tipo_documento_remitente.value === 'DNI' ? 8 : null"
                                                 [maxlength]="f.tipo_documento_remitente.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_remitente.value === 'PASAPORTE' ? 12 : f.tipo_documento_remitente.value === 'DNI' ? 8 : f.tipo_documento_remitente.value === 'RUC' ? 11 : null"
                                                 fluid 
                                                 pInputText />
-                                                @if (f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted)) {
+                                                @if (f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted())) {
                                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                         @if(f.numero_documento_remitente.errors?.['required']){
                                                             Este campo es requerido.
@@ -133,9 +159,9 @@
                                                     placeholder="" 
                                                     pSize="small" 
                                                     fluid 
-                                                    [invalid]="f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted)"
+                                                    [invalid]="f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted())"
                                                     pInputText />
-                                                    @if (f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted)) {
+                                                    @if (f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted())) {
                                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                             @if(f.razon_social_remitente.errors?.['required']){
                                                                 Este campo es requerido.
@@ -152,9 +178,9 @@
                                                     placeholder="" 
                                                     pSize="small" 
                                                     fluid 
-                                                    [invalid]="f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted)"
+                                                    [invalid]="f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted())"
                                                     pInputText />
-                                                    @if (f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted)) {
+                                                    @if (f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted())) {
                                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                             @if(f.nombres_apellidos_remitente.errors?.['required']){
                                                                 Este campo es requerido.
@@ -185,7 +211,7 @@
                                                 class="cursor-not-allowed"
                                                 classLabel="text-[11px]! text-gray-500 font-semibold"
                                             ></app-select-departamento>
-                                            @if (formGroup.get('departamento_remitente')?.invalid && (formGroup.get('departamento_remitente')?.touched || submitted)) {
+                                            @if (formGroup.get('departamento_remitente')?.invalid && (formGroup.get('departamento_remitente')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
@@ -200,7 +226,7 @@
                                                 class="cursor-not-allowed"
                                                 classLabel="text-[11px]! text-gray-500 font-semibold"
                                             ></app-select-provincia>
-                                            @if (formGroup.get('provincia_remitente')?.invalid && (formGroup.get('provincia_remitente')?.touched || submitted)) {
+                                            @if (formGroup.get('provincia_remitente')?.invalid && (formGroup.get('provincia_remitente')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
@@ -215,7 +241,7 @@
                                                 class="cursor-not-allowed" 
                                                 classLabel="text-[11px]! text-gray-500 font-semibold"
                                             ></app-select-distrito>
-                                            @if (formGroup.get('distrito_remitente')?.invalid && (formGroup.get('distrito_remitente')?.touched || submitted)) {
+                                            @if (formGroup.get('distrito_remitente')?.invalid && (formGroup.get('distrito_remitente')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
@@ -279,13 +305,13 @@
                                                     formControlName="numero_documento_destinatario" 
                                                     onlyNumber  
                                                     pSize="small" 
-                                                    [invalid]="f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)"
+                                                    [invalid]="f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted())"
                                                     [minlength]="f.tipo_documento_destinatario.value === 'RUC' ? 11 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : null"
                                                     [maxlength]="f.tipo_documento_destinatario.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_destinatario.value === 'PASAPORTE' ? 12 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : f.tipo_documento_destinatario.value === 'RUC' ? 11 : null"
                                                     fluid 
                                                     pInputText 
                                                 />
-                                                @if (f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted)) {
+                                                @if (f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted())) {
                                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                         @if(f.numero_documento_destinatario.errors?.['required']){
                                                             Este campo es requerido.
@@ -317,10 +343,10 @@
                                                         formControlName="razon_social_destinatario" 
                                                         pSize="small" 
                                                         fluid 
-                                                        [invalid]="f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)"
+                                                        [invalid]="f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted())"
                                                         pInputText 
                                                     />
-                                                    @if (f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted)) {
+                                                    @if (f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted())) {
                                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                             @if(f.razon_social_destinatario.errors?.['required']){
                                                                 Este campo es requerido.
@@ -336,9 +362,9 @@
                                                     formControlName="nombres_apellidos_destinatario" 
                                                     pSize="small" 
                                                     fluid 
-                                                    [invalid]="f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted)"
+                                                    [invalid]="f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted())"
                                                     pInputText />
-                                                    @if (f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted)) {
+                                                    @if (f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted())) {
                                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                             @if(f.nombres_apellidos_destinatario.errors?.['required']){
                                                                 Este campo es requerido.
@@ -367,7 +393,7 @@
                                             [control]="f.departamento_destinatario" 
                                             class="cursor-not-allowed"
                                             classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
-                                            <!--@if (formGroup.get('departamento_destinatario')?.invalid && (formGroup.get('departamento_destinatario')?.touched || submitted)) {
+                                            <!--@if (formGroup.get('departamento_destinatario')?.invalid && (formGroup.get('departamento_destinatario')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
@@ -381,7 +407,7 @@
                                             class="cursor-not-allowed"
                                             [idUbigeoDepartamento]="f.departamento_destinatario.value" 
                                             classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
-                                            <!--@if (formGroup.get('provincia_destinatario')?.invalid && (formGroup.get('provincia_destinatario')?.touched || submitted)) {
+                                            <!--@if (formGroup.get('provincia_destinatario')?.invalid && (formGroup.get('provincia_destinatario')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
@@ -395,7 +421,7 @@
                                             [control]="f.distrito_destinatario" 
                                             [idUbigeoProvincia]="f.provincia_destinatario.value" 
                                             classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
-                                            <!--@if (formGroup.get('distrito_destinatario')?.invalid && (formGroup.get('distrito_destinatario')?.touched || submitted)) {
+                                            <!--@if (formGroup.get('distrito_destinatario')?.invalid && (formGroup.get('distrito_destinatario')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
@@ -414,7 +440,7 @@
                                         [typeahead]="false" 
                                         [addOnTab]="true" 
                                         placeholder="Escribe y presiona Tab para añadir..." />
-                                        @if (f.contactos_destinatario.invalid && (f.contactos_destinatario.touched || submitted)) {
+                                        @if (f.contactos_destinatario.invalid && (f.contactos_destinatario.touched || submitted())) {
                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                 @if(f.contactos_destinatario.hasError('maxEmails')){
                                                     Solo puedes ingresar hasta 3 correos
@@ -461,7 +487,7 @@
                         </div>
                     }
 
-                    <div class="border border-gray-400 p-4">
+                    <div class="border border-gray-300 rounded-lg p-4">
                         <div class="flex items-center gap-1">
                             <label for="" class="text-[14px] font-semibold text-primary">Documentos Relacionados:</label>
                             <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-4.25! text-md!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
@@ -528,7 +554,7 @@
             <app-tab-datos-envio-proveedor 
                 #tabDatosEnvioProveedor
                 [tipoGuia]="selectTipoGuiaComponent?.tipoGuiaSelected!" 
-                [motivoTraslado]="f.motivo_traslado.value"
+                [motivoTraslado]="selectMotivoTraslado?.selected()"
                 [emisora]="empresa()"
                 [remitente]="remitente()"
                 [destinatario]="destinatario()"
@@ -540,7 +566,9 @@
                 [destinatario]="destinatario()"
             ></app-tab-origen-destino>
 
-            <app-section-producto-listado #sectionProductoListado></app-section-producto-listado>
+            <app-section-producto-listado 
+                #sectionProductoListado
+            ></app-section-producto-listado>
         </div>
     </form>
 </div>

@@ -7,9 +7,9 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TabsModule } from 'primeng/tabs';
-import { SelectMotivoTrasladoComponent } from 'app/features/guia-remision/components/selects/select-motivo-traslado/select-motivo-traslado';
+
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
-import { TipoGuiaRemisionEnum, GuiaRemisionTipoTrasladoEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
+import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
@@ -49,6 +49,7 @@ import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/co
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 
 interface Type {
     name: string;
@@ -69,7 +70,6 @@ interface Type {
     TabsModule,
     ReactiveFormsModule,
     SelectTipoGuiaComponent,
-    SelectMotivoTrasladoComponent,
     SelectTipoDocumentoComponent,
     OnlyNumberDirective,
     DatePickerModule,
@@ -91,7 +91,7 @@ interface Type {
     AsyncPipe,
     AutoCompleteModule,
     DividerModule,
-
+    SelectMotivoTrasladoComponent
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -99,6 +99,8 @@ interface Type {
 })
 
 export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
+
+    @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
@@ -119,7 +121,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     // Datos formulario
     formGroup: FormGroup = new FormGroup({});
-    submitted: boolean = false;
+    submitted = signal(false);
     loadingSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     $loadingSubmit = this.loadingSubmit.asObservable();
 
@@ -162,7 +164,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             empresa_id: new FormControl(null, Validators.required),
 
-            motivo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
+            motivo_traslado_id: new FormControl(null, Validators.required),
 
             remitente_id: new FormControl(null, Validators.required),
             tipo_documento_remitente: new FormControl({value: 'RUC', disabled: true}, Validators.required),
@@ -194,7 +196,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
         // detectar el cambio en motivo traslado
-        this.formGroup.get('motivo_traslado')?.valueChanges.subscribe(value => {
+        this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(value => {
             this.tabRemitenteDestinatario.next(0);
             this.remitente.set(null);
             this.destinatario.set(null);
@@ -275,15 +277,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     get request(): GuiaRemisionRemitenteRequestDto{
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
-            tipo_traslado: this.f.motivo_traslado.value,
+            motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
+            motivo_traslado: this.selectMotivoTraslado!.selected(),
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
             observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
-            area: 'sistemas',
             registro_mtc: null,
-            empleado_id_creacion: 1,
-            empleado_nombre_creacion: 'SA',
-
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
                 return {
                     tipo_doc_ref: element.get('tipo_comprobante')?.value,
@@ -293,32 +292,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             }) : null,
 
             remitente: this.remitente()!,
-            /*remitente: {
-                remitente_id: this.f.remitente_id.value,
-                numero_documento: this.remitente()!.ruc,
-                descripcion: this.remitente()!.descripcion,
-                nombre_empresa: this.remitente()!.razon_social,
-                direccion: this.remitente()!.direccion,
-                departamento: this.remitente()!.departamento,
-                provincia: this.remitente()!.provincia,
-                distrito: this.remitente()!.distrito,
-                serie_numero: "",
-            },*/
             remitente_id: this.f.remitente_id.value,
 
             destinatario: this.destinatario()!,
-            /*destinatario: {
-                destinatario_id: this.f.destinatario_id.value,
-                tipo_documento: this.f.tipo_documento_destinatario.value,
-                numero_documento: this.f.numero_documento_destinatario.value,
-                razon_social: this.f.tipo_documento_destinatario.value === 'RUC' ? this.f.razon_social_destinatario.value : this.f.nombres_apellidos_destinatario.value,
-                ubigeo_id: this.f.distrito_destinatario.value,
-                departamento: this.departamentoDestinatario?.labelSelected ?? null,
-                provincia: this.provinciaDestinatario?.labelSelected ?? null,
-                distrito: this.distritoDestinatario?.labelSelected ?? null,
-                direccion: this.f.direccion_destinatario.value,
-                email_destinatario: this.destinatarioContactos.length ? this.destinatarioContactos : null,
-            },*/
             destinatario_id: this.f.destinatario_id.value,
 
             proveedor: (!this.mostrarProveedor) ? null : {
@@ -384,25 +360,25 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     get mostrarSeleccionarDestinatario(): boolean {
         const motivos_traslado = [
-            GuiaRemisionTipoTrasladoEnum.compra,
-            GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa,
-            GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados
+            SunatMotivoTrasladoEnum.compra,
+            SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
         ];
-        return !motivos_traslado.includes(this.f.motivo_traslado.value);
+        return !motivos_traslado.includes(this.f.motivo_traslado_id.value);
     }
 
     get mostrarProveedor(): boolean{
       const motivosTraslado = [
-        GuiaRemisionTipoTrasladoEnum.compra,
-        GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados,
-        GuiaRemisionTipoTrasladoEnum.otros
+        SunatMotivoTrasladoEnum.compra,
+        SunatMotivoTrasladoEnum.otros
       ];
-      return motivosTraslado.includes(this.f.motivo_traslado.value);
+      return motivosTraslado.includes(this.f.motivo_traslado_id.value);
     }
 
 
     // Events
     evtOnSubmit(): void{
+
+        this.submitted.set(true);
 
         if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return;
         if(!this.tabOrigenDestino?.evtOnSubmit()) return;
@@ -536,10 +512,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     evtOnShowEstablecimiento( to: string ): void{
 
+        if(!this.selectMotivoTraslado?.selected()){
+            this.alertService.showToast({
+                icon: 'warning',
+                title: `Debe seleccionar el motivo de traslado`
+            });
+            return;
+        }
+
         if(to === 'destinatario' && !this.remitente()){
             this.alertService.showToast({
                 icon: 'warning',
-                title: `Debe seleccionar remitente primero`
+                title: `Debe seleccionar un remitente`
             });
             return;
         }
@@ -561,7 +545,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             inputValues: {
                 ruc: this.empresa()?.ruc,
                 tipo: to,
-                motivoTraslado: this.f.motivo_traslado.value,
+                motivoTraslado: this.selectMotivoTraslado?.selected(),
                 remitente: this.remitente()
             }
         });

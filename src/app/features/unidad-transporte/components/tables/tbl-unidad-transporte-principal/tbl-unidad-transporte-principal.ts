@@ -229,7 +229,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarUnidadTransporteComponent,  {
-        width: '800px',
+        width: '600px',
         closable: true,
         modal: true,
         draggable: false,
@@ -257,7 +257,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
     evtOnEdit(): void{
       this.ref = this.dialogService.open(MdlEditarUnidadTransporteComponent,  {
-        width: '800px',
+        width: '600px',
         closable: true,
         modal: true,
         draggable: false,

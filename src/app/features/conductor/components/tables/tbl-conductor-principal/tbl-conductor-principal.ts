@@ -19,7 +19,7 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
 import { MdlEditarConductorComponent } from '../../modals/mdl-editar-conductor/mdl-editar-conductor';
-import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorDto, EditarConductorResponseDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -230,7 +230,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarConductorComponent,  {
-        width: '800px',
+        width: '600px',
         closable: true,
         modal: true,
         draggable: false,
@@ -260,7 +260,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       const SELECTED = this.selected!;
 
       this.ref = this.dialogService.open(MdlEditarConductorComponent,  {
-        width: '800px',
+        width: '600px',
         closable: true,
         modal: true,
         draggable: false,

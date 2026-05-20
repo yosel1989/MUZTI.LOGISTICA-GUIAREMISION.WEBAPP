@@ -38,7 +38,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MdlListadoItemsComponent } from '../../modals/mdl-lista-items/mdl-items-listado';
 import { Subscription } from 'rxjs';
-import { ItemsToAddGuiaDto, ItemsToGuiaRequestDto } from 'app/features/items/models/item-to-guia';
+import { ItemsToAddGuiaDto } from 'app/features/items/models/item-to-guia';
 import { unitofMeasures } from 'app/fake/items/data/unitOfMeasure';
 import { SelectModule } from 'primeng/select';
 import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
@@ -131,10 +131,12 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       description: new FormControl(null),
     });
 
-
     effect(() => {
         const detalle = this._detalle();
-        this.handlerValueDetalle(detalle);
+        if(detalle.length){
+          (this.form.get('items') as FormArray).clear();
+          this.handlerValueDetalle(detalle);
+        }
     });
   }
 
@@ -189,6 +191,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   // functions
   newItem(detalle: GuiaRemisionDetalleDto | null = null): FormGroup {
+    console.log('detalle', detalle);
     return detalle ? this.fb.group({
       cantidad: [detalle.cantidad, Validators.required],
       unidad: [detalle.codigo_um, Validators.required],
@@ -372,8 +375,8 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
 
   handlerValueDetalle(s: GuiaRemisionDetalleDto[]): void{
+    console.log('init2');
       if(!s.length){
-          //this.resetOrigenForm();
           return;
       }
 

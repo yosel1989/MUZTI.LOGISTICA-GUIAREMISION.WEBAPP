@@ -7,9 +7,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TabsModule } from 'primeng/tabs';
-import { SelectMotivoTrasladoComponent } from 'app/features/guia-remision/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
-import { TipoGuiaRemisionEnum, GuiaRemisionTipoTrasladoEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
+import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
@@ -30,7 +29,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
 import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
-import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionDetalleDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
@@ -52,6 +51,7 @@ import { SelectTipoDocumentoComponent } from '@features/catalogo/components/sele
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProveedorDto } from '@features/proveedor/models/proveedor';
+import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 
 interface Type {
     name: string;
@@ -107,6 +107,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     private guiaRemisionApiService = inject(GuiaRemisionApiService);
     guiaRemisionUuid!: string;
 
+    @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
     @ViewChild('tabOrigenDestino') tabOrigenDestino: TabOrigenDestinoComponent | undefined;
@@ -151,6 +152,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     remitente = signal<EstablecimientoDTO | null>(null);
     destinatario = signal<EstablecimientoDTO | null>(null);
     proveedor = signal<ProveedorDto | null>(null);
+    detalle = signal<GuiaRemisionDetalleDto[]>([]);
 
     constructor(
         private formBuilder: FormBuilder,
@@ -170,7 +172,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
             empresa_id: new FormControl(null, Validators.required),
 
-            motivo_traslado: new FormControl(GuiaRemisionTipoTrasladoEnum.venta, Validators.required),
+            motivo_traslado_id: new FormControl(SunatMotivoTrasladoEnum.venta, Validators.required),
 
             remitente_id: new FormControl(null, Validators.required),
             tipo_documento_remitente: new FormControl({value: 'RUC', disabled: true}, Validators.required),
@@ -202,7 +204,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
 
         // detectar el cambio en motivo traslado
-        this.formGroup.get('motivo_traslado')?.valueChanges.subscribe(value => {
+        this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(value => {
             this.tabRemitenteDestinatario.next(0);
             this.remitente.set(null);
             this.destinatario.set(null);
@@ -285,14 +287,12 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     get request(): GuiaRemisionRemitenteRequestDto{
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
-            tipo_traslado: this.f.motivo_traslado.value,
+            motivo_traslado_id: this.f.motivo_traslado_id.value,
+            motivo_traslado: this.selectMotivoTraslado?.selected()!,
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
             observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
-            area: 'sistemas',
             registro_mtc: null,
-            empleado_id_creacion: 1,
-            empleado_nombre_creacion: 'SA',
 
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
                 return {
@@ -394,20 +394,18 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
     get mostrarSeleccionarDestinatario(): boolean {
         const motivos_traslado = [
-            GuiaRemisionTipoTrasladoEnum.compra,
-            GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa,
-            GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados
+            SunatMotivoTrasladoEnum.compra,
+            SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
         ];
-        return !motivos_traslado.includes(this.f.motivo_traslado.value);
+        return !motivos_traslado.includes(this.f.motivo_traslado_id.value);
     }
 
     get mostrarProveedor(): boolean{
       const motivosTraslado = [
-        GuiaRemisionTipoTrasladoEnum.compra,
-        GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados,
-        GuiaRemisionTipoTrasladoEnum.otros
+        SunatMotivoTrasladoEnum.compra,
+        SunatMotivoTrasladoEnum.otros
       ];
-      return motivosTraslado.includes(this.f.motivo_traslado.value);
+      return motivosTraslado.includes(this.f.motivo_traslado_id.value);
     }
 
 
@@ -583,7 +581,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
             inputValues: {
                 ruc: this.empresa()?.ruc,
                 tipo: to,
-                motivoTraslado: this.f.motivo_traslado.value
+                motivoTraslado: this.f.motivo_traslado_id.value
             }
         });
 
@@ -893,15 +891,17 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     loadData(): void{
         this.guiaRemisionApiService.buscarPorUuid(this.guiaRemisionUuid).subscribe({
             next: (value: any) =>  {
+                console.log('guia remision', value);
                 this.f.empresa_id.setValue(value.ruc);
                 this.selectTipoGuiaComponent?.frmCtrlTipoGuia.setValue(value.tipo_guia);
                 this.formGroup.patchValue({
                     empresa_id: value.ruc,
-                    motivo_traslado: value.tipo_traslado
+                    motivo_traslado_id: value.tipo_traslado
                 });
                 this.remitente.set(value.remitente);
                 this.destinatario.set(value.destinatario);
                 this.proveedor.set(value.proveedor);
+                this.detalle.set(value.productos);
             },
             error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({

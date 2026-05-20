@@ -4,7 +4,7 @@
         <p-tablist>
             <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
-                    <label for="" class="text-[12px] pointer-events-none">Datos de envio</label>
+                    <label for="" class="text-[12px] pointer-events-none">Datos de envío</label>
                     @if(formDatosEnvio.invalid && (formDatosEnvio.touched || submitted) ) {
                         <ng-icon name="tablerAlertCircle" />
                     }
@@ -379,6 +379,10 @@
                                     }
                                 </div>
                             }
+
+                            @if (f_datosEnvio.vehiculos?.invalid && (f_datosEnvio.vehiculos?.touched || submitted)) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un vehículo</span></p-message>
+                            }
                             
                             @if(vehiculos.length < 3){
                                 <div class="flex flex-wrap gap-x-2">
@@ -391,7 +395,7 @@
                                         class="text-xs!" 
                                         icon="pi pi-search text-xs!" 
                                         severity="primary" 
-                                        label="Seleccionar vehiculo"
+                                        label="Seleccionar vehículo"
                                     ></p-button>
 
                                     <a 
@@ -531,6 +535,11 @@
                                     }
                                 </div>
                             }
+
+                            @if (f_datosEnvio.conductores?.invalid && (f_datosEnvio.conductores?.touched || submitted)) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un conductor</span></p-message>
+                            }
+
                             @if(conductores.length < 3){
                                 <div class="flex flex-wrap gap-x-2">
 
@@ -553,7 +562,7 @@
                     }
 
                     @if(
-                        motivoTraslado === 'TRASLADO'
+                        motivoTraslado?.codigo === sunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
                     ){
                         <div class="flex flex-col gap-4">
 

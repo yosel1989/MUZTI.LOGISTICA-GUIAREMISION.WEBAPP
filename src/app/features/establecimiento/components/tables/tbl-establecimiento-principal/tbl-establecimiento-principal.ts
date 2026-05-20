@@ -247,7 +247,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarEstablecimientoComponent,  {
-        width: '1000px',
+        width: '700px',
         closable: true,
         modal: true,
         position: 'top',
@@ -274,7 +274,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
 
     evtOnEdit(): void{
       this.ref = this.dialogService.open(MdlEditarEstablecimientoComponent,  {
-        width: '1000px',
+        width: '700px',
         closable: true,
         modal: true,
         position: 'top',

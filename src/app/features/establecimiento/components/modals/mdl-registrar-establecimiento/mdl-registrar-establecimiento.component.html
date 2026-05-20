@@ -1,10 +1,8 @@
 <form [formGroup]="frm" (ngSubmit)="evtOnSubmit()">
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-10">
-        <div style="background-image: url('assets/media/bg/bg-registrar-remitente.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
-        </div>
-        <div class="col-span-2"> 
-            <p-divider class="my-0!"></p-divider>
+ <p-divider class="my-0!"></p-divider>
+    <div class="grid grid-cols-1 p-4">
+        <div> 
+           
             <div class="grid grid-cols-2 gap-3 py-10!">
                 <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Empresa *</label>
@@ -211,11 +209,11 @@
                     }
                 </div>
             </div>
-            <p-divider class="my-0!"></p-divider>
+            
         </div>
     </div>
     
-
+<p-divider class="my-0!"></p-divider>
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
         <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />

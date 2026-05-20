@@ -21,8 +21,8 @@ export class GuiaRemitenteApiService {
     );
   }
 
-  emitirGuiaRemision(guiaId: number, ruc: string): Observable<GR_EmitirGuiaRemisionResponseDto> {
-    return this.http.post<any>(`${this.baseUrl}/${ruc}/enviar/${guiaId}`,{}).pipe(
+  aprobarGuiaRemision(guiaId: number): Observable<GR_EmitirGuiaRemisionResponseDto> {
+    return this.http.post<any>(`${this.baseUrl}/${guiaId}/aprobar`,{}).pipe(
       map(response =>{ return response as GR_EmitirGuiaRemisionResponseDto }),
       catchError(error => {
         return throwError(() => error);

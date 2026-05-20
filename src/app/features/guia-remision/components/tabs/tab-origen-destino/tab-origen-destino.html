@@ -40,6 +40,7 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                             <app-select-departamento 
@@ -48,13 +49,14 @@
                                 classLabel="text-[11px]! text-gray-500 font-semibold" 
                                 [invalid]="f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)"
                                 label="Departamento *"
-                                class="cursor-not-allowed! bg-gray-100!"
+                                class="cursor-not-allowed"
                                 [readonly]="true"
                             ></app-select-departamento>
                             @if (f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
                             }
                         </div>
+
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
                             <app-select-provincia 
@@ -88,7 +90,7 @@
                             }
                         </div>
                     </div>
-                    <div class="text-xs! text-gray-500 mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del remitente seleccionado</div>
+                    <div class="text-xs! text-gray-500 font-medium mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del remitente seleccionado</div>
                 </div>
             </p-tabpanel>
             <p-tabpanel value="1">
@@ -161,7 +163,7 @@
                         </div>
                     </div>
 
-                    <div class="text-xs! text-gray-500 mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del destinatario seleccionado</div>
+                    <div class="text-xs! text-gray-500 font-medium mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del destinatario seleccionado</div>
                 </div>
             </p-tabpanel>
         </p-tabpanels>

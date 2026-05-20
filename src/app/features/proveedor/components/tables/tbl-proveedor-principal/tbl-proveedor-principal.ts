@@ -1,6 +1,6 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActualizarEstadoProveedorRequestDto, ActualizarEstadoProveedorResponseDto, EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
+import { ActualizarEstadoProveedorRequestDto, EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -242,7 +242,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarProveedorComponent,  {
-        width: '1000px',
+        width: '700px',
         closable: true,
         modal: true,
         position: 'top',
@@ -269,7 +269,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnEdit(): void{
       this.ref = this.dialogService.open(MdlEditarProveedorComponent,  {
-        width: '1000px',
+        width: '700px',
         closable: true,
         modal: true,
         position: 'top',

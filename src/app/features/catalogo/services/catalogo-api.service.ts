@@ -8,7 +8,7 @@ import { EmisorVehicularDto, PaisDto, TipoEstablecimientoDTO } from "../models/c
   providedIn: 'root'
 })
 export class CatalogoApiService {
-  private baseUrl = `${environment.apiUrl}/Catalogo`;
+  private baseUrl = `${environment.apiUrl}/catalogo`;
 
   constructor(private http: HttpClient) {}
 

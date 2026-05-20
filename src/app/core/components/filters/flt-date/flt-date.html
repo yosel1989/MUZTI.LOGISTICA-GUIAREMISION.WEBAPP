@@ -58,7 +58,7 @@
                                 class="h-[30px]!"
                                 [showOnFocus]="true" 
                                 [readonlyInput]="true"
-                                inputStyleClass="w-[120px]!"
+                                inputStyleClass="w-[120px]! max-w-[120px]!"
                                 [iconDisplay]="'input'" 
                                 [showIcon]="true"
                                 panelStyleClass="text-[12px]!"
@@ -66,7 +66,7 @@
                                 [invalid]="submitted && ctrlDateStart.hasError('required')"
                                 />
                                 @if (submitted && ctrlDateStart.hasError('required')) {
-                                    <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                                    <p-message severity="error" size="small" variant="simple"><span class="text-xs">Debe seleccionar la fecha.</span></p-message>
                                 }
                             </div>
 
@@ -83,7 +83,7 @@
                                 [readonlyInput]="true"
                                 [iconDisplay]="'input'" 
                                 [showIcon]="true"
-                                inputStyleClass="w-[120px]!"
+                                inputStyleClass="w-[120px]! max-w-[120px]!"
                                 panelStyleClass="text-[12px]!"
                                 [touchUI]="isMobile"
                                 [min]="ctrlDateStart.value ? ctrlDateStart.value : null"
@@ -91,10 +91,10 @@
                                 [invalid]="submitted && ctrlDateEnd.hasError('required')"
                                 />
                                 @if (submitted && ctrlDateEnd.hasError('required')) {
-                                    <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                                    <p-message severity="error" size="small" variant="simple"><span class="text-xs">Debe seleccionar la fecha.</span></p-message>
                                 }
                                 @if (submitted && ctrlDateEnd.hasError('dateEndBeforeStart')) {
-                                    <p-message severity="error" size="small" variant="simple" class="text-xs">Debe ser mayor a la fecha inicial</p-message>
+                                    <p-message severity="error" size="small" variant="simple"><span class="text-xs">Debe ser mayor a la fecha inicial</span></p-message>
                                 }
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                                 [invalid]="submitted && ctrlDate.hasError('required')"
                                 />
                             @if (submitted && ctrlDate.hasError('required')) {
-                                <p-message severity="error" size="small" variant="simple" class="text-xs">Debe seleccionar la fecha.</p-message>
+                                <p-message severity="error" size="small" variant="simple"><span class="text-xs">Debe seleccionar la fecha.</span></p-message>
                             }
                         </div>
                     }

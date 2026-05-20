@@ -1,16 +1,15 @@
+import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
-  tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
+  motivo_traslado_id: number;
+  motivo_traslado: SunatMotivoTrasladoDto | undefined;
   fecha: string;
   hora: string;
   observacion: string | null;
-  area: string | null;
   registro_mtc: string | null;
-  empleado_id_creacion: number;
-  empleado_nombre_creacion: string;
 
   doc_relacionado: GR_DocRelacionadoDto[] | null;
   
@@ -162,6 +161,8 @@ export interface GuiaRemisionDto {
   establecimiento_remitente: string;
   tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
   tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
+  motivo_traslado_id: number;
+  motivo_traslado: string;
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
   fecha_emision: Date;
   hora_emision: string; 

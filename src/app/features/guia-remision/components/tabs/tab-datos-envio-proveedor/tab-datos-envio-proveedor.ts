@@ -13,7 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { GrossWeightUnit } from 'app/features/items/models/gross-weight-unit';
 import { FAKE_GROSS_WEIGHT_UNIT } from 'app/fake/items/data/fakeGrossWeightUnit';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { GuiaRemisionTipoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
+import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { FAKE_FREIGHT_PAYER } from 'app/fake/items/data/fakeFreightPayer';
 import { FreightPayer, IssuingEntity } from 'app/features/items/models/freight-payer';
 import { EnumPagadorFlete } from 'app/features/guia-remision/enums/pagador-flete.enum';
@@ -43,6 +43,8 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
+import { minItemsValidator } from '@core/validators/minItemsValidator';
+import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -82,12 +84,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @ViewChild('distritoProveedor') distritoProveedor: SelectDistritoComponent | undefined;
 
     @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
-    @Input() motivoTraslado!: GuiaRemisionTipoTrasladoEnum;
     @Input() emisora: EmpresaToSelectDto | null = null;
 
     private _remitente = signal<EstablecimientoDTO | null>(null);
     private _destinatario = signal<EstablecimientoDTO | null>(null);
     private _proveedor = signal<ProveedorDto | null>(null);
+    private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
     @Input() set remitente(value: EstablecimientoDTO | null) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
@@ -101,6 +103,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() set proveedor(value: ProveedorDto | null) {
         if (this._proveedor() !== value) {
             this._proveedor.set(value);
+        }
+    }
+
+    @Input() set motivoTraslado(value: SunatMotivoTrasladoDto | undefined) {
+        if (this._motivoTraslado() !== value) {
+            this._motivoTraslado.set(value);
         }
     }
 
@@ -118,6 +126,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     subs = new Subscription();
 
     minFechaEntregaTraslado = new Date();
+
+    sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
 
     constructor(
       private fb: FormBuilder,
@@ -157,8 +167,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
           registrar_vehiculos_conductores: new FormControl(false),
 
-          vehiculos: this.fb.array([], Validators.minLength(1)),
-          conductores: this.fb.array([], Validators.minLength(1)),
+          vehiculos: this.fb.array([], [minItemsValidator(1)]),
+          conductores: this.fb.array([], [minItemsValidator(1)]),
 
           cod_establecimiento_origen: new FormControl({value: null, disabled: true}, [Validators.minLength(4), Validators.maxLength(4)]),
           ruc_establecimiento_origen: new FormControl({value: null, disabled: true}),
@@ -290,21 +300,26 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     get tieneDatosContenedor(): boolean{
+      if(!this.motivoTraslado){
+        return false;
+      }
+
       const motivosTraslado = [
-        GuiaRemisionTipoTrasladoEnum.importacion,
-        GuiaRemisionTipoTrasladoEnum.exportacion,
-        GuiaRemisionTipoTrasladoEnum.traslado_mercancia_extranjera
+        SunatMotivoTrasladoEnum.importacion,
+        SunatMotivoTrasladoEnum.exportacion
       ];
-      return motivosTraslado.includes(this.motivoTraslado); 
+      return motivosTraslado.includes(this.motivoTraslado?.codigo); 
     }
 
     get mostrarProveedor(): boolean{
+      if(!this.motivoTraslado){
+        return false;
+      }
       const motivosTraslado = [
-        GuiaRemisionTipoTrasladoEnum.compra,
-        GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados,
-        GuiaRemisionTipoTrasladoEnum.otros
+        SunatMotivoTrasladoEnum.compra,
+        SunatMotivoTrasladoEnum.otros
       ];
-      return motivosTraslado.includes(this.motivoTraslado);
+      return motivosTraslado.includes(this.motivoTraslado?.codigo);
     }
 
     get valid(): boolean{
@@ -574,7 +589,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.f_datosEnvio.tipo_transporte.setValue(tipoTrasnporte);
     }
 
-    evtOnChangeMotivoTraslado(motivoTraslado: GuiaRemisionTipoTrasladoEnum): void{
+    evtOnChangeMotivoTraslado(motivoTraslado: SunatMotivoTrasladoEnum): void{
 
       console.log('Cambio el motivo de traslado', motivoTraslado);
 
@@ -832,7 +847,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        if(this.motivoTraslado === 'TRASLADO'){
+        if(this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
               cod_establecimiento_origen: s.codigo_sunat,
               ruc_establecimiento_origen: s.ruc
@@ -846,7 +861,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        if(this.motivoTraslado === 'TRASLADO'){
+        if(this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
               cod_establecimiento_destino: s.codigo_sunat,
               ruc_establecimiento_destino: s.ruc
@@ -879,4 +894,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         subProvincia1?.unsubscribe();
         subDistrito1?.unsubscribe();
     }
+
+    // validator
+
+    
 }

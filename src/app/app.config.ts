@@ -24,7 +24,7 @@ export const MyPreset = definePreset(Aura, {
       200: '#f8cfcf',
       300: '#f3a9a9',
       400: '#e97d7d',
-      500: '#ab4141', // tu color base
+      500: '#ab4141',
       600: '#933636',
       700: '#7a2c2c',
       800: '#622222',
@@ -63,7 +63,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes, 
       withInMemoryScrolling({
-        scrollPositionRestoration: 'top',
+        scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled'
       })
     ),

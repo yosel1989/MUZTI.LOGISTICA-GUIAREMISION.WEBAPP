@@ -82,13 +82,11 @@ p-select{
 }
 
 .p-select.p-disabled,
-.p-inputtext:disabled,
-.p-inputtext:read-only{
+.p-inputtext:disabled{
   @apply cursor-not-allowed!;
 }
 
 .p-inputtext:disabled,
-.p-inputtext:read-only,
 .p-select.p-disabled{
   @apply bg-gray-100!;
 }
@@ -116,6 +114,6 @@ p-select{
 
 .cursor-not-allowed{
   p-select{
-    @apply bg-gray-100!;
+    //@apply bg-gray-100!;
   }
 }

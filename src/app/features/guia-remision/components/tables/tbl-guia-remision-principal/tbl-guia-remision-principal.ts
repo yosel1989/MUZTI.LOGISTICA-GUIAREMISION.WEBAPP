@@ -169,7 +169,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         //{ field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
         //{ field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
         //{ field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
-        { field: 'tipo_traslado', header: 'T. Traslado', sort: false, sticky: false },
+        { field: 'motivo_traslado', header: 'Motivo Traslado', sort: false, sticky: false },
         { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
         { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
         { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
@@ -662,7 +662,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   handleAcceptAprobarGuia(): void{
-    this.apiGuiaRemitente.emitirGuiaRemision(this.selected!.id, this.selected!.numero_documento_remitente).subscribe({
+    this.apiGuiaRemitente.aprobarGuiaRemision(this.selected!.id).subscribe({
       next: (val: GR_EmitirGuiaRemisionResponseDto) => {
         if(val.success){
           this.alertService.showSwalAlert({

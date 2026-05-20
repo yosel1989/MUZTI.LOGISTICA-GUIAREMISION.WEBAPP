@@ -16,7 +16,8 @@ import { finalize, Subscription } from "rxjs";
 import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { GuiaRemisionTipoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
+import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
+import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',
@@ -45,7 +46,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
-    @Input() motivoTraslado: GuiaRemisionTipoTrasladoEnum | undefined;
+    @Input() motivoTraslado: SunatMotivoTrasladoDto | undefined;
     @Input() remitente: EstablecimientoDTO | undefined;
 
     empresas: EmpresaToSelectDto[] = [];
@@ -71,32 +72,32 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     ngOnInit(): void {
 
+        console.log('motivotraslado', this.motivoTraslado);
+
         if(this.tipo === 'remitente'){
             this.ctrlRuc.setValue(this.ruc);
         }
 
         if(this.tipo === 'destinatario'){
 
-            switch(this.motivoTraslado){
-                case GuiaRemisionTipoTrasladoEnum.venta: 
+            switch(this.motivoTraslado?.codigo){
+                case SunatMotivoTrasladoEnum.venta: 
                  
                     this.ctrlRuc.enable();
                     break;
-                case GuiaRemisionTipoTrasladoEnum.compra: 
+                case SunatMotivoTrasladoEnum.compra: 
                     this.ctrlRuc.setValue(this.ruc);
                     break;
-                case GuiaRemisionTipoTrasladoEnum.venta_entrega_terceros: break;
-                case GuiaRemisionTipoTrasladoEnum.traslado_establecimientos_misma_empresa: break;
-                case GuiaRemisionTipoTrasladoEnum.consignacion: break;
-                case GuiaRemisionTipoTrasladoEnum.devolucion: break;
-                case GuiaRemisionTipoTrasladoEnum.recojo_bienes_transformados: break;
-                case GuiaRemisionTipoTrasladoEnum.importacion: break;
-                case GuiaRemisionTipoTrasladoEnum.exportacion: break;
-                case GuiaRemisionTipoTrasladoEnum.otros: break;
-                case GuiaRemisionTipoTrasladoEnum.venta_sujeta_confirmacion_comprador: break;
-                case GuiaRemisionTipoTrasladoEnum.traslado_bienes_transformacion: break;
-                case GuiaRemisionTipoTrasladoEnum.traslado_emisor_itinerante_CP: break;
-                case GuiaRemisionTipoTrasladoEnum.traslado_mercancia_extranjera: break;
+                case SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa: 
+                console.log('misma empresa');
+                    this.ctrlRuc.setValue(this.ruc);
+                    break;
+                case SunatMotivoTrasladoEnum.importacion: break;
+                case SunatMotivoTrasladoEnum.exportacion: break;
+                case SunatMotivoTrasladoEnum.otros: break;
+                case SunatMotivoTrasladoEnum.venta_sujeta_confirmacion_comprador: break;
+                case SunatMotivoTrasladoEnum.traslado_emisor_itinerante_comprobantes_pago: break;
+                case SunatMotivoTrasladoEnum.traslado_zona_primaria: break;
                 default: this.ctrlRuc.disable(); break;
             }
 
@@ -145,7 +146,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
             next: (value: EmpresaToSelectDto[]) => {
                 this.empresas = value.map(x => ({
                     ...x,
-                    disabled: (this.motivoTraslado === GuiaRemisionTipoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
+                    disabled: (this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
                 }));
                 this.ldEmpresas.set(false);
             },

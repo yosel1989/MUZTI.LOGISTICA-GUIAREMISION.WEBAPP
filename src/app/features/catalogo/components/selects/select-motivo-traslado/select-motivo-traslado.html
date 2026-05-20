@@ -1,0 +1,13 @@
+<p-select 
+    panelStyleClass="text-[.875rem]!"
+    size="small" 
+    fluid 
+    [options]="data" 
+    [formControl]="control"  
+    optionLabel="nombre"  
+    optionValue="id"
+    [loading]="loading()"
+    class="p-inputwrapper-filled" 
+    placeholder="Seleccionar el motivo de traslado"
+    [invalid]="invalid"
+></p-select>
