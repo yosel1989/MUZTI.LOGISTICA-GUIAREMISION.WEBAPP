@@ -5,6 +5,15 @@
 
 html{
   font-size: 14px;
+
+  /* Chrome / Safari */
+  -webkit-font-smoothing: antialiased;
+  
+  /* Firefox en macOS */
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Opcional: mejora en Windows */
+  font-smooth: always; 
 }
 
 /* You can add global styles to this file, and also import other style files */

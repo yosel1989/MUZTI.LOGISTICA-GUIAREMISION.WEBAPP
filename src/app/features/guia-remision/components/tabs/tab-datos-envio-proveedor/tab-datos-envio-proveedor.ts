@@ -129,6 +129,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
 
+    mostrarProveedor = signal(false);
+
     constructor(
       private fb: FormBuilder,
       private cdr: ChangeDetectorRef,
@@ -182,15 +184,15 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
 
-        this.formDatosProveedor = this.fb.group({
-          proveedor_id: new FormControl({value: null, disabled: true}, Validators.required),
-          tipo_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
-          numero_documento_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
-          nombre_rsocial_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
-          direccion_proveedor: new FormControl({value: null, disabled: true}, Validators.required),
-          idDepartamento : new FormControl({value: null, disabled: true}, Validators.required),
-          idProvincia : new FormControl({value: null, disabled: true}, Validators.required),
-          idDistrito : new FormControl({value: null, disabled: true}, Validators.required)
+        this.formDatosProveedor = new FormGroup({
+          proveedor_id: new FormControl(null),
+          tipo_documento_proveedor: new FormControl(null),
+          numero_documento_proveedor: new FormControl(null),
+          nombre_rsocial_proveedor: new FormControl(null),
+          direccion_proveedor: new FormControl(null),
+          idDepartamento : new FormControl(null),
+          idProvincia : new FormControl(null),
+          idDistrito : new FormControl(null)
         });
 
         this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
@@ -208,6 +210,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         effect(() => {
             const proveedor = this._proveedor();
             this.handlerValueProveedor(proveedor);
+        });
+
+        effect(() => {
+            const motivoTraslado = this._motivoTraslado();
+            this.handlerValueMotivoTraslado(motivoTraslado);
         });
     }
 
@@ -311,17 +318,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return motivosTraslado.includes(this.motivoTraslado?.codigo); 
     }
 
-    get mostrarProveedor(): boolean{
-      if(!this.motivoTraslado){
-        return false;
-      }
-      const motivosTraslado = [
-        SunatMotivoTrasladoEnum.compra,
-        SunatMotivoTrasladoEnum.otros
-      ];
-      return motivosTraslado.includes(this.motivoTraslado?.codigo);
-    }
-
     get valid(): boolean{
       return this.formDatosEnvio.valid && this.formDatosProveedor.valid;
     }
@@ -354,6 +350,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }
 
       return false;
+    }
+
+    get proveedor(): ProveedorDto | null {
+      return this._proveedor(); // lectura del signal
     }
 
     ngOnInit(): void {
@@ -395,9 +395,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.cdr.markForCheck();
       }
 
-      if(changes['motivoTraslado']){
-        this.evtOnChangeMotivoTraslado(changes['motivoTraslado'].currentValue);
-      }
     }
 
     ngOnDestroy(): void {
@@ -589,62 +586,16 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.f_datosEnvio.tipo_transporte.setValue(tipoTrasnporte);
     }
 
-    evtOnChangeMotivoTraslado(motivoTraslado: SunatMotivoTrasladoEnum): void{
-
-      console.log('Cambio el motivo de traslado', motivoTraslado);
-
-      // Limpiar los campos antes de manejarlos
-      this.formDatosProveedor = this.fb.group({
-        proveedor_id: new FormControl(null),
-        tipo_documento_proveedor: new FormControl(null),
-        numero_documento_proveedor: new FormControl(null),
-        nombre_rsocial_proveedor: new FormControl(null),
-        direccion_proveedor: new FormControl(null),
-        idDepartamento : new FormControl(null),
-        idProvincia : new FormControl(null),
-        idDistrito : new FormControl(null)
-      });
-      this.formDatosProveedor.markAsUntouched();
-      this.cdr.markForCheck();
-
-      switch(this.mostrarProveedor){
-        case true:
-          this.formDatosProveedor = this.fb.group({
-            proveedor_id: new FormControl(null, Validators.required),
-            tipo_documento_proveedor: new FormControl(null, Validators.required),
-            numero_documento_proveedor: new FormControl(null, Validators.required),
-            nombre_rsocial_proveedor: new FormControl(null, Validators.required),
-            direccion_proveedor: new FormControl(null, Validators.required),
-            idDepartamento : new FormControl(null, Validators.required),
-            idProvincia : new FormControl(null, Validators.required),
-            idDistrito : new FormControl(null, Validators.required)
-          });
-          this.formDatosProveedor.markAsUntouched();
-          this.cdr.markForCheck();
-          break;
-        case false:
-          this.formDatosProveedor.reset();
-          this.formDatosEnvio.get('proveedor_id')?.clearValidators();
-          this.formDatosEnvio.get('tipo_documento_proveedor')?.clearValidators();
-          this.formDatosEnvio.get('numero_documento_proveedor')?.clearValidators();
-          this.formDatosEnvio.get('nombre_rsocial_proveedor')?.clearValidators();
-          break;
-        default:
-          break;
-      }
-
-    }
+  
 
     evtOnSubmit(): boolean {
-
-        console.log(this.formDatosProveedor);
 
         this.submitted = true;
         if(this.formDatosEnvio.invalid){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de datos de envío.",
+                title: "Se tiene que completar los datos obligatorios en la sección de Datos de envío.",
                 showCloseButton: true,
                 timerProgressBar: true,
                 timer: 4000
@@ -653,11 +604,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return false;
         }
 
-        if(this.mostrarProveedor && this.formDatosProveedor.invalid){
+        console.log(this.mostrarProveedor() , this.formDatosProveedor.invalid);
+        if(this.mostrarProveedor() && this.formDatosProveedor.invalid){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de datos del proveedor.",
+                title: "Se tiene que completar los datos obligatorios en la sección de Datos del proveedor.",
                 showCloseButton: true,
                 timerProgressBar: true,
                 timer: 4000
@@ -826,6 +778,32 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       (this.formDatosEnvio.get('conductores') as FormArray).clear();
     }
 
+    resetProveedor(): void {
+      this.formDatosProveedor.reset();
+
+      ['proveedor_id', 'tipo_documento_proveedor', 'numero_documento_proveedor', 'nombre_rsocial_proveedor']
+        .forEach(ctrlName => {
+          const ctrl = this.formDatosProveedor.get(ctrlName);
+          ctrl?.clearValidators();
+          ctrl?.updateValueAndValidity();
+        });
+
+      this.formDatosEnvio.markAsUntouched();
+      //this.cdr.detectChanges();
+    }
+
+    enableValidatorProveedor(): void {
+      ['proveedor_id', 'tipo_documento_proveedor', 'numero_documento_proveedor', 'nombre_rsocial_proveedor']
+        .forEach(ctrlName => {
+          const ctrl = this.formDatosProveedor.get(ctrlName);
+          ctrl?.addValidators(Validators.required);
+          ctrl?.updateValueAndValidity();
+        });
+      //this.formDatosProveedor.markAllAsTouched();
+      //this.cdr.detectChanges();
+    }
+
+
     // handlers
 
     handlerConfirmDialog(callback: () => void, header: string, message: string): void{
@@ -893,6 +871,25 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         subProvincia1?.unsubscribe();
         subDistrito1?.unsubscribe();
+    }
+
+    handlerValueMotivoTraslado(item: SunatMotivoTrasladoDto | undefined): void{
+      this.mostrarProveedor.set(false);
+      this.resetProveedor();
+
+      if(!item){
+        return;
+      }
+
+      const motivosTraslado = [
+        SunatMotivoTrasladoEnum.compra,
+        SunatMotivoTrasladoEnum.otros
+      ];
+
+      if( motivosTraslado.includes(item.codigo) ){
+        this.mostrarProveedor.set(true);
+        this.enableValidatorProveedor();
+      }
     }
 
     // validator

@@ -83,3 +83,9 @@ export interface EstablecimientoRemitenteGuiaDTO{
   nuevo_correlativo: number | null;  
   nuevo_numero_guia: string | null;           
 } 
+
+
+export interface EstablecimientoListToSelectDTO{
+    id: number;
+    descripcion: string;
+}

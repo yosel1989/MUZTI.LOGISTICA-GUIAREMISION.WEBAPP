@@ -336,7 +336,14 @@
                 </tr>
             }
             @else{
-                <tr [pSelectableRow]="rowData" class="text-[12px]!" [class.cursor-grab!]="hands()" [pContextMenuRow]="rowData.__empty ? null : rowData" [class.p-datatable-contextmenu-row-selected]="selected === rowData">
+                <tr 
+                    [pSelectableRow]="rowData" 
+                    class="text-[12px]!" 
+                    [class.cursor-grab!]="hands()" 
+                    [class.hands]="hands()" 
+                    [pContextMenuRow]="rowData.__empty ? null : rowData" 
+                    [class.p-datatable-contextmenu-row-selected]="selected === rowData"
+                >
                     @for (col of columns; let i = $index; track $index) {
                         @if(rowData.__empty) {
                             <td 

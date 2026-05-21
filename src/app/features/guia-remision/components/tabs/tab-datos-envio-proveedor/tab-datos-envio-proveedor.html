@@ -10,7 +10,7 @@
                     }
                 </div>
             </p-tab>
-            @if(mostrarProveedor){
+            @if(mostrarProveedor()){
                 <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
                     <div class="flex items-center gap-2">
                         <label for="" class="text-[12px] pointer-events-none ">Datos del proveedor</label>
@@ -816,7 +816,7 @@
             </p-tabpanel>
 
             
-            @if(mostrarProveedor){
+            @if(mostrarProveedor()){
                 <p-tabpanel value="1">
                     <div [formGroup]="formDatosProveedor" class="flex flex-col gap-4">
 
@@ -837,7 +837,11 @@
 
                         </div>
 
+                        @if(mostrarProveedor() && formDatosProveedor.invalid){
+                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar un proveedor.</span></p-message>
+                        }
 
+                        
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
@@ -943,6 +947,8 @@
                                 ></app-select-distrito>
                             </div>
                         </div>
+                        
+
                     </div>
                 </p-tabpanel>
             }

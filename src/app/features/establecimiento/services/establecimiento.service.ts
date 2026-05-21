@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
+import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
 import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
@@ -102,6 +102,16 @@ export class EstablecimientoApiService{
     getByIdToGuia(idEstablecimiento: number, tipoGuia: 'TRANSPORTISTA' | 'REMITENTE' | string): Observable<EstablecimientoRemitenteGuiaDTO> {
         return this.http.get<any>(`${this.baseUrl}/buscar-por-id-para-guia/${idEstablecimiento}/${tipoGuia}`).pipe(
             map(response =>{ return response as EstablecimientoRemitenteGuiaDTO})
+        );
+    }
+
+
+    getAllToSelectByRuc(ruc: string): Observable<EstablecimientoListToSelectDTO[]>{
+        return this.http.get<any>(`${this.baseUrl}/listar-select/por-ruc/${ruc}`).pipe(
+            map(response =>{ return response as EstablecimientoListToSelectDTO[] }),
+            catchError((error: HttpErrorResponse) => {
+                return throwError(() => error);
+            })
         );
     }
 }

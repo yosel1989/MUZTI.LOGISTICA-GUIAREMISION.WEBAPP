@@ -11,108 +11,225 @@
             <div>
                 <label class="font-normal text-[11px]!">Fecha Registro</label>
                 <app-flt-date 
-                #fechaRegistro
-                [today]="false"
-                column="fecha_registro"
-                (OnValuesChange)="evtChangeFechaRegistro($event)"></app-flt-date>
+                    #fechaRegistro
+                    [today]="true"
+                    column="fecha_registro"
+                    (OnValuesChange)="evtChangeFechaRegistro($event)"
+                ></app-flt-date>
             </div>
 
             <div>
                 <label class="font-normal text-[11px]!">Fecha Emisión</label>
                 <app-flt-date 
-                #fechaEmision
-                [today]="false" 
-                column="fecha_emision"
-                (OnValuesChange)="evtChangeFechaEmision($event)"></app-flt-date>
+                    #fechaEmision
+                    [today]="false" 
+                    column="fecha_emision"
+                    (OnValuesChange)="evtChangeFechaEmision($event)"
+                ></app-flt-date>
             </div>
 
+            <!--Remitente-->
             <div>
-                <label class="font-normal text-[11px]!">Empresa / Remitente</label>
+                <label class="font-normal text-[11px]!">Remitente</label>
                 <p-select 
-                #rucEmpresa
-                formControlName="rucEmpresa"
-                fluid
-                filter="true"
-                size="small" 
-                [inputSize]="2" 
-                panelStyleClass="text-[12px]!"
-                class="h-[28px]!"
-                [options]="empresas | async"  
-                placeholder="Todos" 
-                optionValue="ruc" 
-                optionLabel="empresa" 
-                showClear="true"
-                appendTo="body"
+                    #remitenteId
+                    formControlName="remitenteId"
+                    fluid
+                    filter="true"
+                    size="small" 
+                    [inputSize]="2" 
+                    panelStyleClass="text-[12px]!"
+                    class="h-[28px]!"
+                    [options]="empresas()"  
+                    [loading]="ldEmpresas()"
+                    filterBy="ruc,empresa"
+                    placeholder="Todos" 
+                    optionValue="ruc" 
+                    optionLabel="empresa" 
+                    showClear="true"
+                    appendTo="body"
                 >
                     <ng-template #clearicon>
                         <span class="px-2">
                             <p-inputicon 
-                            class="pi pi-times text-xs! cursor-pointer"
-                            pTooltip="Limpiar"
-                            tooltipPosition="top"
-                            tooltipStyleClass="text-xs! text-center"/>
+                                class="pi pi-times text-xs! cursor-pointer"
+                                pTooltip="Limpiar"
+                                tooltipPosition="top"
+                                tooltipStyleClass="text-xs! text-center"
+                            />
+                        </span>
+                    </ng-template>
+
+                    <ng-template let-empresa #item>
+                        <span class="flex flex-col">
+                            <span class="font-medium">{{ empresa.empresa }}</span>
+                            <span>{{ empresa.ruc }}</span>
                         </span>
                     </ng-template>
                 </p-select>
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Local / Remitente</label>
+                <label class="font-normal text-[11px]!">Origen</label>
                 <p-multiselect
-                #idRemitente 
-                formControlName="idRemitente"
-                fluid
-                [options]="remitentes"  
-                [placeholder]="ldRemitentes ? 'Cargando ...' : 'Todos'" 
-                size="small" 
-                class="h-[28px]!" 
-                panelStyleClass="text-[12px]!"
-                optionValue="id" 
-                optionLabel="descripcion" 
-                showClear="true"
-                appendTo="body"
-                filter="true"
-                [loading]="ldRemitentes"
+                    #establecimientoRemitenteId 
+                    formControlName="establecimientoRemitenteId"
+                    fluid
+                    [options]="establecimientosRemitente()"  
+                    [placeholder]="ldEstablecimientosRemitente() ? 'Cargando ...' : 'Todos'" 
+                    size="small" 
+                    class="h-[28px]!"
+                    panelStyleClass="text-[12px]!"
+                    optionValue="id" 
+                    optionLabel="descripcion" 
+                    showClear="true"
+                    appendTo="body"
+                    filter="true"
+                    [loading]="ldEstablecimientosRemitente()"
                 >
                     <ng-template #clearicon>
                         <span class="px-2">
                             <p-inputicon 
-                            class="pi pi-times text-[12px]! cursor-pointer"
-                            pTooltip="Limpiar"
-                            tooltipPosition="top"
-                            tooltipStyleClass="text-xs! text-center"/>
+                                class="pi pi-times text-[12px]! cursor-pointer"
+                                pTooltip="Limpiar"
+                                tooltipPosition="top"
+                                tooltipStyleClass="text-xs! text-center"
+                            />
                         </span>
                     </ng-template>
 
                     <ng-template #footer>
                         <div class="p-3 flex border-t border-t-gray-200">
-                            @if(idRemitente.value){
+                            @if(establecimientoRemitenteId.value){
                                 <p-button 
-                                label="Limpiar" 
-                                severity="danger" 
-                                size="small" 
-                                outlined
-                                class="mr-auto!"
-                                styleClass="text-xs! bg-red-100! border-0! hover:bg-red-500! hover:text-white!"
-                                icon="pi pi-times text-xs!" 
-                                (click)="evtClearControl('idRemitente')" />
+                                    label="Limpiar" 
+                                    severity="danger" 
+                                    size="small" 
+                                    outlined
+                                    class="mr-auto!"
+                                    styleClass="text-xs! bg-red-100! border-0! hover:bg-red-500! hover:text-white!"
+                                    icon="pi pi-times text-xs!" 
+                                    (click)="evtClearControl('establecimientoRemitenteId')" 
+                                />
                             }
                             <p-button 
-                            class="ml-auto!"
-                            styleClass="text-xs! bg-green-100! border-0! hover:bg-green-500! hover:text-white!"
-                            label="Aceptar" 
-                            outlined
-                            severity="success" 
-                            size="small" 
-                            icon="pi pi-check text-xs!"   
-                            (click)="evtCloseMultiSelect(idRemitente)" />
+                                class="ml-auto!"
+                                styleClass="text-xs! bg-green-100! border-0! hover:bg-green-500! hover:text-white!"
+                                label="Aceptar" 
+                                outlined
+                                severity="success" 
+                                size="small" 
+                                icon="pi pi-check text-xs!"   
+                                (click)="evtCloseMultiSelect(establecimientoRemitenteId)" 
+                            />
                         </div>
                     </ng-template>
                 </p-multiselect>
 
             </div>
 
+            <!--Destinatario-->
+
             <div>
+                <label class="font-normal text-[11px]!">Destinatario</label>
+                <p-select 
+                    #destinatarioId
+                    formControlName="destinatarioId"
+                    fluid
+                    filter="true"
+                    size="small" 
+                    [inputSize]="2" 
+                    panelStyleClass="text-[12px]!"
+                    class="h-[28px]!"
+                    [options]="empresas()"  
+                    [loading]="ldEmpresas()"
+                    filterBy="ruc,empresa"
+                    placeholder="Todos" 
+                    optionValue="ruc" 
+                    optionLabel="empresa" 
+                    showClear="true"
+                    appendTo="body"
+                >
+                    <ng-template #clearicon>
+                        <span class="px-2">
+                            <p-inputicon 
+                                class="pi pi-times text-xs! cursor-pointer"
+                                pTooltip="Limpiar"
+                                tooltipPosition="top"
+                                tooltipStyleClass="text-xs! text-center"
+                            />
+                        </span>
+                    </ng-template>
+
+                    <ng-template let-empresa #item>
+                        <span class="flex flex-col">
+                            <span class="font-medium">{{ empresa.empresa }}</span>
+                            <span>{{ empresa.ruc }}</span>
+                        </span>
+                    </ng-template>
+                </p-select>
+            </div>
+
+            <div>
+                <label class="font-normal text-[11px]!">Destino</label>
+                <p-multiselect
+                    #establecimientoDestinatarioId 
+                    formControlName="establecimientoDestinatarioId"
+                    fluid
+                    [options]="establecimientosDestinatario()"  
+                    [placeholder]="ldEstablecimientosDestinatario() ? 'Cargando ...' : 'Todos'" 
+                    size="small" 
+                    class="h-[28px]!"
+                    panelStyleClass="text-[12px]!"
+                    optionValue="id" 
+                    optionLabel="descripcion" 
+                    showClear="true"
+                    appendTo="body"
+                    filter="true"
+                    [loading]="ldEstablecimientosDestinatario()"
+                >
+                    <ng-template #clearicon>
+                        <span class="px-2">
+                            <p-inputicon 
+                                class="pi pi-times text-[12px]! cursor-pointer"
+                                pTooltip="Limpiar"
+                                tooltipPosition="top"
+                                tooltipStyleClass="text-xs! text-center"
+                            />
+                        </span>
+                    </ng-template>
+
+                    <ng-template #footer>
+                        <div class="p-3 flex border-t border-t-gray-200">
+                            @if(establecimientoDestinatarioId.value){
+                                <p-button 
+                                    label="Limpiar" 
+                                    severity="danger" 
+                                    size="small" 
+                                    outlined
+                                    class="mr-auto!"
+                                    styleClass="text-xs! bg-red-100! border-0! hover:bg-red-500! hover:text-white!"
+                                    icon="pi pi-times text-xs!" 
+                                    (click)="evtClearControl('establecimientoDestinatarioId')" 
+                                />
+                            }
+                            <p-button 
+                                class="ml-auto!"
+                                styleClass="text-xs! bg-green-100! border-0! hover:bg-green-500! hover:text-white!"
+                                label="Aceptar" 
+                                outlined
+                                severity="success" 
+                                size="small" 
+                                icon="pi pi-check text-xs!"   
+                                (click)="evtCloseMultiSelect(establecimientoDestinatarioId)" 
+                            />
+                        </div>
+                    </ng-template>
+                </p-multiselect>
+
+            </div>
+
+            <!--<div>
                 <label class="font-normal text-[11px]!">Tipo Guía</label>
                 <p-select 
                 formControlName="tipoGuia"
@@ -138,7 +255,7 @@
                         </span>
                     </ng-template>
                 </p-select>
-            </div>
+            </div>-->
 
             <div>
                 <label class="font-normal text-[11px]!">Serie Guía</label>
@@ -194,16 +311,17 @@
             <div>
                 <label class="font-normal text-[11px]!">Motivo Traslado</label>
                 <p-multiselect
-                #idTipoTraslado 
-                formControlName="idTipoTraslado"
+                #motivoTrasladoId 
+                formControlName="motivoTrasladoId"
                 fluid
-                [options]="tiposTraslado"  
-                placeholder="Todos" 
+                [options]="motivosTraslado()" 
+                [loading]="ldMotivosTraslado()" 
+                [placeholder]="ldMotivosTraslado() ? 'Cargando ...' : 'Todos'" 
                 size="small" 
                 panelStyleClass="text-[12px]!"
                 class="h-[28px]!"
-                optionValue="value" 
-                optionLabel="label" 
+                optionValue="id" 
+                optionLabel="nombre" 
                 showClear="true"
                 appendTo="body"
                 filter="true"
@@ -222,13 +340,13 @@
                     <ng-template #dropdownicon>
                         <i 
                         class="pi text-xs!"
-                        [ngClass]="{'pi-chevron-up': idTipoTraslado.overlayVisible, 'pi-chevron-down': !idTipoTraslado.overlayVisible}"
+                        [ngClass]="{'pi-chevron-up': motivoTrasladoId.overlayVisible, 'pi-chevron-down': !motivoTrasladoId.overlayVisible}"
                         ></i>
                     </ng-template>
 
                     <ng-template #footer>
                         <div class="p-3 flex border-t border-t-gray-200">
-                            @if(idTipoTraslado.value){
+                            @if(motivoTrasladoId.value){
                             <p-button 
                             label="Limpiar" 
                             severity="danger" 
@@ -237,7 +355,7 @@
                             class="mr-auto!"
                             styleClass="text-xs! bg-red-100! border-0! hover:bg-red-500! hover:text-white!"
                             icon="pi pi-times text-xs!" 
-                            (click)="evtClearControl('idTipoTraslado')" />
+                            (click)="evtClearControl('motivoTrasladoId')" />
                             }
                             <p-button 
                             class="ml-auto!"
@@ -248,7 +366,7 @@
                             text 
                             size="small" 
                             icon="pi pi-check text-xs!"  
-                            (click)="evtCloseMultiSelect(idTipoTraslado)" />
+                            (click)="evtCloseMultiSelect(motivoTrasladoId)" />
                         </div>
                     </ng-template>
                 </p-multiselect>
@@ -282,54 +400,6 @@
                     </ng-template>
                 </p-select>
             </div>
-
-            <div>
-                <label class="font-normal text-[11px]! inline-block">
-                    <span>Local / Destinatario</span>
-                    <ng-icon 
-                    pTooltip="Buscar destinatario por nombre, razón social o ruc para luego seleccionarlo"
-                    tooltipPosition="top"
-                    tooltipStyleClass="text-xs! text-center"
-                    class="text-[12px]!" 
-                    name="heroQuestionMarkCircleMini" />
-                </label>
-                <p-select 
-                [emptyMessage]="ldDestinatarios ? 'Buscando ...' : ''"
-                formControlName="idDestinatario"
-                fluid
-                size="small" 
-                editable="true"
-                panelStyleClass="text-[12px]!"
-                class="h-[28px]!"
-                [options]="destinatarios | async"  
-                placeholder="Todos" 
-                optionValue="id" 
-                optionLabel="razon_social"
-                showClear="true"
-                appendTo="body"
-                [loading]="ldDestinatarios"
-                (input)="evtFilterDestinatario($event)"
-                >
-                    <ng-template #clearicon>
-                        <span class="px-2">
-                            <p-inputicon 
-                            class="pi pi-times text-xs! cursor-pointer"
-                            pTooltip="Limpiar"
-                            tooltipPosition="top"
-                            tooltipStyleClass="text-xs! text-center"/>
-                        </span>
-                    </ng-template>
-                    
-                    <ng-template let-item #item>
-                        <div class="flex flex-col">
-                            <span class="text-gray-800 font-medium!">{{ item.razon_social }}</span>
-                            <span class="text-xs! text-gray-500">{{ item.numero_documento }}</span>
-                        </div>
-                    </ng-template>
-
-                </p-select>
-            </div>
-
 
             <div>
                 <label class="font-normal text-[11px]!">Estado</label>

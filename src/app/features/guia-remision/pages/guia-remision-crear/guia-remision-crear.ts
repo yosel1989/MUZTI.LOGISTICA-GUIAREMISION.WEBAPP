@@ -297,7 +297,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             destinatario: this.destinatario()!,
             destinatario_id: this.f.destinatario_id.value,
 
-            proveedor: (!this.mostrarProveedor) ? null : {
+            proveedor: (!this.tabDatosEnvioProveedor?.mostrarProveedor()) ? null : {
                 id: this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
                 tipo_documento: this.tabDatosEnvioProveedor?.data.proveedor.tipo_documento_proveedor,
                 numero_documento: this.tabDatosEnvioProveedor?.data.proveedor.numero_documento_proveedor,
@@ -306,7 +306,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 direccion: this.tabDatosEnvioProveedor?.data.proveedor.direccion_proveedor,
                 email: "sistemas4@carolina-peru.com",
             },
-            proveedor_id: (!this.mostrarProveedor) ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
+            proveedor_id: (!this.tabDatosEnvioProveedor?.mostrarProveedor()) ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
 
             datos_envio: {
 

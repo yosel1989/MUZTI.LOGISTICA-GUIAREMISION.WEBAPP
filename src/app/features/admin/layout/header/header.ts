@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -50,6 +50,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
     private player!: AnimationPlayer;
 
     public user: User | null = null;
+
+    collapsed = signal(false);
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -121,8 +123,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     evtToggleSidebar(): void{
-        console.log('click');
         document.querySelector("body")?.classList.toggle("collapsed");
+        this.collapsed.set(!this.collapsed());
     }
 
     // handlers

@@ -18,3 +18,16 @@
     }
   }
 }
+
+.hands{
+  user-select: none;          /* estándar */
+  -webkit-user-select: none;  /* Chrome/Safari */
+  -moz-user-select: none;     /* Firefox */
+  -ms-user-select: none;      /* IE/Edge antiguo */      /* IE/Edge antiguo */
+  > * {
+    user-select: none;          /* estándar */
+    -webkit-user-select: none;  /* Chrome/Safari */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* IE/Edge antiguo */
+  }
+}
