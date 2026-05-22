@@ -208,7 +208,6 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         this.ldEmpresas.set(false);
         const sub = this.empresaApiService.loadAllToSelect().subscribe({
             next: (value: EmpresaToSelectDto[]) => {
-                console.log('empresas', value);
                 this.empresas.set(value);
                 this.ldEmpresas.set(false);
             },

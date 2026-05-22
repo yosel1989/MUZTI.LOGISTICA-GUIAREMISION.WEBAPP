@@ -79,6 +79,7 @@ export interface GR_DatosEnvioRequestDto {
   motivo_envio: string; 
   fecha_envio: string | null; 
   peso_bruto: string; 
+  unidad_medida_id: number; 
   codigo_um: string; 
   ruc_empresa_currier: string | null;
   razon_social_currier: string | null;
@@ -128,6 +129,7 @@ export interface GR_ProductoRequestDto {
   codigo: string; 
   descripcion: string; 
   cantidad: string; 
+  unidad_medida_id: number;
   codigo_um: string;
   codigo_sunat: string | null;
   gtin: string | null;
@@ -193,6 +195,7 @@ export interface GuiaRemisionDetalleDto{
   id: number;
   guia_remision_id: number;
   cantidad: number;
+  unidad_medida_id: number;
   codigo_um: string | null;
   descripcion_um: string;
   codigo: string | null;

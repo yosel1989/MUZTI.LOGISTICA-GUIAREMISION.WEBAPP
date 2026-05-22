@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, signal } from '@angular/core';
 import { FltGuiaRemisionPrincipalComponent } from '@features/guia-remision/components/filters/flt-guia-remision-principal/flt-guia-remision-principal';
 import { TableGuiaRemisionPrincipalComponent } from '@features/guia-remision/components/tables/tbl-guia-remision-principal/tbl-guia-remision-principal';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
@@ -28,7 +28,7 @@ export class PageGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit
     
     @ViewChild('fltGuiaRemision') fltGuiaRemision: FltGuiaRemisionPrincipalComponent | undefined;
 
-    collapseFilter = true;
+    collapseFilter = signal(false);
 
     constructor(
       private ls: LayoutService
@@ -51,7 +51,7 @@ export class PageGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit
     // Events
 
     evtShowFilter(): void{
-      this.collapseFilter = !this.collapseFilter;
+      this.collapseFilter.set(!this.collapseFilter());
     }
 
 }

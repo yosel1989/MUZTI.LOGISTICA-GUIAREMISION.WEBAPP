@@ -569,6 +569,24 @@
             <app-section-producto-listado 
                 #sectionProductoListado
             ></app-section-producto-listado>
+
+            <p-card>
+                <div>
+                    <div class="flex flex-col">
+                        <label class="text-xs text-gray-500 font-semibold">Observaciones</label>
+                        <textarea 
+                            #ta 
+                            formControlName="observacion" 
+                            pSize="small" 
+                            class="text-xs" 
+                            flluid rows="4" 
+                            maxlength="250" 
+                            pTextarea
+                        ></textarea>
+                        <small class="text-[10px]! text-gray-500">(250 carácteres) / {{ ta.value.length }}</small>
+                    </div>
+                </div>
+            </p-card>
         </div>
     </form>
 </div>

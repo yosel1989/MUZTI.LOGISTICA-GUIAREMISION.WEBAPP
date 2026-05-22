@@ -64,22 +64,23 @@
                         </td>
                         <td class="px-1! w-30!">
                             <p-select
-                            fluid
-                            size="small"
-                            panelStyleClass="text-[.875rem]!"
-                            [inputSize]="2"
-                            [class]=" row.get('unidad')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
-                            [options]="unitOfMeasures"
-                            formControlName="unidad"
-                            placeholder=""
-                            [editable]="true"
-                            optionValue="short"
-                            optionLabel="short"
-                            appendTo="body"
+                                fluid
+                                size="small"
+                                panelStyleClass="text-[.875rem]!"
+                                [inputSize]="2"
+                                [class]=" row.get('unidad_medida_id')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                                [options]="unidadesMedida()"
+                                formControlName="unidad_medida_id"
+                                placeholder=""
+                                [editable]="true"
+                                optionValue="id"
+                                optionLabel="codigo_um"
+                                appendTo="body"
+                                filterBy="codigo_um,descripcion"
                             >
                                 <ng-template let-unit #item>
                                     <div class="flex items-center">
-                                        {{unit.short}} - {{unit.description}}
+                                        {{unit.codigo_um}} - {{unit.descripcion}}
                                     </div>
                                 </ng-template>
                             </p-select>
@@ -155,7 +156,7 @@
                         <td class="px-1! w-12.5">
                             <div class="flex flex-row gap-1 justify-end">
                                 @if(i == items.length -1){
-                                    <p-button 
+                                    <!--<p-button 
                                         [outlined]="true"
                                         pTooltip="Agregar producto" 
                                         tooltipPosition="left" 
@@ -166,7 +167,7 @@
                                         styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
                                         (click)="evtAddItem(true)" 
                                         rounded="true" 
-                                    />
+                                    />-->
                                 }@else{
                                         <div></div>
                                     }
@@ -202,16 +203,6 @@
             icon="pi pi-plus text-xs!" 
             severity="primary" 
             label="Agregar item"></p-button>
-        </div>
-
-        <p-divider />
-
-        <div>
-            <div class="flex flex-col mt-8">
-                <label class="text-xs text-gray-500 font-semibold">Más información</label>
-                <textarea #ta formControlName="description" pSize="small" class="text-xs" flluid rows="4" maxlength="250" pTextarea></textarea>
-                <small class="text-[10px]! text-gray-500">(250 carácteres) / {{ ta.value.length }}</small>
-            </div>
         </div>
     </form>
 

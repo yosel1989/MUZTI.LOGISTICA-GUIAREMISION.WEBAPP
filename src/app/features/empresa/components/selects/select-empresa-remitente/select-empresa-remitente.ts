@@ -40,7 +40,6 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
         this.loadData();
         this.control.valueChanges.subscribe((res: string | null) => {
             this.selected.set( res ? this.data.find(x => x.ruc === res)! : null );
-            console.log('Empresa seleccionada', this.selected());
         });
     }
 

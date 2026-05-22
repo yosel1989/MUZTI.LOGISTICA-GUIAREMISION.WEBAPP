@@ -30,7 +30,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
 import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
-import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_EnviarGuiaRemisionResponseDto, GR_ProductoRequestDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
@@ -50,6 +50,7 @@ import { EstablecimientoDTO } from '@features/establecimiento/models/establecimi
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
+import { TextareaModule } from 'primeng/textarea';
 
 interface Type {
     name: string;
@@ -91,7 +92,8 @@ interface Type {
     AsyncPipe,
     AutoCompleteModule,
     DividerModule,
-    SelectMotivoTrasladoComponent
+    SelectMotivoTrasladoComponent,
+    TextareaModule
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -190,6 +192,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             fecha_emision: new FormControl(new Date(), Validators.required),
             docs_ref: new FormArray([]),
+            observacion: new FormControl(null)
         });
 
         this.formGroup.get('fecha_emision')?.setValue(new Date());
@@ -281,7 +284,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             motivo_traslado: this.selectMotivoTraslado!.selected(),
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
-            observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
+            observacion: this.f.observacion.value ?? '',
             registro_mtc: null,
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
                 return {
@@ -313,6 +316,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
                 fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
                 peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
+                unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_peso_bruto,
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_peso_bruto,
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
@@ -342,11 +346,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 pais: 'PE'
             }],
 
-            productos: this.sectionProductoListadoComponent!.getFormData.items.map((x) => {
+            productos: this.sectionProductoListadoComponent!.getFormData.map((x: GR_ProductoRequestDto) => {
                 return {
                     codigo: x.codigo,
                     descripcion: x.descripcion,
                     cantidad: x.cantidad.toString(),
+                    unidad_medida_id: x.unidad_medida_id,
                     codigo_um: x.codigo_um,
                     codigo_sunat: x.codigo_sunat,
                     gtin: x.gtin,

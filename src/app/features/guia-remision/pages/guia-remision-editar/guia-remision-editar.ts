@@ -291,7 +291,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
             motivo_traslado: this.selectMotivoTraslado?.selected()!,
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
-            observacion: this.sectionProductoListadoComponent?.getFormData.description ?? '',
+            observacion: this.f.observacion.value ?? '',
             registro_mtc: null,
 
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
@@ -376,11 +376,12 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
                 pais: 'PE'
             }],
 
-            productos: this.sectionProductoListadoComponent!.getFormData.items.map((x) => {
+            productos: this.sectionProductoListadoComponent!.getFormData.map((x) => {
                 return {
                     codigo: x.codigo,
                     descripcion: x.descripcion,
                     cantidad: x.cantidad.toString(),
+                    unidad_medida_id: x.unidad_medida_id,
                     codigo_um: x.codigo_um,
                     codigo_sunat: x.codigo_sunat,
                     gtin: x.gtin,
