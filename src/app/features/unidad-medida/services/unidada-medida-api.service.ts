@@ -23,4 +23,13 @@ export class UnidadMedidaApiService{
         );
     }
 
+    getAllWeightToSelect(): Observable<UnidadMedidaToSelectDto[]> {
+        return this.http.get<any>(`${this.baseUrl}/listar-para-select/peso`).pipe(
+            map(response =>{ return response as UnidadMedidaToSelectDto[]}),
+            catchError(error => {
+                return throwError(() => error);
+            })
+        );
+    }
+
 }

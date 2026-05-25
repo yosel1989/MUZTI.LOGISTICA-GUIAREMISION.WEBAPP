@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -32,34 +32,39 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
   templateUrl: './tbl-conductor-principal.html',
   styleUrl: './tbl-conductor-principal.scss',
   imports: [
-        TableModule,
-        SkeletonModule,
-        TagModule,
-        ToolbarModule,
-        ButtonModule,
-        DividerModule,
-        IconFieldModule,
-        InputIconModule,
-        TooltipModule,
-        InputTextModule,
-        AsyncPipe,
-        DatePipe,
-        ContextMenuModule,
-        ConfirmDialogModule,
-        LoaderComponent,
-        ReactiveFormsModule
+      TableModule,
+      SkeletonModule,
+      TagModule,
+      ToolbarModule,
+      ButtonModule,
+      DividerModule,
+      IconFieldModule,
+      InputIconModule,
+      TooltipModule,
+      InputTextModule,
+      AsyncPipe,
+      DatePipe,
+      ContextMenuModule,
+      ConfirmDialogModule,
+      LoaderComponent,
+      ReactiveFormsModule
   ],
   providers: [DialogService, ConfirmationService]
 })
 
 export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    public util = inject(UtilService);
+    private confirmationService = inject(ConfirmationService);
+    private alertService = inject(AlertService);
+    public dialogService = inject(DialogService);
+    private api = inject(ConductorApiService);
+
     cols: Column[] = [];
 
     data: ConductorDto[] = [];
 
-    ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    $ldData = this.ldData.asObservable();
+    ldData = signal(true);
 
     selected: ConductorDto | undefined;
     private selectedSubject = new BehaviorSubject<ConductorDto | undefined>(undefined);
@@ -78,8 +83,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     private subs = new Subscription();
 
     pageNumber: number = 1;
-    pageSize: number = 10;
-    private pageSize$ = new BehaviorSubject<number>(10);
+    pageSize = signal(10);
     totalRecords: number = 0;
 
     items: MenuItem[] | undefined;
@@ -92,33 +96,28 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     ctrlSearch = new FormControl(null);
 
     constructor(
-      public dialogService: DialogService,
-      private api: ConductorApiService,
-      private cd: ChangeDetectorRef,
-      public util: UtilService,
-      private confirmationService: ConfirmationService,
-      private alertService: AlertService
+      private cd: ChangeDetectorRef
     ){
-        this.cols = [
-          { field: 'select', header: '', sort: false, sticky: false  },
-          { field: 'cod', header: '#', sort: false, sticky: false  },
-          { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'tipo_documento', header: 'T. Documento', sort: false, sticky: false },
-          { field: 'numero_documento', header: 'N° Documento', sort: false, sticky: false },
-          { field: 'nombres', header: 'Nombres', sort: false, sticky: false },
-          { field: 'apellidos', header: 'Apellidos', sort: false, sticky: false },
-          { field: 'cargo', header: 'Cargo', sort: false, sticky: false },
-          { field: 'licencia', header: 'Distrito', sort: false, sticky: false },
-          { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
-          { field: 'estado', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
-        ];
     }
 
     ngOnInit(): void{
+      this.cols = [
+        { field: 'select', header: '', sort: false, sticky: false  },
+        { field: 'cod', header: '#', sort: false, sticky: false  },
+        { field: 'id', header: 'Código', sort: false, sticky: false },
+        { field: 'tipo_documento', header: 'T. Documento', sort: false, sticky: false },
+        { field: 'numero_documento', header: 'N° Documento', sort: false, sticky: false },
+        { field: 'nombres', header: 'Nombres', sort: false, sticky: false },
+        { field: 'apellidos', header: 'Apellidos', sort: false, sticky: false },
+        { field: 'cargo', header: 'Cargo', sort: false, sticky: false },
+        { field: 'licencia', header: 'Distrito', sort: false, sticky: false },
+        { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
+        { field: 'estado', header: 'Estado', sort: false, sticky: false },
+        { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
+        { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
+        { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
+        { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+      ];
     }
 
     ngAfterViewInit(): void{
@@ -137,7 +136,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     // getters
     get paddedData(): any[] {
       const actual = this.data ?? [];
-      const fillerCount = this.pageSize - actual.length;
+      const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
       return [...actual, ...fillerRows];
     }
@@ -153,14 +152,14 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       this.selected = undefined;
       this.firstChange = false;
       this.loading = true;
-      this.ldData.next(true);
+      this.ldData.set(true);
 
       if(reload){
         this.pageNumber = 1;
         this.first = 0;
       }
     
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.search).subscribe({
+      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize(), this.search).subscribe({
         next: (res: TableData<ConductorDto[]>) => {
           this.data = res.data.map(x => {
             x.fecha_registro = new Date(x.fecha_registro);
@@ -171,15 +170,15 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           });
 
           this.pageNumber = res.page_number;
-          this.pageSize = res.page_size;
-          this.first = (this.pageNumber - 1) * this.pageSize;
+          this.pageSize.set(res.page_size);
+          this.first = (this.pageNumber - 1) * this.pageSize();
           this.totalRecords = res.total_records;
-          this.ldData.next(false);
+          this.ldData.set(false);
           this.cd.detectChanges();
           this.loading = false;
         },
         error: (e: HttpErrorResponse) => {
-          this.ldData.next(false); 
+          this.ldData.set(false); 
           this.loading = false; 
           this.data = [];
 
@@ -212,13 +211,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtNext() {
-      this.first = this.first + this.pageSize;
+      this.first = this.first + this.pageSize();
       this.pageNumber = this.pageNumber + 1;
       this.evtOnReload(false);
     }
 
     evtPrev() {
-      this.first = this.first - this.pageSize;
+      this.first = this.first - this.pageSize();
       this.pageNumber--;
       this.evtOnReload(false);
     }
@@ -404,14 +403,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtFirstChange(first: number): void{
-      this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
+      this.pageNumber = (first / this.pageSize()) > 0 ? ((first / this.pageSize()) + 1) : 1 ;
     }
 
     evtRowsChange(rows: number): void{
-      this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
-      this.pageSize = this.pageSize === rows ? this.pageSize : rows;
-      this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
-      this.first = (this.pageNumber - 1) * this.pageSize
+      this.pageNumber = this.pageSize() === rows ? this.pageNumber : 1;
+      this.pageSize.set( this.pageSize() === rows ? this.pageSize() : rows );
+      this.first = (this.pageNumber - 1) * this.pageSize();
       this.loadData();
     }
 
@@ -422,7 +420,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     //functions
     isLastPage(): boolean {
-        return this.data ? this.first + this.pageSize >= this.totalRecords : true;
+        return this.data ? this.first + this.pageSize() >= this.totalRecords : true;
     }
 
     isFirstPage(): boolean {

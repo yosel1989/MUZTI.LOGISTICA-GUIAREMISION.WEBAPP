@@ -102,6 +102,8 @@ interface Type {
 
 export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    
+
     @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
@@ -248,6 +250,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngOnInit(): void{
+
     }
 
     ngAfterViewInit(): void{
@@ -316,8 +319,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
                 fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
                 peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
-                unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_peso_bruto,
-                codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_peso_bruto,
+                unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_medida_id,
+                codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,

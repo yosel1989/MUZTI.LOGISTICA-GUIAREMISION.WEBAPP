@@ -63,7 +63,7 @@
                 size="small" 
                 severity="primary" 
                 [outlined]="true"
-                pTooltip="Emitir Nueva Guía" 
+                pTooltip="Acciones" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs! text-center"
                 placeholder="Top"
@@ -175,7 +175,7 @@
             placeholder="Top"
             styleClass="w-9! h-9!"
             placeholder="Top"
-            [loading]="loadingDownload$ | async"
+            [loading]="loadingDownload()"
             (click)="evtExport()"
         />
 
@@ -190,7 +190,6 @@
             placeholder="Top"
             styleClass="w-9! h-9!"
             placeholder="Top"
-            [loading]="loadingDownload$ | async"
             (click)="evtToggleHand()"
         />
 
@@ -204,7 +203,7 @@
                 [outlined]="true"
                 severity="secondary"
                 pTooltip="Filtros"
-                tooltipPosition="bottom"
+                tooltipPosition="top"
                 tooltipStyleClass="text-xs!"
                 placeholder="Top"
                 styleClass="min-w-9! h-9!"

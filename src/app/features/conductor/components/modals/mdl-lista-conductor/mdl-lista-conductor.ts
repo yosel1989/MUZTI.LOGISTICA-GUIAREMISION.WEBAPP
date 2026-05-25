@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
@@ -41,6 +41,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDestroy{
 
   private alertService = inject(AlertService);
+  private api = inject(ConductorApiService);
+  public util = inject(UtilService);
 
   @Output() OnSelect: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -53,17 +55,10 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
   sbData: Subscription | undefined;
   search = new FormControl(null);
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private api: ConductorApiService,
-    public util: UtilService
-  ) {
+  ngOnInit(): void {
     this.search.valueChanges.subscribe(res => {
       this.getData();
     });
-  }
-
-  ngOnInit(): void {
     this.cols = [
       { field: 'id', header: 'Código', sort: false },
       { field: 'numero_documento', header: 'N° Documento', sort: false },

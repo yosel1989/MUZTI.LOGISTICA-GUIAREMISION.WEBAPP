@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal} from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal} from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -44,19 +44,23 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 })
 export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private api = inject(ConductorApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+
   @Input() id!: number;
   @Output() OnSubmited: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCreated: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  isSubmitted = signal(false);
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
   documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
-  submitted: boolean = false;
+  submitted = signal(false);
 
 
   headerValue: string = '';
@@ -74,13 +78,9 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
   ];
 
   constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: ConductorApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
+    public config: DynamicDialogConfig
 	) {
-    this.frm = this.fb.group({
+    this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
       tipo_documento: new FormControl('DNI', Validators.required),
       numero_documento: new FormControl(null, Validators.required),
@@ -147,7 +147,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -159,13 +159,13 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
 
             const dataRequest = this.request;
             this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             this.OnSubmited.emit(true);
             
             const sub = this.api.editar(dataRequest)
             .pipe(finalize(() => {
               this.frm.enable();
-              this.ldSubmit = false;
+              this.ldSubmit.set(false);
               this.OnSubmited.emit(false);
             }))
             .subscribe({

@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -42,6 +42,9 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
   providers: [ConfirmationService]
 })
 export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, OnDestroy {
+  private api = inject(ConductorApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -69,13 +72,9 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
 
 
   constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: ConductorApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
+    public config: DynamicDialogConfig
 	) {
-    this.frm = this.fb.group({
+    this.frm = new FormGroup({
       tipo_documento: new FormControl('DNI', Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       nombres: new FormControl(null, [Validators.required, Validators.maxLength(50)]),

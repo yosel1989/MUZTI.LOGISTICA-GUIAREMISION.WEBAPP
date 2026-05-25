@@ -125,8 +125,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   visibleFilters: boolean = false;
 
-  loadingDownload = new BehaviorSubject<boolean>(false);
-  loadingDownload$ = this.loadingDownload.asObservable();
+  loadingDownload = signal(false);
 
   filters: ColumnsFilterDto[] = [];
   search: string | null = null;
@@ -160,15 +159,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: "text-center" },
         { field: 'numero', header: 'Número', sort: false, sticky: false },
         { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
-        //{ field: 'ruc', header: 'RUC Empresa', sort: false, sticky: false },
         { field: 'establecimiento_remitente', header: 'Origen', sort: false, sticky: false },
-        //{ field: 'direccion_origen', header: 'Dirección Origen', sort: false, sticky: false },
-        //{ field: 'distrito_origen', header: 'Origen', sort: false, sticky: false },
         { field: 'entidad_destinatario', header: 'Destinatario', sort: false, sticky: false, },
         { field: 'establecimiento_destinatario', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' },
-        //{ field: 'distrito_destino', header: 'Destino', sort: false, sticky: false },
-        //{ field: 'direccion_destino', header: 'Dirección Destino', sort: false, sticky: false },
-        //{ field: 'nro_documento_destinatario', header: 'N° Doc. Destinatario', sort: false, sticky: false },
         { field: 'motivo_traslado', header: 'Motivo Traslado', sort: false, sticky: false },
         { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
         { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
@@ -379,7 +372,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   evtExport(): void {
-    this.loadingDownload.next(true);
+    this.loadingDownload.set(true);
 
     if (this.search) {
       this.filters.push({
@@ -392,9 +385,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
       this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
           saveAs(blob, 'reporte.xlsx');
-        this.loadingDownload.next(false);
+        this.loadingDownload.set(false);
         }, (error) => {
-        this.loadingDownload.next(false);
+        this.loadingDownload.set(false);
         this.alertService.showToast({
           position: 'top-end',
           icon: 'error',
@@ -460,12 +453,17 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   //functions
+
   isLastPage(): boolean {
     return this.data ? this.first + this.pageSize >= this.totalRecords : true;
   }
 
   isFirstPage(): boolean {
     return this.data ? this.first === 0 : true;
+  }
+
+  tieneAccion(acciones: string | undefined, accion: string): boolean{
+    return acciones?.split(",").includes(accion) ?? false;
   }
 
   reload(): void {
@@ -480,7 +478,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
-        visible: selected?.estado_sunat === 'ENVIADO'
+        visible: this.tieneAccion(this.selected?.acciones, 'PDF')
       },
       {
         label: 'Aprobar y Emitir',
@@ -488,6 +486,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAprobarGuia();
         },
+        visible: this.tieneAccion(this.selected?.acciones, 'APE')
       },
       {
         label: 'Confirmar',
@@ -495,13 +494,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnConfirmarGuia();
         },
+        visible: this.tieneAccion(this.selected?.acciones, 'CON')
       },
       {
         label: 'Rechazar',
         icon: 'pi pi-times-circle text-red-500!',
         command: () => {
           this.evtOnRechazarGuia();
-        }
+        },
+        visible: this.tieneAccion(this.selected?.acciones, 'REC')
       },
       {
         label: 'Editar',
@@ -509,6 +510,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnEditarGuia();
         },
+        visible: this.tieneAccion(this.selected?.acciones, 'EDI')
       },
       {
         label: 'Anular',
@@ -516,13 +518,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAnularGuia();
         },
+        visible: this.tieneAccion(this.selected?.acciones, 'ANU')
       },
       {
         label: 'Historial',
         icon: 'pi pi-history',
         command: () => {
           this.evtShowHistory();
-        }
+        },
+        visible: this.tieneAccion(this.selected?.acciones, 'HIS')
       }
     ];
   }

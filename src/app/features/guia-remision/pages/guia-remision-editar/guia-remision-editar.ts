@@ -140,8 +140,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
     breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/administracion/guia-remision",}, { label: 'Editar', labelClass: 'text-[12px]!' }];
 
-    tabRemitenteDestinatario = new BehaviorSubject<number>(0);
-    tabRemitenteDestinatario$ = this.tabRemitenteDestinatario.asObservable();
+    tabRemitenteDestinatario = signal(0);
 
     valueTab: any[] = [];
 
@@ -205,7 +204,8 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
         // detectar el cambio en motivo traslado
         this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(value => {
-            this.tabRemitenteDestinatario.next(0);
+
+            this.tabRemitenteDestinatario.set(0);
             this.remitente.set(null);
             this.destinatario.set(null);
         });
@@ -240,16 +240,6 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
             this.cdr.markForCheck();
         });
-
-        effect(() => {
-            const remitente = this.remitente();
-            this.handlerValueRemitente(remitente);
-        });
-
-        effect(() => {
-            const destinatario = this.destinatario();
-            this.handlerValueDestinatario(destinatario);
-        });
     }
 
     ngOnInit(): void{
@@ -258,6 +248,14 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     }
 
     ngAfterViewInit(): void{
+        /*effect(() => {
+            const remitente = this.remitente();
+            this.handlerValueRemitente(remitente);
+        });
+        effect(() => {
+            const destinatario = this.destinatario();
+            this.handlerValueDestinatario(destinatario);
+        });*/
         this.selectEmpresaRemitente?.onChange.subscribe((selected: EmpresaToSelectDto | null) => {
             this.empresa.set(selected);
         });
@@ -347,7 +345,8 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
                 fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
                 peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
-                codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_peso_bruto,
+                unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_medida_id,
+                codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
@@ -691,7 +690,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
     }*/
 
     evtSelectDestEmi(val: any): void{
-        this.tabRemitenteDestinatario.next(parseInt(val, 10));
+        this.tabRemitenteDestinatario.set(parseInt(val, 10));
     }
 
     evtPreview(): void{

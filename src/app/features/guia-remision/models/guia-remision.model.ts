@@ -187,6 +187,7 @@ export interface GuiaRemisionDto {
   loading_update: boolean;
   area: string | null;
   area_id: string | null;
+  acciones: string;
 }
 
 

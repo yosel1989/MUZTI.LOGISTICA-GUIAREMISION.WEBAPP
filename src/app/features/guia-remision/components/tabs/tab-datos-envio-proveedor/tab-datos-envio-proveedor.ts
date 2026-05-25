@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild, signal, effect } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild, signal, effect, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
@@ -32,7 +32,7 @@ import { ConductorApiService } from 'app/features/conductor/services/conductor-a
 import { DialogService } from 'primeng/dynamicdialog';
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { MdlListaConductorComponent } from '@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor';
 import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { MdlListaProveedorComponent } from '@features/proveedor/components/modals/mdl-lista-proveedor/mdl-lista-proveedor';
@@ -45,6 +45,9 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { minItemsValidator } from '@core/validators/minItemsValidator';
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
+import { UnidadMedidaApiService } from '@features/unidad-medida/services/unidada-medida-api.service';
+import { UnidadMedidaToSelectDto } from '@features/unidad-medida/models/unidad-medida.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -79,11 +82,13 @@ import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo
 
 export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
 
+    private unidadMedidaApiService = inject(UnidadMedidaApiService);
+
     @ViewChild('departamentoProveedor') departamentoProveedor: SelectDepartamentoComponent | undefined;
     @ViewChild('provinciaProveedor') provinciaProveedor: SelectProvinciaComponent | undefined;
     @ViewChild('distritoProveedor') distritoProveedor: SelectDistritoComponent | undefined;
 
-    @Input() tipoGuia: string = TipoGuiaRemisionEnum.remitente;
+    @Input() tipoGuia: string | undefined = TipoGuiaRemisionEnum.remitente;
     @Input() emisora: EmpresaToSelectDto | null = null;
 
     private _remitente = signal<EstablecimientoDTO | null>(null);
@@ -131,6 +136,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     mostrarProveedor = signal(false);
 
+    unidadesMedida = signal<UnidadMedidaToSelectDto[]>([]);
+    ldUnidadesMedida = signal(false);
+
     constructor(
       private fb: FormBuilder,
       private cdr: ChangeDetectorRef,
@@ -145,8 +153,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           fecha_inicio_traslado: new FormControl(null, Validators.required),
           fecha_entrega_transportista: new FormControl(null),
           descripcion_traslado: new FormControl(null),
-          unidad_medida_id: new FormControl(1, Validators.required),
-          unidad_peso_bruto: new FormControl('KGM', Validators.required),
+          unidad_medida_id: new FormControl(null, Validators.required),
           peso_bruto_total: new FormControl(null, Validators.required),
           pagador_flete: new FormControl(EnumPagadorFlete.remitente),
 
@@ -244,7 +251,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           fecha_entrega_transportista: this.f_datosEnvio.fecha_entrega_transportista.value,
           descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
           unidad_medida_id: this.f_datosEnvio.unidad_medida_id.value,
-          unidad_peso_bruto: this.f_datosEnvio.unidad_peso_bruto.value,
+          codigo_um: this.unidadesMedida().find(x => x.id === this.f_datosEnvio.unidad_medida_id.value)?.codigo_um,
           peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
           pagador_flete: this.f_datosEnvio.pagador_flete.value,
           ruc_subcontratador: this.f_datosEnvio.ruc_subcontratador.value,
@@ -365,22 +372,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.evtChangeValueTipoTransporte(res);
       });
 
-      /*this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((res: boolean) => {
-        this.f_datosEnvio.registrar_vehiculos_conductores.setValue(false);
-        if(this.f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
-          this.f_datosEnvio.fecha_inicio_traslado.setValue(null);
-          this.f_datosEnvio.fecha_entrega_transportista.setValue(null);
-
-          if(res){
-            this.f_datosEnvio.fecha_inicio_traslado.setValidators(Validators.required);
-            this.f_datosEnvio.fecha_entrega_transportista.clearValidators();
-          }else{
-            this.f_datosEnvio.fecha_inicio_traslado.clearValidators();
-            this.f_datosEnvio.fecha_entrega_transportista.setValidators(Validators.required);
-          }
-          this.cdr.markForCheck();
-        }
-      });*/
+      this.loadUnidadesMedida();
     }
 
     ngAfterViewInit(): void {
@@ -391,6 +383,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ngOnChanges(changes: SimpleChanges): void {
 
       if(changes['tipoGuia']){
+        console.log('tipoGuia', changes['tipoGuia']);
         if(this.tipoGuia === 'TRANSPORTISTA'){
           this.f_datosEnvio.tipo_transporte.setValue('PRIVADO');
         }
@@ -894,7 +887,30 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }
     }
 
-    // validator
+    // Data
 
-    
+    loadUnidadesMedida(): void{
+        this.ldUnidadesMedida.set(false);
+        const s = this.unidadMedidaApiService.getAllWeightToSelect()
+        .pipe(finalize(()=>{
+            this.ldUnidadesMedida.set(false);
+        }))
+        .subscribe({
+           next: (value: UnidadMedidaToSelectDto[]) => {
+               this.unidadesMedida.set(value);
+               const select = value.find(x => x.codigo_um === 'KGM');
+               this.f_datosEnvio.unidad_medida_id.setValue(select?.id);
+           },
+           error: (err: HttpErrorResponse) => {
+               this.alertService.showToast({
+                title: err.error.detalle,
+                icon: 'error',
+                timer: 4000,
+                timerProgressBar: true,
+                showCloseButton: true
+               });
+           }, 
+        });
+        this.subs.add(s);
+    }
 }

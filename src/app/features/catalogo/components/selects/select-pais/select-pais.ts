@@ -1,11 +1,12 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlertService } from '@core/services/alert.service';
 import { PaisDto } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-pais',
@@ -15,12 +16,15 @@ import { BehaviorSubject, Subscription } from 'rxjs';
     SelectModule, 
     ReactiveFormsModule, 
     FormsModule,
-    AsyncPipe,
     SkeletonModule
   ]
 })
 
 export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
+
+    private alertService = inject(AlertService);
+    private api = inject(CatalogoApiService);
+
     @Input() classLabel: string = '';
     @Input() label: string = 'País';
     @Input() placeholder: string = 'Seleccionar...';
@@ -33,14 +37,9 @@ export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     data: PaisDto[] = [];
-    loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    $loading = this.loading.asObservable();
+    loading = signal(false);
 
     private subs = new Subscription();
-
-    constructor(
-        private api: CatalogoApiService
-    ) {}
 
     ngOnInit(): void {
         this.getData();
@@ -56,15 +55,22 @@ export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
 
     // Data
     getData(): void {
-        this.loading.next(true);
-        const sub = this.api.getPaises().subscribe({
-            next: (response) => {
+        this.loading.set(true);
+        const sub = this.api.getPaises()
+        .pipe(finalize(()=>{ this.loading.set(false) }))
+        .subscribe({
+            next: (response: PaisDto[]) => {
                 this.data = response;
-                this.loading.next(false);
                 this.isLoaded.emit(true);
             },
-            error: (error) => {
-                this.loading.next(false);
+            error: (error: HttpErrorResponse) => {
+                this.alertService.showToast({
+                    title: error.error.detalle,
+                    icon: 'error',
+                    timer: 4000,
+                    timerProgressBar: true,
+                    showCloseButton: true
+                });
             }
         });
         this.subs.add(sub);
