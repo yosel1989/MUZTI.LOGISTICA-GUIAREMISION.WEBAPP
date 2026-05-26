@@ -14,9 +14,9 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="numero_documento"
-                        [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)"/>
+                        [invalid]="frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted())"/>
                     
-                    @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted)) {
+                    @if (frm.get('numero_documento')?.invalid && (frm.get('numero_documento')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.numero_documento.hasError('required')) {
                             Este campo es requerido.
@@ -37,8 +37,8 @@
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="razon_social" 
-                    [invalid]="frm.get('razon_social')?.invalid && (frm.get('razon_social')?.touched || submitted)"/>
-                    @if (frm.get('razon_social')?.invalid && (frm.get('razon_social')?.touched || submitted)) {
+                    [invalid]="frm.get('razon_social')?.invalid && (frm.get('razon_social')?.touched || submitted())"/>
+                    @if (frm.get('razon_social')?.invalid && (frm.get('razon_social')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.razon_social.hasError('required')) {
                             Este campo es requerido.
@@ -56,7 +56,7 @@
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     label="Departamento *"
                     ></app-select-departamento>
-                    @if (frm.get('departamento')?.invalid && (frm.get('departamento')?.touched || submitted)) {
+                    @if (frm.get('departamento')?.invalid && (frm.get('departamento')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
                         </p-message>
@@ -70,7 +70,7 @@
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
                     label="Provincia *"
                     ></app-select-provincia>
-                    @if (frm.get('provincia')?.invalid && (frm.get('provincia')?.touched || submitted)) {
+                    @if (frm.get('provincia')?.invalid && (frm.get('provincia')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
                         </p-message>
@@ -84,7 +84,7 @@
                     [idUbigeoProvincia]="f.provincia.value" 
                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     ></app-select-distrito>
-                    @if (frm.get('distrito')?.invalid && (frm.get('distrito')?.touched || submitted)) {
+                    @if (frm.get('distrito')?.invalid && (frm.get('distrito')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" >
                         <span class="text-[10px]! ">Este campo es requerido.</span>
                         </p-message>
@@ -102,8 +102,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="direccion" 
                     autofocus="true"
-                    [invalid]="frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted)"/>
-                    @if (frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted)) {
+                    [invalid]="frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted())"/>
+                    @if (frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.direccion.hasError('required')) {
                             Este campo es requerido.
@@ -126,8 +126,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="email_contacto" 
                     autofocus="true"
-                    [invalid]="frm.get('email_contacto')?.invalid && (frm.get('email_contacto')?.touched || submitted)"/>
-                    @if (frm.get('email_contacto')?.invalid && (frm.get('email_contacto')?.touched || submitted)) {
+                    [invalid]="frm.get('email_contacto')?.invalid && (frm.get('email_contacto')?.touched || submitted())"/>
+                    @if (frm.get('email_contacto')?.invalid && (frm.get('email_contacto')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                         @if (f.email_contacto.hasError('email')) {
                             El correo no tiene un formato válido.
@@ -150,8 +150,8 @@
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                     formControlName="codigo_sunat" 
                     autofocus="true"
-                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)"/>
-                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted)) {
+                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted())"/>
+                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                             La código debe tener 4 caracteres.
                         </span></p-message>
@@ -169,9 +169,9 @@
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
                         formControlName="registro_mtc" 
                         autofocus="true"
-                        [invalid]="frm.get('registro_mtc')?.invalid && (frm.get('registro_mtc')?.touched || submitted)"
+                        [invalid]="frm.get('registro_mtc')?.invalid && (frm.get('registro_mtc')?.touched || submitted())"
                     />
-                    @if (frm.get('registro_mtc')?.invalid && (frm.get('registro_mtc')?.touched || submitted)) {
+                    @if (frm.get('registro_mtc')?.invalid && (frm.get('registro_mtc')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
                             El registro MTC no debe exceder los 45 caracteres.
                         </span></p-message>
@@ -186,7 +186,7 @@
 
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" />
     </div>
 
 </form>

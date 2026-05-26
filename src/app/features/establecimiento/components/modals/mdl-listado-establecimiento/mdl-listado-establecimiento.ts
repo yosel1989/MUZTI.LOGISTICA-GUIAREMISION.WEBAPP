@@ -103,7 +103,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
         }
 
-        this.ctrlSearch.valueChanges.subscribe((val) => {
+        this.ctrlSearch.valueChanges.subscribe(() => {
             this.loadData();
         });
         this.cols = [
@@ -189,7 +189,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     loadDataById(): void{
         this.ldDataById.set(true);
-        const s = this.api.getById(this.selected?.id!)
+        const s = this.api.getById(this.selected!.id!)
         .pipe(finalize(() => {
             this.ldDataById.set(false);
             this.ldSelected.set(false);

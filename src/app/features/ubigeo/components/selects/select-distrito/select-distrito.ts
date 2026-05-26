@@ -1,10 +1,11 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlertService } from '@core/services/alert.service';
 import { UbigeoDistritoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
-import { BehaviorSubject, Subscriber, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-distrito',
@@ -13,12 +14,14 @@ import { BehaviorSubject, Subscriber, Subscription } from 'rxjs';
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
-    FormsModule,
-    AsyncPipe
+    FormsModule
   ]
 })
 
 export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
+    private ubigeoService = inject(UbigeoApiService);
+    private alertService = inject(AlertService);
+
     @Input() idUbigeoProvincia: string | null = null;
     @Input() classLabel: string = '';
     @Input() label: string = 'Distrito';
@@ -32,23 +35,18 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    collection: UbigeoDistritoDto[] = [];
-    loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    $loading = this.loading.asObservable();
+    collection = signal<UbigeoDistritoDto[]>([]);
+    loading = signal(false);
     private subs = new Subscription();
-    isLoading = false;
+    isLoading = signal(false);
 
     labelSelected: string | null = null;
-
-    constructor(
-        private ubigeoService: UbigeoApiService
-    ) {}
 
     ngOnInit(): void {
         this.getData();
         this.control.valueChanges.subscribe(value => {
             if(value){
-                const distrito = this.collection.find(dist => dist.id === value);
+                const distrito = this.collection().find(dist => dist.id === value);
                 this.labelSelected = distrito ? distrito.distrito : null;
             }else{
                 this.labelSelected = null;
@@ -73,26 +71,32 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     // Data
     getData(): void {
         this.control.patchValue(null);
-        this.collection = [];
-        this.loading.next(false);
+        this.collection.set([]);
+        this.loading.set(false);
         if (!this.idUbigeoProvincia) {
             return;
         }
 
-        this.loading.next(true);
-        this.isLoading = true;
-        const sub = this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia).subscribe({
-            next: (response) => {
-                this.collection = response;
-                this.loading.next(false);
-                this.isLoading = false;
+        this.loading.set(true);
+        this.isLoading.set(true);
+        const sub = this.ubigeoService.getDistritosByProvincia(this.idUbigeoProvincia)
+        .pipe(finalize(()=>{
+            this.loading.set(false);
+        }))
+        .subscribe({
+            next: (response: UbigeoDistritoDto[]) => {
+                this.collection.set(response);
                 this.isLoaded.emit(true);
-                this.valueEdit && this.control.setValue(this.valueEdit);
-                console.log(this.valueEdit);
+                if(this.valueEdit) this.control.setValue(this.valueEdit);
             },
-            error: (error) => {
-                this.loading.next(false);
-                this.isLoading = false;
+            error: (error: HttpErrorResponse) => {
+                this.alertService.showToast({
+                    title: error.error.detalle,
+                    icon: 'error',
+                    timer: 4000,
+                    timerProgressBar: true,
+                    showCloseButton: true
+                });
             }
         })
         this.subs.add(sub);

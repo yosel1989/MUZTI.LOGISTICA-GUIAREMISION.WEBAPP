@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -12,7 +12,7 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { finalize, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
-import { RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from '@features/proveedor/models/proveedor';
+import { RegistrarProveedorRequestDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
 import { DocumentEntityType } from '@features/items/models/document-entity-type';
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
@@ -49,17 +49,21 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 })
 export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private api = inject(ProveedorApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  isSubmitted = signal(false);
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
   
   documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
-  submitted: boolean = false;
+  submitted = signal(false);
 
 
   headerValue: string = '';
@@ -68,14 +72,10 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     {id: 1, label: 'Activo'}
   ];
 
-  constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: ProveedorApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
-	) {
-    this.frm = this.fb.group({
+  constructor( public config: DynamicDialogConfig ) {}
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       tipo_documento: new FormControl('DNI', Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
@@ -113,10 +113,6 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     }));
   }
 
-  ngOnInit(): void {
-
-  }
-
   ngAfterViewInit(): void {
     
   }
@@ -126,6 +122,8 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -147,7 +145,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -158,15 +156,15 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
         accept: () => {
             const requestData = this.request;
             this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const subs = this.api.registrar(requestData)
             .pipe(finalize(() => {
               this.frm.enable();
-              this.ldSubmit = false;
+              this.ldSubmit.set(false);
             }))
             .subscribe({
-              next: (res: RegistrarProveedorResponseDto) => {
+              next: () => {
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
@@ -195,9 +193,6 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
             });
             this.subs.add(subs);
            
-        },
-        reject: () => {
-            
         },
     });
   }

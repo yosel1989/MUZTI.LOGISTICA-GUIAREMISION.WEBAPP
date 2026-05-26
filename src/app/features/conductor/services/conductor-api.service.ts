@@ -2,9 +2,8 @@ import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, ConductorSugeridoDto, EditarConductorRequestDto, EditarConductorResponseDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
+import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, ConductorSugeridoDto, EditarConductorRequestDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
 import { TableData } from "app/core/models/table";
-import { ColumnsFilterDto } from "app/core/models/filter";
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +16,12 @@ export class ConductorApiService {
   obtenerTodo(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<ConductorDto[]>> {
 
     let httpParams = new HttpParams();
-    
-    search && httpParams.set('search', search);
+    httpParams = search 
+      ? httpParams.set('search', search) 
+      : httpParams;
 
-    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
+
+    return this.http.get<TableData<ConductorDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<ConductorDto[]> }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -29,7 +30,7 @@ export class ConductorApiService {
   }
  
   registrar(request: RegistrarConductorRequestDto): Observable<RegistrarConductorResponseDto> {
-    return this.http.post<any>(`${this.baseUrl}`, request).pipe(
+    return this.http.post<RegistrarConductorResponseDto>(`${this.baseUrl}`, request).pipe(
       map(response =>{ return response as RegistrarConductorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -38,7 +39,7 @@ export class ConductorApiService {
   }
 
   buscarPorId(id: number): Observable<ConductorDto> {
-    return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+    return this.http.get<ConductorDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
       map(response =>{ return response as ConductorDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -47,7 +48,7 @@ export class ConductorApiService {
   }
 
   editar(request: EditarConductorRequestDto): Observable<ConductorDto> {
-    return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
+    return this.http.put<ConductorDto>(`${this.baseUrl}/${request.id}`, request).pipe(
       map(response =>{ return response as ConductorDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -56,18 +57,18 @@ export class ConductorApiService {
   }
 
   getByNumeroDocumento(numeroDocumento: string): Observable<ConductorByNumeroDocumento> {
-    return this.http.get<any>(`${this.baseUrl}/buscar-por-numero-documento/${numeroDocumento}`).pipe(
+    return this.http.get<ConductorByNumeroDocumento>(`${this.baseUrl}/buscar-por-numero-documento/${numeroDocumento}`).pipe(
       map(response => { 
         return { 
           ...response, 
-          fechaCreacion: new Date(response.fechaCreacion) 
+          fecha_registro: new Date(response.fecha_registro) 
         } as ConductorByNumeroDocumento; }
       )
     );
   }
 
   eliminar(id: number): Observable<EliminarConductorResponseDto> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
+    return this.http.delete<EliminarConductorResponseDto>(`${this.baseUrl}/${id}`).pipe(
       map(response =>{ return response as EliminarConductorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -76,7 +77,7 @@ export class ConductorApiService {
   }
 
   actualizarEstado(id: number, request: ActualizarEstadoConductorRequestDto ): Observable<ActualizarEstadoConductorResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+    return this.http.put<ActualizarEstadoConductorResponseDto>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>{ return response as ActualizarEstadoConductorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -90,7 +91,7 @@ export class ConductorApiService {
           params = params.set('numeroDoc', texto);
       }
 
-      return this.http.get<any>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+      return this.http.get<ConductorSugeridoDto[]>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
           map(response =>{ return response as ConductorSugeridoDto[] }),
           catchError((error: HttpErrorResponse) => {
               return throwError(() => error);

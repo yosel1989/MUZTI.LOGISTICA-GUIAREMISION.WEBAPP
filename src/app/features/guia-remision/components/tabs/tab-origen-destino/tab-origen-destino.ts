@@ -103,20 +103,17 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
     ngOnDestroy(): void {
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if(changes['remitente']){
-
-        }
-        if(changes['destinatario']){
-
-        }
+    ngOnChanges(): void {
     }
 
     // getters
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get f_origen(): any {
         return this.formGroupOrigen.controls;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get f_destino(): any {
         return this.formGroupDestino.controls;
     }
@@ -194,11 +191,11 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
             idDepartamento: s.ubigeo_id!.substring(0,2)
         });
         this.provinciaOrigen!.valueEdit = s.ubigeo_id!.substring(0,4);
-        const subProvincia1 = this.provinciaOrigen?.loading.subscribe(res => {
+        const subProvincia1 = this.provinciaOrigen?.isLoaded.subscribe(() => {
             this.formGroupOrigen.get('idProvincia')?.setValue(s.ubigeo_id.substring(0,4));
         });
         this.distritoOrigen!.valueEdit = s.ubigeo_id;
-        const subDistrito1 = this.distritoOrigen?.loading.subscribe((res: any) => {
+        const subDistrito1 = this.distritoOrigen?.isLoaded.subscribe(() => {
             this.formGroupOrigen.get('idDistrito')?.setValue(s.ubigeo_id);
         });
         subProvincia1?.unsubscribe();
@@ -216,11 +213,11 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
             idDepartamento: s.ubigeo_id!.substring(0,2)
         });
         this.provinciaDestino!.valueEdit = s.ubigeo_id!.substring(0,4);
-        const subProvincia1 = this.provinciaDestino?.loading.subscribe(res => {
+        const subProvincia1 = this.provinciaDestino?.isLoaded.subscribe(() => {
             this.formGroupDestino.get('idProvincia')?.setValue(s.ubigeo_id.substring(0,4));
         });
         this.distritoDestino!.valueEdit = s.ubigeo_id;
-        const subDistrito1 = this.distritoDestino?.loading.subscribe((res: any) => {
+        const subDistrito1 = this.distritoDestino?.isLoaded.subscribe(() => {
             this.formGroupDestino.get('idDistrito')?.setValue(s.ubigeo_id);
         });
         subProvincia1?.unsubscribe();

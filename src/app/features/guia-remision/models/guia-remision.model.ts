@@ -155,6 +155,7 @@ export interface GuiaRemisionDto {
   id: number;
   uuid: string;
   ruc: string;
+  remitente: EstablecimientoDTO;
   entidad_remitente: string;
   numero_documento_remitente: string; 
   numero_guia: string;

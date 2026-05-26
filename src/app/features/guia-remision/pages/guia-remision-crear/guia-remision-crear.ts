@@ -28,7 +28,6 @@ import { TableModule } from "primeng/table";
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
-import { RemitenteByIdToGuia } from 'app/features/remitente/models/remitente';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
 import { GR_EnviarGuiaRemisionResponseDto, GR_ProductoRequestDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
@@ -41,8 +40,6 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 import { AlertService } from 'app/core/services/alert.service';
 import { Router } from '@angular/router';
-import { MdlListaDestinatariosComponent } from '@features/destinatario/components/modals/mdl-lista-destinatarios/mdl-lista-destinatarios';
-import { DestinatarioDto } from '@features/destinatario/models/destinatario';
 import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
@@ -51,12 +48,6 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { TextareaModule } from 'primeng/textarea';
-
-interface Type {
-    name: string;
-    code: string | null;
-}
-
 @Component({
   selector: 'page-guia-remision-crear',
   templateUrl: './guia-remision-crear.html',
@@ -132,7 +123,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     today: Date = new Date();
     last: Date = new Date(this.today.getFullYear(), this.today.getMonth(), (this.today.getDate()-1));
 
-    remitenteSelected: RemitenteByIdToGuia | undefined;
+    //remitenteSelected: RemitenteByIdToGuia | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modalRef: any | undefined;
     private subs = new Subscription();
 
@@ -141,7 +133,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     tabRemitenteDestinatario = new BehaviorSubject<number>(0);
     tabRemitenteDestinatario$ = this.tabRemitenteDestinatario.asObservable();
 
-    valueTab: any[] = [];
+    //valueTab: any[] = [];
 
     minFechaEmision = new Date();
     maxFechaEmision = new Date();
@@ -201,7 +193,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
         // detectar el cambio en motivo traslado
-        this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(value => {
+        this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(() => {
             this.tabRemitenteDestinatario.next(0);
             this.remitente.set(null);
             this.destinatario.set(null);
@@ -264,6 +256,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     // Getters
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get f(): any{
         return this.formGroup.controls;
     }
@@ -289,6 +283,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
             observacion: this.f.observacion.value ?? '',
             registro_mtc: null,
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
                 return {
                     tipo_doc_ref: element.get('tipo_comprobante')?.value,
@@ -326,11 +322,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
 
                 indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.registrar_vehiculos_conductores,
-
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.map((d: any) => {
                     return d.id
                 }) : null,
-
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.map((d: any) => {
                     return d.id;
                 }) : null
@@ -338,14 +334,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             },
 
             origen: {
-                ubigeo_id: this.tabOrigenDestino?.getFormData.origen.ubigeo_id!,
-                direccion: this.tabOrigenDestino?.getFormData.origen.direccion!,
+                ubigeo_id: this.tabOrigenDestino!.getFormData.origen.ubigeo_id!,
+                direccion: this.tabOrigenDestino!.getFormData.origen.direccion!,
                 pais: 'PE'
             },
 
             destino: [{
-                ubigeo_id: this.tabOrigenDestino?.getFormData.destino.ubigeo_id!,
-                direccion: this.tabOrigenDestino?.getFormData.destino.direccion!,
+                ubigeo_id: this.tabOrigenDestino!.getFormData.destino.ubigeo_id!,
+                direccion: this.tabOrigenDestino!.getFormData.destino.direccion!,
                 pais: 'PE'
             }],
 
@@ -393,7 +389,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return;
 
         this.loadingSubmit.next(true);
-        this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente?.selected()?.ruc! ).subscribe({
+        this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente!.selected()!.ruc! ).subscribe({
             next: (response: GR_EnviarGuiaRemisionResponseDto ) => {
                 this.loadingSubmit.next(false);
                 /*if(response.success && response.respuesta_facturador.codigo === '0'){
@@ -412,7 +408,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                     title: "¡Guía de Remisión Registrada!",
                     text: `Se registro la GUÍA DE REMISIÓN ${response.tipo_guia} ELECTRÓNICA\n N° ${response.numero_guia}`,
                     timer: 3000
-                }).then((result: any) => {
+                }).then(() => {
                     this.router.navigate(['/administracion/guia-remision']);
                 });
                //this.router.navigate(['/administracion/guia-remision']);
@@ -447,6 +443,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlComprobanteReferenciaComponent) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const sub2 = cmp?.OnAdded.subscribe(( s: any) => {
                 this.evtAddDocRef(s);
                 this.modalRef?.close();
@@ -489,6 +486,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlEditarComprobanteReferenciaComponent) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const sub2 = cmp?.OnAdded.subscribe(( s: any) => {
                 this.evtAddDocRef(s);
                 this.modalRef?.close();
@@ -504,6 +502,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.subs.add(sub);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     evtAddDocRef(data: any): void{
       const row = this.newDocRef(data);
       this.docs_ref.push(row);
@@ -571,7 +570,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 });
             });
 
-            const sub3 = cmp?.OnClose.subscribe((_: any) => {
+            const sub3 = cmp?.OnClose.subscribe(() => {
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -585,7 +584,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
     evtOnShowDestinatarios(): void{
-        this.modalRef = this.dialogService.open(MdlListaDestinatariosComponent, {
+        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
             width: '1000px',
             keepInViewport: false,
             closable: true,
@@ -601,33 +600,33 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             appendTo: 'body'
         });
 
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaDestinatariosComponent) => {
-            const sub2 = cmp?.OnSelect.subscribe(( s: DestinatarioDto) => {
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+            const sub2 = cmp?.OnSelected.subscribe(( s: EstablecimientoDTO) => {
 
                 this.formGroup.patchValue({
                     destinatario_id: s.id,
-                    tipo_documento_destinatario: s.tipo_documento,
-                    numero_documento_destinatario: s.numero_documento,
+                    tipo_documento_destinatario: 'RUC',
+                    numero_documento_destinatario: s.ruc,
                     razon_social_destinatario: s.razon_social,
                     nombres_apellidos_destinatario: s.razon_social,
                     direccion_destinatario: s.direccion,
                     departamento_destinatario: s.ubigeo_id.substring(0, 2)
                 });
                 this.provinciaDestinatario!.valueEdit = s.ubigeo_id!.substring(0,4);
-                const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
+                const subProvincia1 = this.provinciaDestinatario?.isLoaded.subscribe(() => {
                     this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
                 });
-                /*this.distritoDestinatario!.valueEdit = this.selectEmpresaRemitente!.selected()!.ubigeo_id;
-                const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
+                this.distritoDestinatario!.valueEdit = s.ubigeo_id;
+                const subDistrito1 = this.distritoDestinatario?.isLoaded.subscribe(() => {
                     this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
-                });*/
+                });
                 subProvincia1?.unsubscribe();
-                //subDistrito1?.unsubscribe();
+                subDistrito1?.unsubscribe();
 
                 this.modalRef?.close();
             });
 
-            const sub3 = cmp?.OnClose.subscribe(_ => {
+            const sub3 = cmp?.OnClose.subscribe(() => {
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -662,8 +661,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.cdr.markForCheck();
     }*/
 
-    evtSelectDestEmi(val: any): void{
-        this.tabRemitenteDestinatario.next(parseInt(val, 10));
+    evtSelectDestEmi(val: string | number | undefined): void{
+        if(val) this.tabRemitenteDestinatario.next(parseInt(val.toString(), 10));
     }
 
     evtPreview(): void{
@@ -719,11 +718,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             departamento_remitente: s.ubigeo_id.substring(0, 2)
         });
         this.provinciaRemitente!.valueEdit = s.ubigeo_id!.substring(0,4);
-        const subProvincia1 = this.provinciaRemitente?.loading.subscribe(res => {
+        const subProvincia1 = this.provinciaRemitente?.isLoaded.subscribe(() => {
             this.formGroup.get('provincia_remitente')?.setValue(s.ubigeo_id.substring(0,4));
         });
         this.distritoRemitente!.valueEdit = s.ubigeo_id;
-        const subDistrito1 = this.distritoRemitente?.loading.subscribe((res: any) => {
+        const subDistrito1 = this.distritoRemitente?.isLoaded.subscribe(() => {
             this.formGroup.get('distrito_remitente')?.setValue(s.ubigeo_id);
         });
         subProvincia1?.unsubscribe();
@@ -746,11 +745,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             departamento_destinatario: s.ubigeo_id.substring(0, 2)
         });
         this.provinciaDestinatario!.valueEdit = s.ubigeo_id!.substring(0,4);
-        const subProvincia1 = this.provinciaDestinatario?.loading.subscribe(res => {
+        const subProvincia1 = this.provinciaDestinatario?.isLoaded.subscribe(() => {
             this.formGroup.get('provincia_destinatario')?.setValue(s.ubigeo_id.substring(0,4));
         });
         this.distritoDestinatario!.valueEdit = s.ubigeo_id;
-        const subDistrito1 = this.distritoDestinatario?.loading.subscribe((res: any) => {
+        const subDistrito1 = this.distritoDestinatario?.isLoaded.subscribe(() => {
             this.formGroup.get('distrito_destinatario')?.setValue(s.ubigeo_id);
         });
         subProvincia1?.unsubscribe();
@@ -759,6 +758,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     // functions
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newDocRef(data: any): FormGroup { 
       return this.formBuilder.group({ 
         tipo_comprobante: new FormControl(data.tipo_comprobante, Validators.required),

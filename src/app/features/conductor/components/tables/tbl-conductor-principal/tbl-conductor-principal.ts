@@ -1,17 +1,17 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
-import { DialogService } from 'primeng/dynamicdialog';
+import { Subscription } from 'rxjs';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
@@ -19,13 +19,14 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
 import { MdlEditarConductorComponent } from '../../modals/mdl-editar-conductor/mdl-editar-conductor';
-import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 
 @Component({
   selector: 'app-tbl-conductor-principal',
@@ -42,7 +43,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
       InputIconModule,
       TooltipModule,
       InputTextModule,
-      AsyncPipe,
       DatePipe,
       ContextMenuModule,
       ConfirmDialogModule,
@@ -62,16 +62,12 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     cols: Column[] = [];
 
-    data: ConductorDto[] = [];
+    data = signal<ConductorDto[]>([]);
 
     ldData = signal(true);
 
-    selected: ConductorDto | undefined;
-    private selectedSubject = new BehaviorSubject<ConductorDto | undefined>(undefined);
-
-    items$ = this.selectedSubject.pipe(
-      map(selected => this.buildMenuItems(selected))
-    );
+    selected = signal<ConductorDto | undefined>(undefined);
+    items = computed(() => this.buildMenuItems(this.selected()));
     loading: boolean = false;
 
     recordsTotalTable: number = 0;
@@ -79,14 +75,14 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     recordsFiltered: number = 0;
     first: number = 0;
 
-    ref: any | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ref: DynamicDialogRef<any> | undefined | null;
     private subs = new Subscription();
 
     pageNumber: number = 1;
     pageSize = signal(10);
     totalRecords: number = 0;
 
-    items: MenuItem[] | undefined;
     firstChange: boolean = false;
 
     filters: ColumnsFilterDto[] = [];
@@ -95,10 +91,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
-    constructor(
-      private cd: ChangeDetectorRef
-    ){
-    }
+    constructor( private cd: ChangeDetectorRef ){}
 
     ngOnInit(): void{
       this.cols = [
@@ -121,10 +114,11 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     ngAfterViewInit(): void{
-      this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
+      const s = this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
         this.search = val;
         this.evtOnReload();
       });
+      this.subs.add(s);
       this.loadData();
     }
 
@@ -134,22 +128,22 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     // getters
-    get paddedData(): any[] {
-      const actual = this.data ?? [];
+    get paddedData(): (ConductorDto | {__empty: boolean})[] {
+      const actual = this.data() ?? [];
       const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
       return [...actual, ...fillerRows];
     }
 
     // setters
-    setSelected(data: ConductorDto | undefined) {
+    /** setSelected(data: ConductorDto | undefined) {
       this.selectedSubject.next(data);
-    }
+    }**/
 
     // data
     loadData(reload: boolean = false): void {
       this.subData?.unsubscribe();
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.firstChange = false;
       this.loading = true;
       this.ldData.set(true);
@@ -161,13 +155,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     
       this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize(), this.search).subscribe({
         next: (res: TableData<ConductorDto[]>) => {
-          this.data = res.data.map(x => {
+          this.data.set(res.data.map(x => {
             x.fecha_registro = new Date(x.fecha_registro);
             x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
             x.ld_estado = false;
             x.ld_update = false;
             return x;
-          });
+          }));
 
           this.pageNumber = res.page_number;
           this.pageSize.set(res.page_size);
@@ -180,7 +174,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         error: (e: HttpErrorResponse) => {
           this.ldData.set(false); 
           this.loading = false; 
-          this.data = [];
+          this.data.set([]);
 
           this.alertService.showToast({
               position: 'top-end',
@@ -199,14 +193,13 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       });
     }
 
-    //events
+    // Events
+
     evtToggleSelection(row: ConductorDto): void{
-      if (this.selected === row) {
-        this.setSelected(undefined);
-        this.selected = undefined;
+      if (this.selected() === row) {
+        this.selected.set(undefined);
       } else {
-        this.setSelected(row);
-        this.selected = row;
+        this.selected.set(row);
       }
     }
 
@@ -223,7 +216,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     private evtOnReload(reload: boolean = false): void{
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.loadData(reload);
     }
 
@@ -240,12 +233,12 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         appendTo: 'body'
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarConductorComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarConductorComponent) => {
+      const sub = this.ref?.onChildComponentLoaded.subscribe((cmp: MdlRegistrarConductorComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(() => {
           this.evtOnReload();
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe(_ => {
+        const sub3 = cmp?.OnCanceled.subscribe(() => {
           this.ref?.close();
         });
         this.subs.add(sub2);
@@ -256,7 +249,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnEdit(): void{
-      const SELECTED = this.selected!;
+
+      if(!this.handlerValidateSelected()) return;
 
       this.ref = this.dialogService.open(MdlEditarConductorComponent,  {
         width: '600px',
@@ -269,28 +263,44 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
         inputValues:{
-          id: SELECTED.id
+          id: this.selected()?.id
         }
       });
-
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarConductorComponent) => {
+      const sub = this.ref?.onChildComponentLoaded.subscribe((cmp: MdlEditarConductorComponent) => {
 
         const sub2 = cmp?.OnCreated.subscribe(( s: ConductorDto) => {
           this.ref?.close();
-          const idx = this.data.findIndex(x => x.id === SELECTED.id);
-          if (idx > -1) {
-            this.data[idx] = s;
-            this.selected = s;
-          }
-          this.cd.detectChanges();
+
+          this.selected.update(current => {
+            const updated = { ...current!, ...s, ld_update: true };
+
+            this.data.update(arr =>
+              arr.map(c => s.id === updated.id ? updated : c)
+            );
+
+            return updated;
+          });
+
+          setTimeout(() => {
+              const idx = this.data().findIndex(x => x.id === this.selected()?.id);
+              if (idx > -1) {
+                this.data.update(arr => {
+                  const copy = [...arr];
+                  copy[idx] = s;
+                  return copy;
+                });
+                this.selected.set(s);
+              }
+          }, 1000);
+
         });
-        const sub3 = cmp?.OnCanceled.subscribe(_ => {
+        const sub3 = cmp?.OnCanceled.subscribe(() => {
           this.ref?.close();
         });
 
         const sub4 = cmp?.OnSubmited.subscribe(( v: boolean) => {
-          SELECTED.ld_update = v;
-          this.cd.detectChanges();
+          const current = this.selected()!;
+          this.selected.set({ ...current, ld_update: v });
         });
 
         this.subs.add(sub2);
@@ -307,7 +317,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const sub = this.api.eliminar(this.selected!.id).subscribe({
+              const sub = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: EliminarConductorResponseDto) => {
 
                   this.alertService.showToast({
@@ -339,27 +349,32 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
               });
               this.subs.add(sub);
             
-          },
-          reject: () => {
-              
-          },
+          }
       });
     }
 
     evtOnUpdateStatus(status: number): void{
+      if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
           header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
           message: 'Confirmar la operación.',
           accept: () => {
-              this.selected!.ld_estado = true;
-              this.cd.detectChanges();
+              this.selected.update(current => {
+                const updated = { ...current!, ld_estado: true };
+
+                this.data.update(arr =>
+                  arr.map(c => c.id === updated.id ? updated : c)
+                );
+
+                return updated;
+              });
 
               const request = {
+                id: this.selected()!.id,
                 id_estado: status
-              } as ActualizarEstadoConductorRequestDto;
+              } as EstadoActualizarRequestDTO;
 
-              const sub = this.api.actualizarEstado(this.selected!.id, request)
-              .pipe(finalize(() => { this.cd.detectChanges() }))
+              const sub = this.api.actualizarEstado(this.selected()!.id, request)
               .subscribe({
                 next: (res: ActualizarEstadoConductorResponseDto) => {
 
@@ -371,13 +386,27 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                     timerProgressBar: true,
                     timer: 4000
                   });
-                  
-                  this.selected!.ld_estado = false;
-                  this.selected!.id_estado = res.id_estado;
-                  this.selected!.estado = res.estado;
-                  this.selected!.fecha_modifico = res.fecha_modifico;
-                  this.selected!.usuario_modifico = res.usuario_modifico;
-                  this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
+
+                  this.selected.update(current => {
+                    const updated = {
+                      ...current!,
+                      ld_estado: false,
+                      ld_update: false,
+                      id_estado: res.id_estado,
+                      estado: res.estado,
+                      fecha_modifico: res.fecha_modifico,
+                      usuario_modifico: res.usuario_modifico,
+                      usuario_modifico_nombre: res.usuario_modifico_nombre
+                    };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
+
+                
                 },
                 error: (err: HttpErrorResponse) => {
 
@@ -393,7 +422,17 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                       popup: 'z-[9999]!'
                     }
                   });
-                  this.selected!.ld_estado = false;
+
+                  this.selected.update(current => {
+                    const updated = { ...current!, ld_estado: false };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
+
                 }
               });
               this.subs.add(sub);
@@ -413,18 +452,18 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       this.loadData();
     }
 
-    evtOnRowSelect(event: any) {
-      this.selected = event.data;
-      this.setSelected(event.data);
+    evtOnRowSelect(event: TableRowSelectEvent) {
+      this.selected.set(event.data);
     }
 
-    //functions
+    // Functions
+    
     isLastPage(): boolean {
-        return this.data ? this.first + this.pageSize() >= this.totalRecords : true;
+        return this.data() ? this.first + this.pageSize() >= this.totalRecords : true;
     }
 
     isFirstPage(): boolean {
-        return this.data ? this.first === 0 : true;
+        return this.data() ? this.first === 0 : true;
     }
 
     reload(): void{
@@ -438,5 +477,23 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
         { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
       ];
+    }
+
+    // Handlers
+
+    handlerValidateSelected(): boolean{
+      if(!this.selected()){
+        this.alertService.showToast({
+          title: "Debe seleccionar un conductor",
+          icon: "error",
+          timer: 4000,
+          timerProgressBar: true,
+          showCloseButton: true
+        });
+
+        return false;
+      }
+
+      return true;
     }
 }

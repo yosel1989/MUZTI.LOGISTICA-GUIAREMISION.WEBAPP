@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
@@ -56,11 +56,10 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
 
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private api: UnidadTransporteApiService,
     public util: UtilService
   ) {
-    this.search.valueChanges.subscribe(res => {
+    this.search.valueChanges.subscribe(() => {
       this.getData();
     });
   }

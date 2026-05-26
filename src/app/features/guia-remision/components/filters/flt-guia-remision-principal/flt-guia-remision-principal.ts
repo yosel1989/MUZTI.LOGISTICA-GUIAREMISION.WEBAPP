@@ -13,7 +13,6 @@ import { AlertService } from "app/core/services/alert.service";
 import { BehaviorSubject, finalize, Subscription } from "rxjs";
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
 import { FltDateComponent } from "app/core/components/filters/flt-date/flt-date";
-import { DestinatarioSugeridoDto } from "@features/destinatario/models/destinatario";
 import { NgClass } from "@angular/common";
 import { ColumnsFilterDto } from "app/core/models/filter";
 import { provideIcons } from "@ng-icons/core";
@@ -102,11 +101,6 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     private subs = new Subscription();
     countActived = 0;
 
-    destinatarios = new BehaviorSubject<DestinatarioSugeridoDto[]>([]);
-    destinatarios$ = this.destinatarios.asObservable();
-    ldDestinatarios: boolean = false;
-    subDestinatario = new Subscription();
-
     constructor(
         private fb: FormBuilder,
         private cd: ChangeDetectorRef
@@ -128,13 +122,13 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         this.formGroup.get('remitenteId')?.valueChanges.subscribe((val)=>{
             this.establecimientosRemitente.set([]);
             this.formGroup.get('establecimientoRemitenteId')?.setValue(null);
-            val && this.loadEstablecimientos('remitente', val)
+            if(val) this.loadEstablecimientos('remitente', val);
         });
 
         this.formGroup.get('destinatarioId')?.valueChanges.subscribe((val)=>{
             this.establecimientosDestinatario.set([]);
             this.formGroup.get('establecimientoDestinatarioId')?.setValue(null);
-            val && this.loadEstablecimientos('destinatario', val)
+            if(val) this.loadEstablecimientos('destinatario', val);
         });
     }
 
@@ -156,27 +150,52 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     }
 
     // Getters
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get f(): any{
         return this.formGroup.controls;
     }
 
-    get request(): ColumnsFilterDto[]{
-        console.log('ctrlFechaRegistro', this.ctrlFechaRegistro?.filter);
+    get request(): ColumnsFilterDto[] {
         const output: ColumnsFilterDto[] = [];
-        this.ctrlFechaRegistro?.filter && output.push(this.ctrlFechaRegistro.filter);
-        this.ctrlFechaEmision?.filter && output.push(this.ctrlFechaEmision.filter);
-        this.f.remitenteId.value && output.push({data: 'remitente', search: { value: this.f.remitenteId.value }});
-        this.f.establecimientoRemitenteId.value && output.push({data: 'remitente_id', search: { value: this.f.establecimientoRemitenteId.value }});
-        this.f.destinatarioId.value && output.push({data: 'destinatario', search: { value: this.f.destinatarioId.value }});
-        this.f.establecimientoDestinatarioId.value && output.push({data: 'destinatario_id', search: { value: this.f.establecimientoDestinatarioId.value }});
-        //this.f.tipoGuia.value && output.push({data: 'tipo_guia', search: { value: this.f.tipoGuia.value }});
-        this.f.serieGuia.value && output.push({data: 'serie_guia', search: { value: this.f.serieGuia.value }});
-        this.f.numeroGuia.value && output.push({data: 'correlativo', search: { value: this.f.numeroGuia.value }});
-        this.f.motivoTrasladoId.value && output.push({data: 'motivo_traslado_id', search: { value: this.f.motivoTrasladoId.value.join(',') }});
-        this.f.idTipoTransporte.value && output.push({data: 'tipo_transporte', search: { value: this.f.idTipoTransporte.value }});
-        this.f.estadoGuia.value && output.push({data: 'estado', search: { value: this.f.estadoGuia.value }});
+
+        if (this.ctrlFechaRegistro?.filter) {
+            output.push(this.ctrlFechaRegistro.filter);
+        }
+        if (this.ctrlFechaEmision?.filter) {
+            output.push(this.ctrlFechaEmision.filter);
+        }
+        if (this.f.remitenteId.value) {
+            output.push({ data: 'remitente', search: { value: this.f.remitenteId.value } });
+        }
+        if (this.f.establecimientoRemitenteId.value) {
+            output.push({ data: 'remitente_id', search: { value: this.f.establecimientoRemitenteId.value } });
+        }
+        if (this.f.destinatarioId.value) {
+            output.push({ data: 'destinatario', search: { value: this.f.destinatarioId.value } });
+        }
+        if (this.f.establecimientoDestinatarioId.value) {
+            output.push({ data: 'destinatario_id', search: { value: this.f.establecimientoDestinatarioId.value } });
+        }
+        if (this.f.serieGuia.value) {
+            output.push({ data: 'serie_guia', search: { value: this.f.serieGuia.value } });
+        }
+        if (this.f.numeroGuia.value) {
+            output.push({ data: 'correlativo', search: { value: this.f.numeroGuia.value } });
+        }
+        if (this.f.motivoTrasladoId.value) {
+            output.push({ data: 'motivo_traslado_id', search: { value: this.f.motivoTrasladoId.value.join(',') } });
+        }
+        if (this.f.idTipoTransporte.value) {
+            output.push({ data: 'tipo_transporte', search: { value: this.f.idTipoTransporte.value } });
+        }
+        if (this.f.estadoGuia.value) {
+            output.push({ data: 'estado', search: { value: this.f.estadoGuia.value } });
+        }
+
         return output;
     }
+
 
     // Events
 
@@ -299,7 +318,8 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
                     showCloseButton: true
                 })
             }
-        })
+        });
+        this.subs.add(s);
     }
 
     // functions

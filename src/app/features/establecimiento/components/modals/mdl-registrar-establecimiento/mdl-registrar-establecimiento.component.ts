@@ -10,15 +10,13 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
-import { RegistrarRemitenteRequestDto, RegistrarRemitenteResponseDto } from '@features/remitente/models/remitente';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
@@ -119,6 +117,8 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -156,7 +156,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
             this.ldSubmit = true;
             
             const subs = this.api.registrar(this.request).subscribe({
-              next: (res: RegistrarEstablecimientoRequestDTO) => {
+              next: () => {
                 this.frm.enable();
                 this.ldSubmit = false;
 
@@ -205,12 +205,13 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   loadEmpresas(): void{
     this.ldEmpresa.set(true);
     this.subs.add(
-      this.empresaApiService.loadAllToSelect().subscribe({
+      this.empresaApiService.loadAllToSelect()
+      .pipe(finalize(()=>{this.ldEmpresa.set(false);}))
+      .subscribe({
         next: (value: EmpresaToSelectDto[]) => {
           this.empresas = value;
-          this.ldEmpresa.set(false);
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           console.error(err);
           this.alertService.showToast({
             position: 'top-end',
@@ -224,7 +225,6 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
               popup: 'z-[9999]!'
             }
           });
-          this.ldEmpresa.set(false);
         },
       })
     )

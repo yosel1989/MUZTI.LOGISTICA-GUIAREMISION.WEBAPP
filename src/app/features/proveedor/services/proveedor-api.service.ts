@@ -2,32 +2,26 @@ import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoProveedorRequestDto, EditarProveedorRequestDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
+import { EditarProveedorRequestDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
-import { ColumnsFilterDto } from "app/core/models/filter";
 import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
+import { EstadoActualizarRequestDTO } from "app/shared/models/request";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProveedorApiService {
-  private baseUrl = `${environment.apiUrl}/Proveedor`;
+  private baseUrl = `${environment.apiUrl}/proveedores`;
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<ProveedorDto[]>> {
+  obtenerTodo(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<ProveedorDto[]>> {
 
     let httpParams = new HttpParams();
 
-    filters.forEach((col, i) => {
-      httpParams = httpParams
-        .set(`columns[${i}][data]`, col.data)
-        .set(`columns[${i}][search][value]`, col.search.value!);
-        col.search.regex && httpParams.set(`columns[${i}][search][regex]`, col.search.regex.toString());
-        col.search.match && httpParams.set(`columns[${i}][search][match]`, col.search.match ?? '');
-    });
+    if(search) httpParams = httpParams.set('search',search);
 
-    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
+    return this.http.get<TableData<ProveedorDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map((response: TableData<ProveedorDto[]>) => ({  
         ...response,
         data: response.data.map((x: ProveedorDto) => ({
@@ -45,7 +39,7 @@ export class ProveedorApiService {
   }
 
   registrar(request: RegistrarProveedorRequestDto): Observable<RegistrarProveedorResponseDto> {
-    return this.http.post<any>(`${this.baseUrl}`, request).pipe(
+    return this.http.post<RegistrarProveedorResponseDto>(`${this.baseUrl}`, request).pipe(
       map(response =>{ return response as RegistrarProveedorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -54,7 +48,7 @@ export class ProveedorApiService {
   }
 
   obtenerPorId(id: number): Observable<ProveedorDto> {
-    return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+    return this.http.get<ProveedorDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
       map(response =>{ return response as ProveedorDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -63,7 +57,7 @@ export class ProveedorApiService {
   }
 
   editar(request: EditarProveedorRequestDto): Observable<ProveedorDto> {
-    return this.http.put<any>(`${this.baseUrl}/${request.id}`, request).pipe(
+    return this.http.put<ProveedorDto>(`${this.baseUrl}/${request.id}`, request).pipe(
       map((response: ProveedorDto) =>({ 
         ...response, 
         fecha_registro: new Date(response.fecha_registro),
@@ -76,7 +70,7 @@ export class ProveedorApiService {
   }
 
   eliminar(id: number): Observable<EliminarProveedorResponseDto> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
+    return this.http.delete<EliminarProveedorResponseDto>(`${this.baseUrl}/${id}`).pipe(
       map(response =>{ return response as EliminarProveedorResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -84,8 +78,8 @@ export class ProveedorApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoProveedorRequestDto ): Observable<ActualizarEstadoResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+  actualizarEstado(id: number, request: EstadoActualizarRequestDTO ): Observable<ActualizarEstadoResponseDto> {
+    return this.http.put<ActualizarEstadoResponseDto>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>{ return response as ActualizarEstadoResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -99,7 +93,7 @@ export class ProveedorApiService {
           params = params.set('numeroDoc', texto);
       }
 
-      return this.http.get<any>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+      return this.http.get<ProveedorSugeridoDto[]>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
           map(response =>{ return response as ProveedorSugeridoDto[] }),
           catchError((error: HttpErrorResponse) => {
               return throwError(() => error);

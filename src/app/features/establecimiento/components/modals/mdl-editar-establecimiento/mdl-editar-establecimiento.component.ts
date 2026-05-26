@@ -129,8 +129,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   }
 
   ngAfterViewChecked(): void{
-    this.ctrlProvincia?.isLoaded.subscribe(val => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4)); });
-    this.ctrlDistrito?.isLoaded.subscribe(val => { this.f.distrito.setValue(this.data?.ubigeo_id);});
+    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4)); });
+    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -138,6 +138,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -162,9 +164,9 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   get isLoading(): boolean{
     return this.ldSubmit() || 
     this.ldData() ||
-    (this.ctrlDepartamento?.isLoading ?? false) || 
-    (this.ctrlProvincia?.isLoading ?? false) || 
-    (this.ctrlDistrito?.isLoading ?? false);
+    (this.ctrlDepartamento?.isLoading() ?? false) || 
+    (this.ctrlProvincia?.isLoading() ?? false) || 
+    (this.ctrlDistrito?.isLoading() ?? false);
   }
 
   // Events

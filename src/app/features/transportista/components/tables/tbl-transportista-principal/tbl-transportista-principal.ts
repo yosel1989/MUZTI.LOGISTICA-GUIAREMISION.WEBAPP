@@ -1,17 +1,16 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActualizarEstadoRemitenteRequestDto } from '@features/remitente/models/remitente';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -29,6 +28,7 @@ import { TransportistaApiService } from '@features/transportista/services/transp
 import { ActualizarEstadoResponseDto, EliminarResponseDto } from '@features/shared/models/shared';
 import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-transportista/mdl-registrar-transportista.component';
 import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transportista/mdl-editar-transportista.component';
+import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 
 @Component({
   selector: 'app-tbl-transportista-principal',
@@ -58,33 +58,35 @@ import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transpo
 
 export class TableTransportistaPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    public util = inject(UtilService);
+    private confirmationService = inject(ConfirmationService);
+    private alertService = inject(AlertService);
+    public dialogService =  inject(DialogService);
+    private api =  inject(TransportistaApiService);
+
     cols: Column[] = [];
 
-    data: TransportistaDto[] = [];
-    ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    $ldData = this.ldData.asObservable();
-    selected: TransportistaDto | undefined;
-    private selectedSubject = new BehaviorSubject<TransportistaDto | undefined>(undefined);
-    items$ = this.selectedSubject.pipe(
-      map(selected => this.buildMenuItems(selected))
-    );
-    loading: boolean = false;
+    data = signal<TransportistaDto[]>([]);
+    ldData = signal(true);
+    selected = signal<TransportistaDto | undefined>(undefined);
+    items = computed(() => this.buildMenuItems(this.selected()));
+
+    loading = signal(false);
 
     recordsTotalTable: number = 0;
     recordsTotal: number = 0;
     recordsFiltered: number = 0;
     first: number = 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 1;
-    pageSize: number = 10;
-    private pageSize$ = new BehaviorSubject<number>(10);
-    totalRecords: number = 0;
+    pageNumber = signal(1);
+    pageSize = signal(10);
+    totalRecords = signal(0);
 
     firstChange: boolean = false;
-    items: MenuItem[] | undefined;
 
     filters: ColumnsFilterDto[] = [];
     search: string | null = null;
@@ -92,15 +94,10 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
-    constructor(
-      public dialogService: DialogService,
-      private api: TransportistaApiService,
-      private cd: ChangeDetectorRef,
-      public util: UtilService,
-      private confirmationService: ConfirmationService,
-      private alertService: AlertService
-    ){
-        this.cols = [
+    constructor( private cd: ChangeDetectorRef ){ }
+
+    ngOnInit(): void{
+      this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
@@ -122,15 +119,6 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
         ];
     }
 
-    ngOnInit(): void{
-      this.items = [
-          { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-          { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-          { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }},
-          { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }},
-      ];
-    }
-
     ngAfterViewInit(): void{
       this.ctrlSearch.valueChanges.subscribe((val: string | null) => {
         this.search = val;
@@ -145,63 +133,50 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     }
 
     // getters
-    get paddedData(): any[] {
-      const actual = this.data ?? [];
-      const fillerCount = this.pageSize - actual.length;
+    get paddedData(): (TransportistaDto | { __empty: boolean })[] {
+      const actual = this.data() ?? [];
+      const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
       return [...actual, ...fillerRows];
-    }
-
-    // setters
-    setSelected(data: TransportistaDto | undefined) {
-      this.selectedSubject.next(data);
     }
 
     // data
     loadData(reload: boolean = false): void {
       this.subData?.unsubscribe();
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.firstChange = false;
-      this.loading = true;
-      this.ldData.next(true);
+      this.loading.set(true);
+      this.ldData.set(true);
 
       if(reload){
-        this.pageNumber = 1;
+        this.pageNumber.set(1);
         this.first = 0;
       }
 
-      this.filters =  this.search ? [{
-        data: 'search',
-        search: {
-          value: this.search
-        }
-      }] : [];
-
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters)
+      this.subData = this.api.obtenerTodo(this.pageNumber(), this.pageSize(), this.search)
       .pipe(finalize(() => {
-          this.ldData.next(false); 
-          this.loading = false; 
+          this.ldData.set(false); 
+          this.loading.set(false); 
       }))
       .subscribe({
         next: (res: TableData<TransportistaDto[]>) => {
           
-          this.data = res.data.map(x => {
+          this.data.set(res.data.map(x => {
             x.fecha_registro = new Date(x.fecha_registro);
             x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
             x.ld_estado = false;
             x.ld_update = false;
             return x;
-          });
+          }));
 
-          this.pageNumber = res.page_number;
-          this.pageSize = res.page_size;
-          this.first = (this.pageNumber - 1) * this.pageSize;
-          this.totalRecords = res.total_records;
-          this.cd.detectChanges();
+          this.pageNumber.set(res.page_number);
+          this.pageSize.set(res.page_size);
+          this.first = (this.pageNumber() - 1) * this.pageSize();
+          this.totalRecords.set(res.total_records);
         },
         error: (e: HttpErrorResponse) => {
           console.error(e);
-          this.data = [];
+          this.data.set([]);
 
           this.alertService.showToast({
               position: 'top-end',
@@ -221,12 +196,10 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
     //events
     evtToggleSelection(row: TransportistaDto): void{
-      if (this.selected === row) {
-        this.selected = undefined;
-        this.setSelected(undefined);
+      if (this.selected() === row) {
+        this.selected.set(undefined);
       } else {
-        this.selected = row;
-        this.setSelected(row);
+        this.selected.set(row);
       }
     }
 
@@ -245,8 +218,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     }
 
     private evtOnReload(): void{
-      this.setSelected(undefined);
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.loadData();
     }
 
@@ -263,11 +235,11 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarTransportistaComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarTransportistaComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(() => {
           this.evtOnReload();
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe((_: any) => {
+        const sub3 = cmp?.OnCanceled.subscribe(() => {
           this.ref?.close();
         });
         this.subs.add(sub2);
@@ -288,27 +260,38 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
         inputValues:{
-          id: this.selected!.id
+          id: this.selected()!.id
         }
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarTransportistaComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: TransportistaDto) => {
-          this.selected!.ld_update = true;
-          this.cd.detectChanges();
+          this.ref?.close();
+
+          this.selected.update(current => {
+            const updated = { ...current!, ...s, ld_update: true };
+
+            this.data.update(arr =>
+              arr.map(c => s.id === updated.id ? updated : c)
+            );
+
+            return updated;
+          });
 
           setTimeout(() => {
-            const idx = this.data.findIndex(x => x.id === this.selected!.id);
-            if (idx > -1) {
-              this.data[idx] = s;
-              this.selected = s;
-            }
-            this.cd.detectChanges();
+              const idx = this.data().findIndex(x => x.id === this.selected()?.id);
+              if (idx > -1) {
+                this.data.update(arr => {
+                  const copy = [...arr];
+                  copy[idx] = s;
+                  return copy;
+                });
+                this.selected.set(s);
+              }
           }, 1000);
-          
-          this.ref?.close();
+
         });
-        const sub3 = cmp?.OnCanceled.subscribe(_ => {
+        const sub3 = cmp?.OnCanceled.subscribe(() => {
           this.ref?.close();
         });
         this.subs.add(sub2);
@@ -324,7 +307,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const subs = this.api.eliminar(this.selected!.id).subscribe({
+              const subs = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: EliminarResponseDto) => {
 
                   this.alertService.showToast({
@@ -356,10 +339,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
               });
               this.subs.add(subs);
             
-          },
-          reject: () => {
-              
-          },
+          }
       });
     }
 
@@ -368,17 +348,22 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           header: !status ? '¿Desactivar al transportista?' : '¿Activar al transportista?',
           message: 'Confirmar la operación.',
           accept: () => {
+              this.selected.update(current => {
+                const updated = { ...current!, ld_estado: true };
 
-              this.selected!.ld_estado = true;
-              this.cd.detectChanges();
+                this.data.update(arr =>
+                  arr.map(c => c.id === updated.id ? updated : c)
+                );
+
+                return updated;
+              });
 
               const request = {
-                id_estado: status,
-                edited_employee_id: 1,
-                edited_employee_name: 'SA'
-              } as ActualizarEstadoRemitenteRequestDto;
+                id: this.selected()!.id,
+                id_estado: status
+              } as EstadoActualizarRequestDTO;
 
-              const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
+              const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
                 next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
@@ -390,19 +375,26 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                     timer: 4000
                   });
 
-                  this.selected!.ld_estado = false;
-                  this.selected!.id_estado = res.id_estado;
-                  this.selected!.estado = res.estado;
-                  this.selected!.usuario_modifico = res.usuario_modifico;
-                  this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
-                  this.selected!.fecha_modifico = res.fecha_modifico;
-                  this.cd.detectChanges();
+                  this.selected.update(current => {
+                    const updated = {
+                      ...current!,
+                      ld_estado: false,
+                      ld_update: false,
+                      id_estado: res.id_estado,
+                      estado: res.estado,
+                      fecha_modifico: res.fecha_modifico,
+                      usuario_modifico: res.usuario_modifico,
+                      usuario_modifico_nombre: res.usuario_modifico_nombre
+                    };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
                 },
                 error: (err: HttpErrorResponse) => {
-
-                  this.selected!.ld_estado = false;
-                  this.cd.detectChanges();
-
                   this.alertService.showToast({
                     position: 'top-end',
                     icon: "error",
@@ -415,6 +407,16 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                       popup: 'z-[9999]!'
                     }
                   });
+
+                  this.selected.update(current => {
+                    const updated = { ...current!, ld_estado: false };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
                 }
               });
               this.subs.add(subs);
@@ -426,29 +428,28 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     }
 
     evtFirstChange(first: number): void{
-      this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
+      this.pageNumber.set( (first / this.pageSize()) > 0 ? ((first / this.pageSize()) + 1) : 1 );
     }
 
     evtRowsChange(rows: number): void{
-      this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
-      this.pageSize = this.pageSize === rows ? this.pageSize : rows;
-      this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
-      this.first = (this.pageNumber - 1) * this.pageSize
+      this.pageNumber.set(this.pageSize() === rows ? this.pageNumber() : 1);
+      this.pageSize.set(this.pageSize() === rows ? this.pageSize() : rows);
+      this.first = (this.pageNumber() - 1) * this.pageSize();
       this.loadData();
     }
 
-    evtOnRowSelect(event: any) {
-      this.selected = event.data;
-      this.setSelected(event.data);
+
+    evtOnRowSelect(event: TableRowSelectEvent) {
+      this.selected.set(event.data);
     }
 
     //functions
     isLastPage(): boolean {
-      return this.data ? this.first >= this.recordsTotalTable : true;
+      return this.data() ? this.first >= this.recordsTotalTable : true;
     }
 
     isFirstPage(): boolean {
-      return this.data ? this.first === 0 : true;
+      return this.data() ? this.first === 0 : true;
     }
 
     reload(): void{

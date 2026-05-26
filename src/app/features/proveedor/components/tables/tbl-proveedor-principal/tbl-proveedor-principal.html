@@ -55,7 +55,7 @@
         (click)="evtOnCreate()"
         />
 
-        @if(selected){
+        @if(selected()){
             <p-button 
                 icon="pi pi-pencil text-[13px]!"  
                 size="small" 
@@ -80,7 +80,7 @@
                 styleClass="w-9! h-9!"
                 (click)="evtOnDelete()"
             />
-            @if(selected.id_estado === 0){
+            @if(selected()?.id_estado === 0){
             <p-button 
                 icon="pi pi-check-circle text-[13px]!"  
                 size="small" 
@@ -94,7 +94,7 @@
                 (click)="evtOnUpdateStatus(1)"
             />
             }
-            @if(selected.id_estado === 1){
+            @if(selected()?.id_estado === 1){
             <p-button 
                 icon="pi pi-ban text-[13px]!" 
                 size="small" 
@@ -139,46 +139,46 @@
 </p-toolbar>
 
 <div class="relative h-full w-full">
-    @if($ldData | async){
+    @if(ldData()){
         <app-loader class="z-40"></app-loader>
     }
 
 <p-table 
-#datatable
-[columns]="cols"
-[value]="paddedData"
-size="small" 
-currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-[showCurrentPageReport]="true"
+    #datatable
+    [columns]="cols"
+    [value]="paddedData"
+    size="small" 
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    [showCurrentPageReport]="true"
 
-[(selection)]="selected"
-[tableStyle]="{ 'min-width': '100px' }"
-[scrollable]="true"
-[showLoader]="false"
-[resizableColumns]="true"
-columnResizeMode="expand"
+    [(selection)]="selected"
+    [tableStyle]="{ 'min-width': '100px' }"
+    [scrollable]="true"
+    [showLoader]="false"
+    [resizableColumns]="true"
+    columnResizeMode="expand"
 
-showGridlines 
+    showGridlines 
 
-stripedRows
-[lazy]="true"
-[rowHover]="true"
-[paginator]="true"
+    stripedRows
+    [lazy]="true"
+    [rowHover]="true"
+    [paginator]="true"
 
-[totalRecords]="totalRecords"
-[rows]="pageSize"
-[first]="first"
-[rowsPerPageOptions]="[5, 10, 25, 50, 100]"
-scrollHeight="400px"
+    [totalRecords]="totalRecords"
+    [rows]="pageSize()"
+    [first]="first"
+    [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+    scrollHeight="400px"
 
-(rowsChange)="evtRowsChange($event)"
+    (rowsChange)="evtRowsChange($event)"
 
-class="border-none! text-mono! max-w-full!"
-paginatorDropdownAppendTo="body"
-paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
+    class="border-none! text-mono! max-w-full!"
+    paginatorDropdownAppendTo="body"
+    paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
 
-[contextMenu]="cm" 
-(onContextMenuSelect)="evtOnRowSelect($event)"
+    [contextMenu]="cm" 
+    (onContextMenuSelect)="evtOnRowSelect($event)"
 >
     <ng-template pTemplate="header" let-columns>
         <tr class="text-nowrap">
@@ -210,7 +210,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
 
     <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
 
-        @if($ldData | async) {
+        @if(ldData()) {
             <tr>
                 @for (col of columns; let i = $index; track $index) {
                     <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
@@ -324,7 +324,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
 
 </div>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="items()" appendTo="body"/>
 
 <div class="card flex justify-center">
     <p-confirmdialog #cd appendTo="body">

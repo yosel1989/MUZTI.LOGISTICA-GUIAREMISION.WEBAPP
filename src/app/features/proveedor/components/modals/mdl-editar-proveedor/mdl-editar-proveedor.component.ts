@@ -10,7 +10,7 @@ import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { BehaviorSubject, finalize, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ProveedorDto, EditarProveedorRequestDto } from '@features/proveedor/models/proveedor';
 import { SelectModule } from 'primeng/select';
@@ -19,7 +19,6 @@ import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { AsyncPipe } from '@angular/common';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
@@ -43,7 +42,6 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
     SelectProvinciaComponent,
     SelectDistritoComponent,
     SkeletonModule,
-    AsyncPipe,
     OnlyNumberDirective,
     OnlyUpperDirective
   ],
@@ -62,7 +60,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   @ViewChild('distrito') ctrlDistrito: SelectDistritoComponent | undefined;
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
+  isSubmitted = signal(false);
   ldSubmit = signal(false);
 
   private subs = new Subscription();
@@ -70,15 +68,13 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
   submitted: boolean = false;
 
-
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
     {id: 0, label: 'Inactivo'},
     {id: 1, label: 'Activo'}
   ];
 
-  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  $ldData = this.ldData.asObservable();
+  ldData = signal(false);
   data: ProveedorDto | undefined;
 
   constructor(
@@ -133,9 +129,8 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   }
 
   ngAfterViewChecked(): void{
-    
-    this.ctrlProvincia?.isLoaded.subscribe(val => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4));});
-    this.ctrlDistrito?.isLoaded.subscribe(val => { this.f.distrito.setValue(this.data?.ubigeo_id);});
+    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4));});
+    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -143,6 +138,8 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -165,7 +162,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       console.log(this.frm);
       return;
@@ -211,10 +208,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
             });
             this.subs.add(sub);
            
-        },
-        reject: () => {
-            
-        },
+        }
     });
   }
 
@@ -225,9 +219,9 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   // data
 
   loadData(): void{
-    this.ldData.next(true);
+    this.ldData.set(true);
     const sub = this.api.obtenerPorId(this.id)
-    .pipe(finalize(() => { this.ldData.next(false) }))
+    .pipe(finalize(() => { this.ldData.set(false) }))
     .subscribe({
       next: (res: ProveedorDto) => {
         this.handlerLoadData(res);

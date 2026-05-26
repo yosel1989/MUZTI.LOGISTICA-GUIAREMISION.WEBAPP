@@ -54,6 +54,10 @@
     "@angular/build": "^21.1.0",
     "@angular/cli": "^21.1.0",
     "@angular/compiler-cli": "^21.2.10",
+    "@eslint/css": "^1.2.0",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^1.2.0",
+    "@eslint/markdown": "^8.0.2",
     "@ngxpert/hot-toast": "^6.1.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/file-saver": "^2.0.7",
@@ -61,8 +65,10 @@
     "@types/pdfmake": "^0.3.2",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.58.1",
-    "eslint": "^10.2.0",
+    "eslint": "^10.4.0",
+    "globals": "^17.6.0",
     "jasmine-core": "~5.9.0",
+    "jiti": "^2.7.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
@@ -70,6 +76,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.11",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.60.0"
   }
 }

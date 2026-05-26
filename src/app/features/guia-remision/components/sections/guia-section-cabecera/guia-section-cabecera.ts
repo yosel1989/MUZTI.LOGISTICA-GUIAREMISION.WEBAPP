@@ -1,10 +1,9 @@
 import { AsyncPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, inject} from '@angular/core';
 import { AlertService } from '@core/services/alert.service';
 import { EstablecimientoRemitenteGuiaDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
-import { RemitenteApiService } from 'app/features/remitente/services/remitente-api.service';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BehaviorSubject, finalize } from 'rxjs';
@@ -37,7 +36,7 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
   $loading = this.loading.asObservable();
 
   constructor(
-    private remitenteService: RemitenteApiService
+    
   ){
     
   }
@@ -50,7 +49,7 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
     
   }
 
-  ngOnChanges( changes: SimpleChanges ): void {
+  ngOnChanges(): void {
     if(this.idEstablecimiento && this.tipoGuiaRemision){
       this.loading.next(true);
       this.establecimientoApiService.getByIdToGuia(this.idEstablecimiento, this.tipoGuiaRemision)

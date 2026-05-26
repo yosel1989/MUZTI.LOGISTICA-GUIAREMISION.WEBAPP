@@ -1,16 +1,16 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
@@ -19,7 +19,7 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ActualizarEstadoUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { EliminarUnidadTransporteResponseDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { MdlRegistrarUnidadTransporteComponent } from '../../modals/mdl-registrar-unidad-transporte/mdl-registrar-unidad-transporte';
 import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unidad-transporte/mdl-editar-unidad-transporte';
@@ -27,59 +27,60 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActualizarEstadoResponseDto } from '@features/shared/models/shared';
+import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 
 @Component({
   selector: 'app-tbl-unidad-transporte-principal',
   templateUrl: './tbl-unidad-transporte-principal.html',
   styleUrl: './tbl-unidad-transporte-principal.scss',
   imports: [
-        TableModule,
-        SkeletonModule,
-        TagModule,
-        ToolbarModule,
-        ButtonModule,
-        DividerModule,
-        IconFieldModule,
-        InputIconModule,
-        TooltipModule,
-        InputTextModule,
-        AsyncPipe,
-        DatePipe,
-        ContextMenuModule,
-        ConfirmDialogModule,
-        LoaderComponent,
-        ReactiveFormsModule
+      TableModule,
+      SkeletonModule,
+      TagModule,
+      ToolbarModule,
+      ButtonModule,
+      DividerModule,
+      IconFieldModule,
+      InputIconModule,
+      TooltipModule,
+      InputTextModule,
+      DatePipe,
+      ContextMenuModule,
+      ConfirmDialogModule,
+      LoaderComponent,
+      ReactiveFormsModule
   ],
   providers: [DialogService, ConfirmationService]
 })
 
 export class TableUnidadTransportePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    public util = inject(UtilService);
+    private confirmationService = inject(ConfirmationService);
+    private alertService = inject(AlertService);
+    public dialogService = inject(DialogService);
+    private api = inject(UnidadTransporteApiService);
+
     cols: Column[] = [];
 
-    data: UnidadTransporteDto[] = [];
-    ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    $ldData = this.ldData.asObservable();
-    selected: UnidadTransporteDto | undefined;
-    private selectedSubject = new BehaviorSubject<UnidadTransporteDto | undefined>(undefined);
-    items$ = this.selectedSubject.pipe(
-      map(selected => this.buildMenuItems(selected))
-    );
-    loading: boolean = false;
+    data = signal<UnidadTransporteDto[]>([]);
+    ldData = signal(false);
+    selected = signal<UnidadTransporteDto | undefined>(undefined);
+    items = computed(() => this.buildMenuItems(this.selected()));
+    loading = signal(false);
 
     recordsTotalTable: number = 0;
     recordsTotal: number = 0;
     recordsFiltered: number = 0;
     first: number = 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 1;
-    pageSize: number = 10;
-    totalRecords: number = 0;
-
-    items: MenuItem[] | undefined;
+    pageNumber = signal(1);
+    pageSize = signal(10);
+    totalRecords = signal(0);
 
     firstChange: boolean = false;
 
@@ -90,12 +91,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     ctrlSearch = new FormControl(null);
 
     constructor(
-      public dialogService: DialogService,
-      private api: UnidadTransporteApiService,
-      private cd: ChangeDetectorRef,
-      public util: UtilService,
-      private confirmationService: ConfirmationService,
-      private alertService: AlertService
+      private cd: ChangeDetectorRef
     ){
         this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
@@ -134,54 +130,48 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     }
 
     // getters
-    get paddedData(): any[] {
-      const actual = this.data ?? [];
-      const fillerCount = this.pageSize - actual.length;
+    get paddedData(): (UnidadTransporteDto | {__empty: boolean})[] {
+      const actual = this.data() ?? [];
+      const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
       return [...actual, ...fillerRows];
-    }
-
-    // setters
-    setSelected(data: UnidadTransporteDto | undefined) {
-      this.selectedSubject.next(data);
     }
 
     // data
     loadData(reload: boolean = false): void {
       this.subData?.unsubscribe();
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.firstChange = false;
-      this.loading = true;
-      this.ldData.next(true);
+      this.loading.set(true);
+      this.ldData.set(true);
 
       if(reload){
-        this.pageNumber = 1;
+        this.pageNumber.set(1);
         this.first = 0;
       }
 
-      this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.search).subscribe({
+      this.subData = this.api.obtenerTodo(this.pageNumber(), this.pageSize(), this.search).subscribe({
         next: (res: TableData<UnidadTransporteDto[]>) => {
-          this.data = res.data.map(x => {
+          this.data.set(res.data.map(x => {
             x.fecha_registro = new Date(x.fecha_registro);
             x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
             x.ld_estado = false;
             x.ld_update = false;
             return x;
-          });
+          }));
 
-          this.pageNumber = res.page_number;
-          this.pageSize = res.page_size;
-          this.first = (this.pageNumber - 1) * this.pageSize;
-          this.totalRecords = res.total_records;
-          this.ldData.next(false);
-          this.cd.detectChanges();
-          this.loading = false;
+          this.pageNumber.set(res.page_number);
+          this.pageSize.set(res.page_size);
+          this.first = (this.pageNumber() - 1) * this.pageSize();
+          this.totalRecords.set(res.total_records);
+          this.ldData.set(false);
+          this.loading.set(false);
         },
         error: (e: HttpErrorResponse) => {
           console.log(e);
-          this.ldData.next(false); 
-          this.loading = false; 
-          this.data = [];
+          this.ldData.set(false); 
+          this.loading.set(false); 
+          this.data.set([]);
 
           this.alertService.showToast({
               position: 'top-end',
@@ -201,29 +191,27 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
     //events
     evtToggleSelection(row: UnidadTransporteDto): void{
-      if (this.selected === row) {
-        this.setSelected(undefined);
-        this.selected = undefined;
+      if (this.selected() === row) {
+        this.selected.set(undefined);
       } else {
-        this.setSelected(row);
-        this.selected = row;
+        this.selected.set(row);
       }
     }
 
     evtNext() {
-      this.first = this.first + this.pageSize;
-      this.pageNumber = this.pageNumber + 1;
+      this.first = this.first + this.pageSize();
+      this.pageNumber.set(this.pageNumber() + 1);
       this.evtOnReload(false);
     }
 
     evtPrev() {
-      this.first = this.first - this.pageSize;
-      this.pageNumber--;
+      this.first = this.first - this.pageSize();
+      this.pageNumber.update(current => current - 1);
       this.evtOnReload(false);
     }
 
     private evtOnReload(reload: boolean = false): void{
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.loadData(reload);
     }
 
@@ -241,11 +229,11 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarUnidadTransporteComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: MdlRegistrarUnidadTransporteComponent) => {
+        const sub2 = cmp?.OnCreated.subscribe(() => {
           this.evtOnReload();
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe((_: any) => {
+        const sub3 = cmp?.OnCanceled.subscribe(() => {
           this.ref?.close();
         });
         this.subs.add(sub2);
@@ -267,26 +255,38 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
         inputValues:{
-          id: this.selected!.id
+          id: this.selected()!.id
         }
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarUnidadTransporteComponent) => {
         const sub2 = cmp?.OnCreated.subscribe(( s: UnidadTransporteDto ) => {
-          this.selected!.ld_update = true;
-          this.cd.detectChanges();
+          this.ref?.close();
+
+          this.selected.update(current => {
+            const updated = { ...current!, ...s, ld_update: true };
+
+            this.data.update(arr =>
+              arr.map(c => s.id === updated.id ? updated : c)
+            );
+
+            return updated;
+          });
 
           setTimeout(() => {
-            const idx = this.data.findIndex(x => x.id === this.selected!.id);
-            if (idx > -1) {
-              this.data[idx] = s;
-              this.selected = s;
-            }
-            this.cd.detectChanges();
+              const idx = this.data().findIndex(x => x.id === this.selected()?.id);
+              if (idx > -1) {
+                this.data.update(arr => {
+                  const copy = [...arr];
+                  copy[idx] = s;
+                  return copy;
+                });
+                this.selected.set(s);
+              }
           }, 1000);
-          this.ref?.close();
+
         });
-        const sub3 = cmp?.OnCanceled.subscribe(_ => {
+        const sub3 = cmp?.OnCanceled.subscribe(() => {
           this.ref?.close();
         });
         this.subs.add(sub2);
@@ -303,7 +303,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const subs = this.api.eliminar(this.selected!.id).subscribe({
+              const subs = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: EliminarUnidadTransporteResponseDto) => {
 
                   this.alertService.showToast({
@@ -347,14 +347,22 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           header: !status ? '¿Desactivar la Unidad de Transporte?' : '¿Activar la Unidad de Transporte',
           message: 'Confirmar la operación.',
           accept: () => {
-              this.selected!.ld_estado = true;
-              this.cd.detectChanges();
+              this.selected.update(current => {
+                const updated = { ...current!, ld_estado: true };
+
+                this.data.update(arr =>
+                  arr.map(c => c.id === updated.id ? updated : c)
+                );
+
+                return updated;
+              });
 
               const request = {
+                id: this.selected()!.id,
                 id_estado: status
-              } as ActualizarEstadoUnidadTransporteRequestDto;
+              } as EstadoActualizarRequestDTO;
 
-              const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
+              const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
                 next: (res: ActualizarEstadoResponseDto) => {
 
                   this.alertService.showToast({
@@ -366,19 +374,26 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                     timer: 4000
                   });
 
-                  this.selected!.ld_estado = false;
-                  this.selected!.id_estado = res.id_estado;
-                  this.selected!.estado = res.estado;
-                  this.selected!.usuario_modifico = res.usuario_modifico;
-                  this.selected!.usuario_modifico_nombre = res.usuario_modifico_nombre;
-                  this.selected!.fecha_modifico = res.fecha_modifico;
-                  this.cd.detectChanges();
+                  this.selected.update(current => {
+                    const updated = {
+                      ...current!,
+                      ld_estado: false,
+                      ld_update: false,
+                      id_estado: res.id_estado,
+                      estado: res.estado,
+                      fecha_modifico: res.fecha_modifico,
+                      usuario_modifico: res.usuario_modifico,
+                      usuario_modifico_nombre: res.usuario_modifico_nombre
+                    };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
                 },
                 error: (err: HttpErrorResponse) => {
-
-                  this.selected!.ld_estado = false;
-                  this.cd.detectChanges();
-
                   this.alertService.showToast({
                     position: 'top-end',
                     icon: "error",
@@ -391,6 +406,16 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                       popup: 'z-[9999]!'
                     }
                   });
+
+                  this.selected.update(current => {
+                    const updated = { ...current!, ld_estado: false };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
                 }
               });
               this.subs.add(subs);
@@ -402,28 +427,27 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       });
     }
     evtFirstChange(first: number): void{
-      this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
+      this.pageNumber.set( (first / this.pageSize()) > 0 ? ((first / this.pageSize()) + 1) : 1 );
     }
 
     evtRowsChange(rows: number): void{
-      this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
-      this.pageSize = this.pageSize === rows ? this.pageSize : rows;
-      this.first = (this.pageNumber - 1) * this.pageSize
+      this.pageNumber.set( this.pageSize() === rows ? this.pageNumber() : 1 );
+      this.pageSize.set( this.pageSize() === rows ? this.pageSize() : rows );
+      this.first = (this.pageNumber() - 1) * this.pageSize();
       this.loadData();
     }
 
-    evtOnRowSelect(event: any) {
-      this.selected = event.data;
-      this.setSelected(event.data);
+    evtOnRowSelect(event: TableRowSelectEvent) {
+      this.selected.set(event.data);
     }
 
     //functions
     isLastPage(): boolean {
-        return this.data ? this.first + this.pageSize >= this.totalRecords : true;
+        return this.data() ? this.first + this.pageSize() >= this.totalRecords() : true;
     }
 
     isFirstPage(): boolean {
-        return this.data ? this.first === 0 : true;
+        return this.data() ? this.first === 0 : true;
     }
 
     reload(): void{

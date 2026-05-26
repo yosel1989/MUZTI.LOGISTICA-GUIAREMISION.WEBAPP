@@ -2,60 +2,60 @@
     <ng-template #start>
     <div class="flex items-center gap-1">
         <p-button 
-        size="small"
-        icon="pi pi-angle-left text-[13px]!" 
-        size="small" 
-        [disabled]="isFirstPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Anterior"
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtPrev()"
+            size="small"
+            icon="pi pi-angle-left text-[13px]!" 
+            size="small" 
+            [disabled]="isFirstPage()"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Anterior"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtPrev()"
         />
         <p-button icon="pi pi-refresh text-[13px]!" 
-        size="small"  
-        severity="secondary" 
-        [outlined]="true"
-        pTooltip="Actualizar" 
-        tooltipPosition="top" 
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="reload()"
+            size="small"  
+            severity="secondary" 
+            [outlined]="true"
+            pTooltip="Actualizar" 
+            tooltipPosition="top" 
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="reload()"
         />
         <p-button 
-        icon="pi pi-angle-right text-[13px]!" 
-        size="small" 
-        [disabled]="isLastPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Siguiente"
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtNext()"
+            icon="pi pi-angle-right text-[13px]!" 
+            size="small" 
+            [disabled]="isLastPage()"
+            [outlined]="true"
+            severity="secondary"
+            pTooltip="Siguiente"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtNext()"
         />
         
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
         
         <p-button 
-        icon="pi pi-plus text-[13px]!"  
-        size="small" 
-        severity="info" 
-        [outlined]="true"
-        pTooltip="Nueva Unidad de Transporte" 
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs! text-center"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtOnCreate()"
+            icon="pi pi-plus text-[13px]!"  
+            size="small" 
+            severity="info" 
+            [outlined]="true"
+            pTooltip="Nueva Unidad de Transporte" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-center"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtOnCreate()"
         />
 
-        @if(selected){
+        @if(selected()){
             <p-button 
                 icon="pi pi-pencil text-[13px]!"  
                 size="small" 
@@ -80,33 +80,33 @@
                 styleClass="w-9! h-9!"
                 (click)="evtOnDelete()"
             />
-            @if(selected!.id_estado === 0){
-            <p-button 
-                icon="pi pi-check-circle text-[13px]!"  
-                size="small" 
-                severity="success" 
-                [outlined]="true"
-                pTooltip="Activar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnUpdateStatus(1)"
-            />
+            @if(selected()?.id_estado === 0){
+                <p-button 
+                    icon="pi pi-check-circle text-[13px]!"  
+                    size="small" 
+                    severity="success" 
+                    [outlined]="true"
+                    pTooltip="Activar" 
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9!"
+                    (click)="evtOnUpdateStatus(1)"
+                />
             }
-            @if(selected!.id_estado === 1){
-            <p-button 
-                icon="pi pi-ban text-[13px]!" 
-                size="small" 
-                severity="secondary" 
-                [outlined]="true"
-                pTooltip="Desactivar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnUpdateStatus(0)"
-            />
+            @if(selected()?.id_estado === 1){
+                <p-button 
+                    icon="pi pi-ban text-[13px]!" 
+                    size="small" 
+                    severity="secondary" 
+                    [outlined]="true"
+                    pTooltip="Desactivar" 
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9!"
+                    (click)="evtOnUpdateStatus(0)"
+                />
             }
         }
 
@@ -139,7 +139,7 @@
 </p-toolbar>
 
 <div class="relative h-full w-full">
-    @if($ldData | async){
+    @if(ldData()){
         <app-loader class="z-40"></app-loader>
     }
 
@@ -165,8 +165,8 @@
     [rowHover]="true"
     [paginator]="true"
 
-    [totalRecords]="totalRecords"
-    [rows]="pageSize"
+    [totalRecords]="totalRecords()"
+    [rows]="pageSize()"
     [first]="first"
     [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
     scrollHeight="400px"
@@ -181,7 +181,7 @@
     [contextMenu]="cm" 
     (onContextMenuSelect)="evtOnRowSelect($event)"
 
-    [loading]="$ldData | async"
+    [loading]="ldData()"
 >
     <ng-template pTemplate="header" let-columns>
         <tr class="text-nowrap">
@@ -214,7 +214,7 @@
 
     <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
 
-        @if($ldData | async) {
+        @if(ldData()) {
             <tr>
                 @for (col of columns; let i = $index; track $index) {
                     <td>
@@ -332,7 +332,7 @@
 
 </div>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="items()" appendTo="body"/>
 
 
 <p-confirmdialog #cd appendTo="body" styleClass="max-w-[450px]!">

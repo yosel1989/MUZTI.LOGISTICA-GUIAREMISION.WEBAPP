@@ -68,7 +68,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
 
   ldUpdate = signal(false);
   ldData = signal(false);
-  data: UnidadTransporteDto | undefined;
+  data = signal<UnidadTransporteDto | undefined>(undefined);
 
   constructor(
     private fb: FormBuilder,
@@ -105,6 +105,8 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -140,7 +142,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
             this.ldSubmit.set(true);
             this.ldUpdate.set(true);
             
-            const subs = this.api.editar(this.data!.id, this.request)
+            const subs = this.api.editar(this.data()!.id, this.request)
             .pipe(finalize(() => {
                 this.ldSubmit.set(false);
                 this.ldUpdate.set(false);
@@ -224,7 +226,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
 
   // handlers
   handlerLoadData(res: UnidadTransporteDto): void{
-    this.data = res;
+    this.data.set(res);
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       descripcion: res.descripcion,

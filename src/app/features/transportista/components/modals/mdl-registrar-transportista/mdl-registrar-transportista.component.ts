@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -8,7 +8,7 @@ import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
@@ -17,8 +17,6 @@ import { SelectProvinciaComponent } from '@features/guia-remision/components/sel
 import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
-import { RegistrarRemitenteResponseDto } from '@features/remitente/models/remitente';
-import { RemitenteApiService } from '@features/remitente/services/remitente-api.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
@@ -51,15 +49,19 @@ import { TransportistaApiService } from '@features/transportista/services/transp
 })
 export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private api = inject(TransportistaApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  isSubmitted = signal(false);
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
-  submitted: boolean = false;
+  submitted = signal(false);
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
@@ -67,14 +69,10 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
     {id: 1, label: 'Activo'}
   ];
 
-  constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: TransportistaApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
-	) {
-    this.frm = this.fb.group({
+  constructor( public config: DynamicDialogConfig ) { }
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       tipo_documento: new FormControl('RUC', [Validators.required]),
       numero_documento: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
@@ -91,10 +89,6 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
     this.headerValue = this.config.header ?? '';
   }
 
-  ngOnInit(): void {
-
-  }
-
   ngAfterViewInit(): void {
     
   }
@@ -104,6 +98,8 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -126,7 +122,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -137,12 +133,12 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
         accept: () => {
 
             this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const subs = this.api.registrar(this.request).subscribe({
-              next: (res: RegistrarRemitenteResponseDto) => {
+              next: () => {
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -157,7 +153,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
               },
               error: (err: HttpErrorResponse) => {
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",

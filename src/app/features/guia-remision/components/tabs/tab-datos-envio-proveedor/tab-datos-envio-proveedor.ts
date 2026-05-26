@@ -34,7 +34,7 @@ import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-t
 import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
 import { finalize, Subscription } from 'rxjs';
 import { MdlListaConductorComponent } from '@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor';
-import { ConductorDto } from '@features/conductor/models/conductor.model';
+import { ConductorByNumeroDocumento, ConductorDto } from '@features/conductor/models/conductor.model';
 import { MdlListaProveedorComponent } from '@features/proveedor/components/modals/mdl-lista-proveedor/mdl-lista-proveedor';
 import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -126,6 +126,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ussuingEntities: IssuingEntity[] = FAKE_ISSUING_ENTITY;
     documentEntityTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PERSON;
     documentEntityProviderTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modalRef: any | undefined;
 
     subs = new Subscription();
@@ -227,10 +229,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     // getters
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get f_datosEnvio(): any{
       return this.formDatosEnvio.controls;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get f_datosProveedor(): any{
       return this.formDatosProveedor.controls;
     }
@@ -243,6 +248,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this.formDatosEnvio.get('vehiculos') as FormArray; 
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get data(): any{
       return {
         datosEnvio: {
@@ -368,7 +374,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ngOnInit(): void {
       this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
 
-      this.formDatosEnvio.get('tipo_transporte')?.valueChanges.subscribe((res: any) => {
+      this.formDatosEnvio.get('tipo_transporte')?.valueChanges.subscribe((res: 'PRIVADO' | 'PUBLICO') => {
         this.evtChangeValueTipoTransporte(res);
       });
 
@@ -476,13 +482,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
       this.resetDatosEnvio();
 
-      const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
-      const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
+      //const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
+      //const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
 
       if(tipo === 'PRIVADO'){
 
-        const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
-        const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
+        //const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
+        //const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
 
         /*this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
@@ -622,12 +628,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.formDatosProveedor.reset();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     evtOnSearchConductor(fg: AbstractControl, evt: any): void{
       evt.stopPropagation();
       evt.preventDefault();
       
       fg.get('loading')?.setValue(true);
-      this.conductorService.getByNumeroDocumento(evt.target.value).subscribe((res: any) => {
+      this.conductorService.getByNumeroDocumento(evt.target.value).subscribe((res: ConductorByNumeroDocumento) => {
         fg.get('tipo_documento_conductor')?.setValue(res.tipo_documento);
         fg.get('numero_licencia_brevete_conductor')?.setValue(res.licencia);
         fg.get('nombre_conductor')?.setValue(res.nombres);
@@ -668,7 +675,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 }
                 this.modalRef?.close();
             });
-            const sub3 = cmp?.OnClose.subscribe(_ => {
+            const sub3 = cmp?.OnClose.subscribe(() => {
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -711,7 +718,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 }
                 this.modalRef?.close();
             });
-            const sub3 = cmp?.OnClose.subscribe(_ => {
+            const sub3 = cmp?.OnClose.subscribe(() => {
                 this.modalRef?.close();
             });
             this.subs.add(sub2);
@@ -747,7 +754,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
                 this.modalRef?.close();
             });
 
-            const sub3 = cmp?.OnClose.subscribe(_ => {
+            const sub3 = cmp?.OnClose.subscribe(() => {
             this.modalRef?.close();
         });
             
@@ -856,11 +863,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           idDepartamento : item.ubigeo_id?.substring(0,2)
         });
         this.provinciaProveedor!.valueEdit = item.ubigeo_id!.substring(0,4);
-        const subProvincia1 = this.provinciaProveedor?.loading.subscribe(res => {
+        const subProvincia1 = this.provinciaProveedor?.isLoaded.subscribe(() => {
             this.formDatosProveedor.get('idProvincia')?.setValue(item.ubigeo_id.substring(0,4));
         });
         this.distritoProveedor!.valueEdit = item.ubigeo_id;
-        const subDistrito1 = this.distritoProveedor?.loading.subscribe((res: any) => {
+        const subDistrito1 = this.distritoProveedor?.isLoaded.subscribe(() => {
             this.formDatosProveedor.get('idDistrito')?.setValue(item.ubigeo_id);
         });
 

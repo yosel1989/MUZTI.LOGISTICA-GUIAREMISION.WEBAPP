@@ -1,5 +1,5 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -44,12 +44,16 @@ import { TransportistaApiService } from '@features/transportista/services/transp
     SkeletonModule,
     DividerModule,
     OnlyNumberDirective
-],
+  ],
   templateUrl: './mdl-editar-transportista.component.html',
   styleUrl: './mdl-editar-transportista.component.scss',
   providers: [ConfirmationService]
 })
 export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+
+  private api = inject(TransportistaApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
 
   @Input() id!: number;
   @Output() OnCreated: EventEmitter<TransportistaDto> = new EventEmitter<TransportistaDto>();
@@ -60,13 +64,13 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   @ViewChild('distrito') ctrlDistrito: SelectDistritoComponent | undefined;
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
+  isSubmitted = signal(false);
   ldSubmit = signal(false);
 
   private subs = new Subscription();
   
   documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
-  submitted: boolean = false;
+  submitted = signal(false);
 
 
   headerValue: string = '';
@@ -76,16 +80,12 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   ];
 
   ldData = signal(false);
-  data: TransportistaDto | undefined;
+  data = signal<TransportistaDto | undefined>(undefined);
 
-  constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: TransportistaApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
-	) {
-    this.frm = this.fb.group({
+  constructor( public config: DynamicDialogConfig ) {}
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
       tipo_documento: new FormControl(null, Validators.required),
       numero_documento: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
@@ -102,9 +102,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     this.f.codigo.disable();
 
     this.headerValue = this.config.header ?? '';
-  }
 
-  ngOnInit(): void {
     this.loadData();
   }
 
@@ -112,8 +110,8 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   }
 
   ngAfterViewChecked(): void{
-    this.ctrlProvincia?.isLoaded.subscribe(val => { this.f.provincia.setValue(this.data?.ubigeo_id!.substring(0,4)); });
-    this.ctrlDistrito?.isLoaded.subscribe(val => { this.f.distrito.setValue(this.data?.ubigeo_id);});
+    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data()?.ubigeo_id!.substring(0,4)); });
+    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data()?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -121,6 +119,8 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -144,14 +144,14 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   get isLoading(): boolean{
     return this.ldSubmit() || 
     this.ldData() ||
-    (this.ctrlDepartamento?.isLoading ?? false) || 
-    (this.ctrlProvincia?.isLoading ?? false) || 
-    (this.ctrlDistrito?.isLoading ?? false);
+    (this.ctrlDepartamento?.isLoading() ?? false) || 
+    (this.ctrlProvincia?.isLoading() ?? false) || 
+    (this.ctrlDistrito?.isLoading() ?? false);
   }
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     if(this.frm.invalid){
       console.log(this.frm);
       return;
@@ -164,7 +164,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
 
             this.ldSubmit.set(true);
             
-            const sub = this.api.editar(this.data!.id, this.request).subscribe({
+            const sub = this.api.editar(this.data()!.id, this.request).subscribe({
               next: (res: TransportistaDto) => {
                 this.ldSubmit.set(false);
 
@@ -239,7 +239,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
 
   // handlers
   handlerLoadData(res: TransportistaDto): void{
-    this.data = res;
+    this.data.set(res);
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       tipo_documento: res.tipo_documento,

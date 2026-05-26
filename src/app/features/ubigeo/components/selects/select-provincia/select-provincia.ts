@@ -1,10 +1,11 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlertService } from '@core/services/alert.service';
 import { UbigeoProvinciaDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
-import { BehaviorSubject, Subscriber, Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-provincia',
@@ -13,12 +14,16 @@ import { BehaviorSubject, Subscriber, Subscription } from 'rxjs';
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
-    FormsModule,
-    AsyncPipe
+    FormsModule
   ]
 })
 
 export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
+
+    private ubigeoService = inject(UbigeoApiService);
+    private alertService = inject(AlertService);
+
+
     @Input() idUbigeoDepartamento: string | null = null;
     @Input() classLabel: string = '';
     @Input() label: string = 'Provincia';
@@ -33,23 +38,18 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 
-    collection: UbigeoProvinciaDto[] = [];
-    loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    $loading = this.loading.asObservable();
+    collection = signal<UbigeoProvinciaDto[]>([]);
+    loading = signal(false);
     private subs = new Subscription();
-    isLoading = false;
+    isLoading = signal(false);
 
     labelSelected: string | null = null;
-
-    constructor(
-        private ubigeoService: UbigeoApiService
-    ) {}
 
     ngOnInit(): void {
         this.getData();
         this.control.valueChanges.subscribe(value => {
             if(value){
-                const provincia = this.collection.find(prov => prov.id === value);
+                const provincia = this.collection().find(prov => prov.id === value);
                 this.labelSelected = provincia ? provincia.provincia : null;
             }else{
                 this.labelSelected = null;
@@ -75,26 +75,36 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
 
     // Data
     getData(): void {
-        this.collection = [];
-        this.loading.next(false);
+        this.collection.set([]);
+        this.loading.set(false);
         if (!this.idUbigeoDepartamento) {
             return;
         }
 
-        this.isLoading = true;
-        this.loading.next(true);
+        this.isLoading.set(true);
+        this.loading.set(true);
             this.isLoaded.emit(true);
-            this.subs.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
+            this.subs.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento)
+            .pipe(finalize(()=>{
+                this.loading.set(false);
+                this.isLoading.set(false);
+            }))
+            .subscribe({
                 next: (response) => {
-                    this.collection = response;
+                    this.collection.set(response);
                     this.isLoaded.emit(false);
-                    this.loading.next(false);
-                    this.isLoading = false;
-                    this.valueEdit && this.control.setValue(this.valueEdit);
+                    if(this.valueEdit) this.control.setValue(this.valueEdit);
                 },
-                error: (error) => {
-                    this.loading.next(false);
-                    this.isLoading = false;
+                error: (error: HttpErrorResponse) => {
+                    this.loading.set(false);
+                    this.isLoading.set(false);
+                    this.alertService.showToast({
+                        title: error.error.detalle,
+                        icon: 'error',
+                        timer: 4000,
+                        timerProgressBar: true,
+                        showCloseButton: true
+                    });
                 }
             })
         );
