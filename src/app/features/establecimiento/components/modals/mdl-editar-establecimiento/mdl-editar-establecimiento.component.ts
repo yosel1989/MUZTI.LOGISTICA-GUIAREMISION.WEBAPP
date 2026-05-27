@@ -1,5 +1,5 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, computed, inject, signal } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -88,19 +88,18 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   ];
 
   ldData = signal(false);
-  data: EstablecimientoDTO | undefined;
+  data = signal<EstablecimientoDTO | undefined>(undefined);
 
   ldEmpresa = signal(false);
-  empresas: EmpresaToSelectDto[] = [];
+  empresas = signal<EmpresaToSelectDto[]>([]);
 
-  tiposEstablecimiento: TipoEstablecimientoDTO[] = [];
+  tiposEstablecimiento = signal<TipoEstablecimientoDTO[]>([]);
   ldTipoEstablecimiento = signal(false);
 
-  constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig
-	) {
-    this.frm = this.fb.group({
+  constructor( public config: DynamicDialogConfig ) {}
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       descripcion: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
@@ -114,12 +113,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       codigo_sunat: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
       tipo: new FormControl(null, Validators.required),
     });
-    this.f.codigo.disable();
-
     this.headerValue = this.config.header ?? '';
-  }
 
-  ngOnInit(): void {
     this.loadData();
     this.loadEmpresas();
     this.loadTiposEstablecimiento();
@@ -129,8 +124,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   }
 
   ngAfterViewChecked(): void{
-    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4)); });
-    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data?.ubigeo_id);});
+    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data()?.ubigeo_id.substring(0,4)); });
+    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data()?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -161,13 +156,13 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     };
   }
 
-  get isLoading(): boolean{
+  isLoading = computed(() =>{
     return this.ldSubmit() || 
     this.ldData() ||
     (this.ctrlDepartamento?.isLoading() ?? false) || 
     (this.ctrlProvincia?.isLoading() ?? false) || 
     (this.ctrlDistrito?.isLoading() ?? false);
-  }
+  });
 
   // Events
   evtOnSubmit(): void{
@@ -184,7 +179,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
             this.ldSubmit.set(true);
             
-            const sub = this.api.editar(this.data!.id, this.request)
+            const sub = this.api.editar(this.data()!.id, this.request)
             .pipe(finalize(() => { this.ldSubmit.set(false) }))
             .subscribe({
               next: (res: EstablecimientoDTO) => {
@@ -263,7 +258,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       .pipe(finalize(() => { this.ldEmpresa.set(false); }))
       .subscribe({
         next: (value: EmpresaToSelectDto[]) => {
-          this.empresas = value;
+          this.empresas.set(value);
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
@@ -291,7 +286,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
       .pipe(finalize(() => { this.ldTipoEstablecimiento.set(false) }))
       .subscribe({
         next: (value: TipoEstablecimientoDTO[]) => {
-          this.tiposEstablecimiento = value;
+          this.tiposEstablecimiento.set(value);
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
@@ -315,7 +310,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
   // handlers
   handlerLoadData(res: EstablecimientoDTO): void{
-    this.data = res;
+    this.data.set(res);
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       ruc: res.ruc,

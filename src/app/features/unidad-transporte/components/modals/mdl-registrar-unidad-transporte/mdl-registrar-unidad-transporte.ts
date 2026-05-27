@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -16,7 +16,6 @@ import { DocumentEntityType } from '@features/items/models/document-entity-type'
 import { FAKE_DOCUMENT_TYPE_PERSON } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
-import { RegistrarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { RegistrarUnidadTransporteRequestDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
@@ -48,6 +47,10 @@ import { TooltipModule } from 'primeng/tooltip';
 })
 export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private api = inject(UnidadTransporteApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+
   @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -69,14 +72,10 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
     {value: 'externo', label: 'EXTERNO'}
   ];
 
-  constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: UnidadTransporteApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
-	) {
-    this.frm = this.fb.group({
+  constructor( public config: DynamicDialogConfig ) { }
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       descripcion: new FormControl(null, Validators.maxLength(50)),
       marca: new FormControl(null, Validators.maxLength(20)),
       modelo: new FormControl(null, Validators.maxLength(20)),
@@ -92,10 +91,6 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
     this.headerValue = this.config.header ?? '';
   }
 
-  ngOnInit(): void {
-
-  }
-
   ngAfterViewInit(): void {
     
   }
@@ -105,6 +100,8 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -119,7 +116,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       placa: form.placa,
       tarjeta: form.tarjeta,
       cod_emisor_vehicular: form.cod_emisor_vehicular,
-      emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
+      emisor_vehicular: this.ctrlEmisorVehicular?.selected()?.abreviatura ?? null,
       nro_autorizacion: form.nro_autorizacion,
       tipo: form.tipo
     };
@@ -141,7 +138,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
             this.ldSubmit = true;
             
             const subs = this.api.registrar(this.request).subscribe({
-              next: (res: RegistrarConductorResponseDto) => {
+              next: () => {
                 this.frm.enable();
                 this.ldSubmit = false;
 

@@ -13,8 +13,8 @@ export class CatalogoApiService {
   constructor(private http: HttpClient) {}
 
   getPaises(): Observable<PaisDto[]> {
-    return this.http.get<any>(`${this.baseUrl}/paises`).pipe(
-      map(response =>{ return response as PaisDto[]}),
+    return this.http.get<PaisDto[]>(`${this.baseUrl}/paises`).pipe(
+      map(response => response),
       catchError(error => {
         return throwError(() => error);
       })
@@ -22,8 +22,8 @@ export class CatalogoApiService {
   }
 
   getEmisorVehicular(): Observable<EmisorVehicularDto[]> {
-    return this.http.get<any>(`${this.baseUrl}/emisor-vehicular`).pipe(
-      map(response =>{ return response as EmisorVehicularDto[]}),
+    return this.http.get<EmisorVehicularDto[]>(`${this.baseUrl}/emisor-vehicular`).pipe(
+      map(response => response),
       catchError(error => {
         return throwError(() => error);
       })
@@ -31,8 +31,8 @@ export class CatalogoApiService {
   }
 
   getTipoEstablecimiento(): Observable<TipoEstablecimientoDTO[]> {
-    return this.http.get<any>(`${this.baseUrl}/tipo-establecimiento`).pipe(
-      map(response =>{ return response as TipoEstablecimientoDTO[]}),
+    return this.http.get<TipoEstablecimientoDTO[]>(`${this.baseUrl}/tipo-establecimiento`).pipe(
+      map( response => response ),
       catchError(error => {
         return throwError(() => error);
       })

@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
-import { ActualizarEstadoResponseDto, EliminarResponseDto } from "@features/shared/models/shared";
+import { ActualizarEstadoResponseDto, EliminarResponseDto, ResponseDTO } from "@features/shared/models/shared";
 import { EditarTransportistaRequestDto, RegistrarTransportistaRequestDto, RegistrarTransportistaResponseDto, TransportistaDto } from "../models/transportista";
 import { EstadoActualizarRequestDTO } from "app/shared/models/request";
 
@@ -96,12 +96,15 @@ export class TransportistaApiService {
     );
   }
 
-  actualizarEstado(id: number, request: EstadoActualizarRequestDTO ): Observable<ActualizarEstadoResponseDto> {
-    return this.http.put<ActualizarEstadoResponseDto>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+  actualizarEstado(id: number, request: EstadoActualizarRequestDTO ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+    return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(res =>{ 
         return {
           ...res,
-          fecha_modifico: res.fecha_modifico ? new Date(res.fecha_modifico) : null
+          data: {
+            ...res.data,
+            fecha_modifico: res.data.fecha_modifico ? new Date(res.data.fecha_modifico) : null
+          } 
         };
       }),
       catchError((error: HttpErrorResponse) => {

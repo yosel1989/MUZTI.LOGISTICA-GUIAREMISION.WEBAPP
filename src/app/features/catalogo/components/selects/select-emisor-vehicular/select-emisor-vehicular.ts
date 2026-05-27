@@ -36,10 +36,10 @@ export class SelectEmisorVehicularComponent implements OnInit, AfterViewInit, On
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    data: EmisorVehicularDto[] = [];
+    data = signal<EmisorVehicularDto[]>([]);
     loading = signal(false);
 
-    selected: EmisorVehicularDto | undefined = undefined;
+    selected = signal<EmisorVehicularDto | undefined>(undefined);
 
     private subs = new Subscription();
 
@@ -48,10 +48,10 @@ export class SelectEmisorVehicularComponent implements OnInit, AfterViewInit, On
     }
 
     ngAfterViewInit(): void {
-        this.control.valueChanges.subscribe( (res: any) => {
-            this.selected = undefined;
+        this.control.valueChanges.subscribe( (res: string | null) => {
+            this.selected.set(undefined);
             if(res){
-                this.selected = this.data.find(x => x.codigo === res);
+                this.selected.set( this.data().find(x => x.codigo === res) );
             }
         });
     }
@@ -68,7 +68,7 @@ export class SelectEmisorVehicularComponent implements OnInit, AfterViewInit, On
         .pipe(finalize(()=>{this.loading.set(false);}))
         .subscribe({
             next: (response: EmisorVehicularDto[]) => {
-                this.data = response;
+                this.data.set(response);
                 this.isLoaded.emit(true);
             },
             error: (error: HttpErrorResponse) => {

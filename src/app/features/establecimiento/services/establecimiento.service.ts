@@ -4,7 +4,7 @@ import { catchError, map, Observable, throwError } from "rxjs";
 import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
-import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
+import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
 
 @Injectable({
     providedIn: "root"
@@ -24,7 +24,7 @@ export class EstablecimientoApiService{
             httpParams = httpParams.set('search', search);
         }
 
-        return this.http.get<any>(`${this.baseUrl}/listar-sugerido/${ruc}`, { params: httpParams }).pipe(
+        return this.http.get<EstablecimientoListToModalDTO[]>(`${this.baseUrl}/listar-sugerido/${ruc}`, { params: httpParams }).pipe(
             map(response =>{ return response as EstablecimientoListToModalDTO[] }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -34,7 +34,7 @@ export class EstablecimientoApiService{
 
 
     getById(id: number): Observable<EstablecimientoDTO>{
-        return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+        return this.http.get<EstablecimientoDTO>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
             map(response =>{ return response as EstablecimientoDTO }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -49,7 +49,7 @@ export class EstablecimientoApiService{
             httpParams = httpParams.set('search', search);
         }
 
-        return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, {
+        return this.http.get<TableData<EstablecimientoDTO[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, {
             params: httpParams
         }).pipe(
             map(response =>{ return response as TableData<EstablecimientoDTO[]> }),
@@ -60,7 +60,7 @@ export class EstablecimientoApiService{
     }
 
     delete(id: number): Observable<EliminarEstablecimientoResponseDTO> {
-        return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
+        return this.http.delete<EliminarEstablecimientoResponseDTO>(`${this.baseUrl}/${id}`).pipe(
             map(response =>{ return response as EliminarEstablecimientoResponseDTO }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -68,9 +68,16 @@ export class EstablecimientoApiService{
         );
     }
 
-    actualizarEstado(id: number, request: ActualizarEstadoEstablecimientoRequestDTO ): Observable<ActualizarEstadoResponseDto> {
-        return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-            map(response =>{ return response as ActualizarEstadoResponseDto }),
+    actualizarEstado(id: number, request: ActualizarEstadoEstablecimientoRequestDTO ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+        return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+            map(response => ({  
+                ...response,
+                data: {
+                    ...response.data,
+                    fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+                }
+
+            }) as ResponseDTO<ActualizarEstadoResponseDto>),
             catchError((error: HttpErrorResponse) => {
             return throwError(() => error);
             })
@@ -78,7 +85,7 @@ export class EstablecimientoApiService{
     }
 
     registrar(request: RegistrarEstablecimientoRequestDTO): Observable<RegistrarEstablecimientoRequestDTO> {
-        return this.http.post<any>(`${this.baseUrl}`, request).pipe(
+        return this.http.post<RegistrarEstablecimientoRequestDTO>(`${this.baseUrl}`, request).pipe(
             map(response =>{ return response as RegistrarEstablecimientoRequestDTO }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -87,7 +94,7 @@ export class EstablecimientoApiService{
     }
 
     editar(id: number, request: EditarEstablecimientoRequestDTO): Observable<EstablecimientoDTO> {
-        return this.http.put<any>(`${this.baseUrl}/${id}`, request).pipe(
+        return this.http.put<EstablecimientoDTO>(`${this.baseUrl}/${id}`, request).pipe(
             map(response => ({ 
                 ...response,
                 fecha_registro: new Date(response.fecha_registro),
@@ -100,14 +107,14 @@ export class EstablecimientoApiService{
     }
 
     getByIdToGuia(idEstablecimiento: number, tipoGuia: 'TRANSPORTISTA' | 'REMITENTE' | string): Observable<EstablecimientoRemitenteGuiaDTO> {
-        return this.http.get<any>(`${this.baseUrl}/buscar-por-id-para-guia/${idEstablecimiento}/${tipoGuia}`).pipe(
+        return this.http.get<EstablecimientoRemitenteGuiaDTO>(`${this.baseUrl}/buscar-por-id-para-guia/${idEstablecimiento}/${tipoGuia}`).pipe(
             map(response =>{ return response as EstablecimientoRemitenteGuiaDTO})
         );
     }
 
 
     getAllToSelectByRuc(ruc: string): Observable<EstablecimientoListToSelectDTO[]>{
-        return this.http.get<any>(`${this.baseUrl}/listar-select/por-ruc/${ruc}`).pipe(
+        return this.http.get<EstablecimientoListToSelectDTO[]>(`${this.baseUrl}/listar-select/por-ruc/${ruc}`).pipe(
             map(response =>{ return response as EstablecimientoListToSelectDTO[] }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);

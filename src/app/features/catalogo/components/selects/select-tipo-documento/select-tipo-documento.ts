@@ -26,16 +26,16 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
     @Input() disabled: boolean = false;
 
     data: SelectTipoDocumento[] = [ 
-        { label: 'DNI', value: TipoDocumentoEnum.dni }, 
-        { label: 'Carnet de Extranjería', value: TipoDocumentoEnum.carnet_extranjeria }, 
-        { label: 'RUC', value: TipoDocumentoEnum.ruc },
-        { label: 'Pasaporte', value: TipoDocumentoEnum.pasaporte },
+      { label: 'DNI', value: TipoDocumentoEnum.dni }, 
+      { label: 'Carnet de Extranjería', value: TipoDocumentoEnum.carnet_extranjeria }, 
+      { label: 'RUC', value: TipoDocumentoEnum.ruc },
+      { label: 'Pasaporte', value: TipoDocumentoEnum.pasaporte },
     ];
 
     constructor() {}
 
     ngOnInit(): void {
-        
+      
     }
 
     ngAfterViewInit(): void {

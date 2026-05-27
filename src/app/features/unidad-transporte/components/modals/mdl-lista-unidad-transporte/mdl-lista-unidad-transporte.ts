@@ -6,7 +6,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
-import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -23,7 +22,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './mdl-lista-unidad-transporte.html',
   styleUrls: ['./mdl-lista-unidad-transporte.scss'],                          
   imports: [
-    CommonModule,
     InputTextModule,
     ReactiveFormsModule,
     FormsModule,
@@ -42,29 +40,25 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy{
 
   private alertService = inject(AlertService);
+  private api = inject(UnidadTransporteApiService);
+  public util = inject(UtilService);
 
   @Output() OnSelect: EventEmitter<UnidadTransporteDto> = new EventEmitter<UnidadTransporteDto>();
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   data = signal<UnidadTransporteSugeridoDto[]>([]);
-  selected: UnidadTransporteSugeridoDto | undefined;
+  selected = signal<UnidadTransporteSugeridoDto | undefined>(undefined);
   cols: TableColumn[] = []
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
   sbData: Subscription | undefined;
   search = new FormControl(null);
 
-
-  constructor(
-    private api: UnidadTransporteApiService,
-    public util: UtilService
-  ) {
+  ngOnInit(): void {
     this.search.valueChanges.subscribe(() => {
       this.getData();
     });
-  }
 
-  ngOnInit(): void {
     this.cols = [
       { field: 'id', header: 'Código', sort: false },
       { field: 'placa', header: 'Placa', sort: false },
@@ -123,7 +117,7 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.getById(this.selected!.id)
+    this.sbData = this.api.getById(this.selected()!.id)
     .pipe(finalize(() => {
       this.ldData.set(false);
       this.ldSelected.set(false);

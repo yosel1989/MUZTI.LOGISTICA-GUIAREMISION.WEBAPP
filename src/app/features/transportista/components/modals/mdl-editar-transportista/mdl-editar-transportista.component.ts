@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -24,6 +24,7 @@ import { DividerModule } from 'primeng/divider';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EditarTransportistaRequestDto, TransportistaDto } from '@features/transportista/models/transportista';
 import { TransportistaApiService } from '@features/transportista/services/transportista-api.service';
+import { OnlyUpperDirective } from "@core/directives/only-uppers.directive";
 
 @Component({
   selector: 'app-mdl-editar-transportista',
@@ -43,8 +44,9 @@ import { TransportistaApiService } from '@features/transportista/services/transp
     SelectDistritoComponent,
     SkeletonModule,
     DividerModule,
-    OnlyNumberDirective
-  ],
+    OnlyNumberDirective,
+    OnlyUpperDirective
+],
   templateUrl: './mdl-editar-transportista.component.html',
   styleUrl: './mdl-editar-transportista.component.scss',
   providers: [ConfirmationService]
@@ -141,13 +143,12 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     };
   }
 
-  get isLoading(): boolean{
-    return this.ldSubmit() || 
-    this.ldData() ||
-    (this.ctrlDepartamento?.isLoading() ?? false) || 
-    (this.ctrlProvincia?.isLoading() ?? false) || 
-    (this.ctrlDistrito?.isLoading() ?? false);
-  }
+  isLoading = computed(() => {
+    const controls = [this.ctrlDepartamento, this.ctrlProvincia, this.ctrlDistrito];
+    return this.ldSubmit() ||
+          this.ldData() ||
+          controls.some(ctrl => ctrl?.isLoading() ?? false);
+  });
 
   // Events
   evtOnSubmit(): void{

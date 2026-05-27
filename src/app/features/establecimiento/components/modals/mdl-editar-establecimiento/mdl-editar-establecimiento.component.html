@@ -28,7 +28,7 @@
                         [inputSize]="2"
                         panelStyleClass="text-[.875rem]!"
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
-                        [options]="empresas" 
+                        [options]="empresas()" 
                         placeholder="Seleccionar..." 
                         optionValue="ruc" 
                         optionLabel="empresa" 
@@ -246,7 +246,7 @@
                             [inputSize]="2"
                             panelStyleClass="text-[.875rem]!"
                             class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
-                            [options]="tiposEstablecimiento" 
+                            [options]="tiposEstablecimiento()" 
                             placeholder="Seleccionar..." 
                             optionValue="codigo" 
                             optionLabel="tipo" 
@@ -267,8 +267,25 @@
     </div>
 <p-divider class="my-0!"></p-divider>
     <div class="flex justify-end gap-2 pt-4">
-        <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" [disabled]="isLoading"/>
+        <p-button 
+            styleClass="w-[92px]!" 
+            type="reset" 
+            icon="pi pi-times" 
+            size="small" 
+            label="Cancelar" 
+            severity="secondary" 
+            (click)="evtOnClose()"
+        />
+        <p-button 
+            styleClass="w-[92px]!" 
+            type="submit" 
+            icon="pi pi-save" 
+            size="small" 
+            [label]="ldSubmit() ? '' : 'Guardar'" 
+            [loading]="ldSubmit()" 
+            severity="primary" 
+            [disabled]="isLoading()"
+        />
     </div>
 
 </form>

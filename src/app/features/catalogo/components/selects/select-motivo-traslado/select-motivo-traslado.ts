@@ -33,7 +33,7 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
     @Input() invalid: boolean = false;
 
     selected = signal<SunatMotivoTrasladoDto | undefined>(undefined);
-    data: SunatMotivoTrasladoDto[] = [];
+    data = signal<SunatMotivoTrasladoDto[]>([]);
     loading = signal(false);
     subs = new Subscription();
 
@@ -44,7 +44,7 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
     ngOnInit(): void {
         this.control.valueChanges.subscribe(res => {
             if(res){
-                const selected = this.data.find(x => x.id === res);
+                const selected = this.data().find(x => x.id === res);
                 this.selected.set(selected);
             }
         });
@@ -69,7 +69,7 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
         }))
         .subscribe({
             next: (value: SunatMotivoTrasladoDto[]) => {
-                this.data = value;
+                this.data.set(value);
             },
             error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({

@@ -153,7 +153,7 @@
                     [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted())"/>
                     @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                            La código debe tener 4 caracteres.
+                            La código debe tener 4 dígitos.
                         </span></p-message>
                     }
                 </div>

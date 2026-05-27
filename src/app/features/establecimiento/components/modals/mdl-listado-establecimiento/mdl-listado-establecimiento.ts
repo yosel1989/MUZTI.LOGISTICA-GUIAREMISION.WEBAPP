@@ -49,7 +49,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     @Input() motivoTraslado: SunatMotivoTrasladoDto | undefined;
     @Input() remitente: EstablecimientoDTO | undefined;
 
-    empresas: EmpresaToSelectDto[] = [];
+    empresas = signal<EmpresaToSelectDto[]>([]);
     ldEmpresas = signal(false);
 
     ctrlRuc = new FormControl<string | null>({value: null, disabled: true});
@@ -62,7 +62,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     ldDataById = signal(false);
 
     ldSelected = signal(false);
-    selected: EstablecimientoListToModalDTO | null = null;
+    selected = signal<EstablecimientoListToModalDTO | null>(null);
 
     sb = new Subscription();
     sbData : Subscription | undefined;
@@ -71,8 +71,6 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     placeholder = 'Seleccionar ...';
 
     ngOnInit(): void {
-
-        console.log('motivotraslado', this.motivoTraslado);
 
         if(this.tipo === 'remitente'){
             this.ctrlRuc.setValue(this.ruc);
@@ -144,10 +142,10 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.ldEmpresas.set(true);
         const s = this.empresaApiService.loadAllToSelect().subscribe({
             next: (value: EmpresaToSelectDto[]) => {
-                this.empresas = value.map(x => ({
+                this.empresas.set(value.map(x => ({
                     ...x,
                     disabled: (this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
-                }));
+                })));
                 this.ldEmpresas.set(false);
             },
             error: (e: HttpErrorResponse) => {
@@ -189,7 +187,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     loadDataById(): void{
         this.ldDataById.set(true);
-        const s = this.api.getById(this.selected!.id!)
+        const s = this.api.getById(this.selected()!.id!)
         .pipe(finalize(() => {
             this.ldDataById.set(false);
             this.ldSelected.set(false);
@@ -223,7 +221,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     }
 
     evtChangeEmpresa(): void{
-        this.selected = null;
+        this.selected.set(null);
         this.loadData();
     }
 }

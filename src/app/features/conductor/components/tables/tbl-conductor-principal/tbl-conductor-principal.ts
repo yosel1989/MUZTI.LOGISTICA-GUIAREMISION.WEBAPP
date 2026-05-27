@@ -275,7 +275,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
             const updated = { ...current!, ...s, ld_update: true };
 
             this.data.update(arr =>
-              arr.map(c => s.id === updated.id ? updated : c)
+              arr.map(c => c.id === updated.id ? updated : c)
             );
 
             return updated;

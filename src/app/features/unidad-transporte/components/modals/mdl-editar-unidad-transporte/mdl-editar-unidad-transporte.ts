@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild} from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal, ViewChild} from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -41,7 +41,11 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
   providers: [ConfirmationService]
 })
 export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit, OnDestroy {
-  
+
+  private api = inject(UnidadTransporteApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+
   @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
   @Input() id!: number;
   @Output() OnCreated: EventEmitter<UnidadTransporteDto | undefined> = new EventEmitter<UnidadTransporteDto | undefined>(undefined);
@@ -53,7 +57,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
 
   private subs = new Subscription();
   
-  submitted: boolean = false;
+  submitted = signal(false);
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
@@ -70,14 +74,10 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   ldData = signal(false);
   data = signal<UnidadTransporteDto | undefined>(undefined);
 
-  constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: UnidadTransporteApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
-	) {
-    this.frm = this.fb.group({
+  constructor( public config: DynamicDialogConfig ) { }
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
       descripcion: new FormControl(null, Validators.maxLength(50)),
       marca: new FormControl(null, Validators.maxLength(20)),
@@ -91,9 +91,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
     });
 
     this.headerValue = this.config.header ?? '';
-  }
 
-  ngOnInit(): void {
     this.loadData();
   }
 
@@ -121,7 +119,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
       placa: form.placa,
       tarjeta: form.tarjeta,
       cod_emisor_vehicular: form.cod_emisor_vehicular,
-      emisor_vehicular: this.ctrlEmisorVehicular?.selected?.abreviatura ?? null,
+      emisor_vehicular: this.ctrlEmisorVehicular?.selected()?.abreviatura ?? null,
       nro_autorizacion: form.nro_autorizacion,
       tipo: form.tipo
     };
@@ -178,10 +176,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
             });
             this.subs.add(subs);
            
-        },
-        reject: () => {
-            
-        },
+        }
     });
   }
 

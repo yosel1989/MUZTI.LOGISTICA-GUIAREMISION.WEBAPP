@@ -7,13 +7,14 @@ import { SunatMotivoTrasladoDto } from "../models/sunat-catalogo.model";
 @Injectable({
   providedIn: 'root'
 })
+
 export class SunatCatalogoApiService {
   private baseUrl = `${environment.apiUrl}/sunat-catalogo`;
 
   constructor(private http: HttpClient) {}
 
   loadMotivosTraslado(): Observable<SunatMotivoTrasladoDto[]> {
-    return this.http.get<any>(`${this.baseUrl}/motivos-traslado`).pipe(
+    return this.http.get<SunatMotivoTrasladoDto[]>(`${this.baseUrl}/motivos-traslado`).pipe(
       map(response =>{ return response as SunatMotivoTrasladoDto[]}),
       catchError(error => {
         return throwError(() => error);

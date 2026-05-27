@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -66,7 +66,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
 
   frm: FormGroup = new FormGroup({});
   isSubmitted = signal(false);
-  ldSubmit: boolean = false;
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
 
@@ -77,16 +77,19 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   ];
 
   ldEmpresa = signal(false);
-  empresas: EmpresaToSelectDto[] = [];
+  empresas = signal<EmpresaToSelectDto[]>([]);
 
-  tiposEstablecimiento: TipoEstablecimientoDTO[] = [];
+  tiposEstablecimiento = signal<TipoEstablecimientoDTO[]>([]);
   ldTipoEstablecimiento = signal(false);
 
   constructor(
-    private fb: FormBuilder,
     public config: DynamicDialogConfig
 	) {
-    this.frm = this.fb.group({
+    
+  }
+
+  ngOnInit(): void {
+    this.frm = new FormGroup({
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       descripcion: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       departamento: new FormControl(null, Validators.required),
@@ -99,11 +102,8 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
       tipo: new FormControl(null, Validators.required),
     });
-
     this.headerValue = this.config.header ?? '';
-  }
 
-  ngOnInit(): void {
     this.loadEmpresas();
     this.loadTiposEstablecimiento();
   }
@@ -153,12 +153,12 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
         accept: () => {
 
             this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const subs = this.api.registrar(this.request).subscribe({
               next: () => {
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -173,7 +173,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
               },
               error: (err: HttpErrorResponse) => {
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",
@@ -191,9 +191,6 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
             this.subs.add(subs);
            
         },
-        reject: () => {
-            
-        },
     });
   }
 
@@ -209,7 +206,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       .pipe(finalize(()=>{this.ldEmpresa.set(false);}))
       .subscribe({
         next: (value: EmpresaToSelectDto[]) => {
-          this.empresas = value;
+          this.empresas.set(value);
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
@@ -235,11 +232,10 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     this.subs.add(
       this.catalogoApiService.getTipoEstablecimiento().subscribe({
         next: (value: TipoEstablecimientoDTO[]) => {
-          this.tiposEstablecimiento = value;
+          this.tiposEstablecimiento.set(value);
           this.ldTipoEstablecimiento.set(false);
         },
-        error: (err: any) => {
-          console.error(err);
+        error: (err: HttpErrorResponse) => {
           this.alertService.showToast({
             position: 'top-end',
             icon: "error",

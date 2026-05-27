@@ -20,3 +20,8 @@ export interface EliminarResponseDto {
   eliminado: boolean;
   detalle: string;
 }
+
+export interface ResponseDTO<T>{
+  data: T;
+  detalle: string;
+}

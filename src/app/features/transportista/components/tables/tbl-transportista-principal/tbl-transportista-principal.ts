@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -25,7 +25,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TransportistaDto } from '@features/transportista/models/transportista';
 import { TransportistaApiService } from '@features/transportista/services/transportista-api.service';
-import { ActualizarEstadoResponseDto, EliminarResponseDto } from '@features/shared/models/shared';
+import { ActualizarEstadoResponseDto, EliminarResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-transportista/mdl-registrar-transportista.component';
 import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transportista/mdl-editar-transportista.component';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
@@ -45,7 +45,6 @@ import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
         InputIconModule,
         TooltipModule,
         InputTextModule,
-        AsyncPipe,
         DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
@@ -272,7 +271,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
             const updated = { ...current!, ...s, ld_update: true };
 
             this.data.update(arr =>
-              arr.map(c => s.id === updated.id ? updated : c)
+              arr.map(c => c.id === updated.id ? updated : c)
             );
 
             return updated;
@@ -364,7 +363,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
               } as EstadoActualizarRequestDTO;
 
               const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
-                next: (res: ActualizarEstadoResponseDto) => {
+                next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -380,11 +379,11 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                       ...current!,
                       ld_estado: false,
                       ld_update: false,
-                      id_estado: res.id_estado,
-                      estado: res.estado,
-                      fecha_modifico: res.fecha_modifico,
-                      usuario_modifico: res.usuario_modifico,
-                      usuario_modifico_nombre: res.usuario_modifico_nombre
+                      id_estado: res.data.id_estado,
+                      estado: res.data.estado,
+                      fecha_modifico: res.data.fecha_modifico,
+                      usuario_modifico: res.data.usuario_modifico,
+                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
                     };
 
                     this.data.update(arr =>
