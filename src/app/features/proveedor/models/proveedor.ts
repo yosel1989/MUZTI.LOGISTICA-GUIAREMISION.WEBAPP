@@ -1,6 +1,7 @@
 export interface ProveedorDto{
     id: number;
     tipo_documento: string;
+    tipo_documento_id: number;
     numero_documento: string;
     razon_social: string;
     ubigeo_id: string;
@@ -25,7 +26,7 @@ export interface ProveedorDto{
 
 
 export interface RegistrarProveedorRequestDto{
-  tipo_documento: 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
+  tipo_documento_id: number;
   numero_documento: string;
   razon_social: string;
   ubigeo_id: string;
@@ -37,7 +38,7 @@ export interface RegistrarProveedorRequestDto{
 
 export interface EditarProveedorRequestDto{
   id: number,
-  tipo_documento: 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
+  tipo_documento_id: number;
   numero_documento: string;
   razon_social: string;
   ubigeo_id: string;
@@ -53,8 +54,9 @@ export interface RegistrarProveedorResponseDto {
 }
 
 export interface EditarProveedorResponseDto{
-  id: number;
+    id: number;
     tipo_documento: string;
+    numero_documento_id: number;
     numero_documento: string;
     razon_social: string;
     ubigeo_id: string;
@@ -101,6 +103,7 @@ export interface ActualizarEstadoProveedorResponseDto{
 
 export interface ProveedorSugeridoDto{
   id: number;
+  tipo_documento_id: number;
   tipo_documento: string;
   numero_documento: string;
   razon_social: string;

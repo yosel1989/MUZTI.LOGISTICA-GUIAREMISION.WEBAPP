@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -17,9 +17,11 @@ import { FAKE_DOCUMENT_TYPE_PERSON } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
-import { RegistrarConductorRequestDto, RegistrarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { RegistrarConductorRequestDto } from '@features/conductor/models/conductor.model';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
 
 @Component({
   selector: 'app-mdl-registrar-conductor',
@@ -35,7 +37,8 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
     ConfirmDialog,
     SelectModule,
     OnlyNumberDirective,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+    SelectTipoDocumentoComponent
   ],
   templateUrl: './mdl-registrar-conductor.html',
   styleUrl: './mdl-registrar-conductor.scss',
@@ -75,7 +78,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
     public config: DynamicDialogConfig
 	) {
     this.frm = new FormGroup({
-      tipo_documento: new FormControl('DNI', Validators.required),
+      tipo_documento_id: new FormControl(null, Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       nombres: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       apellidos: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
@@ -87,31 +90,10 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
     });
 
     this.headerValue = this.config.header ?? '';
-
-    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      
-      this.frm.get('numero_documento')?.clearValidators();
-      switch(value){
-          case 'DNI':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
-            break;
-          case 'PASAPORTE':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'CARNET DE EXTRANJERIA':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'RUC':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
-            break;
-          default:
-            break;
-      }
-    }));
   }
 
   ngOnInit(): void {
-
+    
   }
 
   ngAfterViewInit(): void {
@@ -123,6 +105,8 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -131,7 +115,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
     const form = this.frm.value;
 
     return {
-      tipo_documento: form.tipo_documento,
+      tipo_documento_id: form.tipo_documento_id,
       numero_documento: form.numero_documento,
       nombres: form.nombres,
       apellidos: form.apellidos,
@@ -163,7 +147,7 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
                 this.ldSubmit.set(false);
              }))
             .subscribe({
-              next: (res: RegistrarConductorResponseDto) => {
+              next: () => {
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -204,5 +188,14 @@ export class MdlRegistrarConductorComponent implements OnInit, AfterViewInit, On
     this.OnCanceled.emit(true);
   }
 
+  evtSelectedChangeTipoDocumento(evt: TipoDocumentoDTO | undefined){
 
+    this.frm.get('numero_documento')?.clearValidators();
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+
+    this.frm.get('numero_documento')?.addValidators(Validators.required);
+    if(evt?.min) this.frm.get('numero_documento')?.addValidators(Validators.minLength(evt.min));
+    if(evt?.max) this.frm.get('numero_documento')?.addValidators(Validators.maxLength(evt.max));
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+  }
 }

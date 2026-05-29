@@ -1,6 +1,7 @@
 export interface ConductorDto{
     id: number;
-    tipo_documento: 'DNI' | 'CE' | 'PASAPORTE';
+    tipo_documento_id: number;
+    tipo_documento: string;
     numero_documento: string;
     nombres: string;
     apellidos: string;
@@ -32,7 +33,7 @@ export interface ConductorByNumeroDocumento{
 }
 
 export interface RegistrarConductorRequestDto{
-  tipo_documento: 'DNI' | 'CE' | 'PASAPORTE';
+  tipo_documento_id: number;
   numero_documento: string;
   nombres: string;
   apellidos: string;
@@ -46,10 +47,9 @@ export interface RegistrarConductorResponseDto {
   detalle: string;
 }
 
-
 export interface EditarConductorRequestDto{
   id: number,
-  tipo_documento: 'DNI' | 'CE' | 'PASAPORTE';
+  tipo_documento_id: number;
   numero_documento: string;
   nombres: string;
   apellidos: string;

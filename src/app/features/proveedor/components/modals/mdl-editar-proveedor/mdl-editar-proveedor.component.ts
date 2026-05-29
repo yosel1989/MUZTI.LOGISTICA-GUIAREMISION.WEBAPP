@@ -1,5 +1,5 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AfterViewChecked, AfterViewInit, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -24,6 +24,9 @@ import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/se
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { ResponseDTO } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-mdl-editar-proveedor',
@@ -43,7 +46,8 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
     SelectDistritoComponent,
     SkeletonModule,
     OnlyNumberDirective,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+    SelectTipoDocumentoComponent
   ],
   templateUrl: './mdl-editar-proveedor.component.html',
   styleUrl: './mdl-editar-proveedor.component.scss',
@@ -51,10 +55,15 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 })
 export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
+  private api = inject(ProveedorApiService);
+  private confirmationService = inject(ConfirmationService);
+  private alertService = inject(AlertService);
+
   @Input() id!: number;
   @Output() OnCreated: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+  @ViewChild('tipoDocumento') tipoDocumento: SelectTipoDocumentoComponent | undefined;
   @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
   @ViewChild('provincia') ctrlProvincia: SelectProvinciaComponent | undefined;
   @ViewChild('distrito') ctrlDistrito: SelectDistritoComponent | undefined;
@@ -66,7 +75,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   private subs = new Subscription();
   
   documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PROVIDER;
-  submitted: boolean = false;
+  submitted = signal(false);
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
@@ -75,18 +84,14 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   ];
 
   ldData = signal(false);
-  data: ProveedorDto | undefined;
+  data = signal<ProveedorDto | undefined>(undefined);
 
   constructor(
-    private fb: FormBuilder,
-    public config: DynamicDialogConfig,
-    private api: ProveedorApiService,
-    private confirmationService: ConfirmationService,
-    private alertService: AlertService
+    public config: DynamicDialogConfig
 	) {
-    this.frm = this.fb.group({
+    this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
-      tipo_documento: new FormControl('DNI', Validators.required),
+      tipo_documento_id: new FormControl(null, Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       departamento: new FormControl(null, Validators.required),
@@ -100,25 +105,6 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
 
     this.headerValue = this.config.header ?? '';
 
-    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.clearValidators();
-      switch(value){
-          case 'DNI':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
-            break;
-          case 'PASAPORTE':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'CARNET DE EXTRANJERIA':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'RUC':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
-            break;
-          default:
-            break;
-      }
-    }));
   }
 
   ngOnInit(): void {
@@ -129,8 +115,8 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   }
 
   ngAfterViewChecked(): void{
-    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data?.ubigeo_id.substring(0,4));});
-    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data?.ubigeo_id);});
+    this.ctrlProvincia?.isLoaded.subscribe(() => { this.f.provincia.setValue(this.data()?.ubigeo_id.substring(0,4));});
+    this.ctrlDistrito?.isLoaded.subscribe(() => { this.f.distrito.setValue(this.data()?.ubigeo_id);});
   }
 
   ngOnDestroy(): void {
@@ -148,8 +134,8 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
     const form = this.frm.value;
 
     return {
-      id: this.data!.id,
-      tipo_documento: form.tipo_documento,
+      id: this.data()!.id,
+      tipo_documento_id: form.tipo_documento_id,
       numero_documento: form.numero_documento,
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
@@ -163,6 +149,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   // Events
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
+    this.submitted.set(true);
     if(this.frm.invalid){
       console.log(this.frm);
       return;
@@ -176,20 +163,23 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
             this.ldSubmit.set(true);
             
             const sub = this.api.editar(this.request)
-            .pipe(finalize(() => { this.ldSubmit.set(false) }))
+            .pipe(finalize(() => { 
+              this.ldSubmit.set(false);
+              this.submitted.set(false);
+            }))
             .subscribe({
-              next: (res: ProveedorDto) => {
+              next: (res: ResponseDTO<ProveedorDto>) => {
 
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
-                  title: "Se edito el proveedor con éxito",
+                  title: res.detalle,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(res);
+                this.OnCreated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({
@@ -212,8 +202,18 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
     });
   }
 
-  evtOnClose(): void{
+  evtOnClose(): void {
     this.OnCanceled.emit(true);
+  }
+
+  evtSelectedChangeTipoDocumento(evt: TipoDocumentoDTO | undefined){
+    this.frm.get('numero_documento')?.clearValidators();
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+
+    this.frm.get('numero_documento')?.addValidators(Validators.required);
+    if(evt?.min) this.frm.get('numero_documento')?.addValidators(Validators.minLength(evt.min));
+    if(evt?.max) this.frm.get('numero_documento')?.addValidators(Validators.maxLength(evt.max));
+    this.frm.get('numero_documento')?.updateValueAndValidity();
   }
 
   // data
@@ -249,10 +249,10 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   // handlers
 
   handlerLoadData(res: ProveedorDto): void{
-    this.data = res;
+    this.data.set(res);
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
-      tipo_documento: res.tipo_documento,
+      tipo_documento_id: res.tipo_documento_id,
       numero_documento: res.numero_documento,
       razon_social: res.razon_social?.toUpperCase(),
       departamento: res.ubigeo_id.substring(0,2),
@@ -262,5 +262,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
       codigo_sunat: res.codigo_sunat
     });
   }
+
+
 
 }

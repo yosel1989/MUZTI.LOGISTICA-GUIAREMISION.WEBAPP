@@ -19,6 +19,7 @@ import { EditarUnidadTransporteRequestDto, UnidadTransporteDto } from '@features
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { ResponseDTO } from '@features/shared/models/shared';
 @Component({
   selector: 'app-mdl-editar-unidad-transporte',
   imports: [
@@ -128,6 +129,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   // Events
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
+    this.submitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -146,18 +148,18 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
                 this.ldUpdate.set(false);
             }))
             .subscribe({
-              next: (res: UnidadTransporteDto) => {
+              next: (res: ResponseDTO<UnidadTransporteDto>) => {
 
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
-                  title: "Se edito la unidad de transporte con éxito",
+                  title: res.detalle,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(res);
+                this.OnCreated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({

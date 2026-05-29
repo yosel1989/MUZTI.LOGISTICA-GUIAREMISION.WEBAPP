@@ -4,7 +4,7 @@ import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { EditarProveedorRequestDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
-import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
+import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
 import { EstadoActualizarRequestDTO } from "app/shared/models/request";
 
 @Injectable({
@@ -56,13 +56,16 @@ export class ProveedorApiService {
     );
   }
 
-  editar(request: EditarProveedorRequestDto): Observable<ProveedorDto> {
-    return this.http.put<ProveedorDto>(`${this.baseUrl}/${request.id}`, request).pipe(
-      map((response: ProveedorDto) =>({ 
+  editar(request: EditarProveedorRequestDto): Observable<ResponseDTO<ProveedorDto>> {
+    return this.http.put<ResponseDTO<ProveedorDto>>(`${this.baseUrl}/${request.id}`, request).pipe(
+      map((response: ResponseDTO<ProveedorDto>) =>({ 
         ...response, 
-        fecha_registro: new Date(response.fecha_registro),
-        fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
-      } as ProveedorDto)),
+        data:{
+          ...response.data,
+          fecha_registro: new Date(response.data.fecha_registro),
+          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+        }
+      })),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -78,9 +81,15 @@ export class ProveedorApiService {
     );
   }
 
-  actualizarEstado(id: number, request: EstadoActualizarRequestDTO ): Observable<ActualizarEstadoResponseDto> {
-    return this.http.put<ActualizarEstadoResponseDto>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-      map(response =>{ return response as ActualizarEstadoResponseDto }),
+  actualizarEstado(id: number, request: EstadoActualizarRequestDTO ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+    return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+      map(response =>({ 
+        ...response,
+        data: {
+          ...response.data,
+          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+        }
+      })),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

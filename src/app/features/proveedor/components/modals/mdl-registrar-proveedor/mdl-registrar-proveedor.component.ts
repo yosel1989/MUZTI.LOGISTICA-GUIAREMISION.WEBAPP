@@ -23,6 +23,8 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
 
 @Component({
   selector: 'app-mdl-registrar-proveedor',
@@ -41,7 +43,8 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
     SelectProvinciaComponent,
     SelectDistritoComponent,
     OnlyNumberDirective,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+    SelectTipoDocumentoComponent
   ],
   templateUrl: './mdl-registrar-proveedor.component.html',
   styleUrl: './mdl-registrar-proveedor.component.scss',
@@ -76,7 +79,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
 
   ngOnInit(): void {
     this.frm = new FormGroup({
-      tipo_documento: new FormControl('DNI', Validators.required),
+      tipo_documento_id: new FormControl(null, Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       departamento: new FormControl(null, Validators.required),
@@ -92,25 +95,6 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
 
     this.headerValue = this.config.header ?? '';
 
-    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.clearValidators();
-      switch(value){
-          case 'DNI':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
-            break;
-          case 'PASAPORTE':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'CARNET DE EXTRANJERIA':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'RUC':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
-            break;
-          default:
-            break;
-      }
-    }));
   }
 
   ngAfterViewInit(): void {
@@ -132,7 +116,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
     const form = this.frm.value;
 
     return {
-      tipo_documento: form.tipo_documento,
+      tipo_documento_id: form.tipo_documento_id,
       numero_documento: form.numero_documento,
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
@@ -199,6 +183,16 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
 
   evtOnClose(): void{
     this.OnCanceled.emit(true);
+  }
+
+  evtSelectedChangeTipoDocumento(evt: TipoDocumentoDTO | undefined){
+    this.frm.get('numero_documento')?.clearValidators();
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+
+    this.frm.get('numero_documento')?.addValidators(Validators.required);
+    if(evt?.min) this.frm.get('numero_documento')?.addValidators(Validators.minLength(evt.min));
+    if(evt?.max) this.frm.get('numero_documento')?.addValidators(Validators.maxLength(evt.max));
+    this.frm.get('numero_documento')?.updateValueAndValidity();
   }
 
 }

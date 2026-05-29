@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal, ViewChild} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,6 +21,9 @@ import { ConductorDto, EditarConductorRequestDto } from '@features/conductor/mod
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { ResponseDTO } from '@features/shared/models/shared';
 @Component({
   selector: 'app-mdl-editar-conductor',
   imports: [
@@ -36,7 +39,8 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
     SelectModule,
     SkeletonModule,
     OnlyNumberDirective,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+    SelectTipoDocumentoComponent
   ],
   templateUrl: './mdl-editar-conductor.html',
   styleUrl: './mdl-editar-conductor.scss',
@@ -48,6 +52,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
 
+  @ViewChild('tipoDocumento') tipoDocumento: SelectTipoDocumentoComponent | undefined;
   @Input() id!: number;
   @Output() OnSubmited: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCreated: EventEmitter<ConductorDto> = new EventEmitter<ConductorDto>();
@@ -82,7 +87,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
 	) {
     this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
-      tipo_documento: new FormControl('DNI', Validators.required),
+      tipo_documento_id: new FormControl(null, Validators.required),
       numero_documento: new FormControl(null, Validators.required),
       nombres: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       apellidos: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
@@ -92,26 +97,6 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
     });
 
     this.headerValue = this.config.header ?? '';
-
-    this.subs.add(this.frm.get('tipo_documento')?.valueChanges.subscribe((value)=> {
-      this.frm.get('numero_documento')?.clearValidators();
-      switch(value){
-          case 'DNI':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
-            break;
-          case 'PASAPORTE':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'CARNET DE EXTRANJERIA':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.maxLength(12)]);
-            break;
-          case 'RUC':
-              this.frm.get('numero_documento')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
-            break;
-          default:
-            break;
-      }
-    }));
   }
 
   ngOnInit(): void {
@@ -126,6 +111,8 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
   }
 
   // Getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frm.controls;
   }
@@ -135,7 +122,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
 
     return {
       id: this.data!.id,
-      tipo_documento: form.tipo_documento,
+      tipo_documento_id: form.tipo_documento_id,
       numero_documento: form.numero_documento,
       nombres: form.nombres,
       apellidos: form.apellidos,
@@ -158,28 +145,26 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
         accept: () => {
 
             const dataRequest = this.request;
-            this.frm.disable();
             this.ldSubmit.set(true);
             this.OnSubmited.emit(true);
             
             const sub = this.api.editar(dataRequest)
             .pipe(finalize(() => {
-              this.frm.enable();
               this.ldSubmit.set(false);
               this.OnSubmited.emit(false);
             }))
             .subscribe({
-              next: (res: ConductorDto) => {
+              next: (res: ResponseDTO<ConductorDto>) => {
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
-                  title: "Se editó el conductor con éxito",
+                  title: res.detalle,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(res);
+                this.OnCreated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({
@@ -207,6 +192,17 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
 
   evtOnClose(): void{
     this.OnCanceled.emit(true);
+  }
+
+  evtSelectedChangeTipoDocumento(evt: TipoDocumentoDTO | undefined){
+
+    this.frm.get('numero_documento')?.clearValidators();
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+
+    this.frm.get('numero_documento')?.addValidators(Validators.required);
+    if(evt?.min) this.frm.get('numero_documento')?.addValidators(Validators.minLength(evt.min));
+    if(evt?.max) this.frm.get('numero_documento')?.addValidators(Validators.maxLength(evt.max));
+    this.frm.get('numero_documento')?.updateValueAndValidity();
   }
 
 
@@ -242,7 +238,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
     this.data = res;
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
-      tipo_documento: res.tipo_documento,
+      tipo_documento_id: res.tipo_documento_id,
       numero_documento: res.numero_documento,
       nombres: res.nombres?.toString().toUpperCase(),
       apellidos: res.apellidos?.toString().toUpperCase(),

@@ -26,7 +26,7 @@ import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unid
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActualizarEstadoResponseDto } from '@features/shared/models/shared';
+import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 
 @Component({
@@ -363,7 +363,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
               } as EstadoActualizarRequestDTO;
 
               const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
-                next: (res: ActualizarEstadoResponseDto) => {
+                next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -379,11 +379,11 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                       ...current!,
                       ld_estado: false,
                       ld_update: false,
-                      id_estado: res.id_estado,
-                      estado: res.estado,
-                      fecha_modifico: res.fecha_modifico,
-                      usuario_modifico: res.usuario_modifico,
-                      usuario_modifico_nombre: res.usuario_modifico_nombre
+                      id_estado: res.data.id_estado,
+                      estado: res.data.estado,
+                      fecha_modifico: res.data.fecha_modifico,
+                      usuario_modifico: res.data.usuario_modifico,
+                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
                     };
 
                     this.data.update(arr =>

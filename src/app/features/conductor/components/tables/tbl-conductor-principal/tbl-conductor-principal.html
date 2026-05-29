@@ -226,7 +226,12 @@
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class="text-[12px]!" [pContextMenuRow]="rowData">
+            <tr 
+                [pSelectableRow]="rowData" 
+                class="text-[12px]!" 
+                [pContextMenuRow]="rowData.__empty ? null : rowData" 
+                [class.p-datatable-contextmenu-row-selected]="selected() === rowData"
+            >
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
@@ -345,7 +350,13 @@
 
 </div>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="items()" appendTo="body"/>
+<p-contextmenu 
+    styleClass="text-[12px]!"   
+    #cm 
+    [model]="items()" 
+    appendTo="body"
+    (onHide)="false"
+/>
 
 <div class="card flex justify-center">
     <p-confirmdialog #cd appendTo="body">

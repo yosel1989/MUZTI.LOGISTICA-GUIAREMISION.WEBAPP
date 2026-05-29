@@ -27,6 +27,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { ResponseDTO } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-tbl-conductor-principal',
@@ -376,7 +377,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
               const sub = this.api.actualizarEstado(this.selected()!.id, request)
               .subscribe({
-                next: (res: ActualizarEstadoConductorResponseDto) => {
+                next: (res: ResponseDTO<ActualizarEstadoConductorResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -392,11 +393,11 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                       ...current!,
                       ld_estado: false,
                       ld_update: false,
-                      id_estado: res.id_estado,
-                      estado: res.estado,
-                      fecha_modifico: res.fecha_modifico,
-                      usuario_modifico: res.usuario_modifico,
-                      usuario_modifico_nombre: res.usuario_modifico_nombre
+                      id_estado: res.data.id_estado,
+                      estado: res.data.estado,
+                      fecha_modifico: res.data.fecha_modifico,
+                      usuario_modifico: res.data.usuario_modifico,
+                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
                     };
 
                     this.data.update(arr =>

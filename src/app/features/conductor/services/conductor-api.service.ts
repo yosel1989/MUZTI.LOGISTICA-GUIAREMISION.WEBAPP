@@ -4,6 +4,7 @@ import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, ConductorSugeridoDto, EditarConductorRequestDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
 import { TableData } from "app/core/models/table";
+import { ResponseDTO } from '@features/shared/models/shared';
 
 @Injectable({
   providedIn: 'root'
@@ -47,9 +48,16 @@ export class ConductorApiService {
     );
   }
 
-  editar(request: EditarConductorRequestDto): Observable<ConductorDto> {
-    return this.http.put<ConductorDto>(`${this.baseUrl}/${request.id}`, request).pipe(
-      map(response =>{ return response as ConductorDto }),
+  editar(request: EditarConductorRequestDto): Observable<ResponseDTO<ConductorDto>> {
+    return this.http.put<ResponseDTO<ConductorDto>>(`${this.baseUrl}/${request.id}`, request).pipe(
+      map(response =>({
+        ...response,
+        data: {
+          ...response.data,
+          fecha_registro: new Date(response.data.fecha_registro),
+          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+        }
+      })),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -76,9 +84,15 @@ export class ConductorApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoConductorRequestDto ): Observable<ActualizarEstadoConductorResponseDto> {
-    return this.http.put<ActualizarEstadoConductorResponseDto>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-      map(response =>{ return response as ActualizarEstadoConductorResponseDto }),
+  actualizarEstado(id: number, request: ActualizarEstadoConductorRequestDto ): Observable<ResponseDTO<ActualizarEstadoConductorResponseDto>> {
+    return this.http.put<ResponseDTO<ActualizarEstadoConductorResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+      map(response =>({ 
+        ...response,
+        data: {
+          ...response.data,
+          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+        }
+      })),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })

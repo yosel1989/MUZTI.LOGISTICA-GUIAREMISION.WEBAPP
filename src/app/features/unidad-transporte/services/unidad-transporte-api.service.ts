@@ -4,8 +4,7 @@ import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
 import { ActualizarEstadoUnidadTransporteRequestDto, EditarUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
-import { ColumnsFilterDto } from "app/core/models/filter";
-import { ActualizarEstadoResponseDto } from "@features/shared/models/shared";
+import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,7 @@ export class UnidadTransporteApiService {
       httpParams = httpParams.set('search', search);
     }
     
-    return this.http.get<any>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
+    return this.http.get<TableData<UnidadTransporteDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<UnidadTransporteDto[]> }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -31,7 +30,7 @@ export class UnidadTransporteApiService {
   }
 
   registrar(request: RegistrarUnidadTransporteRequestDto): Observable<RegistrarUnidadTransporteResponseDto> {
-    return this.http.post<any>(`${this.baseUrl}`, request).pipe(
+    return this.http.post<RegistrarUnidadTransporteResponseDto>(`${this.baseUrl}`, request).pipe(
       map(response =>{ return response as RegistrarUnidadTransporteResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -40,7 +39,7 @@ export class UnidadTransporteApiService {
   }
 
   getById(id: number): Observable<UnidadTransporteDto> {
-    return this.http.get<any>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+    return this.http.get<UnidadTransporteDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
       map(response =>{ 
         return {
           ...response,
@@ -54,15 +53,18 @@ export class UnidadTransporteApiService {
     );
   }
 
-  editar(id: number, request: EditarUnidadTransporteRequestDto): Observable<UnidadTransporteDto> {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, request).pipe(
-      map(response =>{ return ({
+  editar(id: number, request: EditarUnidadTransporteRequestDto): Observable<ResponseDTO<UnidadTransporteDto>> {
+    return this.http.put<ResponseDTO<UnidadTransporteDto>>(`${this.baseUrl}/${id}`, request).pipe(
+      map(response => ({
         ...response,
-        fecha_registro: new Date(response.fecha_registro),
-        fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null,
-        ld_estado: false,
-        ld_update: false
-      } as UnidadTransporteDto )  }),
+        data: {
+          ...response.data,
+          fecha_registro: new Date(response.data.fecha_registro),
+          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null,
+          ld_estado: false,
+          ld_update: false
+        }
+      }) ),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -70,7 +72,7 @@ export class UnidadTransporteApiService {
   }
 
   eliminar(id: number): Observable<EliminarUnidadTransporteResponseDto> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
+    return this.http.delete<EliminarUnidadTransporteResponseDto>(`${this.baseUrl}/${id}`).pipe(
       map(response =>{ return response as EliminarUnidadTransporteResponseDto }),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
@@ -78,9 +80,15 @@ export class UnidadTransporteApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoUnidadTransporteRequestDto ): Observable<ActualizarEstadoResponseDto> {
-    return this.http.put<any>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
-      map(response =>{ return response as ActualizarEstadoResponseDto }),
+  actualizarEstado(id: number, request: ActualizarEstadoUnidadTransporteRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+    return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+      map(response =>({
+        ...response,
+        data: {
+          ...response.data,
+          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+        }
+      })),
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
@@ -93,7 +101,7 @@ export class UnidadTransporteApiService {
           params = params.set('numeroDoc', texto);
       }
 
-      return this.http.get<any>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+      return this.http.get<UnidadTransporteSugeridoDto[]>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
           map(response =>{ return response as UnidadTransporteSugeridoDto[] }),
           catchError((error: HttpErrorResponse) => {
               return throwError(() => error);

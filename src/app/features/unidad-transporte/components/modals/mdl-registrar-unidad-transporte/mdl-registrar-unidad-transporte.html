@@ -18,9 +18,9 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="placa"
-                        [invalid]="frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)"
+                        [invalid]="frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted())"
                     />
-                    @if (frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted)) {
+                    @if (frm.get('placa')?.invalid && (frm.get('placa')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.placa.hasError('required')) {
                             Este campo es requerido.
@@ -44,9 +44,9 @@
                         fluid 
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="descripcion"
-                        [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)"/>
+                        [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted())"/>
                     
-                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted)) {
+                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La descripción no debe exceder los 50 caracteres.</span></p-message>
                     }
                 </div>
@@ -60,9 +60,9 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="marca"
-                        [invalid]="frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)"/>
+                        [invalid]="frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted())"/>
                     
-                    @if (frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted)) {
+                    @if (frm.get('marca')?.invalid && (frm.get('marca')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">La marca no debe exceder los 20 caracteres.</span></p-message>
                     }
                 </div>
@@ -76,8 +76,8 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="modelo"
-                        [invalid]="frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)"/>
-                    @if (frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted)) {
+                        [invalid]="frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted())"/>
+                    @if (frm.get('modelo')?.invalid && (frm.get('modelo')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">El modelo no debe exceder los 20 caracteres.</span></p-message>
                     }
                 </div>
@@ -91,8 +91,8 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="tarjeta"
-                        [invalid]="frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)"/>
-                    @if (frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted)) {
+                        [invalid]="frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted())"/>
+                    @if (frm.get('tarjeta')?.invalid && (frm.get('tarjeta')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.tarjeta.hasError('maxlength')) {
                             La tarjeta no debe exceder los 20 caracteres.
@@ -107,7 +107,7 @@
                         #ctrlEmisorVehicular
                         [control]="f.cod_emisor_vehicular"
                     ></app-select-emisor-vehicular>
-                    @if (frm.get('cod_emisor_vehicular')?.invalid && (frm.get('cod_emisor_vehicular')?.touched || submitted)) {
+                    @if (frm.get('cod_emisor_vehicular')?.invalid && (frm.get('cod_emisor_vehicular')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.tarjeta.hasError('maxlength')) {
                             La tarjeta no debe exceder los 2 caracteres.
@@ -125,8 +125,8 @@
                         pInputText 
                         class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                         formControlName="nro_autorizacion"
-                        [invalid]="frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)"/>
-                    @if (frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted)) {
+                        [invalid]="frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted())"/>
+                    @if (frm.get('nro_autorizacion')?.invalid && (frm.get('nro_autorizacion')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                         @if (f.nro_autorizacion.hasError('minlength')) {
                             El número de autorización debe tener más de 3 caracteres.
@@ -146,14 +146,14 @@
                         fluid 
                         [options]="tipos" 
                         formControlName="tipo" 
-                        [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)" 
+                        [invalid]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted())" 
                         optionLabel="label" 
                         optionValue="value" 
-                        [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                        [class]="frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted()) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
                         [filter]="false" 
                         appendTo="body"
                     ></p-select>
-                    @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted)) {
+                    @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                             Este campo es requerido
                         </span></p-message>
@@ -166,7 +166,7 @@
     
     <div class="flex justify-end gap-2 pt-4">
         <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit ? '' : 'Guardar'" [loading]="ldSubmit" severity="primary" />
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" />
     </div>
 
 </form>

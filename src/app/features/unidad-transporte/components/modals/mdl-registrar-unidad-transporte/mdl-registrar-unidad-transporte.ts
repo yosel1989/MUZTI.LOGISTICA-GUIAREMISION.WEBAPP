@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,8 +12,6 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
-import { DocumentEntityType } from '@features/items/models/document-entity-type';
-import { FAKE_DOCUMENT_TYPE_PERSON } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
 import { RegistrarUnidadTransporteRequestDto } from '@features/unidad-transporte/models/unidad-transporte.model';
@@ -57,13 +55,12 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
-  isSubmitted: boolean = false;
-  ldSubmit: boolean = false;
+  isSubmitted = signal(false);
+  ldSubmit = signal(false);
 
   private subs = new Subscription();
-  
-  documentTypes: DocumentEntityType[] = FAKE_DOCUMENT_TYPE_PERSON;
-  submitted: boolean = false;
+
+  submitted = signal(false);
 
   headerValue: string = '';
 
@@ -124,7 +121,8 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
+    this.submitted.set(true);
     if(this.frm.invalid){
       return;
     }
@@ -135,12 +133,12 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
         accept: () => {
 
             this.frm.disable();
-            this.ldSubmit = true;
+            this.ldSubmit.set(true);
             
             const subs = this.api.registrar(this.request).subscribe({
               next: () => {
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -155,7 +153,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
               },
               error: (err: HttpErrorResponse) => {
                 this.frm.enable();
-                this.ldSubmit = false;
+                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",
@@ -172,9 +170,6 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
             });
             this.subs.add(subs);
            
-        },
-        reject: () => {
-            
         },
     });
   }

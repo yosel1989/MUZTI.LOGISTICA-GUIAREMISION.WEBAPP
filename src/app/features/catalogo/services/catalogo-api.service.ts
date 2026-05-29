@@ -1,14 +1,14 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EmisorVehicularDto, PaisDto, TipoEstablecimientoDTO } from "../models/catalogo.model";
+import { EmisorVehicularDto, PaisDto, TipoDocumentoDTO, TipoEstablecimientoDTO } from "../models/catalogo.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CatalogoApiService {
-  private baseUrl = `${environment.apiUrl}/catalogo`;
+  private baseUrl = `${environment.apiUrl}/catalogos`;
 
   constructor(private http: HttpClient) {}
 
@@ -37,6 +37,21 @@ export class CatalogoApiService {
         return throwError(() => error);
       })
     );
+  }
+
+  getTiposDocumento(tipoRegimen: string | 'natural' | 'juridico' | null): Observable<TipoDocumentoDTO[]>{
+    let httpParams = new HttpParams();
+    httpParams = tipoRegimen 
+      ? httpParams.set('tipoRegimen', tipoRegimen) 
+      : httpParams;
+    return this.http.get<TipoDocumentoDTO[]>(`${this.baseUrl}/tipos-documento`,{
+      params: httpParams
+    }).pipe(
+      map(response => response),
+      catchError(error => {
+        return throwError(() => error);
+      })
+    )
   }
 
 }
