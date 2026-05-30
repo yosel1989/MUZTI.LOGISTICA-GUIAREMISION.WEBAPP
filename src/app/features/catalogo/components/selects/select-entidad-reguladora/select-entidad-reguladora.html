@@ -1,0 +1,16 @@
+@if(label){<label [attr.class]="classLabel">{{ label }}</label>}
+<p-select 
+    panelStyleClass="text-[.875rem]!"
+    size="small" 
+    fluid 
+    [options]="data()"
+    [loading]="ldData()" 
+    [formControl]="control"  
+    optionLabel="descripcion" 
+    optionValue="id"  
+    class="p-inputwrapper-filled" 
+    placeholder="--SELECCIONAR--"
+    appendTo="body"
+    [invalid]="invalid"
+>
+</p-select>

@@ -133,10 +133,12 @@
                 <div class="flex flex-col">
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Entidad emisora de la autorización vehícular</label>
                     @if(!ldData()){
-                        <app-select-emisor-vehicular
-                            #ctrlEmisorVehicular
-                            [control]="f.cod_emisor_vehicular"
-                        ></app-select-emisor-vehicular>
+                        <app-select-entidad-reguladora
+                            #tipoDocumento
+                            [default]="1"
+                            [control]="f.entidad_reguladora_vehicular_id"
+                            [invalid]="f.entidad_reguladora_vehicular_id.invalid && ( f.entidad_reguladora_vehicular_id.touched || submitted())"
+                        ></app-select-entidad-reguladora>
                     }@else{
                         <p-skeleton width="100%" height="32px"></p-skeleton>
                     }

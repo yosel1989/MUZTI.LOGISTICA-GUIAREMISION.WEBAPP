@@ -23,3 +23,10 @@ export interface TipoDocumentoDTO{
     min: number | null;
     max: number | null;
 }
+
+export interface EntidadReguladoraDTO{
+    id: number;
+    descripcion: string;
+    descripcion_corta: string;
+    codigo_sunat: string;
+}

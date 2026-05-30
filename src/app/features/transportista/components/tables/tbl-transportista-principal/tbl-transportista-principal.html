@@ -144,41 +144,41 @@
     }
 
 <p-table 
-#datatable
-[columns]="cols"
-[value]="paddedData"
-size="small" 
-currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-[showCurrentPageReport]="true"
+    #datatable
+    [columns]="cols"
+    [value]="paddedData"
+    size="small" 
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    [showCurrentPageReport]="true"
 
-[(selection)]="selected"
-[tableStyle]="{ 'min-width': '100px' }"
-[scrollable]="true"
-[showLoader]="false"
-[resizableColumns]="true"
-columnResizeMode="expand"
+    [selection]="selected()"
+    [tableStyle]="{ 'min-width': '100px' }"
+    [scrollable]="true"
+    [showLoader]="false"
+    [resizableColumns]="true"
+    columnResizeMode="expand"
 
-showGridlines 
+    showGridlines 
 
-stripedRows
-[lazy]="true"
-[rowHover]="true"
-[paginator]="true"
+    stripedRows
+    [lazy]="true"
+    [rowHover]="true"
+    [paginator]="true"
 
-[totalRecords]="totalRecords()"
-[rows]="pageSize()"
-[first]="pageNumber()"
-[rowsPerPageOptions]="[5, 10, 25, 50, 100]"
-scrollHeight="400px"
+    [totalRecords]="totalRecords()"
+    [rows]="pageSize()"
+    [first]="pageNumber()"
+    [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+    scrollHeight="400px"
 
-(rowsChange)="evtRowsChange($event)"
+    (rowsChange)="evtRowsChange($event)"
 
-class="border-none! text-mono! max-w-full!"
-paginatorDropdownAppendTo="body"
-paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
+    class="border-none! text-mono! max-w-full!"
+    paginatorDropdownAppendTo="body"
+    paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
 
-[contextMenu]="cm" 
-(onContextMenuSelect)="evtOnRowSelect($event)"
+    [contextMenu]="cm" 
+    (onContextMenuSelect)="evtOnRowSelect($event)"
 >
     <ng-template pTemplate="header" let-columns>
         <tr class="text-nowrap">
@@ -220,7 +220,12 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
             </tr>
         }
         @else{
-            <tr [pSelectableRow]="rowData" class=" text-[12px]!" [pContextMenuRow]="rowData">
+            <tr 
+                [pSelectableRow]="rowData" 
+                class="text-[12px]!" 
+                [pContextMenuRow]="rowData.__empty ? null : rowData" 
+                [class.p-datatable-contextmenu-row-selected]="selected() === rowData"
+            >
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
@@ -317,7 +322,7 @@ paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! b
     </ng-template>
 </p-table>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="items()" appendTo="body"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="items()" appendTo="body" (onHide)="false"/>
 
 <div class="card flex justify-center">
     <p-confirmdialog #cd appendTo="body">

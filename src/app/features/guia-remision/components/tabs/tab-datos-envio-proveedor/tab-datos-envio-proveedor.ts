@@ -449,7 +449,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           id: [ {value: vehiculo?.id, disabled: true}, Validators.required], 
           placa_vehiculo: [ {value: vehiculo?.placa, disabled: true}, Validators.required], 
           cert_habilitacion_vehiculo: [{value: null, disabled: true}, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-          entidad_emisora_autoriza_vehiculo: [{value: vehiculo?.cod_emisor_vehicular, disabled: true}], 
+          entidad_reguladora_vehicular_id: [{value: vehiculo?.entidad_reguladora_vehicular_id, disabled: true}], 
           numero_autoriza_vehicular_vehiculo: [{value: vehiculo?.nro_autorizacion, disabled: true}]
         });
       }else{

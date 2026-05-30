@@ -5,7 +5,8 @@ export interface UnidadTransporteDto{
     modelo: string;
     placa: string;
     tarjeta: string;
-    cod_emisor_vehicular: string | null;
+    entidad_reguladora_vehicular_id: number | null;
+    entidad_reguladora_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
     fecha_registro: Date;
@@ -27,7 +28,7 @@ export interface RegistrarUnidadTransporteRequestDto{
     modelo: string | null;
     placa: string;
     tarjeta: string | null;
-    cod_emisor_vehicular: string | null;
+    entidad_reguladora_vehicular_id: number | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
     tipo: string;
@@ -44,7 +45,7 @@ export interface EditarUnidadTransporteRequestDto{
     modelo: string | null;
     placa: string;
     tarjeta: string | null;
-    cod_emisor_vehicular: string | null;
+    entidad_reguladora_vehicular_id: number | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
     tipo: string | 'interno' | 'externo';
@@ -57,7 +58,8 @@ export interface EditarUnidadTransporteResponseDto{
     modelo: string;
     placa: string;
     tarjeta: string;
-    cod_emisor_vehicular: string | null;
+    entidad_reguladora_vehicular_id: number | null;
+    entidad_reguladora_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
     fecha_registro: Date;

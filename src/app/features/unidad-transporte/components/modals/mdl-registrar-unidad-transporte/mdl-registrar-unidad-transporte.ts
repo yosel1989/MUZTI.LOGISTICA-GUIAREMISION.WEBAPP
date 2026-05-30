@@ -19,6 +19,7 @@ import { UnidadTransporteApiService } from '@features/unidad-transporte/services
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { TooltipModule } from 'primeng/tooltip';
+import { SelectEntidadReguladoraComponent } from '@features/catalogo/components/selects/select-entidad-reguladora/select-entidad-reguladora';
 
 @Component({
   selector: 'app-mdl-registrar-unidad-transporte',
@@ -33,9 +34,9 @@ import { TooltipModule } from 'primeng/tooltip';
     MessageModule, 
     ConfirmDialog,
     SelectModule,
-    SelectEmisorVehicularComponent,
     OnlyUpperDirective,
-    TooltipModule
+    TooltipModule,
+    SelectEntidadReguladoraComponent
   ],
   templateUrl: './mdl-registrar-unidad-transporte.html',
   styleUrl: './mdl-registrar-unidad-transporte.scss',
@@ -78,7 +79,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       modelo: new FormControl(null, Validators.maxLength(20)),
       placa: new FormControl(null, [Validators.required, Validators.maxLength(8), Validators.pattern('^[A-Z0-9]{6,8}$')]),
       tarjeta: new FormControl(null, [Validators.maxLength(20)]),
-      cod_emisor_vehicular: new FormControl(null, [Validators.maxLength(2)]),
+      entidad_reguladora_vehicular_id: new FormControl(null),
       emisor_vehicular: new FormControl(null, [Validators.minLength(2), Validators.maxLength(100)]),
       nro_autorizacion: new FormControl(null, [Validators.minLength(3), Validators.maxLength(50)]),
       tipo: new FormControl('interno', [Validators.maxLength(20)]),
@@ -112,7 +113,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
       modelo: form.modelo,
       placa: form.placa,
       tarjeta: form.tarjeta,
-      cod_emisor_vehicular: form.cod_emisor_vehicular,
+      entidad_reguladora_vehicular_id: form.entidad_reguladora_vehicular_id,
       emisor_vehicular: this.ctrlEmisorVehicular?.selected()?.abreviatura ?? null,
       nro_autorizacion: form.nro_autorizacion,
       tipo: form.tipo
