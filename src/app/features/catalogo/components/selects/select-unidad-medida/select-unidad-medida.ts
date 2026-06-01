@@ -2,20 +2,15 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@core/services/alert.service';
-import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
+import { UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { SelectModule } from 'primeng/select';
 import { finalize, Subscription } from 'rxjs';
 
-export interface SelectTipoDocumento{
-    label: string;
-    value: string;
-}
-
 @Component({
-  selector: 'app-select-tipo-documento',
-  templateUrl: './select-tipo-documento.html',
-  styleUrl: './select-tipo-documento.scss',
+  selector: 'app-select-unidad-medida',
+  templateUrl: './select-unidad-medida.html',
+  styleUrl: './select-unidad-medida.scss',
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
@@ -23,7 +18,7 @@ export interface SelectTipoDocumento{
   ]
 })
 
-export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDestroy{
+export class SelectUnidadMedidaComponent implements OnInit, AfterViewInit, OnDestroy{
 
     private catalogoApiService = inject(CatalogoApiService);
     private alertService = inject(AlertService);
@@ -34,15 +29,12 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
-    @Input() tipoRegimen: string | null | 'natural' | 'juridico' = null;
+    @Input() tipo: string | null | 'peso' | 'volumen' | 'longitud' | 'conteo' = null;
+    @Output() selectedChange = new EventEmitter<UnidadMedidaDTO | undefined>;
 
-    @Input() optionLabel: string = 'descripcion';
-    @Input() optionValue: string = 'id';
-    @Output() selectedChange = new EventEmitter<TipoDocumentoDTO | undefined>;
-
-    data = signal<TipoDocumentoDTO[]>([]);
+    data = signal<UnidadMedidaDTO[]>([]);
     ldData = signal(false);
-    selected = signal<TipoDocumentoDTO | undefined>(undefined);
+    selected = signal<UnidadMedidaDTO | undefined>(undefined);
 
     subs = new Subscription();
 
@@ -69,12 +61,12 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
 
     loadData(): void{
       this.ldData.set(true);
-      const s = this.catalogoApiService.getTiposDocumento(this.tipoRegimen)
+      const s = this.catalogoApiService.getUnidadesMedida(this.tipo)
       .pipe(finalize(()=>{
         this.ldData.set(false);
       }))
       .subscribe({
-        next: (value: TipoDocumentoDTO[]) =>  {
+        next: (value: UnidadMedidaDTO[]) =>  {
           this.data.set(value);
           if(this.default) this.control.setValue(this.default);
           //this.selectedChange.emit(value.find(x => x.id === this.default));

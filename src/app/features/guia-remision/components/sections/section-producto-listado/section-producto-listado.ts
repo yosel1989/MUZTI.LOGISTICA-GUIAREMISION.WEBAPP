@@ -14,7 +14,6 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -37,10 +36,7 @@ import { OverlayModule } from 'primeng/overlay';
 import { DividerModule } from 'primeng/divider';
 import { TextareaModule } from 'primeng/textarea';
 import { DialogService } from 'primeng/dynamicdialog';
-import { MdlListadoItemsComponent } from '../../modals/mdl-lista-items/mdl-items-listado';
 import { finalize, Subscription } from 'rxjs';
-import { ItemsToAddGuiaDto } from 'app/features/items/models/item-to-guia';
-import { unitofMeasures } from 'app/fake/items/data/unitOfMeasure';
 import { SelectModule } from 'primeng/select';
 import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
 import { SubNationalCode } from 'app/features/items/models/sub-national-code';
@@ -50,9 +46,9 @@ import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { GR_ProductoRequestDto, GuiaRemisionDetalleDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { CardModule } from 'primeng/card';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
-import { UnidadMedidaApiService } from '@features/unidad-medida/services/unidada-medida-api.service';
-import { UnidadMedidaToSelectDto } from '@features/unidad-medida/models/unidad-medida.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -85,7 +81,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class SectionProductoListadoComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  private unidadMedidaService = inject(UnidadMedidaApiService);
+  public dialogService = inject(DialogService);
+  private alertService = inject(AlertService);
+  private catalogoApiService = inject(CatalogoApiService);
 
   private _detalle = signal<GuiaRemisionDetalleDto[]>([]);
   @Input() set detalle(value: GuiaRemisionDetalleDto[]) {
@@ -93,11 +91,15 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
           this._detalle.set(value);
       }
   }
-
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref: any | undefined;
 
   @ViewChild('menuUnidadMedida') menuUnidadMedida!: Menu;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products!: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cols!: any[];
 
   form: FormGroup = new FormGroup({});
@@ -124,15 +126,13 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   private subs = new Subscription();
 
   submitted = false;
-  
-  unidadesMedida = signal<UnidadMedidaToSelectDto[]>([]);
+
+  unidadesMedida = signal<UnidadMedidaDTO[]>([]);
   ldUnidadesMedida = signal(false);
 
   constructor(
     private fb: FormBuilder,
-    public dialogService: DialogService,
-    private cdr: ChangeDetectorRef,
-    private alertService: AlertService,
+    private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
       items: this.fb.array([])
@@ -152,16 +152,18 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     return this.form.get('items') as FormArray;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private get f(): any {
     return this.form.controls;
   }
 
   get getFormData(): GR_ProductoRequestDto[] {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this.items as FormArray).controls.map((element: any) => {
       return {
         cantidad: element.get('cantidad')?.value,
         unidad_medida_id: element.get('unidad_medida_id')?.value,
-        codigo_um: this.unidadesMedida().find(x => x.id === element.get('unidad_medida_id')?.value)?.codigo_um ?? 'NIU',
+        codigo_um: this.unidadesMedida().find(x => x.id === element.get('unidad_medida_id')?.value)?.codigo_sunat ?? 'NIU',
         codigo: element.get('codigo')?.value,
         descripcion: element.get('descripcion')?.value,
         codigo_sunat: element.get('codigo_sunat')?.value,
@@ -212,7 +214,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       bien_normalizado: [detalle.bien_normalizado],
     }) : this.fb.group({
       cantidad: [1, Validators.required],
-      unidad_medida_id: [1, Validators.required],
+      unidad_medida_id: [24, Validators.required],
       unidad: ['NIU', Validators.required],
       codigo: [null],
       descripcion: [null, Validators.required],
@@ -275,6 +277,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   evtSelectSubNationalCode(event: any, form: any): void {
     const fg = form as FormGroup;
     fg.get('codigo_sunat')?.setValue(event.value);
@@ -352,12 +355,12 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   loadUnidadesMedida(): void{
     this.ldUnidadesMedida.set(true);
-    const s = this.unidadMedidaService.getAllToSelect()
+    const s = this.catalogoApiService.getUnidadesMedida(null)
       .pipe(finalize(()=>{
         this.ldUnidadesMedida.set(false);
       }))
       .subscribe({
-        next: (value: UnidadMedidaToSelectDto[]) =>  {
+        next: (value: UnidadMedidaDTO[]) =>  {
           this.unidadesMedida.set(value);
         },
         error: (err: HttpErrorResponse) => {

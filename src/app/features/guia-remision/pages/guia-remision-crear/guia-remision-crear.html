@@ -110,10 +110,12 @@
                                                 <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
 
                                                 <app-select-tipo-documento 
-                                                class="flex flex-col cursor-not-allowed" 
-                                                [control]="f.tipo_documento_remitente" 
-                                                classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
-                                                </app-select-tipo-documento>
+                                                    class="flex flex-col cursor-not-allowed" 
+                                                    [control]="f.tipo_documento_remitente" 
+                                                    classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                                                    optionLabel="descripcion_corta"
+                                                />
+                                                
                                             </div>
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nro. de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
@@ -293,11 +295,12 @@
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Tipo de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                 <app-select-tipo-documento 
-                                                class="flex flex-col cursor-not-allowed" 
-                                                [control]="f.tipo_documento_destinatario"
-                                                [disabled]="true"
-                                                classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold">
-                                                </app-select-tipo-documento>
+                                                    class="flex flex-col cursor-not-allowed" 
+                                                    [control]="f.tipo_documento_destinatario"
+                                                    [disabled]="true"
+                                                    classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                                                    optionLabel="descripcion_corta"
+                                                />
                                             </div>
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nro. de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>

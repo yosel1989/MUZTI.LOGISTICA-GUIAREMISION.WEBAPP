@@ -14,7 +14,6 @@ export interface TipoEstablecimientoDTO{
     codigo: string;
 }
 
-
 export interface TipoDocumentoDTO{
     id: number;
     descripcion: string;
@@ -25,6 +24,13 @@ export interface TipoDocumentoDTO{
 }
 
 export interface EntidadReguladoraDTO{
+    id: number;
+    descripcion: string;
+    descripcion_corta: string;
+    codigo_sunat: string;
+}
+
+export interface UnidadMedidaDTO{
     id: number;
     descripcion: string;
     descripcion_corta: string;

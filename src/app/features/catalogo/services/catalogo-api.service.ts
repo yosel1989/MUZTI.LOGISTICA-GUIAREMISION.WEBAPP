@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EmisorVehicularDto, EntidadReguladoraDTO, PaisDto, TipoDocumentoDTO, TipoEstablecimientoDTO } from "../models/catalogo.model";
+import { EmisorVehicularDto, EntidadReguladoraDTO, PaisDto, TipoDocumentoDTO, TipoEstablecimientoDTO, UnidadMedidaDTO } from "../models/catalogo.model";
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +56,21 @@ export class CatalogoApiService {
 
   getEntidadesReguladoras(): Observable<EntidadReguladoraDTO[]>{
     return this.http.get<EntidadReguladoraDTO[]>(`${this.baseUrl}/entidades-reguladoras`).pipe(
+      map(response => response),
+      catchError(error => {
+        return throwError(() => error);
+      })
+    )
+  }
+
+  getUnidadesMedida(tipo: string | 'peso' | 'volumen' | 'longitud' | 'conteo' | null): Observable<UnidadMedidaDTO[]>{
+    let httpParams = new HttpParams();
+    httpParams = tipo 
+      ? httpParams.set('tipo', tipo) 
+      : httpParams;
+    return this.http.get<UnidadMedidaDTO[]>(`${this.baseUrl}/unidades-medida`,{
+      params: httpParams
+    }).pipe(
       map(response => response),
       catchError(error => {
         return throwError(() => error);

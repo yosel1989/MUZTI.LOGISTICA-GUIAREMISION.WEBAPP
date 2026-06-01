@@ -48,7 +48,7 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   data = signal<ConductorSugeridoDto[]>([]);
-  selected: ConductorSugeridoDto | undefined;
+  selected : ConductorSugeridoDto | undefined = undefined;
   cols: TableColumn[] = []
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
@@ -56,7 +56,7 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
   search = new FormControl(null);
 
   ngOnInit(): void {
-    this.search.valueChanges.subscribe(res => {
+    this.search.valueChanges.subscribe(() => {
       this.getData();
     });
     this.cols = [

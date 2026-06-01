@@ -14,7 +14,7 @@
         [columns]="cols"
         showGridlines
         [value]="data()"
-        [selection]="selected()"
+        [(selection)]="selected"
         selectionMode="single"
         [tableStyle]="{ 'min-width': '100px' }"
         [scrollable]="true"
@@ -23,12 +23,12 @@
 
         [metaKeySelection]="true"
         dataKey="id"
-    
+
         [lazy]="true"
         [rowHover]="true"
         scrollHeight="400px"
         class="border-0! text-[12px]!"
-        >
+    >
         
             <ng-template pTemplate="header" let-columns>
                     <tr>

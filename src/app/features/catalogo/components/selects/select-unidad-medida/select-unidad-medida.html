@@ -6,16 +6,17 @@
     [options]="data()"
     [loading]="ldData()" 
     [formControl]="control"  
-    [optionLabel]="optionLabel"
-    [optionValue]="optionValue"
-    class="p-inputwrapper-filled" 
+    optionLabel="descripcion_corta" 
+    optionValue="id"  
+    class="p-inputwrapper-filled min-h-9!" 
     placeholder="--SELECCIONAR--"
     appendTo="body"
     [invalid]="invalid"
+    [checkmark]="true"
 >
-    <!--<ng-template let-item #item>
+    <ng-template let-item #item>
         <div class="flex items-center">
-            {{item.descripcion}}
+            {{item.descripcion_corta}} - {{item.descripcion}}
         </div>
-    </ng-template>-->
+    </ng-template>
 </p-select>

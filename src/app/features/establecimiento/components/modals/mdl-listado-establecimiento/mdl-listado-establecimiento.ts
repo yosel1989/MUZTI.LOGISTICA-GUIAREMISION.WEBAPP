@@ -62,7 +62,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     ldDataById = signal(false);
 
     ldSelected = signal(false);
-    selected = signal<EstablecimientoListToModalDTO | null>(null);
+    selected : EstablecimientoListToModalDTO | null = null;
 
     sb = new Subscription();
     sbData : Subscription | undefined;
@@ -186,8 +186,9 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     }
 
     loadDataById(): void{
+        console.log('cargando establecimiento por id', this.selected!.id);
         this.ldDataById.set(true);
-        const s = this.api.getById(this.selected()!.id!)
+        const s = this.api.getById(this.selected!.id!)
         .pipe(finalize(() => {
             this.ldDataById.set(false);
             this.ldSelected.set(false);
@@ -212,6 +213,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     // events 
     
     evtSelect(): void{
+        console.log('establecimiento seleccionado', this.selected!);
         this.ldSelected.set(true);
         this.loadDataById();
     }
@@ -221,7 +223,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     }
 
     evtChangeEmpresa(): void{
-        this.selected.set(null);
+        this.selected = null;
         this.loadData();
     }
 }

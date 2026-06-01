@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild, signal, effect, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild, signal, effect } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
@@ -32,7 +32,7 @@ import { ConductorApiService } from 'app/features/conductor/services/conductor-a
 import { DialogService } from 'primeng/dynamicdialog';
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
-import { finalize, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MdlListaConductorComponent } from '@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor';
 import { ConductorByNumeroDocumento, ConductorDto } from '@features/conductor/models/conductor.model';
 import { MdlListaProveedorComponent } from '@features/proveedor/components/modals/mdl-lista-proveedor/mdl-lista-proveedor';
@@ -45,9 +45,9 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { minItemsValidator } from '@core/validators/minItemsValidator';
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
-import { UnidadMedidaApiService } from '@features/unidad-medida/services/unidada-medida-api.service';
-import { UnidadMedidaToSelectDto } from '@features/unidad-medida/models/unidad-medida.model';
-import { HttpErrorResponse } from '@angular/common/http';
+import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida';
+import { SelectEntidadReguladoraComponent } from '@features/catalogo/components/selects/select-entidad-reguladora/select-entidad-reguladora';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -73,7 +73,10 @@ import { HttpErrorResponse } from '@angular/common/http';
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
     SelectDistritoComponent,
-    OnlyNumberDirective
+    OnlyNumberDirective,
+    SelectUnidadMedidaComponent,
+    SelectEntidadReguladoraComponent,
+    SelectTipoDocumentoComponent
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle, heroArrowTurnDownLeftMini })],
   providers: [ConfirmationService, MessageService]
@@ -82,8 +85,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
 
-    private unidadMedidaApiService = inject(UnidadMedidaApiService);
-
+    @ViewChild('selectUnidadesMedida') selectUnidadesMedida: SelectUnidadMedidaComponent | undefined;
     @ViewChild('departamentoProveedor') departamentoProveedor: SelectDepartamentoComponent | undefined;
     @ViewChild('provinciaProveedor') provinciaProveedor: SelectProvinciaComponent | undefined;
     @ViewChild('distritoProveedor') distritoProveedor: SelectDistritoComponent | undefined;
@@ -119,7 +121,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     formDatosEnvio: FormGroup = new FormGroup({});
     formDatosProveedor: FormGroup = new FormGroup({});
-    submitted = false;
+    submitted = signal(false);
 
     grossWeightUnits: GrossWeightUnit[] = FAKE_GROSS_WEIGHT_UNIT;
     freightPayers: FreightPayer[] = FAKE_FREIGHT_PAYER;
@@ -137,9 +139,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
 
     mostrarProveedor = signal(false);
-
-    unidadesMedida = signal<UnidadMedidaToSelectDto[]>([]);
-    ldUnidadesMedida = signal(false);
 
     constructor(
       private fb: FormBuilder,
@@ -257,7 +256,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           fecha_entrega_transportista: this.f_datosEnvio.fecha_entrega_transportista.value,
           descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
           unidad_medida_id: this.f_datosEnvio.unidad_medida_id.value,
-          codigo_um: this.unidadesMedida().find(x => x.id === this.f_datosEnvio.unidad_medida_id.value)?.codigo_um,
+          codigo_um: this.selectUnidadesMedida?.selected()?.codigo_sunat,
           peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
           pagador_flete: this.f_datosEnvio.pagador_flete.value,
           ruc_subcontratador: this.f_datosEnvio.ruc_subcontratador.value,
@@ -285,13 +284,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             id: group.get('id')?.value, 
             placa_vehiculo: group.get('placa_vehiculo')?.value, 
             cert_habilitacion_vehiculo: group.get('cert_habilitacion_vehiculo')?.value, 
-            entidad_emisora_autoriza_vehiculo: group.get('entidad_emisora_autoriza_vehiculo')?.value, 
+            entidad_reguladora_vehicular_id: group.get('entidad_reguladora_vehicular_id')?.value, 
             numero_autoriza_vehicular_vehiculo: group.get('numero_autoriza_vehicular_vehiculo')?.value
           })),
 
           conductores: (this.conductores.controls as FormGroup[]).map(group => ({ 
             id : group.get('id')?.value, 
-            tipo_documento_conductor : group.get('tipo_documento_conductor')?.value, 
+            tipo_documento_id : group.get('tipo_documento_id')?.value, 
             numero_documento_conductor: group.get('numero_documento_conductor')?.value, 
             numero_licencia_brevete_conductor: group.get('numero_licencia_brevete_conductor')?.value, 
             nombre_conductor: group.get('nombre_conductor')?.value, 
@@ -377,8 +376,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.formDatosEnvio.get('tipo_transporte')?.valueChanges.subscribe((res: 'PRIVADO' | 'PUBLICO') => {
         this.evtChangeValueTipoTransporte(res);
       });
-
-      this.loadUnidadesMedida();
     }
 
     ngAfterViewInit(): void {
@@ -407,7 +404,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       if(item){
         return this.fb.group({ 
           id: [ {value: item?.id, disabled: true}, Validators.required],
-          tipo_documento_conductor: [{value: item.tipo_documento, disabled: true}, Validators.required], 
+          tipo_documento_id: [{value: item.tipo_documento_id, disabled: true}, Validators.required], 
           numero_documento_conductor: [{value: item.numero_documento, disabled: true}, Validators.required], 
           numero_licencia_brevete_conductor: [{value: item.licencia, disabled: true}, Validators.required],
           nombre_conductor: [{value: item.nombres, disabled: true}, Validators.required],
@@ -417,7 +414,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }else{
         return this.fb.group({ 
           id: [ {value: 0, disabled: true}, Validators.required],
-          tipo_documento_conductor: [ 'DNI', Validators.required], 
+          tipo_documento_id: [ 1, Validators.required], 
           numero_documento_conductor: [null, Validators.required], 
           numero_licencia_brevete_conductor: [null, Validators.required],
           nombre_conductor: [null, Validators.required],
@@ -427,7 +424,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }
     }
 
-    
+    parseFormControl(item: AbstractControl): FormControl{
+      return item as FormControl;
+    }
 
     // events
     evtAddConductor(item: ConductorDto | null = null): void{
@@ -457,7 +456,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           id: [ {value: 0, disabled: true}, Validators.required], 
           placa_vehiculo: [ {value: null, disabled: true}, Validators.required], 
           cert_habilitacion_vehiculo: [{value: null, disabled: true}, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-          entidad_emisora_autoriza_vehiculo: [{value: null, disabled: true}], 
+          entidad_reguladora_vehicular_id: [{value: null, disabled: true}], 
           numero_autoriza_vehicular_vehiculo: [{value: null, disabled: true}]
         });
       }
@@ -591,7 +590,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     evtOnSubmit(): boolean {
 
-        this.submitted = true;
+        this.submitted.set(true);
         if(this.formDatosEnvio.invalid){
             this.alertService.showToast({
                 position: 'top-end',
@@ -623,25 +622,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     evtOnReset(): void {
-        this.submitted = false;
+        this.submitted.set(false);
         this.formDatosEnvio.reset();
         this.formDatosProveedor.reset();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    evtOnSearchConductor(fg: AbstractControl, evt: any): void{
-      evt.stopPropagation();
-      evt.preventDefault();
-      
-      fg.get('loading')?.setValue(true);
-      this.conductorService.getByNumeroDocumento(evt.target.value).subscribe((res: ConductorByNumeroDocumento) => {
-        fg.get('tipo_documento_conductor')?.setValue(res.tipo_documento);
-        fg.get('numero_licencia_brevete_conductor')?.setValue(res.licencia);
-        fg.get('nombre_conductor')?.setValue(res.nombres);
-        fg.get('apellido_conductor')?.setValue(res.apellidos);
-        fg.get('loading')?.setValue(false);
-      });
-    }
 
     evtOnShowListaUnidadTransporte(): void{
         this.modalRef = this.dialogService.open(MdlListaUnidadTransporteComponent, {
@@ -894,30 +879,4 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }
     }
 
-    // Data
-
-    loadUnidadesMedida(): void{
-        this.ldUnidadesMedida.set(false);
-        const s = this.unidadMedidaApiService.getAllWeightToSelect()
-        .pipe(finalize(()=>{
-            this.ldUnidadesMedida.set(false);
-        }))
-        .subscribe({
-           next: (value: UnidadMedidaToSelectDto[]) => {
-               this.unidadesMedida.set(value);
-               const select = value.find(x => x.codigo_um === 'KGM');
-               this.f_datosEnvio.unidad_medida_id.setValue(select?.id);
-           },
-           error: (err: HttpErrorResponse) => {
-               this.alertService.showToast({
-                title: err.error.detalle,
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true
-               });
-           }, 
-        });
-        this.subs.add(s);
-    }
 }

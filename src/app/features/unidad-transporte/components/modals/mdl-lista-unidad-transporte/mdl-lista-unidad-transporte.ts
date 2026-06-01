@@ -47,7 +47,8 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   data = signal<UnidadTransporteSugeridoDto[]>([]);
-  selected = signal<UnidadTransporteSugeridoDto | undefined>(undefined);
+  selected : UnidadTransporteSugeridoDto | undefined = undefined;
+
   cols: TableColumn[] = []
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
@@ -117,7 +118,7 @@ export class MdlListaUnidadTransporteComponent implements OnInit, AfterViewInit,
 
   getDataById(): void{
     this.ldSelected.set(true);
-    this.sbData = this.api.getById(this.selected()!.id)
+    this.sbData = this.api.getById(this.selected!.id)
     .pipe(finalize(() => {
       this.ldData.set(false);
       this.ldSelected.set(false);

@@ -5,7 +5,7 @@
             <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
                     <label for="" class="text-[12px] pointer-events-none">Datos de envío</label>
-                    @if(formDatosEnvio.invalid && (formDatosEnvio.touched || submitted) ) {
+                    @if(formDatosEnvio.invalid && (formDatosEnvio.touched || submitted()) ) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
@@ -14,7 +14,7 @@
                 <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
                     <div class="flex items-center gap-2">
                         <label for="" class="text-[12px] pointer-events-none ">Datos del proveedor</label>
-                        @if(formDatosProveedor.invalid && (formDatosProveedor.touched || submitted)) {
+                        @if(formDatosProveedor.invalid && (formDatosProveedor.touched || submitted())) {
                             <ng-icon name="tablerAlertCircle" />
                         }
                     </div>
@@ -66,13 +66,13 @@
                                     appendTo="body"
                                     panelStyleClass="text-xs-panel"
                                     [showButtonBar]="true"
-                                    [invalid]="f_datosEnvio.fecha_inicio_traslado?.invalid && (f_datosEnvio.fecha_inicio_traslado?.touched || submitted)" 
+                                    [invalid]="f_datosEnvio.fecha_inicio_traslado?.invalid && (f_datosEnvio.fecha_inicio_traslado?.touched || submitted())" 
                                     [showIcon]="true" 
                                     [minDate]="minFechaEntregaTraslado"
                                 />
                                 @if (
                                     f_datosEnvio.fecha_inicio_traslado?.invalid && 
-                                    (f_datosEnvio.fecha_inicio_traslado?.touched || submitted)
+                                    (f_datosEnvio.fecha_inicio_traslado?.touched || submitted())
                                 ) 
                                 {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
@@ -90,13 +90,13 @@
                                 [iconDisplay]="'input'" 
                                 panelStyleClass="text-xs! m-auto!"
                                 readonlyInput="true"
-                                [invalid]="f_datosEnvio.fecha_entrega_transportista?.invalid && (f_datosEnvio.fecha_entrega_transportista?.touched || submitted)"
+                                [invalid]="f_datosEnvio.fecha_entrega_transportista?.invalid && (f_datosEnvio.fecha_entrega_transportista?.touched || submitted())"
                                 appendTo="body" 
                                 [showIcon]="true" 
                                 [showButtonBar]="true"
                                 [minDate]="minFechaEntregaTraslado"
                                 />
-                                @if (f_datosEnvio.fecha_entrega_transportista?.invalid && (f_datosEnvio.fecha_entrega_transportista?.touched || submitted)) {
+                                @if (f_datosEnvio.fecha_entrega_transportista?.invalid && (f_datosEnvio.fecha_entrega_transportista?.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                 }
                             </div>
@@ -110,19 +110,27 @@
                                 fluid 
                                 pInputText 
                                 formControlName="descripcion_traslado" 
-                                [class]="f_datosEnvio.descripcion_traslado.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.descripcion_traslado.invalid && submitted" />
+                                [class]="f_datosEnvio.descripcion_traslado.invalid && submitted() ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.descripcion_traslado.invalid && submitted()" />
                             </div>
                         }
 
                         <div class="flex flex-col ">
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Und. del peso bruto *</label>
-                            <p-select 
+                            <app-select-unidad-medida
+                                #selectUnidadesMedida
+                                [control]="f_datosEnvio.unidad_medida_id"
+                                [invalid]="f_datosEnvio.unidad_medida_id.invalid && ( f_datosEnvio.unidad_medida_id.touched || submitted())"
+                                [tipo]="'peso'"
+                                [default]="2"
+                            ></app-select-unidad-medida>
+
+                            <!---<p-select 
                                 fluid
                                 size="small" 
                                 [inputSize]="2" 
                                 panelStyleClass="text-[.875rem]!"
-                                [class]=" f_datosEnvio.unidad_medida_id.invalid && submitted ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : ' shadow-none! min-h-9!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                                [class]=" f_datosEnvio.unidad_medida_id.invalid && submitted() ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : ' shadow-none! min-h-9!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
                                 [options]="unidadesMedida()" 
                                 [loading]="ldUnidadesMedida()"
                                 formControlName="unidad_medida_id" 
@@ -136,7 +144,9 @@
                                         {{unit.codigo_um}} - {{unit.descripcion}}
                                     </div>
                                 </ng-template>
-                            </p-select>
+                            </p-select>-->
+
+
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">Peso bruto total * <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
@@ -147,9 +157,9 @@
                                 mode="decimal" 
                                 [maxFractionDigits]="3" 
                                 [maxlength]="15" 
-                                [class]="f_datosEnvio.peso_bruto_total.invalid && (submitted || f_datosEnvio.peso_bruto_total.touched) ? 'text-xs! min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.peso_bruto_total.invalid && (submitted || f_datosEnvio.peso_bruto_total.touched)"/>
-                                @if (f_datosEnvio.peso_bruto_total?.invalid && (f_datosEnvio.peso_bruto_total?.touched || submitted)) {
+                                [class]="f_datosEnvio.peso_bruto_total.invalid && (submitted() || f_datosEnvio.peso_bruto_total.touched) ? 'text-xs! min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.peso_bruto_total.invalid && (submitted() || f_datosEnvio.peso_bruto_total.touched)"/>
+                                @if (f_datosEnvio.peso_bruto_total?.invalid && (f_datosEnvio.peso_bruto_total?.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                 }
                             </div>
@@ -162,7 +172,7 @@
                                 size="small" 
                                 [inputSize]="2" 
                                 panelStyleClass="text-[.875rem]!"
-                                [class]=" f_datosEnvio.pagador_flete.invalid && submitted ? 'shadow-none! border-primary-400! focus:border-primary-400!' : ' shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                                [class]=" f_datosEnvio.pagador_flete.invalid && submitted() ? 'shadow-none! border-primary-400! focus:border-primary-400!' : ' shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
                                 [options]="freightPayers" 
                                 formControlName="pagador_flete" 
                                 placeholder="" 
@@ -185,8 +195,8 @@
                                 fluid 
                                 pInputText 
                                 formControlName="numero_bultos" 
-                                [class]="f_datosEnvio.numero_bultos.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.numero_bultos.invalid && submitted" />
+                                [class]="f_datosEnvio.numero_bultos.invalid && submitted() ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_bultos.invalid && submitted()" />
                             </div>
 
                             <div class="flex flex-col">
@@ -197,8 +207,8 @@
                                 fluid 
                                 pInputText 
                                 formControlName="numero_contenedor" 
-                                [class]="f_datosEnvio.numero_contenedor.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.numero_contenedor.invalid && submitted" />
+                                [class]="f_datosEnvio.numero_contenedor.invalid && submitted() ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_contenedor.invalid && submitted()" />
                             </div>
 
                             <div class="flex flex-col">
@@ -209,8 +219,8 @@
                                 fluid 
                                 pInputText 
                                 formControlName="numero_precinto" 
-                                [class]="f_datosEnvio.numero_precinto.invalid && submitted ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.numero_precinto.invalid && submitted" />
+                                [class]="f_datosEnvio.numero_precinto.invalid && submitted() ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_precinto.invalid && submitted()" />
                             </div>
                         </div>
                     }
@@ -226,8 +236,8 @@
                                 fluid 
                                 pInputText 
                                 formControlName="ruc_subcontratador" 
-                                [class]="f_datosEnvio.ruc_subcontratador.invalid && submitted ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.ruc_subcontratador.invalid && submitted" />
+                                [class]="f_datosEnvio.ruc_subcontratador.invalid && submitted() ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.ruc_subcontratador.invalid && submitted()" />
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre o Razón Social *</label>
@@ -237,8 +247,8 @@
                                 fluid 
                                 pInputText 
                                 formControlName="nombre_rsocial_subcontratador" 
-                                [class]="f_datosEnvio.nombre_rsocial_subcontratador.invalid && submitted ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.nombre_rsocial_subcontratador.invalid && submitted" />
+                                [class]="f_datosEnvio.nombre_rsocial_subcontratador.invalid && submitted() ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.nombre_rsocial_subcontratador.invalid && submitted()" />
                             </div>
                         }
 
@@ -251,12 +261,12 @@
                                 fluid 
                                 pInputText 
                                 formControlName="numero_documento_tercero" 
-                                [class]="f_datosEnvio.numero_documento_tercero.invalid && submitted ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                [invalid]="f_datosEnvio.numero_documento_tercero.invalid && submitted" />
+                                [class]="f_datosEnvio.numero_documento_tercero.invalid && submitted() ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="f_datosEnvio.numero_documento_tercero.invalid && submitted()" />
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre o Razón Social *</label>
-                                <input placeholder="" pSize="small" fluid pInputText formControlName="nombre_rsocial_tercero" [class]="f_datosEnvio.nombre_rsocial_tercero.invalid && submitted ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " [invalid]="f_datosEnvio.nombre_rsocial_tercero.invalid && submitted" />
+                                <input placeholder="" pSize="small" fluid pInputText formControlName="nombre_rsocial_tercero" [class]="f_datosEnvio.nombre_rsocial_tercero.invalid && submitted() ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " [invalid]="f_datosEnvio.nombre_rsocial_tercero.invalid && submitted()" />
                             </div>
                         }
                     </div>
@@ -308,9 +318,9 @@
                                                         pSize="small" 
                                                         fluid 
                                                         pInputText 
-                                                        class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="placa_vehiculo" 
+                                                        class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="placa_vehiculo" 
                                                         />
-                                                        @if (vehiculo.get('placa_vehiculo')?.invalid && (vehiculo.get('placa_vehiculo')?.touched || submitted)) {
+                                                        @if (vehiculo.get('placa_vehiculo')?.invalid && (vehiculo.get('placa_vehiculo')?.touched || submitted())) {
                                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                         }
                                                     </div>
@@ -322,9 +332,9 @@
                                                             pSize="small" 
                                                             fluid 
                                                             pInputText 
-                                                            class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="cert_habilitacion_vehiculo" 
-                                                            [invalid]="vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)"/>
-                                                            @if (vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted)) {
+                                                            class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="cert_habilitacion_vehiculo" 
+                                                            [invalid]="vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted())"/>
+                                                            @if (vehiculo.get('cert_habilitacion_vehiculo')?.invalid && (vehiculo.get('cert_habilitacion_vehiculo')?.touched || submitted())) {
                                                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                             }
                                                         </div>
@@ -332,24 +342,15 @@
                                                     <div class="flex flex-col">
                                                         <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >Entidad emisora de la autorización vahícular (opcional)</label>
                                                         <div class="cursor-not-allowed">
-                                                            <p-select 
-                                                            fluid
-                                                            size="small" 
-                                                            [inputSize]="2" 
-                                                            
-                                                            panelStyleClass="text-[.875rem]!"
-                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                                                            [options]="ussuingEntities" 
-                                                            placeholder="Seleccionar..." 
-                                                            optionValue="value" 
-                                                            optionLabel="description" 
-                                                            appendTo="body"
-                                                            [showClear]="true"
-                                                            formControlName="entidad_emisora_autoriza_vehiculo"
-                                                            pTooltip="Entidad emisora de la autorización vahícular (opcional)"
-                                                            tooltipPosition="top"
-                                                            tooltipStyleClass="text-xs!"
-                                                            />
+
+                                                            <app-select-entidad-reguladora
+                                                                [default]="1"
+                                                                [control]="parseFormControl(vehiculo.get('entidad_reguladora_vehicular_id')!)"
+                                                                [invalid]="vehiculo.get('entidad_reguladora_vehicular_id')!.invalid && ( vehiculo.get('entidad_reguladora_vehicular_id')?.touched || submitted())"
+                                                                pTooltip="Entidad emisora de la autorización vahícular (opcional)"
+                                                                tooltipPosition="top"
+                                                                tooltipStyleClass="text-xs!"
+                                                            ></app-select-entidad-reguladora>
                                                         </div>
                                                     </div>
                                                     <div class="flex flex-col">
@@ -358,7 +359,7 @@
                                                         pSize="small" 
                                                         fluid 
                                                         pInputText 
-                                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_autoriza_vehicular_vehiculo"
+                                                        class="shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_autoriza_vehicular_vehiculo"
                                                         />
                                                     </div>
                                                 </div>
@@ -386,7 +387,7 @@
                                 </div>
                             }
 
-                            @if (f_datosEnvio.vehiculos?.invalid && (f_datosEnvio.vehiculos?.touched || submitted)) {
+                            @if (f_datosEnvio.vehiculos?.invalid && (f_datosEnvio.vehiculos?.touched || submitted())) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un vehículo</span></p-message>
                             }
                             
@@ -434,46 +435,27 @@
                                                 <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                                         <div>
                                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
-                                                            <p-select 
-                                                            fluid
-                                                            size="small"
-                                                            [inputSize]="2"
-                                                            panelStyleClass="text-[.875rem]!"
-                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
-                                                            
-                                                            [options]="documentEntityTypes" 
-                                                            placeholder="Seleccionar..." 
-                                                            optionValue="value" 
-                                                            optionLabel="description" 
-                                                            appendTo="body"
-                                                            formControlName="tipo_documento_conductor"
-                                                            [invalid]="conductor.get('tipo_documento_conductor')?.invalid && ( conductor.get('tipo_documento_conductor')?.touched || submitted)"
+                                                            <app-select-tipo-documento 
+                                                                class="flex flex-col cursor-not-allowed" 
+                                                                [control]="parseFormControl(conductor.get('tipo_documento_id')!)"
+                                                                [disabled]="true"
+                                                                classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                                                                optionLabel="descripcion_corta"
                                                             />
-                                                            @if (conductor.get('tipo_documento_conductor')?.invalid && (conductor.get('tipo_documento_conductor')?.touched || submitted)) {
+                                                            @if (conductor.get('tipo_documento_id')?.invalid && (conductor.get('tipo_documento_id')?.touched || submitted())) {
                                                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                             }
                                                         </div>
                                                         <div>
                                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Doc. de identidad *</label>
-                                                            <div class="relative">
                                                             <input 
                                                                 pSize="small" 
                                                                 fluid 
                                                                 pInputText 
-                                                                (keydown.enter)="evtOnSearchConductor(conductor, $event)"
-                                                                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento_conductor"
-                                                                [invalid]="conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)"/>
-                                                                <span class="absolute w-[20px]! h-[20px]! text-[14px] rounded-md bg-gray-200 right-[5px] top-0 bottom-0 my-auto text-center flex items-center">
-                                                                    @if(conductor.get('loading')?.value === false){
-                                                                        <ng-icon class="m-auto stroke-gray-300" name="heroArrowTurnDownLeftMini" />
-                                                                    }@else{
-                                                                        <i class="pi pi-spin pi-spinner-dotted m-auto animate-duration-1000 text-primary"></i>
-                                                                    }
-                                                                    
-                                                                </span>
-                                                            </div>
+                                                                class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_documento_conductor"
+                                                                [invalid]="conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted())"/>
                                                             
-                                                            @if (conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted)) {
+                                                            @if (conductor.get('numero_documento_conductor')?.invalid && (conductor.get('numero_documento_conductor')?.touched || submitted())) {
                                                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                             }
                                                         </div>
@@ -483,10 +465,10 @@
                                                             pSize="small" 
                                                             fluid 
                                                             pInputText 
-                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_licencia_brevete_conductor"
-                                                            [invalid]="conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted)"
+                                                            class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="numero_licencia_brevete_conductor"
+                                                            [invalid]="conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted())"
                                                             />
-                                                            @if (conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted)) {
+                                                            @if (conductor.get('numero_licencia_brevete_conductor')?.invalid && (conductor.get('numero_licencia_brevete_conductor')?.touched || submitted())) {
                                                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                             }
                                                         </div>
@@ -496,9 +478,9 @@
                                                             pSize="small" 
                                                             fluid 
                                                             pInputText 
-                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="nombre_conductor"
-                                                            [invalid]="conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted)"/>
-                                                            @if (conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted)) {
+                                                            class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="nombre_conductor"
+                                                            [invalid]="conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted())"/>
+                                                            @if (conductor.get('nombre_conductor')?.invalid && (conductor.get('nombre_conductor')?.touched || submitted())) {
                                                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                             }
                                                         </div>
@@ -508,10 +490,10 @@
                                                             pSize="small" 
                                                             fluid 
                                                             pInputText 
-                                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="apellido_conductor"
-                                                            [invalid]="conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted)"
+                                                            class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="apellido_conductor"
+                                                            [invalid]="conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted())"
                                                             />
-                                                            @if (conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted)) {
+                                                            @if (conductor.get('apellido_conductor')?.invalid && (conductor.get('apellido_conductor')?.touched || submitted())) {
                                                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                             }
                                                         </div>
@@ -542,7 +524,7 @@
                                 </div>
                             }
 
-                            @if (f_datosEnvio.conductores?.invalid && (f_datosEnvio.conductores?.touched || submitted)) {
+                            @if (f_datosEnvio.conductores?.invalid && (f_datosEnvio.conductores?.touched || submitted())) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un conductor</span></p-message>
                             }
 
@@ -585,9 +567,9 @@
                                         fluid 
                                         pInputText 
                                         [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
-                                        [invalid]="f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted)"
+                                        [invalid]="f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted())"
                                     />
-                                    @if (f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted)) {
+                                    @if (f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted())) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]!">
                                             El código debe tener 4 digitos
                                         </span></p-message>
@@ -617,9 +599,9 @@
                                         fluid 
                                         pInputText 
                                         [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                        [invalid]="f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted)"
+                                        [invalid]="f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted())"
                                     />
-                                    @if (f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted)) {
+                                    @if (f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted())) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                             El código debe tener 4 digitos
                                         </span></p-message>
@@ -674,9 +656,9 @@
                                     fluid 
                                     pInputText 
                                     formControlName="ruc_transportista" 
-                                    [class]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted) ? 'text-xs! shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted)" />
-                                    @if (f_datosEnvio.ruc_transportista?.invalid && (f_datosEnvio.ruc_transportista?.touched || submitted)) {
+                                    [class]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted()) ? 'text-xs! shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    [invalid]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted())" />
+                                    @if (f_datosEnvio.ruc_transportista?.invalid && (f_datosEnvio.ruc_transportista?.touched || submitted())) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                     }
                                 </div>
@@ -687,9 +669,9 @@
                                     fluid 
                                     pInputText 
                                     formControlName="rsocial_transportista" 
-                                    [class]="f_datosEnvio.rsocial_transportista.invalid && (submitted || f_datosEnvio.rsocial_transportista.touched) ? 'text-xs!  shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosEnvio.rsocial_transportista.invalid && (submitted || f_datosEnvio.rsocial_transportista.touched)" />
-                                    @if (f_datosEnvio.rsocial_transportista?.invalid && (f_datosEnvio.rsocial_transportista?.touched || submitted)) {
+                                    [class]="f_datosEnvio.rsocial_transportista.invalid && (submitted() || f_datosEnvio.rsocial_transportista.touched) ? 'text-xs!  shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    [invalid]="f_datosEnvio.rsocial_transportista.invalid && (submitted() || f_datosEnvio.rsocial_transportista.touched)" />
+                                    @if (f_datosEnvio.rsocial_transportista?.invalid && (f_datosEnvio.rsocial_transportista?.touched || submitted())) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                     }
                                 </div>
@@ -866,10 +848,10 @@
                                 appendTo="body"
                                 readonly
                                 formControlName="tipo_documento_proveedor"
-                                [invalid]="f_datosProveedor.tipo_documento_proveedor.invalid && ( f_datosProveedor.tipo_documento_proveedor.touched || submitted)"
+                                [invalid]="f_datosProveedor.tipo_documento_proveedor.invalid && ( f_datosProveedor.tipo_documento_proveedor.touched || submitted())"
                                 />
                                 </div>
-                                @if (f_datosProveedor.tipo_documento_proveedor.invalid && (f_datosProveedor.tipo_documento_proveedor.touched || submitted)) {
+                                @if (f_datosProveedor.tipo_documento_proveedor.invalid && (f_datosProveedor.tipo_documento_proveedor.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                 }
                             </div>
@@ -882,10 +864,10 @@
                                     pInputText 
                                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                                     formControlName="numero_documento_proveedor"
-                                    [invalid]="f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted)"
+                                    [invalid]="f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted())"
                                     readonly
                                 />
-                                @if (f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted)) {
+                                @if (f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                 }
                             </div>
@@ -897,11 +879,11 @@
                                     fluid 
                                     pInputText 
                                     formControlName="nombre_rsocial_proveedor" 
-                                    [class]="f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted) ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted)" 
+                                    [class]="f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted()) ? ' shadow-none! border-primary-400! focus:border-primary-400!' : 'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    [invalid]="f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted())" 
                                     readonly
                                 />
-                                @if (f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted)) {
+                                @if (f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                 }
                             </div>

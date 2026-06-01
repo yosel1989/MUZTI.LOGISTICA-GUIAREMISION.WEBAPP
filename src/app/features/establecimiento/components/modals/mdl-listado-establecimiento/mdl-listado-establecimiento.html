@@ -41,7 +41,7 @@
         [columns]="cols"
         showGridlines
         [value]="data()"
-        [selection]="selected()"
+        [(selection)]="selected"
         selectionMode="single"
         [tableStyle]="{ 'min-width': '100px' }"
         [scrollable]="true"
@@ -55,7 +55,7 @@
         [rowHover]="true"
         scrollHeight="400px"
         class="border-0! text-[12px]!"
-        >
+    >
         
             <ng-template pTemplate="header" let-columns>
                     <tr>
@@ -80,7 +80,10 @@
                         }
                     </tr>
                 }@else {
-                    <tr [pSelectableRow]="rowData" (dblclick)="evtSelect()">
+                    <tr 
+                        [pSelectableRow]="rowData" 
+                        (dblclick)="evtSelect()"
+                    >
                         @for (col of columns; track $index) {
                             <td class="text-nowrap font-light! truncate">{{ rowData[col.field] }}</td>
                         }

@@ -710,7 +710,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         this.formGroup.patchValue({
             remitente_id: s.id,
-            tipo_documento_remitente: 'RUC',
+            tipo_documento_remitente: 4,
             numero_documento_remitente: s.ruc,
             razon_social_remitente: `${s.razon_social} (${s.descripcion})`,
             nombres_apellidos_remitente: s.razon_social,
@@ -737,7 +737,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         this.formGroup.patchValue({
             destinatario_id: s.id,
-            tipo_documento_destinatario: 'RUC',
+            tipo_documento_destinatario: 4,
             numero_documento_destinatario: s.ruc,
             razon_social_destinatario: `${s.razon_social} (${s.descripcion})`,
             nombres_apellidos_destinatario: s.razon_social,
