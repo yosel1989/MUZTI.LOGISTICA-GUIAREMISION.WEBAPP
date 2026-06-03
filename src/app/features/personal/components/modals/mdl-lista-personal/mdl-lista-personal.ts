@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, Output, EventEmitter, signal, inject } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,7 +8,6 @@ import { TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { finalize, Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
@@ -17,6 +16,12 @@ import { AlertService } from '@core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PersonalApiService } from '@features/personal/services/personal-api.service';
 import { PersonalDTO, PersonalSugeridoDTO } from '@features/personal/models/personal.model';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { TooltipModule } from 'primeng/tooltip';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-mdl-lista-personal',
@@ -32,9 +37,14 @@ import { PersonalDTO, PersonalSugeridoDTO } from '@features/personal/models/pers
     PaginatorModule,
     SkeletonModule,
     ToggleButtonModule,
-    IconFieldModule,
     InputIconModule,
-    DynamicDialogModule
+    DynamicDialogModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    TooltipModule,
+    ProgressBarModule,
+    OnlyUpperDirective,
+    AvatarModule 
   ],
 })
 
@@ -53,22 +63,19 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
   ldData = signal<boolean>(false);
   ldSelected = signal<boolean>(false);
   sbData: Subscription | undefined;
-  search = new FormControl(null);
+  search = new FormControl(null, Validators.required);
 
   ngOnInit(): void {
-    this.search.valueChanges.subscribe(() => {
-      this.getData();
-    });
     this.cols = [
-      { field: 'id', header: 'Código', sort: false },
+      { field: 'id', header: '', sort: false },
       { field: 'nombre', header: 'Nombre', sort: false },
-      { field: 'apellido', header: 'Apellido', sort: true},
+      //{ field: 'apellido', header: 'Apellido', sort: true},
       { field: 'cargo', header: 'Cargo', sort: true}
     ];
   }
 
   ngAfterViewInit(): void {
-    this.getData();
+    //this.getData();
   }
 
   ngOnDestroy(): void {
@@ -82,6 +89,19 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
   // Data
 
   getData(): void{
+    if(this.search.invalid){
+      this.alertService.showToast({
+        position: 'top-end',
+        icon: "error",
+        title: 'El campo de búsqueda es requerido',
+        showCloseButton: true,
+        timerProgressBar: true,
+        timer: 4000
+      });
+      return;
+    }
+
+    this.data.set([]);
     this.ldData.set(true);
     this.sbData?.unsubscribe();
     this.sbData = this.api.getPersonalSugerido(this.search.value)

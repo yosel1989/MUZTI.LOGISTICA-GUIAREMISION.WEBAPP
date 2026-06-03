@@ -1,10 +1,31 @@
 
-<div class="grid grid-cols-3 gap-4">
+<div class="">
     <div class="">
-        <p-iconfield>
-            <p-inputicon class="pi pi-search" />
-            <input [formControl]="search" pSize="small" fluid type="text" pInputText placeholder="Filtrar" />
-        </p-iconfield>           
+        <p-inputgroup>
+            <input 
+                [formControl]="search" 
+                pSize="small" 
+                (keyup.enter)="getData()" 
+                pInputText 
+                placeholder="Ingresar texto" 
+                onlyUpper
+            />
+            <p-inputgroup-addon class="p-0! min-w-0!">
+                <p-button 
+                    size="small" 
+                    icon="pi pi-search" 
+                    severity="secondary" 
+                    variant="text" 
+                    pTooltip="Buscar" 
+                    tooltipPosition="top" 
+                    tooltipStyleClass="text-[10px]!" 
+                    styleClass="w-[60px]!" 
+                    (click)="getData()" 
+                    [loading]="ldData()" 
+                />
+            </p-inputgroup-addon>
+        </p-inputgroup>    
+
     </div>
 </div>
 
@@ -20,7 +41,6 @@
         [scrollable]="true"
         [showLoader]="true"
         scrollDirection="horizontal"
-
         [metaKeySelection]="true"
         dataKey="id"
     
@@ -52,14 +72,20 @@
                         }
                     </tr>
                 }@else {
-                    <tr [pSelectableRow]="rowData" (dblclick)="evtSelect()">
+                    <tr 
+                        [pSelectableRow]="rowData" 
+                        (dblclick)="evtSelect()"
+                        [class.p-datatable-contextmenu-row-selected]="selected === rowData"
+                    >
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){
-                                    <td class="text-nowrap font-light! truncate" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
+                                    <td class="text-nowrap font-light! truncate w-[40px]" >
+                                        <p-avatar icon="pi pi-user" style="background-color: #dee9fc; color: #1a2551" />
+                                    </td>
                                 }
-                                @case('tipo'){
-                                    <td class="uppercase text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
+                                @case('nombre'){
+                                    <td class="uppercase text-nowrap font-light! truncate" >{{ rowData[col.field] }}, {{ rowData['apellido'] }}</td>
                                 }
                                 @default {
                                     <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
@@ -70,10 +96,18 @@
                 }
             </ng-template>
 
-            <ng-template pTemplate="empty" let-columns="columns">
+            <ng-template #emptymessage >
                 <tr>
-                    <td [colSpan]="columns.length">
-                        No se encontraron registros.
+                    <td [colSpan]="cols.length" class="text-center!">
+                        <div class="py-6">
+                            <img src="assets/media/bg/buscar-personal.png" alt="No hay datos" class="opacity-50 mx-auto w-[100px]! h-auto!">
+                            @if(ldData()){
+                                <p-progressbar mode="indeterminate" class="mx-auto! mt-3" [style]="{ height: '6px', width: '150px' }" />
+                                <span>Buscando...</span>
+                            }@else {
+                                <span class="mt-3 block">No se encontraron registros.</span>
+                            }
+                        </div>
                     </td>
                 </tr>
             </ng-template>
