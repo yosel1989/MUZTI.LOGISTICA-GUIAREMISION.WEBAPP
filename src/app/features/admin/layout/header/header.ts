@@ -18,6 +18,9 @@ import { AsyncPipe } from '@angular/common';
 import { animate, AnimationBuilder, AnimationPlayer, style } from '@angular/animations';
 import { StorageService } from '@core/services/storage.service';
 import { User } from '@features/auth/services/auth.interface';
+import { PopoverModule } from 'primeng/popover';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +38,10 @@ import { User } from '@features/auth/services/auth.interface';
     ConfirmDialogModule,
     OverlayBadgeModule,
     BreadcrumbModule,
-    AsyncPipe
+    AsyncPipe,
+    PopoverModule,
+    InputGroupModule,
+    InputGroupAddonModule
   ],
   providers: [ConfirmationService]
 })
@@ -107,6 +113,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
 
     // events
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     evtShowMenu(evt: any): void{
         const target = evt.currentTarget as HTMLElement;
         this.menuUser?.show({ currentTarget: target });
@@ -114,7 +121,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
 
     evtLogout(): void{
         this.handlerConfirmDialog(() => {
-            this.authApi.logout().subscribe((res) => {
+            this.authApi.logout().subscribe(() => {
                 console.log('Se cerró sesión');
             });
         }, 

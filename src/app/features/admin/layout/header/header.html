@@ -1,4 +1,4 @@
-<p-toolbar class="rounded-none! sticky top-0 z-10 w-full border-none! shadow-md">
+<p-toolbar class="rounded-none! toolbarsticky sticky top-0 z-10 w-full border-none! shadow-md">
     <ng-template #start>
         <div class="flex items-center gap-2">
             <p-avatar 
@@ -9,10 +9,37 @@
         </div>
     </ng-template>
     <ng-template #end>
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1 topbar">
             <p-avatar pRipple icon="pi pi-bell" size="normal" class="cursor-pointer"/>
             <span class="text-xs">Hola, {{user!.firstName}}</span>
-            <p-avatar [label]="user!.firstName[0]" size="normal" class="cursor-pointer bg-primary-500! text-white!" (click)="evtShowMenu($event)" />
+            <p-avatar [label]="user!.firstName[0]" size="normal" class="cursor-pointer bg-primary-500! text-white!" (click)="op.toggle($event)" />
+
+            <p-popover #op  styleClass="w-auto p-4">
+                <div class="flex flex-col gap-4 w-[25rem]">
+                    <div>
+                        <span class="font-medium text-surface-900 dark:text-surface-0 block mb-2">Share this document</span>
+                        <p-inputgroup>
+                            <input pInputText value="https://primeng.org/12323ff26t2g243g423g234gg52hy25XADXAG3" readonly class="w-[25rem]" />
+                            <p-inputgroup-addon>
+                                <i class="pi pi-copy"></i>
+                            </p-inputgroup-addon>
+                        </p-inputgroup>
+                    </div>
+                    <div>
+                        <span class="font-medium text-surface-900 dark:text-surface-0 block mb-2">Invite Member</span>
+                        <div class="flex">
+                            <p-inputgroup>
+                                <input pInputText disabled />
+                                <button pButton label="Invite" icon="pi pi-users"></button>
+                            </p-inputgroup>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="font-medium text-surface-900 dark:text-surface-0 block mb-2">Team Members</span>
+                    </div>
+                </div>
+            </p-popover>
         </div>
     </ng-template>
 </p-toolbar>
@@ -60,4 +87,5 @@
         </div>
     </ng-template>
 </p-confirmdialog>
+
 

@@ -19,7 +19,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -112,6 +112,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   recordsFiltered: number = 0;
   first: number = 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref: any | undefined;
   private subs = new Subscription();
 
@@ -193,6 +194,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   // getters
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get paddedData(): any[] {
     const actual = this.data ?? [];
     const fillerCount = this.pageSize - actual.length;
@@ -360,7 +363,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.loadData();
   }
 
-  evtOnRowSelect(event: any, menuActions: Menu) {
+  evtOnRowSelect(event: TableRowSelectEvent, menuActions: Menu) {
     menuActions.hide();
     this.selected = event.data;
     this.setSelected(event.data);
@@ -386,7 +389,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
           saveAs(blob, 'reporte.xlsx');
         this.loadingDownload.set(false);
-        }, (error) => {
+        }, () => {
         this.loadingDownload.set(false);
         this.alertService.showToast({
           position: 'top-end',
@@ -447,6 +450,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showHistory.set(true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   evtHideHistory(history: any): void{
     console.log('drawer', history);
     this.showHistory.set(false);
@@ -478,7 +482,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'PDF')
+        visible: this.tieneAccion(selected?.acciones, 'PDF')
       },
       {
         label: 'Aprobar y Emitir',
@@ -486,7 +490,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAprobarGuia();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'APE')
+        visible: this.tieneAccion(selected?.acciones, 'APE')
       },
       {
         label: 'Confirmar',
@@ -494,7 +498,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnConfirmarGuia();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'CON')
+        visible: this.tieneAccion(selected?.acciones, 'CON')
       },
       {
         label: 'Rechazar',
@@ -502,7 +506,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnRechazarGuia();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'REC')
+        visible: this.tieneAccion(selected?.acciones, 'REC')
       },
       {
         label: 'Editar',
@@ -510,7 +514,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnEditarGuia();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'EDI')
+        visible: this.tieneAccion(selected?.acciones, 'EDI')
       },
       {
         label: 'Anular',
@@ -518,7 +522,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAnularGuia();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'ANU')
+        visible: this.tieneAccion(selected?.acciones, 'ANU')
       },
       {
         label: 'Historial',
@@ -526,11 +530,12 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtShowHistory();
         },
-        visible: this.tieneAccion(this.selected?.acciones, 'HIS')
+        visible: this.tieneAccion(selected?.acciones, 'HIS')
       }
     ];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   evtShowMenuActions(event: any, menu: Menu): void{
     const target = event.currentTarget as HTMLElement;
     menu?.show({ currentTarget: target });
@@ -538,7 +543,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   // handlers
 
-  handleAccept(onAccept: Function): void{
+  handleAccept(onAccept: () => void): void{
     if(this.showInputAlert() && this.ctrlDescripcion.invalid){
       this.alertService.showToast({
         title: "Debe ingresar el motivo o descripción",

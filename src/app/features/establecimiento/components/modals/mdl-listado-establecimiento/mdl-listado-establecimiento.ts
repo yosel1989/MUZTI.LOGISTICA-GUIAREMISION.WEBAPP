@@ -72,13 +72,15 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     ngOnInit(): void {
 
+        console.log(this.tipo, this.motivoTraslado, this.remitente);
+
         if(this.tipo === 'remitente'){
             this.ctrlRuc.setValue(this.ruc);
         }
 
         if(this.tipo === 'destinatario'){
 
-            switch(this.motivoTraslado?.codigo){
+            switch(this.motivoTraslado?.codigo_sunat){
                 case SunatMotivoTrasladoEnum.venta: 
                  
                     this.ctrlRuc.enable();
@@ -144,7 +146,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
             next: (value: EmpresaToSelectDto[]) => {
                 this.empresas.set(value.map(x => ({
                     ...x,
-                    disabled: (this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
+                    disabled: (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
                 })));
                 this.ldEmpresas.set(false);
             },

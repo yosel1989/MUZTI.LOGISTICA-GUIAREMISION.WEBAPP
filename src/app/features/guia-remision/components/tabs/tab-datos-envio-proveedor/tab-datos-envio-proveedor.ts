@@ -34,7 +34,7 @@ import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-t
 import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
 import { Subscription } from 'rxjs';
 import { MdlListaConductorComponent } from '@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor';
-import { ConductorByNumeroDocumento, ConductorDto } from '@features/conductor/models/conductor.model';
+import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { MdlListaProveedorComponent } from '@features/proveedor/components/modals/mdl-lista-proveedor/mdl-lista-proveedor';
 import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -329,7 +329,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         SunatMotivoTrasladoEnum.importacion,
         SunatMotivoTrasladoEnum.exportacion
       ];
-      return motivosTraslado.includes(this.motivoTraslado?.codigo); 
+      return motivosTraslado.includes(this.motivoTraslado?.codigo_sunat); 
     }
 
     get valid(): boolean{
@@ -812,7 +812,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        if(this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
+        if(this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
               cod_establecimiento_origen: s.codigo_sunat,
               ruc_establecimiento_origen: s.ruc
@@ -826,7 +826,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        if(this.motivoTraslado?.codigo === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
+        if(this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
               cod_establecimiento_destino: s.codigo_sunat,
               ruc_establecimiento_destino: s.ruc
@@ -873,7 +873,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         SunatMotivoTrasladoEnum.otros
       ];
 
-      if( motivosTraslado.includes(item.codigo) ){
+      if( motivosTraslado.includes(item.codigo_sunat) ){
         this.mostrarProveedor.set(true);
         this.enableValidatorProveedor();
       }

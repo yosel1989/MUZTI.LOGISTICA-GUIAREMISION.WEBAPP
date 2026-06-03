@@ -540,7 +540,7 @@
 
 </div>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body" (onHide)="false"/>
 
 <p-menu #menuActions [model]="(items$ | async) ?? []" [popup]="true" target="body" appendTo="body" styleClass="text-[12px]!"></p-menu>
 

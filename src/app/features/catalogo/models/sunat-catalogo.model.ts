@@ -3,5 +3,5 @@ import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remi
 export interface SunatMotivoTrasladoDto{
     id: number;
     nombre: string;
-    codigo: SunatMotivoTrasladoEnum;
+    codigo_sunat: SunatMotivoTrasladoEnum;
 }

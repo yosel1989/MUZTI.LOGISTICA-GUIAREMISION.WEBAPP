@@ -350,7 +350,11 @@
                                                         pInputText 
                                                     />
                                                     @if (f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted())) {
-                                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                                        <p-message 
+                                                            severity="error" 
+                                                            size="small" 
+                                                            variant="simple"
+                                                        ><span class="text-[10px]! ">
                                                             @if(f.razon_social_destinatario.errors?.['required']){
                                                                 Este campo es requerido.
                                                             }
@@ -590,6 +594,10 @@
                     </div>
                 </div>
             </p-card>
+
+            <app-section-responsable-listado 
+                #sectionResponsableListado
+            ></app-section-responsable-listado>
         </div>
     </form>
 </div>

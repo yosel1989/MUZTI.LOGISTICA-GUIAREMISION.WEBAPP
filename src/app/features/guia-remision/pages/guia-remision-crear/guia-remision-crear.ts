@@ -48,6 +48,7 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { TextareaModule } from 'primeng/textarea';
+import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 @Component({
   selector: 'page-guia-remision-crear',
   templateUrl: './guia-remision-crear.html',
@@ -84,7 +85,8 @@ import { TextareaModule } from 'primeng/textarea';
     AutoCompleteModule,
     DividerModule,
     SelectMotivoTrasladoComponent,
-    TextareaModule
+    TextareaModule,
+    SectionResponsableListadoComponent
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
