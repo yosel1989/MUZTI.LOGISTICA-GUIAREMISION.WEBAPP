@@ -139,6 +139,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
 
     mostrarProveedor = signal(false);
+    puertos = signal<{value: string, label: string}[]>([]);
+    aereopuertos = signal<{value: string, label: string}[]>([]);
 
     constructor(
       private fb: FormBuilder,
@@ -175,6 +177,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
           traslado_vehiculo_categoria: new FormControl(false),
           traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
+
+          cod_puerto: new FormControl(null),
+          cod_aeropuerto: new FormControl(null),
 
           registrar_vehiculos_conductores: new FormControl(false),
 
@@ -225,6 +230,64 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             const motivoTraslado = this._motivoTraslado();
             this.handlerValueMotivoTraslado(motivoTraslado);
         });
+
+        this.puertos.set([
+            { value: 'PUB', label: 'PUB - Bayóvar' },
+            { value: 'CLL', label: 'CLL - Callao' },
+            { value: 'CON', label: 'CON - Conchán' },
+            { value: 'CHY', label: 'CHY - Chancay' },
+            { value: 'CHM', label: 'CHM - Chimbote' },
+            { value: 'EEN', label: 'EEN - Eten' },
+            { value: 'HCO', label: 'HCO - Huacho' },
+            { value: 'HUY', label: 'HUY - Huarmey' },
+            { value: 'ILQ', label: 'ILQ - Ilo' },
+            { value: 'IQT', label: 'IQT - Iquitos' },
+            { value: 'MRI', label: 'MRI - Matarani' },
+            { value: 'PAI', label: 'PAI - Paita' },
+            { value: 'PIO', label: 'PIO - Pisco' },
+            { value: 'PCL', label: 'PCL - Pucallpa' },
+            { value: 'PUN', label: 'PUN - Puno' },
+            { value: 'SVY', label: 'SVY - Salaverry' },
+            { value: 'SNX', label: 'SNX - San Nicolas' },
+            { value: 'SUP', label: 'SUP - Supe' },
+            { value: 'TYL', label: 'TYL - Talara' },
+            { value: 'YMS', label: 'YMS - Yurimaguas' },
+            { value: 'ZOR', label: 'ZOR - Zorritos' }
+        ]);
+
+        this.aereopuertos.set([
+            { value: 'AQP', label: 'AQP - Rodríguez Ballón' },
+            { value: 'ANS', label: 'ANS - Andahuaylas' },
+            { value: 'ATA', label: 'ATA - Comandante FAP Germán Arias Graciani' },
+            { value: 'AYP', label: 'AYP - Coronel FAP Alfredo Mendívil Duarte' },
+            { value: 'CJA', label: 'CJA - Mayor Gral. FAP Armando Revoredo Iglesias' },
+            { value: 'CHM', label: 'CHM - Tnte. FAP Jaime De Montruil M.' },
+            { value: 'CUZ', label: 'CUZ - Alejandro Velazco Astete' },
+            { value: 'CHH', label: 'CHH - Chachapoyas' },
+            { value: 'CIX', label: 'CIX - Capitán FAP José Quiñones G' },
+            { value: 'HUU', label: 'HUU - Alférez FAP David Figueroa Fernandini' },
+            { value: 'ILO', label: 'ILO - Ilo' },
+            { value: 'IQT', label: 'IQT - Coronel FAP Francisco Secada Vignetta' },
+            { value: 'JAE', label: 'JAE - Jaén - Shumba' },
+            { value: 'JJI', label: 'JJI - Juanjuí' },
+            { value: 'JUL', label: 'JUL - Manco Cápac' },
+            { value: 'JAU', label: 'JAU - Francisco Carlé' },
+            { value: 'LIM', label: 'LIM - Internacional Jorge Chávez' },
+            { value: 'MBP', label: 'MBP - Moyobamba' },
+            { value: 'PIO', label: 'PIO - Capitán FAP Renán Elías Olivera' },
+            { value: 'PIU', label: 'PIU - Capitán FAP Carlos Concha Iberico' },
+            { value: 'PCL', label: 'PCL - Capitán FAP David Abensur Rengifo' },
+            { value: 'PEM', label: 'PEM - Padre Aldamiz' },
+            { value: 'RIJ', label: 'RIJ - Juan Simons Vela - Rioja' },
+            { value: 'TCQ', label: 'TCQ - Coronel FAP Carlos Ciriani Santa Rosa' },
+            { value: 'TYL', label: 'TYL - Capitán FAP Montes Arias' },
+            { value: 'TPP', label: 'TPP - Cadete FAP Guillermo del Castillo Paredes' },
+            { value: 'TIG', label: 'TIG - Tingo María' },
+            { value: 'TRU', label: 'TRU - Capitán FAP Carlos Martínez Pinillos' },
+            { value: 'TBP', label: 'TBP - Capitán FAP Pedro Canga Rodríguez' },
+            { value: 'ATG', label: 'ATG - Atalaya - Tnte. Gral. Gerardo Pérez Pinedo' },
+            { value: 'YMS', label: 'YMS - Moisés Benzaquen Rengifo' }
+        ]);
     }
 
     // getters
@@ -368,6 +431,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     get proveedor(): ProveedorDto | null {
       return this._proveedor(); // lectura del signal
+    }
+
+    get motivoTraslado(): SunatMotivoTrasladoDto | undefined {
+      return this._motivoTraslado(); // lectura del signal
     }
 
     ngOnInit(): void {

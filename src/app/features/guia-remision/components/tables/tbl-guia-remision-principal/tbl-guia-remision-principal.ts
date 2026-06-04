@@ -405,6 +405,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   evtOnAprobarGuia(): void{
     this.validateSelected();
+    this.showInputAlert.set(false);
     this.confirmAction.set('aprobarGuia');
     this.confirmationService.confirm({
         header: `Desea aprobar la guía de Remisión N° ${this.selected!.numero_guia}`,
@@ -414,6 +415,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   evtOnConfirmarGuia(): void{
     this.validateSelected();
+    this.showInputAlert.set(false);
     this.confirmAction.set('confirmarGuia');
     this.confirmationService.confirm({
         header: `Desea confirmar la guía de Remisión N° ${this.selected!.numero_guia}`,
@@ -508,14 +510,14 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         },
         visible: this.tieneAccion(selected?.acciones, 'REC')
       },
-      {
+      /*{
         label: 'Editar',
         icon: 'pi pi-pencil text-yellow-500!',
         command: () => {
           this.evtOnEditarGuia();
         },
         visible: this.tieneAccion(selected?.acciones, 'EDI')
-      },
+      },*/
       {
         label: 'Anular',
         icon: 'pi pi-ban text-red-500!',

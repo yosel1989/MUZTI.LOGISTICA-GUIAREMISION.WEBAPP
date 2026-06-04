@@ -4,7 +4,7 @@
             <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
                     <label for="" class="text-[12px] pointer-events-none">Punto de partida</label>
-                    @if(submitted && formGroupOrigen.invalid) {
+                    @if(submitted() && !remitente) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
@@ -12,7 +12,7 @@
             <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
                     <label for="" class="text-[12px] pointer-events-none">Punto de llegada</label>
-                    @if(submitted && formGroupDestino.invalid) {
+                    @if(submitted() && !destinatario) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
@@ -20,12 +20,15 @@
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel value="0">
-                <div [formGroup]="formGroupOrigen" class="flex flex-col gap-x-4 gap-y-2">
+                <div class="flex flex-col gap-x-4 gap-y-2">
                     <div class="flex flex-col">
-                        <div class="grid grid-cols-3 xl:grid-cols-4 gap-2"> 
+                        <div class="grid grid-cols-3 xl:grid-cols-4 gap-x-5"> 
                             <div class="col-span-3">
                                 <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
-                                <input 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    {{ remitente?.direccion ?? '--' }}
+                                </div>
+                                <!--<input 
                                 pSize="small" 
                                 fluid 
                                 pInputText 
@@ -35,15 +38,18 @@
                                 [invalid]="f_origen.direccion?.invalid && (f_origen.direccion?.touched || submitted)" />
                                 @if (f_origen.direccion?.invalid && (f_origen.direccion?.touched || submitted)) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Dirección es requerido.</span></p-message>
-                                }
+                                }-->
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-x-5">
 
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
-                            <app-select-departamento 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                {{ remitente?.departamento ?? '--' }}
+                            </div>
+                            <!---<app-select-departamento 
                                 #departamentoOrigen
                                 [control]="f_origen.idDepartamento" 
                                 classLabel="text-[11px]! text-gray-500 font-semibold" 
@@ -54,12 +60,15 @@
                             ></app-select-departamento>
                             @if (f_origen.idDepartamento.invalid && (f_origen.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
 
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
-                            <app-select-provincia 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                {{ remitente?.provincia ?? '--' }}
+                            </div>
+                            <!--<app-select-provincia 
                                 #provinciaOrigen
                                 [control]="f_origen.idProvincia" 
                                 [idUbigeoDepartamento]="f_origen.idDepartamento.value" 
@@ -71,11 +80,14 @@
                             ></app-select-provincia>
                             @if (f_origen.idProvincia.invalid && (f_origen.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
-                            <app-select-distrito 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                {{ remitente?.distrito ?? '--' }}
+                            </div>
+                            <!---<app-select-distrito 
                                 #distritoOrigen
                                 label="Distrito *"
                                 [control]="f_origen.idDistrito" 
@@ -87,18 +99,21 @@
                             ></app-select-distrito>
                             @if (f_origen.idDistrito.invalid && (f_origen.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
                     </div>
                     <div class="text-xs! text-gray-500 font-medium mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del remitente seleccionado</div>
                 </div>
             </p-tabpanel>
             <p-tabpanel value="1">
-                <div [formGroup]="formGroupDestino" class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2">
                     <div class="grid grid-cols-4 gap-x-2 gap-y-2">
                         <div class="col-span-4 lg:col-span-3!">
                             <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
-                            <input 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    {{ destinatario?.direccion ?? '--' }}
+                                </div>
+                            <!--<input 
                                 formControlName="direccion" 
                                 pSize="small" 
                                 fluid 
@@ -109,14 +124,17 @@
                             />
                             @if (f_destino.direccion.invalid && (f_destino.direccion.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Dirección es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
-                            <app-select-departamento 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                {{ destinatario?.departamento ?? '--' }}
+                            </div>
+                            <!--<app-select-departamento 
                                 #departamentoDestino
                                 [control]="f_destino.idDepartamento" 
                                 classLabel="text-[11px]! text-gray-500 font-semibold" 
@@ -127,11 +145,14 @@
                             ></app-select-departamento>
                             @if (f_destino.idDepartamento.invalid && (f_destino.idDepartamento.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Departamento es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
-                            <app-select-provincia 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                {{ destinatario?.provincia ?? '--' }}
+                            </div>
+                            <!--<app-select-provincia 
                                 #provinciaDestino
                                 [control]="f_destino.idProvincia" 
                                 [idUbigeoDepartamento]="f_destino.idDepartamento.value" 
@@ -143,11 +164,14 @@
                             ></app-select-provincia>
                             @if (f_destino.idProvincia.invalid && (f_destino.idProvincia.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Provincia es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
-                            <app-select-distrito 
+                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                {{ destinatario?.distrito ?? '--' }}
+                            </div>
+                            <!--<app-select-distrito 
                                 #distritoDestino
                                 [control]="f_destino.idDistrito" 
                                 [idUbigeoProvincia]="f_destino.idProvincia.value" 
@@ -159,7 +183,7 @@
                             ></app-select-distrito>
                             @if (f_destino.idDistrito.invalid && (f_destino.idDistrito.touched || submitted)) {
                                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Distrito es requerido.</span></p-message>
-                            }
+                            }-->
                         </div>
                     </div>
 

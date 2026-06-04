@@ -66,6 +66,9 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
   search = new FormControl(null, Validators.required);
 
   ngOnInit(): void {
+    this.search.valueChanges.subscribe((search: string | null) => {
+      if(!search) this.data.set([]);
+    });
     this.cols = [
       { field: 'id', header: '', sort: false },
       { field: 'nombre', header: 'Nombre', sort: false },
@@ -75,7 +78,6 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
-    //this.getData();
   }
 
   ngOnDestroy(): void {
@@ -90,14 +92,6 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
 
   getData(): void{
     if(this.search.invalid){
-      this.alertService.showToast({
-        position: 'top-end',
-        icon: "error",
-        title: 'El campo de búsqueda es requerido',
-        showCloseButton: true,
-        timerProgressBar: true,
-        timer: 4000
-      });
       return;
     }
 

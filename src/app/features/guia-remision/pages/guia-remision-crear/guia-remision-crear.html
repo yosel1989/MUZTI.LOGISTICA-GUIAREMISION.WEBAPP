@@ -55,8 +55,8 @@
                                 value="0" 
                                 class="rounded-t-xl! text-md! py-2!"
                                 [ngClass]="{ 
-                                    'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 0,
-                                    'bg-gray-50!': (tabRemitenteDestinatario$ | async) !== 0
+                                    'bg-primary-50!': tabRemitenteDestinatario() === 0,
+                                    'bg-gray-50! border-b-gray-300! border-b-2!': tabRemitenteDestinatario() !== 0
                                 }"
                             >
                                 Remitente 
@@ -68,8 +68,8 @@
                                 value="1"
                                 class="rounded-t-xl! text-md! py-2!"
                                 [ngClass]="{ 
-                                    'bg-primary-50!': (tabRemitenteDestinatario$ | async) === 1 ,
-                                    'bg-gray-50!': (tabRemitenteDestinatario$ | async) !== 1
+                                    'bg-primary-50!': tabRemitenteDestinatario() === 1 ,
+                                    'bg-gray-50! border-b-gray-300! border-b-2!': tabRemitenteDestinatario() !== 1
                                 }"
                             >
                                 Destinatario
@@ -153,7 +153,7 @@
                                                     </span></p-message>
                                                 }
                                             </div>
-                                            @if(f.tipo_documento_remitente.value === 'RUC'){
+                                            @if(f.tipo_documento_remitente.value === 4){
                                                 <div class="flex flex-col lg:col-span-2">
                                                     <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
                                                     <input 
@@ -339,7 +339,7 @@
                                                     </span></p-message>
                                                 }
                                             </div>
-                                            @if(f.tipo_documento_destinatario.value === 'RUC'){
+                                            @if(f.tipo_documento_destinatario.value === 4){
                                                 <div class="flex flex-col lg:col-span-2">
                                                     <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                     <input 
@@ -590,7 +590,7 @@
                             maxlength="250" 
                             pTextarea
                         ></textarea>
-                        <small class="text-[10px]! text-gray-500">(250 carácteres) / {{ ta.value.length }}</small>
+                        <small class="text-[10px]! text-gray-500">{{ ta.value.length }} / 250 carácteres</small>
                     </div>
                 </div>
             </p-card>

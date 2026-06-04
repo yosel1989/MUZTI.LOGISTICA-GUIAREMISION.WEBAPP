@@ -548,6 +548,65 @@
                             }
                         </div>
                     }
+                    @if(
+                        motivoTraslado?.codigo_sunat === sunatMotivoTrasladoEnum.exportacion || 
+                        motivoTraslado?.codigo_sunat === sunatMotivoTrasladoEnum.importacion
+                    ){
+                        <div class="flex flex-col gap-4">
+                            <label class="text-md font-semibold text-primary bg-gray-100 w-full py-2 ps-3 my-3 rounded-lg">Datos de la importación / exportación</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                @if(!f_datosEnvio.cod_aeropuerto.value){
+                                    <div>
+                                        <label class="text-[11px]! h-4.5! text-gray-500 ">Cod. de puerto</label>
+                                        <p-select 
+                                            fluid
+                                            size="small" 
+                                            [inputSize]="2" 
+
+                                            panelStyleClass="text-[.875rem]!"
+                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                                            [options]="puertos()" 
+                                            placeholder="Seleccionar..." 
+                                            optionValue="value" 
+                                            optionLabel="label" 
+                                            appendTo="body"
+                                            [showClear]="true"
+                                            formControlName="cod_puerto"
+                                            pTooltip="Puerto marítimo, fluvial o lacustre de embarque o desembarque de la mercancía"
+                                            tooltipPosition="top"
+                                            tooltipStyleClass="text-xs!"
+                                            showClear="true"
+                                        />
+                                    </div>
+                                }
+                                @if(!f_datosEnvio.cod_puerto.value){
+                                    <div>
+                                        <label class="text-[11px]! h-4.5! text-gray-500 ">Cod. de aeropuerto</label>
+                                        <p-select 
+                                            #codAeropuerto
+                                            fluid
+                                            size="small" 
+                                            [inputSize]="2" 
+                                            panelStyleClass="text-[.875rem]!"
+                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                                            [options]="aereopuertos()" 
+                                            placeholder="Seleccionar..." 
+                                            optionValue="value" 
+                                            optionLabel="label" 
+                                            appendTo="body"
+                                            [showClear]="true"
+                                            formControlName="cod_aeropuerto"
+                                            pTooltip="Aeropuerto de embarque o desembarque de la mercancía"
+                                            tooltipPosition="top"
+                                            tooltipStyleClass="text-xs!"
+                                            showClear="true"
+                                        />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
 
                     @if(
                         motivoTraslado?.codigo_sunat === sunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
@@ -740,22 +799,22 @@
                                     <div class="flex flex-col">
                                         <label class="text-[11px]! h-4.5! text-gray-500 truncate" title="Entidad emisora de la autorización vahícular (opcional)" >Entidad emisora de la autorización especial (opcional)</label>
                                         <p-select 
-                                        fluid
-                                        size="small" 
-                                        [inputSize]="2" 
-                                        inputId="text-xs"
-                                        panelStyleClass="text-[.875rem]!"
-                                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                                        [options]="ussuingEntities" 
-                                        placeholder="Seleccionar..." 
-                                        optionValue="value" 
-                                        optionLabel="description" 
-                                        appendTo="body"
-                                        [showClear]="true"
-                                        formControlName="ent_emisora_especial_adicional"
-                                        pTooltip="Entidad emisora de la autorización especial (opcional)"
-                                        tooltipPosition="top"
-                                        tooltipStyleClass="text-xs!"
+                                            fluid
+                                            size="small" 
+                                            [inputSize]="2" 
+                                            inputId="text-xs"
+                                            panelStyleClass="text-[.875rem]!"
+                                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                                            [options]="ussuingEntities" 
+                                            placeholder="Seleccionar..." 
+                                            optionValue="value" 
+                                            optionLabel="description" 
+                                            appendTo="body"
+                                            [showClear]="true"
+                                            formControlName="ent_emisora_especial_adicional"
+                                            pTooltip="Entidad emisora de la autorización especial (opcional)"
+                                            tooltipPosition="top"
+                                            tooltipStyleClass="text-xs!"
                                         />
                                     </div>
 

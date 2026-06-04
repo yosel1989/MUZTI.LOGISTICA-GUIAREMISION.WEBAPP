@@ -8,12 +8,13 @@ export class OnlyUpperDirective {
   constructor(private ngControl: NgControl) {}
 
   @HostListener('input', ['$event'])
-  onInput(event: any) {
+
+  onInput(event: InputEvent): void {
     const input = event.target as HTMLInputElement;
     const start = input.selectionStart;
     const end = input.selectionEnd;
 
-    let valor: string = input.value.toUpperCase();
+    const valor: string = input.value.toUpperCase();
 
     // Actualiza el FormControl asociado
     if (this.ngControl && this.ngControl.control) {

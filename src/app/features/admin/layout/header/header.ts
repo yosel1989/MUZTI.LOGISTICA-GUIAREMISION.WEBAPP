@@ -71,7 +71,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
 
     ngOnInit(): void {
         this.items = [
-            {
+            /*{
                 label: 'Documents',
                 items: [
                     {
@@ -83,14 +83,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
                         icon: 'pi pi-search'
                     }
                 ]
-            },
+            },*/
             {
-                label: 'Profile',
+                label: 'Perfil',
                 items: [
-                    {
+                    /*{
                         label: 'Mi Perfil',
                         icon: 'pi pi-cog'
-                    },
+                    },*/
                     {
                         label: 'Cerrar Sesion',
                         icon: 'pi pi-sign-out',

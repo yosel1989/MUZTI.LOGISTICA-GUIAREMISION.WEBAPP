@@ -37,10 +37,11 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
     ) {}
 
     ngOnInit(): void {
-        this.loadData();
         this.control.valueChanges.subscribe((res: string | null) => {
             this.selected.set( res ? this.data.find(x => x.ruc === res)! : null );
+            this.onChange.emit( res ? this.data.find(x => x.ruc === res)! : null );
         });
+        this.loadData();
     }
 
     ngAfterViewInit(): void {
@@ -59,7 +60,7 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
             next: (response) => {
                 this.data = response;
                 this.control.setValue(this.data.length ? this.data[0].ruc : null);
-                this.onChange.emit(this.data.length ? this.data[0] : null);
+                //this.onChange.emit(this.data.length ? this.data[0] : null);
                 this.loading.set(false);
             },
             error: (error) => {

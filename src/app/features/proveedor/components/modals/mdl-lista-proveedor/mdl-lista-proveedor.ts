@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Output, EventEmitter, signal, inject } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TableColumn } from 'app/core/models/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
-import { CommonModule } from '@angular/common';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -16,13 +15,17 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ProveedorDto, ProveedorSugeridoDto } from '@features/proveedor/models/proveedor';
 import { AlertService } from '@core/services/alert.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 
 @Component({
   selector: 'app-mdl-lista-proveedor',
   templateUrl: './mdl-lista-proveedor.html',
   styleUrls: ['./mdl-lista-proveedor.scss'],                          
   imports: [
-    CommonModule,
     InputTextModule,
     ReactiveFormsModule,
     FormsModule,
@@ -33,12 +36,18 @@ import { AlertService } from '@core/services/alert.service';
     ToggleButtonModule,
     IconFieldModule,
     InputIconModule,
-    DynamicDialogModule
+    DynamicDialogModule,
+    ProgressBarModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    OnlyUpperDirective
   ],
 })
 
 export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDestroy{
   private alertService = inject(AlertService);
+  private api = inject(ProveedorApiService);
+  public util = inject(UtilService);
 
   @Output() OnSelect: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
   @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -52,19 +61,14 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
 
   sb = new Subscription();
   sbData: Subscription | undefined;
-  search = new FormControl(null);
+  search = new FormControl(null, Validators.required);
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private api: ProveedorApiService,
-    public util: UtilService
-  ) {
-    this.search.valueChanges.subscribe(res => {
-      this.getData();
-    });
-  }
+  constructor( private cdr: ChangeDetectorRef ) { }
 
   ngOnInit(): void {
+    this.search.valueChanges.subscribe((value: string | null) => {
+      if(!value) this.data.set([]);
+    });
     this.cols = [
       { field: 'id', header: 'Código', sort: false },
       { field: 'numero_documento', header: 'N° Documento', sort: false },
@@ -76,7 +80,6 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngAfterViewInit(): void {
-    this.getData();
   }
 
   ngOnDestroy(): void {
@@ -92,6 +95,13 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
   // Data
 
   getData(): void{
+
+    if(this.search.invalid){
+      return;
+    }
+
+
+
     this.ldData.set(true);
     this.data.set( Array.from({ length: 5 }).map((_, i) => (
       { numero_documento: i.toString() } as ProveedorSugeridoDto
@@ -106,7 +116,7 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
       next: (value: ProveedorSugeridoDto[]) => {
         this.data.set(value);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         this.data.set([]);
         this.alertService.showToast({
           position: 'top-end',
@@ -137,7 +147,7 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
         console.log('proveedor seleccionado', value);
         this.OnSelect.emit(value);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         this.alertService.showToast({
           position: 'top-end',
           icon: "error",

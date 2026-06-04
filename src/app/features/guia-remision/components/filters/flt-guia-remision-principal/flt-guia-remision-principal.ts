@@ -77,9 +77,10 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         { label: 'PRIVADO', value: 'PRIVADO' }
     ];
 
-    estadosGuia: {label: string, value: string | null}[] = [ 
-        { label: 'CREADO', value: 'CREADO' },
-        { label: 'ENVIADO', value: 'ENVIADO' }
+    estadosGuiaSunat: {label: string, value: string | null}[] = [ 
+        { label: 'PENDIENTE', value: 'PENDIENTE' },
+        { label: 'ENVIADO', value: 'ENVIADO' },
+        { label: 'ERROR', value: 'ERROR' },
     ];
 
     establecimientosRemitente = signal<EstablecimientoListToSelectDTO[]>([]);
@@ -117,6 +118,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
             motivoTrasladoId: new FormControl(null),
             idTipoTransporte: new FormControl(null),
             estadoGuia: new FormControl(null),
+            estadoGuiaSunat: new FormControl(null),
         });
 
         this.formGroup.get('remitenteId')?.valueChanges.subscribe((val)=>{
@@ -190,7 +192,10 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
             output.push({ data: 'tipo_transporte', search: { value: this.f.idTipoTransporte.value } });
         }
         if (this.f.estadoGuia.value) {
-            output.push({ data: 'estado', search: { value: this.f.estadoGuia.value } });
+            output.push({ data: 'estado_id', search: { value: this.f.estadoGuia.value } });
+        }
+        if (this.f.estadoGuiaSunat.value) {
+            output.push({ data: 'estado_sunat', search: { value: this.f.estadoGuiaSunat.value } });
         }
 
         return output;

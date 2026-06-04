@@ -49,6 +49,12 @@ import { SelectTipoDocumentoComponent } from '@features/catalogo/components/sele
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { TextareaModule } from 'primeng/textarea';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
+
+export interface Puerto{
+    value: string;
+    label: string;
+}
+
 @Component({
   selector: 'page-guia-remision-crear',
   templateUrl: './guia-remision-crear.html',
@@ -132,8 +138,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Guía de Remisión', labelClass: 'text-[12px]!', routerLink: "/administracion/guia-remision",}, { label: 'Nuevo', labelClass: 'text-[12px]!' }];
 
-    tabRemitenteDestinatario = new BehaviorSubject<number>(0);
-    tabRemitenteDestinatario$ = this.tabRemitenteDestinatario.asObservable();
+    tabRemitenteDestinatario = signal(0);
 
     //valueTab: any[] = [];
 
@@ -143,6 +148,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     empresa = signal<EmpresaToSelectDto | null>(null);
     remitente = signal<EstablecimientoDTO | null>(null);
     destinatario = signal<EstablecimientoDTO | null>(null);
+
+    puertos = signal<Puerto[]>([]);
+    aereopuertos = signal<{value: string, label: string}[]>([]);
 
     constructor(
         private formBuilder: FormBuilder,
@@ -196,7 +204,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         // detectar el cambio en motivo traslado
         this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(() => {
-            this.tabRemitenteDestinatario.next(0);
+            this.tabRemitenteDestinatario.set(0);
             this.remitente.set(null);
             this.destinatario.set(null);
         });
@@ -664,7 +672,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }*/
 
     evtSelectDestEmi(val: string | number | undefined): void{
-        if(val) this.tabRemitenteDestinatario.next(parseInt(val.toString(), 10));
+        if(val) this.tabRemitenteDestinatario.set(parseInt(val.toString(), 10));
     }
 
     evtPreview(): void{

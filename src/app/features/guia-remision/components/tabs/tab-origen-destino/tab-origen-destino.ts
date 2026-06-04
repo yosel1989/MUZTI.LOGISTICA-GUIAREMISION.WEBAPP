@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, effect, inject, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges, ViewChild } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { AfterViewInit, Component, inject, Input, OnChanges, OnDestroy, OnInit, signal} from "@angular/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
 import { TabsModule } from 'primeng/tabs';
@@ -12,9 +12,9 @@ import { MessageModule } from "primeng/message";
 import { GR_DestinoRequestDto, GR_OrigenRequestDto } from "app/features/guia-remision/models/guia-remision.model";
 import { AlertService } from "app/core/services/alert.service";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
-import { SelectDepartamentoComponent } from "@features/ubigeo/components/selects/select-departamento/select-departamento";
-import { SelectProvinciaComponent } from "@features/ubigeo/components/selects/select-provincia/select-provincia";
-import { SelectDistritoComponent } from "@features/ubigeo/components/selects/select-distrito/select-distrito";
+//import { SelectDepartamentoComponent } from "@features/ubigeo/components/selects/select-departamento/select-departamento";
+//import { SelectProvinciaComponent } from "@features/ubigeo/components/selects/select-provincia/select-provincia";
+//import { SelectDistritoComponent } from "@features/ubigeo/components/selects/select-distrito/select-distrito";
 
 @Component({
   selector: 'app-tab-origen-destino',
@@ -25,12 +25,12 @@ import { SelectDistritoComponent } from "@features/ubigeo/components/selects/sel
     ReactiveFormsModule,
     TabsModule,
     InputTextModule,
-    SelectDepartamentoComponent,
-    SelectProvinciaComponent,
-    SelectDistritoComponent,
     CardModule,
     NgIcon,
-    MessageModule
+    MessageModule,
+    //SelectDepartamentoComponent,   
+    //SelectProvinciaComponent,
+    //SelectDistritoComponent
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
   providers: [MessageService]
@@ -52,23 +52,23 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         }
     }
 
-    @ViewChild("departamentoOrigen") departamentoOrigen: SelectDepartamentoComponent | undefined;
+    /*@ViewChild("departamentoOrigen") departamentoOrigen: SelectDepartamentoComponent | undefined;
     @ViewChild("provinciaOrigen") provinciaOrigen: SelectProvinciaComponent | undefined;
     @ViewChild("distritoOrigen") distritoOrigen: SelectDistritoComponent | undefined;
 
     @ViewChild("departamentoDestino") departamentoDestino: SelectDepartamentoComponent | undefined;
     @ViewChild("provinciaDestino") provinciaDestino: SelectProvinciaComponent | undefined;
-    @ViewChild("distritoDestino") distritoDestino: SelectDistritoComponent | undefined;
+    @ViewChild("distritoDestino") distritoDestino: SelectDistritoComponent | undefined;*/
     
-    formGroupOrigen: FormGroup = new FormGroup({});
-    formGroupDestino: FormGroup = new FormGroup({});
-    submitted = false;
+    //formGroupOrigen: FormGroup = new FormGroup({});
+    //formGroupDestino: FormGroup = new FormGroup({});
+    submitted = signal(false);
 
     constructor(
-        private formBuilder: FormBuilder,
+        //private formBuilder: FormBuilder,
         private alertService: AlertService
     ) {
-        this.formGroupOrigen = this.formBuilder.group({
+        /*this.formGroupOrigen = this.formBuilder.group({
             idDepartamento : new FormControl({value: null, disabled: false}, Validators.required),
             idProvincia : new FormControl({value: null, disabled: false}, Validators.required),
             idDistrito : new FormControl({value: null, disabled: false}, Validators.required),
@@ -81,17 +81,17 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
             idDistrito : new FormControl({value: null, disabled: false}, Validators.required),
             direccion : new FormControl({value: null, disabled: false}, Validators.required),
             pais : new FormControl('PE', Validators.required)
-        });
+        });*/
 
-        effect(() => {
+        /*effect(() => {
             const remitente = this._remitente();
-            this.handlerValueRemitente(remitente);
+            //this.handlerValueRemitente(remitente);
         });
 
         effect(() => {
             const destinatario = this._destinatario();
-            this.handlerValueDestinatario(destinatario);
-        });
+            //this.handlerValueDestinatario(destinatario);
+        });*/
     }
 
     ngOnInit(): void {
@@ -109,41 +109,51 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
     // getters
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get f_origen(): any {
+    /*get f_origen(): any {
         return this.formGroupOrigen.controls;
-    }
+    }*/
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get f_destino(): any {
+    /*get f_destino(): any {
         return this.formGroupDestino.controls;
-    }
+    }*/
 
     get invalid(): boolean{
-        return this.f_origen.invalid || this.f_destino.invalid;
+        return !this.remitente || !this.destinatario;
     }
 
-    get valid(): boolean{
-        return this.f_origen.valid && this.f_destino.valid;
+    get valid(): boolean {
+        return !!(this.remitente && this.destinatario);
     }
+
 
     get getFormData(): {origen: GR_OrigenRequestDto, destino: GR_DestinoRequestDto} {
         return {
             origen: {
-                ubigeo_id: this.f_origen.idDistrito.value,
-                direccion: this.f_origen.direccion.value,
-                pais: this.f_origen.pais.value,
+                ubigeo_id: this.remitente!.ubigeo_id,
+                direccion: this.remitente!.direccion,
+                pais: this.remitente!.pais,
             },
             destino: {
-                ubigeo_id: this.f_destino.idDistrito.value,
-                direccion: this.f_destino.direccion.value,
-                pais: this.f_destino.pais.value,
+                ubigeo_id: this.destinatario!.ubigeo_id,
+                direccion: this.destinatario!.direccion,
+                pais: this.destinatario!.pais,
             }
         }
     }
 
+    get remitente(): EstablecimientoDTO | null {
+        return this._remitente();
+    }
+
+    get destinatario(): EstablecimientoDTO | null {
+        return this._destinatario();
+    }
+
     evtOnSubmit(): boolean {
-        this.submitted = true;
-        if(this.formGroupOrigen.invalid){
+        this.submitted.set(true);
+
+        if(!this.remitente){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
@@ -152,11 +162,10 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
                 timerProgressBar: true,
                 timer: 4000
             });
-            console.log('invalid form origen', this.formGroupOrigen);
             return false;
         }
 
-        if(this.formGroupDestino.invalid){
+        if(!this.destinatario){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
@@ -165,7 +174,6 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
                 timerProgressBar: true,
                 timer: 4000
             });
-            console.log('invalid form destino', this.formGroupDestino);
             return false;
         }
 
@@ -173,24 +181,24 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     evtOnReset(): void {
-        this.submitted = false;
-        this.resetOrigenForm();
-        this.resetDestinoForm();
+        //this.submitted = false;
+        //this.resetOrigenForm();
+        //this.resetDestinoForm();
     }
 
     // handlers
 
-    handlerValueRemitente(s: EstablecimientoDTO | null): void{
-        if(!s){
+    //handlerValueRemitente(s: EstablecimientoDTO | null): void{
+        /*if(!s){
             this.resetOrigenForm();
             return;
-        }
+        }*/
 
-        this.formGroupOrigen.patchValue({
+        /*this.formGroupOrigen.patchValue({
             direccion: s.direccion,
             idDepartamento: s.ubigeo_id!.substring(0,2)
-        });
-        this.provinciaOrigen!.valueEdit = s.ubigeo_id!.substring(0,4);
+        });*/
+        /*this.provinciaOrigen!.valueEdit = s.ubigeo_id!.substring(0,4);
         const subProvincia1 = this.provinciaOrigen?.isLoaded.subscribe(() => {
             this.formGroupOrigen.get('idProvincia')?.setValue(s.ubigeo_id.substring(0,4));
         });
@@ -199,10 +207,10 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
             this.formGroupOrigen.get('idDistrito')?.setValue(s.ubigeo_id);
         });
         subProvincia1?.unsubscribe();
-        subDistrito1?.unsubscribe();
-    }
+        subDistrito1?.unsubscribe();*/
+    //}
 
-    handlerValueDestinatario(s: EstablecimientoDTO | null): void{
+    /*handlerValueDestinatario(s: EstablecimientoDTO | null): void{
         if(!s){
             this.resetDestinoForm();
             return;
@@ -222,20 +230,20 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         });
         subProvincia1?.unsubscribe();
         subDistrito1?.unsubscribe();
-    }
+    }*/
 
     // functions
 
-    resetOrigenForm(): void{
+    /*resetOrigenForm(): void{
         this.formGroupOrigen.reset({
             pais: 'PE'
         });
-    }
+    }*/
 
-    resetDestinoForm(): void{
+    /*resetDestinoForm(): void{
         this.formGroupDestino.reset({
             pais: 'PE'
         });
-    }
+    }*/
 
 }
