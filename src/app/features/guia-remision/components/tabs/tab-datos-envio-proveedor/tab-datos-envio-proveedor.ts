@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ViewChild, signal, effect } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { heroArrowTurnDownLeftMini } from '@ng-icons/heroicons/mini';
@@ -43,11 +43,9 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
-import { minItemsValidator } from '@core/validators/minItemsValidator';
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida';
-import { SelectEntidadReguladoraComponent } from '@features/catalogo/components/selects/select-entidad-reguladora/select-entidad-reguladora';
-import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { TypingComponent } from '@features/shared/components/typing/typing';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -75,8 +73,7 @@ import { SelectTipoDocumentoComponent } from '@features/catalogo/components/sele
     SelectDistritoComponent,
     OnlyNumberDirective,
     SelectUnidadMedidaComponent,
-    SelectEntidadReguladoraComponent,
-    SelectTipoDocumentoComponent
+    TypingComponent
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle, heroArrowTurnDownLeftMini })],
   providers: [ConfirmationService, MessageService]
@@ -97,6 +94,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     private _destinatario = signal<EstablecimientoDTO | null>(null);
     private _proveedor = signal<ProveedorDto | null>(null);
     private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
+    private _conductores = signal<ConductorDto[]>([]);
+    private _vehiculos = signal<UnidadTransporteDto[]>([]);
+
     @Input() set remitente(value: EstablecimientoDTO | null) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
@@ -184,9 +184,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           cod_aeropuerto: new FormControl(null),
 
           registrar_vehiculos_conductores: new FormControl(false),
-
-          vehiculos: this.fb.array([], [minItemsValidator(1)]),
-          conductores: this.fb.array([], [minItemsValidator(1)]),
 
           cod_establecimiento_origen: new FormControl({value: null, disabled: true}, [Validators.minLength(4), Validators.maxLength(4)]),
           ruc_establecimiento_origen: new FormControl({value: null, disabled: true}),
@@ -304,12 +301,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this.formDatosProveedor.controls;
     }
 
-    get conductores(): FormArray { 
-      return this.formDatosEnvio.get('conductores') as FormArray; 
+    get conductores(): ConductorDto[] { 
+      return this._conductores(); 
     }
 
-    get vehiculos(): FormArray { 
-      return this.formDatosEnvio.get('vehiculos') as FormArray; 
+    get vehiculos(): UnidadTransporteDto[] { 
+      return this._vehiculos(); 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -345,21 +342,21 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           cod_establecimiento_destino: this.f_datosEnvio.cod_establecimiento_destino.value,
           ruc_establecimiento_destino: this.f_datosEnvio.ruc_establecimiento_destino.value,
 
-          vehiculos: (this.vehiculos.controls as FormGroup[]).map(group => ({ 
-            id: group.get('id')?.value, 
-            placa_vehiculo: group.get('placa_vehiculo')?.value, 
-            cert_habilitacion_vehiculo: group.get('cert_habilitacion_vehiculo')?.value, 
-            entidad_reguladora_vehicular_id: group.get('entidad_reguladora_vehicular_id')?.value, 
-            numero_autoriza_vehicular_vehiculo: group.get('numero_autoriza_vehicular_vehiculo')?.value
+          vehiculos: this.vehiculos.map(v => ({ 
+            id: v.id, 
+            placa_vehiculo: v.placa, 
+            cert_habilitacion_vehiculo: v.tarjeta, 
+            entidad_reguladora_vehicular_id: v.entidad_reguladora_vehicular_id, 
+            numero_autoriza_vehicular_vehiculo: v.nro_autorizacion
           })),
 
-          conductores: (this.conductores.controls as FormGroup[]).map(group => ({ 
-            id : group.get('id')?.value, 
-            tipo_documento_id : group.get('tipo_documento_id')?.value, 
-            numero_documento_conductor: group.get('numero_documento_conductor')?.value, 
-            numero_licencia_brevete_conductor: group.get('numero_licencia_brevete_conductor')?.value, 
-            nombre_conductor: group.get('nombre_conductor')?.value, 
-            apellido_conductor: group.get('apellido_conductor')?.value, 
+          conductores: this._conductores().map( (c: ConductorDto) => ({ 
+            id : c.id, 
+            tipo_documento_id : c.tipo_documento_id, 
+            numero_documento_conductor: c.numero_documento, 
+            numero_licencia_brevete_conductor: c.licencia, 
+            nombre_conductor: c.nombres, 
+            apellido_conductor: c.apellidos, 
           })),
 
           num_autoriza_especial_adicional: this.f_datosEnvio.num_autoriza_especial_adicional.value,
@@ -469,193 +466,55 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     // functions
-    newConductor(item: ConductorDto | null = null): FormGroup { 
-      if(item){
-        return this.fb.group({ 
-          id: [ {value: item?.id, disabled: true}, Validators.required],
-          tipo_documento_id: [{value: item.tipo_documento_id, disabled: true}, Validators.required], 
-          numero_documento_conductor: [{value: item.numero_documento, disabled: true}, Validators.required], 
-          numero_licencia_brevete_conductor: [{value: item.licencia, disabled: true}, Validators.required],
-          nombre_conductor: [{value: item.nombres, disabled: true}, Validators.required],
-          apellido_conductor: [{value: item.apellidos, disabled: true}, Validators.required],
-          loading: [false]
-        });
-      }else{
-        return this.fb.group({ 
-          id: [ {value: 0, disabled: true}, Validators.required],
-          tipo_documento_id: [ 1, Validators.required], 
-          numero_documento_conductor: [null, Validators.required], 
-          numero_licencia_brevete_conductor: [null, Validators.required],
-          nombre_conductor: [null, Validators.required],
-          apellido_conductor: [null, Validators.required],
-          loading: [false]
-        }); 
-      }
-    }
 
     parseFormControl(item: AbstractControl): FormControl{
       return item as FormControl;
     }
 
     // events
-    evtAddConductor(item: ConductorDto | null = null): void{
-      const row = this.newConductor(item);
-      this.conductores.push(row);
-      this.cdr.markForCheck(); 
+    evtAddConductor(item: ConductorDto): void{
+      this._conductores.update(c => {
+        return [...c, item];
+      });
     }
 
     evtRemoveCoductor(index: number): void{
       this.handlerConfirmDialog(() => {
-        this.conductores.removeAt(index);
-        this.cdr.markForCheck();
+        this._conductores.update(c => {
+          return c.filter((_, i) => i !== index);
+        });
       }, '¿Desea remover el conductor seleccionado?', 'Confirmar la operación.');
     }
 
-    newVehiculo(vehiculo: UnidadTransporteDto | null = null): FormGroup { 
-      if(vehiculo){
-        return this.fb.group({ 
-          id: [ {value: vehiculo?.id, disabled: true}, Validators.required], 
-          placa_vehiculo: [ {value: vehiculo?.placa, disabled: true}, Validators.required], 
-          cert_habilitacion_vehiculo: [{value: null, disabled: true}, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-          entidad_reguladora_vehicular_id: [{value: vehiculo?.entidad_reguladora_vehicular_id, disabled: true}], 
-          numero_autoriza_vehicular_vehiculo: [{value: vehiculo?.nro_autorizacion, disabled: true}]
-        });
-      }else{
-        return this.fb.group({ 
-          id: [ {value: 0, disabled: true}, Validators.required], 
-          placa_vehiculo: [ {value: null, disabled: true}, Validators.required], 
-          cert_habilitacion_vehiculo: [{value: null, disabled: true}, this.f_datosEnvio.tipo_transporte.value === 'PUBLICO' ? [ Validators.required ] : []], 
-          entidad_reguladora_vehicular_id: [{value: null, disabled: true}], 
-          numero_autoriza_vehicular_vehiculo: [{value: null, disabled: true}]
-        });
-      }
-      
-    }
-
     // events
-    evtAddVehiculo(item: UnidadTransporteDto | null = null): void{
-      const row = this.newVehiculo(item);
-      this.vehiculos.push(row);
-      this.cdr.markForCheck(); 
+    evtAddVehiculo(item: UnidadTransporteDto): void {
+      this._vehiculos.update(v => {
+        return [...v, item];
+      });
     }
 
     evtRemoveVehiculo(index: number): void{
       this.handlerConfirmDialog(() => {
-        this.vehiculos.removeAt(index);
-        this.cdr.markForCheck(); 
+        this._vehiculos.update(c => {
+          return c.filter((_, i) => i !== index);
+        });
       }, '¿Desea remover el vehículo seleccionado?', 'Confirmar la operación.');
     }
 
     evtChangeValueTipoTransporte = (tipo: 'PRIVADO' | 'PUBLICO') => {
 
       this.resetDatosEnvio();
-
-      //const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
-      //const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
-
-      if(tipo === 'PRIVADO'){
-
-        //const pbrutoTotal = this.f_datosEnvio.peso_bruto_total.value;
-        //const upbrutoTotal = this.f_datosEnvio.unidad_peso_bruto.value;
-
-        /*this.formDatosEnvio = this.fb.group({
-          tipo_transporte: new FormControl('PRIVADO', Validators.required),
-          fecha_inicio_traslado: new FormControl(null, Validators.required),
-          fecha_entrega_transportista: new FormControl(null),
-          descripcion_traslado: new FormControl(null),
-          unidad_peso_bruto: new FormControl(upbrutoTotal, Validators.required),
-          peso_bruto_total: new FormControl(pbrutoTotal, Validators.required),
-          pagador_flete: this.tipoGuia === 'TRANSPORTISTA' ? new FormControl(EnumPagadorFlete.remitente,Validators.required) : new FormControl(null),
-
-          traslado_vehiculo_categoria: new FormControl(false),
-          traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
-
-          registrar_vehiculos_conductores: new FormControl(false),
-          vehiculos: this.fb.array([], Validators.minLength(1)),
-          conductores: this.fb.array([], Validators.minLength(1)),
-
-          ruc_subcontratador: new FormControl(null),
-          nombre_rsocial_subcontratador: new FormControl(null),
-          tipo_documento_tercero: new FormControl(null),
-          numero_documento_tercero: new FormControl(null),
-          nombre_rsocial_tercero: new FormControl(null),
-
-          ruc_transportista: new FormControl(null),
-          rsocial_transportista: new FormControl(null),
-          num_mtc_transportista: new FormControl(null),
-          email_transportista: new FormControl(null),
-
-          num_autoriza_especial_adicional: new FormControl(null),
-          ent_emisora_especial_adicional: new FormControl(null),
-          indic_retorno_vehiculo_envase_adicional: new FormControl(false),
-          transbordo_programado_adicional: new FormControl(false),
-          indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
-        });*/
-
-        //this.evtAddVehiculo();
-        //this.evtAddConductor();
-        
-        /*this.f_datosEnvio.fecha_inicio_traslado.addValidators(Validators.required);
-        this.f_datosEnvio.fecha_entrega_transportista.clearValidators();
-
-        this.f_datosEnvio.ruc_transportista.clearValidators();
-        this.f_datosEnvio.rsocial_transportista.clearValidators();*/
-      }else{
-        /*this.formDatosEnvio = this.fb.group({
-          tipo_transporte: new FormControl('PUBLICO', Validators.required),
-          fecha_inicio_traslado: new FormControl(null),
-          fecha_entrega_transportista: new FormControl(null, Validators.required),
-          descripcion_traslado: new FormControl(null),
-          unidad_peso_bruto: new FormControl(upbrutoTotal, Validators.required),
-          peso_bruto_total: new FormControl(pbrutoTotal, Validators.required),
-          pagador_flete: new FormControl(null),
-
-          traslado_vehiculo_categoria: new FormControl(false),
-          traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
-
-          registrar_vehiculos_conductores: new FormControl(false),
-          vehiculos: this.fb.array([]),
-          conductores: this.fb.array([]),
-
-          ruc_subcontratador: new FormControl(null),
-          nombre_rsocial_subcontratador: new FormControl(null),
-          tipo_documento_tercero: new FormControl(null),
-          numero_documento_tercero: new FormControl(null),
-          nombre_rsocial_tercero: new FormControl(null),
-
-          ruc_transportista: new FormControl(null),
-          rsocial_transportista: new FormControl(null),
-          num_mtc_transportista: new FormControl(null),
-          email_transportista: new FormControl(null),
-
-          num_autoriza_especial_adicional: new FormControl(null),
-          ent_emisora_especial_adicional: new FormControl(null),
-          indic_retorno_vehiculo_envase_adicional: new FormControl(false),
-          transbordo_programado_adicional: new FormControl(false),
-          indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
-        });*/
-      }
-
       this.cdr.markForCheck();
     }
 
     evtChaneValueRegistrarVehiculosConductores = (value: boolean): void => {
-      this.vehiculos.clear();
-      this.conductores.clear();
-
-      if(value && this.f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
-        //this.evtAddVehiculo();
-        //this.evtAddConductor();
-      }
-
-      this.cdr.markForCheck();
+      this._vehiculos.set([]);
+      this._conductores.set([]);
     }
 
-    evtOnChangeTipoTransporte(tipoTrasnporte: 'PRIVADO' | 'PUBLICO'): void{
-      this.f_datosEnvio.tipo_transporte.setValue(tipoTrasnporte);
+    evtOnChangeTipoTransporte(tipoTransporte: 'PRIVADO' | 'PUBLICO'): void{
+      this.f_datosEnvio.tipo_transporte.setValue(tipoTransporte);
     }
-
-  
 
     evtOnSubmit(): boolean {
 
@@ -716,7 +575,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaUnidadTransporteComponent) => {
             const sub2 = cmp?.OnSelect.subscribe(( s: UnidadTransporteDto) => {
-                const existe = this.vehiculos.controls.some(ctrl => ctrl.get('id')?.value === s.id);
+                const existe = this.vehiculos.some(v => v.id === s.id);
                 if(existe){
                   this.alertService.showToast({
                     title: "El vehiculo ya se encuentra seleccionado",
@@ -759,12 +618,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaConductorComponent) => {
             const sub2 = cmp?.OnSelect.subscribe(( c: ConductorDto) => {
-                const existe = this.conductores.controls.some(ctrl => ctrl.get('id')?.value === c.id);
+                const existe = this._conductores().some(conduc => conduc.id === c.id);
                 if(existe){
                   this.alertService.showToast({
                     text: "El conductor ya se encuentra seleccionado",
-                    icon: "warning",
+                    icon: "error",
                     timer: 4000,
+                    timerProgressBar: true,
                     showCloseButton: true
                   });
                 }else{
@@ -830,8 +690,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
         unidad_peso_bruto: this.f_datosEnvio.unidad_peso_bruto.value
       });
-      (this.formDatosEnvio.get('vehiculos') as FormArray).clear();
-      (this.formDatosEnvio.get('conductores') as FormArray).clear();
+      this._conductores.set([]);
+      this._vehiculos.set([]);
     }
 
     resetProveedor(): void {

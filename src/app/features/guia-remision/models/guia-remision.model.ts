@@ -157,10 +157,10 @@ export interface GuiaRemisionDto {
   ruc: string;
   remitente: EstablecimientoDTO;
   entidad_remitente: string;
-  numero_documento_remitente: string; 
+  numero_documento_remitente: string;
   numero_guia: string;
-  serie: string; 
-  numero: string; 
+  serie: string;
+  numero: string;
   establecimiento_remitente: string;
   tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
   tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
@@ -168,7 +168,7 @@ export interface GuiaRemisionDto {
   motivo_traslado: string;
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
   fecha_emision: Date;
-  hora_emision: string; 
+  hora_emision: string;
   respuesta_ticket: string | null;
   entidad_destinatario: string;
   establecimiento_destinatario: string;

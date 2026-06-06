@@ -12,7 +12,7 @@ export class TypingComponent {
   // Signal que se va mostrando progresivamente
   displayedText = signal<string>('');
 
-  @Input() set text(value: string) {
+  @Input() set text(value: string | null) {
     this.inputText.set(value ?? '--');
   }
 

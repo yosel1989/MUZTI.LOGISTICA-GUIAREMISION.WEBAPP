@@ -56,6 +56,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { Router } from '@angular/router';
 import { Menu, MenuModule } from 'primeng/menu';
 import { SignaturePadComponent, NgSignaturePadOptions } from '@almothafar/angular-signature-pad';
+import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -350,11 +351,33 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       contentStyle: {
         height: '100%',
         padding: '0',
-        overflow: 'hide',
+        overflow: 'hide'
       },
       appendTo: 'body',
       inputValues: {
         ticket: this.selected!.respuesta_ticket,
+        data: this.selected!,
+      },
+    });
+  }
+
+  evtOnShowInfo(): void {
+    this.ref = this.dialogService.open(MdlPrevisualizarGuiaRemisionComponent, {
+      width: '1200px',
+      height: '90vh',
+      closable: true,
+      maximizable: true,
+      modal: true,
+      draggable: false,
+      header: this.selected?.numero_guia,
+      styleClass: 'max-h-none! slide-down-dialog overflow-hidden',
+      maskStyleClass: 'overflow-y-auto',
+      contentStyle: {
+        height: '100%',
+        overflow: 'hide',
+      },
+      appendTo: 'body',
+      inputValues: {
         data: this.selected!,
       },
     });
@@ -500,6 +523,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         visible: this.tieneAccion(selected?.acciones, 'PDF')
       },
       {
+        label: 'Ver Detalle',
+        icon: 'pi pi-eye text-gray-500!',
+        command: () => {
+          this.evtOnShowInfo();
+        }
+      },
+      {
         label: 'Aprobar y Emitir',
         icon: 'pi pi-send text-green-500!',
         command: () => {
@@ -523,14 +553,14 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         },
         visible: this.tieneAccion(selected?.acciones, 'REC')
       },
-      /*{
+      {
         label: 'Editar',
         icon: 'pi pi-pencil text-yellow-500!',
         command: () => {
           this.evtOnEditarGuia();
         },
         visible: this.tieneAccion(selected?.acciones, 'EDI')
-      },*/
+      },
       {
         label: 'Anular',
         icon: 'pi pi-ban text-red-500!',

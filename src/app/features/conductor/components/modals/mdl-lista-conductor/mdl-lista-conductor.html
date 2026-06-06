@@ -52,7 +52,11 @@
                         }
                     </tr>
                 }@else {
-                    <tr [pSelectableRow]="rowData" (dblclick)="evtSelect()">
+                    <tr 
+                        [pSelectableRow]="rowData" 
+                        (dblclick)="evtSelect()"
+                        [class.p-datatable-contextmenu-row-selected]="selected === rowData"
+                    >
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){

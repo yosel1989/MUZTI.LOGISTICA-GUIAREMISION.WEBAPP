@@ -1,0 +1,116 @@
+<div class="flex flex-col gap-2 text-[11px]!">
+
+
+
+    <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-2">
+        <div class="flex flex-col items-center align-center justify-items-center text-center p-4 border border-gray-500 rounded-lg h-full col-span-2" >
+            <p class="font-semibold">CONSORCIO CAROLINA S.A.C</p>
+            <p>20458464613</p>
+        </div>
+        
+        <div class="text-center p-4 border border-gray-500 rounded-lg h-full" >
+            <p class="font-semibold text-gray-400">RUC: 00000000000</p>
+            <p class="font-semibold">GUIA DE REMISIÓN ELECTRÓNICA</p>
+            <p>N° 0000-00000000</p>
+        </div>
+
+        <div class="flex flex-row justify-between text-center p-4 border border-gray-500 rounded-lg " >
+            <p class="font-semibold text-start">FECHA EMISIÓN</p>
+            <p class="text-end">01/05/2026</p>
+        </div>
+
+        <div class="flex flex-row justify-between text-center p-4 border border-gray-500 rounded-lg " >
+            <p class="font-semibold text-start">FECHA INICIO TRASLADO</p>
+            <p class="text-end">01/05/2026</p>
+        </div>
+
+        <div class="text-center p-4 border border-gray-500 rounded-lg" >
+        </div>
+
+    </div>
+
+    <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-2 ">
+        <div>
+            <p class="block font-semibold text-center">DIRECCIÓN DE PARTIDA</p>
+            <div class="flex flex-col items-center align-center justify-items-center text-center p-4 border border-gray-500 rounded-lg " >
+                <p>JR. ORBEGOZO KM. 772 (SEDE CENTRAL), LA LIBERTAD - TRUJILLO - TRUJILLO</p>
+
+                <div class="flex flex-row justify-between w-full mt-4">
+                    <span class="font-semibold">RUC y Cod. de establecimiento: </span>
+                    <span>20530811001 - 0026</span>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <p class="font-semibold text-center">DIRECCIÓN DE LLEGADA</p>
+            <div class="flex flex-col items-center align-center justify-items-center text-center p-4 border border-gray-500 rounded-lg " >
+                <p>JR. ORBEGOZO KM. 772 (SALA 02), LA LIBERTAD - TRUJILLO - TRUJILLO</p>
+
+                <div class="flex flex-row justify-between w-full mt-4">
+                    <span class="font-semibold">RUC y Cod. de establecimiento: </span>
+                    <span>20530811001 - 0026</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center align-center justify-items-center text-center p-4 border border-gray-500 rounded-lg h-full" >
+            <p class="font-semibold">DATOS DEL DESTINATARIO</p>
+            <p>20458464613</p>
+        </div>
+        <div class="flex flex-col items-center align-center justify-items-center text-center p-4 border border-gray-500 rounded-lg h-full" >
+            <p class="font-semibold">UNIDAD DE TRANSPORTE / CONDUCTOR</p>
+            <p>20458464613</p>
+        </div>
+
+        <div class="col-span-2 border border-gray-500 rounded-lg overflow-hidden ">
+            <p-table
+                d
+            >
+                <ng-template pTemplate="header" let-columns>
+                    <tr class="text-nowrap">
+                        <th class="font-medium">ITEM</th>
+                        <th class="font-medium">CANT.</th>
+                        <th class="font-medium">UNID.</th>
+                        <th class="font-medium">CÓDIGO</th>
+                        <th class="font-medium">DESCRIPCIÓN</th>
+                        <th class="font-medium">COD. DE PRD. SUNAT</th>
+                        <th class="font-medium">GTIN</th>
+                        <th class="font-medium">BIEN NORMALIZADO</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                    <tr>
+                        <td>ITEM</td>
+                        <td>CANT.</td>
+                        <td>UNID.</td>
+                        <td>CÓDIGO</td>
+                        <td>DESCRIPCIÓN</td>
+                        <td>COD. DE PRD. SUNAT</td>
+                        <td>GTIN</td>
+                        <td>BIEN NORMALIZADO</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <div class="gap-4 ">
+        <div>
+            <p class="block font-semibold text-start">OBSERVACIONES</p>
+            <div class="flex flex-col items-center align-center justify-items-center text-center p-4 border border-gray-500 rounded-lg " >
+                <p> -- </p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <p class="block font-semibold text-start">DATOS DEL VEHÍCULO</p>   
+        <div class="flex flex-col p-4 border border-gray-500 rounded-lg">
+            <p class="block font-semibold text-start">Principal:</p>
+            <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">ERT345</span></p>   
+        </div>
+    </div>
+
+</div>
