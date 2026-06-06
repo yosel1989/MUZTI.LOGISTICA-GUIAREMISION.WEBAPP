@@ -26,7 +26,7 @@
                             <div class="col-span-3">
                                 <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                    {{ remitente?.direccion ?? '--' }}
+                                    <app-typing [text]="remitente?.direccion ?? '--'"></app-typing>
                                 </div>
                                 <!--<input 
                                 pSize="small" 
@@ -47,7 +47,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                {{ remitente?.departamento ?? '--' }}
+                                <app-typing [text]="remitente?.departamento ?? '--'"></app-typing>
                             </div>
                             <!---<app-select-departamento 
                                 #departamentoOrigen
@@ -66,7 +66,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                {{ remitente?.provincia ?? '--' }}
+                                <app-typing [text]="remitente?.provincia ?? '--'"></app-typing>
                             </div>
                             <!--<app-select-provincia 
                                 #provinciaOrigen
@@ -85,7 +85,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                {{ remitente?.distrito ?? '--' }}
+                                <app-typing [text]="remitente?.distrito ?? '--'"></app-typing>
                             </div>
                             <!---<app-select-distrito 
                                 #distritoOrigen
@@ -111,8 +111,8 @@
                         <div class="col-span-4 lg:col-span-3!">
                             <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                    {{ destinatario?.direccion ?? '--' }}
-                                </div>
+                                <app-typing [text]="destinatario?.direccion ?? '--'"></app-typing>
+                            </div>
                             <!--<input 
                                 formControlName="direccion" 
                                 pSize="small" 
@@ -132,7 +132,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                {{ destinatario?.departamento ?? '--' }}
+                                <app-typing [text]="destinatario?.departamento ?? '--'"></app-typing>
                             </div>
                             <!--<app-select-departamento 
                                 #departamentoDestino
@@ -150,7 +150,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                {{ destinatario?.provincia ?? '--' }}
+                                <app-typing [text]="destinatario?.provincia ?? '--'"></app-typing>
                             </div>
                             <!--<app-select-provincia 
                                 #provinciaDestino
@@ -169,7 +169,7 @@
                         <div>
                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                {{ destinatario?.distrito ?? '--' }}
+                                <app-typing [text]="destinatario?.distrito ?? '--'"></app-typing>
                             </div>
                             <!--<app-select-distrito 
                                 #distritoDestino

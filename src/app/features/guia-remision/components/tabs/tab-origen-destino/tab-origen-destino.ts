@@ -12,6 +12,7 @@ import { MessageModule } from "primeng/message";
 import { GR_DestinoRequestDto, GR_OrigenRequestDto } from "app/features/guia-remision/models/guia-remision.model";
 import { AlertService } from "app/core/services/alert.service";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
+import { TypingComponent } from "@features/shared/components/typing/typing";
 //import { SelectDepartamentoComponent } from "@features/ubigeo/components/selects/select-departamento/select-departamento";
 //import { SelectProvinciaComponent } from "@features/ubigeo/components/selects/select-provincia/select-provincia";
 //import { SelectDistritoComponent } from "@features/ubigeo/components/selects/select-distrito/select-distrito";
@@ -28,9 +29,7 @@ import { EstablecimientoDTO } from "@features/establecimiento/models/establecimi
     CardModule,
     NgIcon,
     MessageModule,
-    //SelectDepartamentoComponent,   
-    //SelectProvinciaComponent,
-    //SelectDistritoComponent
+    TypingComponent
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
   providers: [MessageService]

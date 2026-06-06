@@ -62,7 +62,7 @@
     </ng-template>
 
     <ng-template #item let-item>
-        <a (click)="item.command" pRipple class="text-sm flex items-center p-menu-item-link cursor-pointer!">
+        <a (click)="item.command"  pRipple class="text-sm flex items-center p-menu-item-link cursor-pointer!">
             <i [class]="item.icon"></i>
             <span class="ml-1">{{ item.label }}</span>
             <span>{{ item.shortcut }}</span>

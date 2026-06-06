@@ -61,6 +61,16 @@ const routes: Routes = [
             pathMatch: 'full'
           }
         ]
+      },
+      {
+        path: 'mi-perfil',
+        loadComponent: () => import('@features/mi-perfil/pages/page-mi-perfil-principal/page-mi-perfil-principal').then(m => m.PageMiPerfilPrincipalComponent),
+        children: [
+          {
+            path: 'firma',
+            loadComponent: () => import('@features/firma/pages/page-firma-principal/page-firma-principal').then(m => m.PageFirmaPrincipalComponent)
+          }
+        ]
       }
     ]
   }

@@ -142,6 +142,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     puertos = signal<{value: string, label: string}[]>([]);
     aereopuertos = signal<{value: string, label: string}[]>([]);
 
+    today: Date = new Date();
+
     constructor(
       private fb: FormBuilder,
       private cdr: ChangeDetectorRef,
@@ -153,7 +155,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         this.formDatosEnvio = this.fb.group({
           tipo_transporte: new FormControl('PRIVADO', Validators.required),
-          fecha_inicio_traslado: new FormControl(null, Validators.required),
+          fecha_inicio_traslado: new FormControl(new Date(), Validators.required),
           fecha_entrega_transportista: new FormControl(null),
           descripcion_traslado: new FormControl(null),
           unidad_medida_id: new FormControl(null, Validators.required),

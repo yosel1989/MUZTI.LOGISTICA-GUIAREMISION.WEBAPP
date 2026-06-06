@@ -9,7 +9,7 @@ export class OnlyUpperDirective {
 
   @HostListener('input', ['$event'])
 
-  onInput(event: InputEvent): void {
+  onInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const start = input.selectionStart;
     const end = input.selectionEnd;

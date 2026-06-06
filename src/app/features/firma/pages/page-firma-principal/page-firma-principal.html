@@ -1,0 +1,75 @@
+<div class="flex flex-col gap-y-2 p-6">
+
+    <form [formGroup]="form" (ngSubmit)="evtOnSubmit()" >
+
+        <h2 class="text-lg font-semibold text-gray-700! mb-6">Configuración de firma personal</h2>
+        <p-divider class="mb-16!"></p-divider> 
+
+        <div class="grid sm:grid-cols-1 lg:grid-cols-3 gap-3">
+
+            <div class="">
+                <label class="font-semibold  text-gray-700!">Mi firma</label>
+                <p class="text-[12px] text-gray-500!">Registrar firma digital para las diferentes operaciones dentro del modulo de guías de remisión</p>
+            </div> 
+
+            <div class="flex flex-col col-span-2 self-center">
+                
+                <div class="flex flex-row gap-x-2 ml-auto">
+                    
+                    @if(editarFirma()){
+                        <p-button 
+                            icon="fa-light fa-floppy-disk text-[20px]!" 
+                            label="Guardar" 
+                            size="small" 
+                            [outlined]="true" 
+                            (click)="evtGuardarFirma()"
+                        ></p-button>
+                        <p-button 
+                            icon="fa-light fa-signature-slash text-[20px]!" 
+                            label="Limpiar" 
+                            size="small" 
+                            [outlined]="true"
+                            severity="secondary"
+                            (click)="evtLimpiarFirma()"
+                        ></p-button>
+                        <p-button 
+                            icon="fa-light fa-xmark text-[20px]!" 
+                            label="Cancelar" 
+                            size="small" 
+                            [outlined]="true" 
+                            severity="secondary"
+                            (click)="evtEditarFirma()"
+                        ></p-button>
+                    }@else{
+                        <p-button 
+                            icon="fa-light fa-signature text-[20px]!" 
+                            [label]="imageUrl() ? 'Editar firma' : 'Registrar firma' " 
+                            size="small" 
+                            [outlined]="true" 
+                            (click)="evtEditarFirma()"
+                        ></p-button>
+                    }
+                </div>
+
+                
+                
+
+                @if(editarFirma()){
+                    <signature-pad
+                        [options]="signaturePadOptions"
+                        (drawStart)="drawStart($event)"
+                        (drawEnd)="drawComplete($event)"
+                        (drawClear)="drawCleared()" 
+                        class="bg-white! ml-auto mt-2"
+                    />
+                }@else{
+                    @if(imageUrl()){
+                        <img class="block ml-auto border border-1 border-gray-200 rounded-md mt-2" [src]="imageUrl()" width="300" height="auto"> 
+                    }
+                }
+
+            </div>
+        </div>
+
+    </form>
+</div>

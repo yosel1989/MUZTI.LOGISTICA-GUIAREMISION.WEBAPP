@@ -56,7 +56,7 @@
                                 class="rounded-t-xl! text-md! py-2!"
                                 [ngClass]="{ 
                                     'bg-primary-50!': tabRemitenteDestinatario() === 0,
-                                    'bg-gray-50! border-b-gray-300! border-b-2!': tabRemitenteDestinatario() !== 0
+                                    'bg-gray-50! border-b-gray-200! border-b-2!': tabRemitenteDestinatario() !== 0
                                 }"
                             >
                                 Remitente 
@@ -69,7 +69,7 @@
                                 class="rounded-t-xl! text-md! py-2!"
                                 [ngClass]="{ 
                                     'bg-primary-50!': tabRemitenteDestinatario() === 1 ,
-                                    'bg-gray-50! border-b-gray-300! border-b-2!': tabRemitenteDestinatario() !== 1
+                                    'bg-gray-50! border-b-gray-200! border-b-2!': tabRemitenteDestinatario() !== 1
                                 }"
                             >
                                 Destinatario
@@ -105,21 +105,27 @@
                                     </div>
 
                                     <div>
-                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-3">
+                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-8">
                                             <div class="flex flex-col">
-                                                <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-
-                                                <app-select-tipo-documento 
+                                                <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de Documento<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="remitente() ? 'RUC' : '--'"></app-typing>
+                                                </div>
+                                                <!--<app-select-tipo-documento 
                                                     class="flex flex-col cursor-not-allowed" 
                                                     [control]="f.tipo_documento_remitente" 
                                                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
                                                     optionLabel="descripcion_corta"
-                                                />
+                                                />-->
                                                 
                                             </div>
                                             <div class="flex flex-col">
-                                                <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nro. de Documento *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                                <input 
+                                                <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nro. de Documento<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="remitente()?.ruc ?? '--'"></app-typing>
+                                                </div>
+
+                                                <!--<input 
                                                 formControlName="numero_documento_remitente" 
                                                 onlyNumber 
                                                 pSize="small" 
@@ -151,12 +157,15 @@
                                                             caracteres.
                                                         }
                                                     </span></p-message>
-                                                }
+                                                }-->
                                             </div>
                                             @if(f.tipo_documento_remitente.value === 4){
                                                 <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                                    <input 
+                                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                        <app-typing [text]="remitente()?.razon_social ?? '--'"></app-typing>
+                                                    </div>
+                                                    <!--<input 
                                                     formControlName="razon_social_remitente" 
                                                     placeholder="" 
                                                     pSize="small" 
@@ -169,13 +178,16 @@
                                                                 Este campo es requerido.
                                                             }
                                                         </span></p-message>
-                                                    }
+                                                    }-->
                                                 </div>
                                             }
                                             @else{
                                                 <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombres y Apellidos *<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                                    <input 
+                                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                        <app-typing [text]="remitente()?.razon_social ?? '--'"></app-typing>
+                                                    </div>
+                                                    <!--<input 
                                                     formControlName="nombres_apellidos_remitente" 
                                                     placeholder="" 
                                                     pSize="small" 
@@ -188,26 +200,32 @@
                                                                 Este campo es requerido.
                                                             }
                                                         </span></p-message>
-                                                    }
+                                                    }-->
                                                 </div>
                                             }
 
                                             <div class="flex flex-col md:col-span-2">
-                                                <label class="text-[11px]! h-4.5! text-gray-500">Dirección<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                                <input 
+                                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="remitente()?.direccion ? remitente()?.direccion + ' (' + remitente()?.descripcion + ')' : '--'"></app-typing>
+                                                </div>
+                                                <!--<input 
                                                 formControlName="direccion_remitente"
                                                 placeholder="" 
                                                 pSize="small" 
                                                 fluid 
-                                                pInputText />
+                                                pInputText />-->
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-3 gap-y-4">
+                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-4">
                                         <div>
-                                            <label class="text-[11px]! h-4.5! text-gray-500">Departamento<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                            <app-select-departamento 
+                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                <app-typing [text]="remitente()?.departamento ?? '--'"></app-typing>
+                                            </div>
+                                            <!--<app-select-departamento 
                                                 #departamentoRemitente
                                                 [control]="f.departamento_remitente" 
                                                 class="cursor-not-allowed"
@@ -217,11 +235,14 @@
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
-                                            }
+                                            }-->
                                         </div>
                                         <div>
-                                            <label class="text-[11px]! h-4.5! text-gray-500 ">Provincia<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
-                                            <app-select-provincia 
+                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
+                                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                <app-typing [text]="remitente()?.provincia ?? '--'"></app-typing>
+                                            </div>
+                                            <!--<app-select-provincia 
                                                 #provinciaRemitente
                                                 [control]="f.provincia_remitente" 
                                                 [idUbigeoDepartamento]="f.departamento_remitente.value" 
@@ -232,11 +253,14 @@
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
-                                            }
+                                            }-->
                                         </div>
                                         <div>
-                                            <label class="text-[11px]! h-4.5! text-gray-500 ">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
-                                            <app-select-distrito 
+                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
+                                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                <app-typing [text]="remitente()?.distrito ?? '--'"></app-typing>
+                                            </div>
+                                            <!--<app-select-distrito 
                                                 #distritoRemitente
                                                 [control]="f.distrito_remitente" 
                                                 [idUbigeoProvincia]="f.provincia_remitente.value"
@@ -247,7 +271,7 @@
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
                                                 </p-message>
-                                            }
+                                            }-->
                                         </div>
                                     </div>
 
@@ -291,20 +315,27 @@
                                     </div>
 
                                     <div>
-                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-3">
+                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-8">
                                             <div class="flex flex-col">
-                                                <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Tipo de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                <app-select-tipo-documento 
+                                                <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Tipo de Documento</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="destinatario() ? 'RUC' : '--'"></app-typing>
+                                                </div>
+                                                <!--<app-select-tipo-documento 
                                                     class="flex flex-col cursor-not-allowed" 
                                                     [control]="f.tipo_documento_destinatario"
                                                     [disabled]="true"
                                                     classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
                                                     optionLabel="descripcion_corta"
-                                                />
+                                                />-->
                                             </div>
                                             <div class="flex flex-col">
-                                                <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nro. de Documento *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                <input 
+                                                <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nro. de Documento</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="destinatario()?.ruc ?? '--'"></app-typing>
+                                                </div>
+
+                                                <!--<input 
                                                     formControlName="numero_documento_destinatario" 
                                                     onlyNumber  
                                                     pSize="small" 
@@ -337,12 +368,15 @@
                                                             caracteres.
                                                         }
                                                     </span></p-message>
-                                                }
+                                                }-->
                                             </div>
                                             @if(f.tipo_documento_destinatario.value === 4){
                                                 <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social *</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                    <input 
+                                                    <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                        <app-typing [text]="destinatario()?.razon_social ?? '--'"></app-typing>
+                                                    </div>
+                                                    <!--<input 
                                                         formControlName="razon_social_destinatario" 
                                                         pSize="small" 
                                                         fluid 
@@ -359,13 +393,16 @@
                                                                 Este campo es requerido.
                                                             }
                                                         </span></p-message>
-                                                    }
+                                                    }-->
                                                 </div>
                                             }
                                             @else{
                                                 <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombres y Apellidos*</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                    <input 
+                                                    <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                        <app-typing [text]="destinatario()?.razon_social ?? '--'"></app-typing>
+                                                    </div>
+                                                    <!--<input 
                                                     formControlName="nombres_apellidos_destinatario" 
                                                     pSize="small" 
                                                     fluid 
@@ -377,29 +414,35 @@
                                                                 Este campo es requerido.
                                                             }
                                                         </span></p-message>
-                                                    }
+                                                    }-->
                                                 </div>
                                             }
 
                                             <div class="flex flex-col lg:col-span-2">
-                                                <label class="text-[11px]! h-4.5! text-gray-500">Dirección<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                <input 
+                                                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="destinatario()?.direccion ? destinatario()?.direccion + ' (' + destinatario()?.descripcion + ')' : '--'"></app-typing>
+                                                </div>
+                                                <!--<input 
                                                 formControlName="direccion_destinatario"
                                                 pSize="small" 
                                                 fluid 
-                                                pInputText />
+                                                pInputText />-->
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-3 gap-y-4">
+                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-4">
                                         <div>
-                                            <label class="text-[11px]! h-4.5! text-gray-500">Departamento<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                            <app-select-departamento 
+                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                <app-typing [text]="destinatario()?.departamento ?? '--'"></app-typing>
+                                            </div>
+                                            <!--<app-select-departamento 
                                             #departamentoDestinatario
                                             [control]="f.departamento_destinatario" 
                                             class="cursor-not-allowed"
-                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>
+                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>-->
                                             <!--@if (formGroup.get('departamento_destinatario')?.invalid && (formGroup.get('departamento_destinatario')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -407,13 +450,16 @@
                                             }-->
                                         </div>
                                         <div>
-                                            <label class="text-[11px]! h-4.5! text-gray-500">Provincia<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                            <app-select-provincia 
+                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                <app-typing [text]="destinatario()?.provincia ?? '--'"></app-typing>
+                                            </div>
+                                            <!--<app-select-provincia 
                                             #provinciaDestinatario
                                             [control]="f.provincia_destinatario" 
                                             class="cursor-not-allowed"
                                             [idUbigeoDepartamento]="f.departamento_destinatario.value" 
-                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>
+                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>-->
                                             <!--@if (formGroup.get('provincia_destinatario')?.invalid && (formGroup.get('provincia_destinatario')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>
@@ -421,13 +467,16 @@
                                             }-->
                                         </div>
                                         <div>
-                                            <label class="text-[11px]! h-4.5! text-gray-500">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                            <app-select-distrito 
+                                            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                <app-typing [text]="destinatario()?.distrito ?? '--'"></app-typing>
+                                            </div>
+                                            <!--<app-select-distrito 
                                             #distritoDestinatario
                                             class="cursor-not-allowed"
                                             [control]="f.distrito_destinatario" 
                                             [idUbigeoProvincia]="f.provincia_destinatario.value" 
-                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>
+                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>-->
                                             <!--@if (formGroup.get('distrito_destinatario')?.invalid && (formGroup.get('distrito_destinatario')?.touched || submitted())) {
                                                 <p-message severity="error" size="small" variant="simple" >
                                                     <span class="text-[10px]! ">Este campo es requerido.</span>

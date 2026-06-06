@@ -21,6 +21,7 @@ import { User } from '@features/auth/services/auth.interface';
 import { PopoverModule } from 'primeng/popover';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -63,7 +64,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
         private confirmationService: ConfirmationService,
         private authApi: AuthApiService,
         private layoutService: LayoutService,
-        private builder: AnimationBuilder
+        private builder: AnimationBuilder,
+        private router: Router
     ) {
         this.breadCrumbItems = this.layoutService.breadCrumbItems;
         this.user = this.ls.getUser();
@@ -87,10 +89,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
             {
                 label: 'Perfil',
                 items: [
-                    /*{
+                    {
                         label: 'Mi Perfil',
-                        icon: 'pi pi-cog'
-                    },*/
+                        icon: 'pi pi-cog',
+                        command: () => { this.router.navigate(['/mi-perfil']) }
+                    },
                     {
                         label: 'Cerrar Sesion',
                         icon: 'pi pi-sign-out',

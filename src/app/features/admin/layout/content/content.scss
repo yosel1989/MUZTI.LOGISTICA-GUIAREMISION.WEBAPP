@@ -14,3 +14,9 @@ body.collapsed :host{
 :host{
     background: #EEEEEE;
 }
+
+@media (max-width: 991px) {
+    body:not(.collapsed) :host .wrap-content{
+        padding-left: 0 !important;
+    }
+}

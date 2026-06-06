@@ -12,6 +12,7 @@ import {
   ElementRef,
   signal,
   inject,
+  viewChild,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -54,6 +55,7 @@ import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/gui
 import { TextareaModule } from 'primeng/textarea';
 import { Router } from '@angular/router';
 import { Menu, MenuModule } from 'primeng/menu';
+import { SignaturePadComponent, NgSignaturePadOptions } from '@almothafar/angular-signature-pad';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -82,7 +84,8 @@ import { Menu, MenuModule } from 'primeng/menu';
     DragScrollDirective,
     AvatarModule,
     TextareaModule,
-    MenuModule
+    MenuModule,
+    SignaturePadComponent
   ],
   providers: [DialogService, ConfirmationService],
 })
@@ -92,7 +95,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
   
-
+  public signaturePad = viewChild(SignaturePadComponent);
+  public signaturePadOptions: NgSignaturePadOptions = { // passed through to szimek/signature_pad constructor
+    minWidth: 1,
+    canvasWidth: 300,
+    canvasHeight: 150,
+    dotSize: 1
+  };
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
   @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
   @Output() OnShowFilter: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -180,6 +189,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
+    this.signaturePad()?.set('minWidth', 5); // set szimek/signature_pad options at runtime
+    this.signaturePad()?.clear();
+
+
     this.filter?.filters.subscribe((res: ColumnsFilterDto[]) => {
       this.filters = res;
       this.loadData(true);
@@ -763,4 +776,25 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       return;
     }
   }
+
+
+  //
+
+  drawComplete(event: MouseEvent | Touch) {
+    // will be notified of szimek/signature_pad's onEnd event
+    console.log('Completed drawing', event);
+    console.log(this.signaturePad()?.toDataURL());
+    console.log(this.signaturePad()?.getCanvas());
+  }
+
+  drawStart(event: MouseEvent | Touch) {
+    // will be notified of szimek/signature_pad's onBegin event
+    console.log('Start drawing', event);
+  }
+
+  drawCleared() {
+    // will be notified when clear() is called on the pad
+    console.log('Pad cleared');
+  }
+
 }
