@@ -100,12 +100,8 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
       return;
     }
 
-
-
+    this.data.set([]);
     this.ldData.set(true);
-    this.data.set( Array.from({ length: 5 }).map((_, i) => (
-      { numero_documento: i.toString() } as ProveedorSugeridoDto
-    )) );
     this.sbData?.unsubscribe();
     this.sbData = this.api.buscarSugerido(this.search.value)
     .pipe(finalize(() => { 

@@ -48,7 +48,7 @@
         [rowHover]="true"
         scrollHeight="400px"
         class="border-0! text-[12px]!"
-        [loading]="ldSelected()"
+        [loading]="ldSelected() || ldData()"
     >
         
             <ng-template pTemplate="header" let-columns>

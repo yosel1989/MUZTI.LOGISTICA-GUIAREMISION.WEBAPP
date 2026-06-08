@@ -14,7 +14,7 @@
                 <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
                     <div class="flex items-center gap-2">
                         <label for="" class="text-[12px] pointer-events-none ">Datos del proveedor</label>
-                        @if(formDatosProveedor.invalid && (formDatosProveedor.touched || submitted())) {
+                        @if(mostrarProveedor() && !proveedor) {
                             <ng-icon name="tablerAlertCircle" />
                         }
                     </div>
@@ -893,7 +893,7 @@
             
             @if(mostrarProveedor()){
                 <p-tabpanel value="1">
-                    <div [formGroup]="formDatosProveedor" class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-4">
 
                         <div class="flex flex-wrap gap-x-2">
 
@@ -912,7 +912,7 @@
 
                         </div>
 
-                        @if(mostrarProveedor() && formDatosProveedor.invalid){
+                        @if(mostrarProveedor() && !proveedor){
                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar un proveedor.</span></p-message>
                         }
 
@@ -920,7 +920,11 @@
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
-                                <div class="cursor-not-allowed">
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.tipo_documento ?? '--'"></app-typing>
+                                </div>
+
+                                <!--<div class="cursor-not-allowed">
                                 <p-select 
                                 fluid
                                 size="small"
@@ -940,12 +944,16 @@
                                 </div>
                                 @if (f_datosProveedor.tipo_documento_proveedor.invalid && (f_datosProveedor.tipo_documento_proveedor.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                }
+                                }-->
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Documento *</label>
-                                <input 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.numero_documento ?? '--'"></app-typing>
+                                </div>
+                                
+                                <!--<input 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
@@ -956,12 +964,16 @@
                                 />
                                 @if (f_datosProveedor.numero_documento_proveedor.invalid && (f_datosProveedor.numero_documento_proveedor.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                }
+                                }-->
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre o Razón Social *</label>
-                                <input 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.razon_social ?? '--'"></app-typing>
+                                </div>
+
+                                <!--<input 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
@@ -972,46 +984,61 @@
                                 />
                                 @if (f_datosProveedor.nombre_rsocial_proveedor.invalid && (f_datosProveedor.nombre_rsocial_proveedor.touched || submitted())) {
                                     <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                }
+                                }-->
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500 ">Dirección</label>
-                                <input 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.direccion ?? '--'"></app-typing>
+                                </div>
+
+                                <!--<input 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
                                     formControlName="direccion_proveedor" 
                                     class="shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                                     readonly
-                                />
+                                />-->
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500">Departamento</label>
-                                <app-select-departamento 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.departamento ?? '--'"></app-typing>
+                                </div>
+                                <!--<app-select-departamento 
                                     #departamentoProveedor
                                     [control]="f_datosProveedor.idDepartamento" 
                                     class="cursor-not-allowed"
                                     classLabel="text-[11px]! h-4.5! text-gray-500 " 
                                     label="Departamento"
                                     [readonly]="true"
-                                ></app-select-departamento>
+                                ></app-select-departamento>-->
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500">Provincia</label>
-                                <app-select-provincia 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.provincia ?? '--'"></app-typing>
+                                </div>
+
+                                <!--<app-select-provincia 
                                     #provinciaProveedor
                                     [control]="f_datosProveedor.idProvincia" 
                                     class="cursor-not-allowed"
                                     [idUbigeoDepartamento]="f_datosProveedor.idDepartamento.value" 
                                     classLabel="text-[11px]! h-4.5! text-gray-500"
                                     [readonly]="true"
-                                ></app-select-provincia>
+                                ></app-select-provincia>-->
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[11px]! h-4.5! text-gray-500">Distrito</label>
-                                <app-select-distrito 
+                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <app-typing [text]="proveedor?.distrito ?? '--'"></app-typing>
+                                </div>
+
+                                <!--<app-select-distrito 
                                     #distritoProveedor
                                     label="Distrito"
                                     [control]="f_datosProveedor.idDistrito" 
@@ -1019,7 +1046,7 @@
                                     [idUbigeoProvincia]="f_datosProveedor.idProvincia.value" 
                                     classLabel="text-[11px]! h-4.5! text-gray-500" 
                                     [readonly]="true"
-                                ></app-select-distrito>
+                                ></app-select-distrito>-->
                             </div>
                         </div>
                         

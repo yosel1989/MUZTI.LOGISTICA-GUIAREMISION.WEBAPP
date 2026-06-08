@@ -1,5 +1,9 @@
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
+import { ConductorDto } from "@features/conductor/models/conductor.model";
+import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
+import { ProveedorDto } from "@features/proveedor/models/proveedor";
+import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
@@ -155,10 +159,10 @@ export interface GuiaRemisionDto {
   id: number;
   uuid: string;
   ruc: string;
-  remitente: EstablecimientoDTO;
   entidad_remitente: string;
   numero_documento_remitente: string;
   numero_guia: string;
+  serie_correlativo: string;
   serie: string;
   numero: string;
   establecimiento_remitente: string;
@@ -189,6 +193,14 @@ export interface GuiaRemisionDto {
   area: string | null;
   area_id: string | null;
   acciones: string;
+  observacion: string | null;
+
+  empresa: EmpresaDTO;
+  remitente: EstablecimientoDTO;
+  destinatario: EstablecimientoDTO;
+  datos_envio: GuiaRemisionDatosEnvioDto;
+  proveedor: ProveedorDto | null;
+  productos: GuiaRemisionDetalleDto[];
 }
 
 
@@ -198,6 +210,7 @@ export interface GuiaRemisionDetalleDto{
   guia_remision_id: number;
   cantidad: number;
   unidad_medida_id: number;
+  unidad_medida: string;
   codigo_um: string | null;
   descripcion_um: string;
   codigo: string | null;
@@ -206,4 +219,20 @@ export interface GuiaRemisionDetalleDto{
   gtin: string | null;
   codigo_subnacional: string | null;
   bien_normalizado: boolean;
+}
+
+export interface GuiaRemisionDatosEnvioDto{
+  datos_envio_id: number;
+  motivo_envio: string | 'PRIVADO' | 'PUBLICO';
+  fecha_envio: string;
+  peso_bruto: number;
+  unidad_medida_id: number;
+  unidad_medida: string;
+  codigo_um: string;
+  ruc_empresa_currier: string | null;
+  razon_social_currier: string | null;
+  registro_mtc_currier: string | null;
+  indicador_vehiculo_conductor: boolean;
+  conductor: ConductorDto[];
+  unidad_transporte: UnidadTransporteDto[];
 }

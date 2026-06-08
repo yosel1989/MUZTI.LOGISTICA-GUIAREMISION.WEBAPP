@@ -28,7 +28,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { AlertService } from 'app/core/services/alert.service';
-import { ConductorApiService } from 'app/features/conductor/services/conductor-api.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
@@ -68,9 +67,6 @@ import { TypingComponent } from '@features/shared/components/typing/typing';
     MessageModule,
     ConfirmDialogModule,
     CheckboxModule,
-    SelectDepartamentoComponent,
-    SelectProvinciaComponent,
-    SelectDistritoComponent,
     OnlyNumberDirective,
     SelectUnidadMedidaComponent,
     TypingComponent
@@ -120,7 +116,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     formDatosEnvio: FormGroup = new FormGroup({});
-    formDatosProveedor: FormGroup = new FormGroup({});
     submitted = signal(false);
 
     grossWeightUnits: GrossWeightUnit[] = FAKE_GROSS_WEIGHT_UNIT;
@@ -149,7 +144,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       private cdr: ChangeDetectorRef,
       private confirmationService: ConfirmationService,
       private alertService: AlertService,
-      private conductorService: ConductorApiService,
       private dialogService: DialogService
     ){
 
@@ -197,17 +191,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
 
-        this.formDatosProveedor = new FormGroup({
-          proveedor_id: new FormControl(null),
-          tipo_documento_proveedor: new FormControl(null),
-          numero_documento_proveedor: new FormControl(null),
-          nombre_rsocial_proveedor: new FormControl(null),
-          direccion_proveedor: new FormControl(null),
-          idDepartamento : new FormControl(null),
-          idProvincia : new FormControl(null),
-          idDistrito : new FormControl(null)
-        });
-
         this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
 
         effect(() => {
@@ -220,10 +203,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             this.handlerValueDestinatario(destinatario);
         });
 
-        effect(() => {
+        /*effect(() => {
             const proveedor = this._proveedor();
             this.handlerValueProveedor(proveedor);
-        });
+        });*/
 
         effect(() => {
             const motivoTraslado = this._motivoTraslado();
@@ -296,11 +279,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this.formDatosEnvio.controls;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get f_datosProveedor(): any{
-      return this.formDatosProveedor.controls;
-    }
-
     get conductores(): ConductorDto[] { 
       return this._conductores(); 
     }
@@ -366,14 +344,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_vacio_adicional.value
         },
         proveedor: {
-          proveedor_id: this.f_datosProveedor.proveedor_id.value,
-          tipo_documento_proveedor: this.f_datosProveedor.tipo_documento_proveedor.value,
-          numero_documento_proveedor: this.f_datosProveedor.numero_documento_proveedor.value,
-          nombre_rsocial_proveedor: this.f_datosProveedor.nombre_rsocial_proveedor.value,
-          direccion_proveedor: this.f_datosProveedor.direccion_proveedor.value,
-          idDepartamento : this.f_datosProveedor.idDepartamento.value,
-          idProvincia : this.f_datosProveedor.idProvincia.value,
-          idDistrito : this.f_datosProveedor.idDistrito.value
+          proveedor_id: this._proveedor()?.id
         }
       };
     }
@@ -395,28 +366,17 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     get valid(): boolean{
-      return this.formDatosEnvio.valid && this.formDatosProveedor.valid;
+      return this.formDatosEnvio.valid;
     }
 
     get invalid(): boolean{
-      return this.formDatosEnvio.invalid || this.formDatosProveedor.invalid;
+      return this.formDatosEnvio.invalid;
     }
 
     get isInvalid(): boolean{
       if(this.formDatosEnvio.invalid){
         this.alertService.showToast({
           title: "Faltan datos por completar en Datos Envio",
-          icon: "error",
-          timer: 4000,
-          showCloseButton: true,
-          timerProgressBar: true
-        });
-        return true;
-      }
-
-      if(this.formDatosProveedor.invalid){
-        this.alertService.showToast({
-          title: "Faltan datos por completar en Proveedor",
           icon: "error",
           timer: 4000,
           showCloseButton: true,
@@ -532,17 +492,15 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return false;
         }
 
-        console.log(this.mostrarProveedor() , this.formDatosProveedor.invalid);
-        if(this.mostrarProveedor() && this.formDatosProveedor.invalid){
+        if(this.mostrarProveedor() && !this._proveedor()){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de Datos del proveedor.",
+                title: "Se tiene que seleccionar el proveedor",
                 showCloseButton: true,
                 timerProgressBar: true,
                 timer: 4000
             });
-            console.log('invalid form datos-proveedor', this.formDatosProveedor);
             return false;
         }
 
@@ -552,7 +510,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     evtOnReset(): void {
         this.submitted.set(false);
         this.formDatosEnvio.reset();
-        this.formDatosProveedor.reset();
+        this._proveedor.set(null);
     }
 
 
@@ -694,31 +652,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this._vehiculos.set([]);
     }
 
-    resetProveedor(): void {
-      this.formDatosProveedor.reset();
-
-      ['proveedor_id', 'tipo_documento_proveedor', 'numero_documento_proveedor', 'nombre_rsocial_proveedor']
-        .forEach(ctrlName => {
-          const ctrl = this.formDatosProveedor.get(ctrlName);
-          ctrl?.clearValidators();
-          ctrl?.updateValueAndValidity();
-        });
-
-      this.formDatosEnvio.markAsUntouched();
-      //this.cdr.detectChanges();
-    }
-
-    enableValidatorProveedor(): void {
-      ['proveedor_id', 'tipo_documento_proveedor', 'numero_documento_proveedor', 'nombre_rsocial_proveedor']
-        .forEach(ctrlName => {
-          const ctrl = this.formDatosProveedor.get(ctrlName);
-          ctrl?.addValidators(Validators.required);
-          ctrl?.updateValueAndValidity();
-        });
-      //this.formDatosProveedor.markAllAsTouched();
-      //this.cdr.detectChanges();
-    }
-
 
     // handlers
 
@@ -763,35 +696,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         }
     }
 
-    handlerValueProveedor(item: ProveedorDto | null): void{
-        if(!item){
-            return;
-        }
-
-        this.formDatosProveedor.patchValue({
-          proveedor_id: item.id,
-          tipo_documento_proveedor: item.tipo_documento,
-          numero_documento_proveedor: item.numero_documento,
-          nombre_rsocial_proveedor: item.razon_social,
-          direccion_proveedor: item.direccion,
-          idDepartamento : item.ubigeo_id?.substring(0,2)
-        });
-        this.provinciaProveedor!.valueEdit = item.ubigeo_id!.substring(0,4);
-        const subProvincia1 = this.provinciaProveedor?.isLoaded.subscribe(() => {
-            this.formDatosProveedor.get('idProvincia')?.setValue(item.ubigeo_id.substring(0,4));
-        });
-        this.distritoProveedor!.valueEdit = item.ubigeo_id;
-        const subDistrito1 = this.distritoProveedor?.isLoaded.subscribe(() => {
-            this.formDatosProveedor.get('idDistrito')?.setValue(item.ubigeo_id);
-        });
-
-        subProvincia1?.unsubscribe();
-        subDistrito1?.unsubscribe();
-    }
-
     handlerValueMotivoTraslado(item: SunatMotivoTrasladoDto | undefined): void{
       this.mostrarProveedor.set(false);
-      this.resetProveedor();
+      this._proveedor.set(null);
 
       if(!item){
         return;
@@ -804,7 +711,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
       if( motivosTraslado.includes(item.codigo_sunat) ){
         this.mostrarProveedor.set(true);
-        this.enableValidatorProveedor();
       }
     }
 

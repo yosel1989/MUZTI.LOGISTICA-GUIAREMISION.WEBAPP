@@ -556,14 +556,6 @@
                 <span class="font-semibold text-2xl block mb-2 mt-6 text-center">{{ message.header }}</span>
                 <p class="mb-0">{{ message.message }}</p>
 
-                <signature-pad
-                    [options]="signaturePadOptions"
-                    (drawStart)="drawStart($event)"
-                    (drawEnd)="drawComplete($event)"
-                    (drawClear)="drawCleared()" 
-                    class="bg-white!"
-                />
-
                 @if(showInputAlert()){
                     <div class="w-full mt-6">
                         <textarea pSize="small" pTextarea rows="6" fluid [formControl]="ctrlDescripcion" placeholder="Ingresar motivo o descripción"></textarea>

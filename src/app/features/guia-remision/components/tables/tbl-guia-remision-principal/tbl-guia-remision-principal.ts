@@ -11,8 +11,7 @@ import {
   ViewChild,
   ElementRef,
   signal,
-  inject,
-  viewChild,
+  inject
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -55,7 +54,6 @@ import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/gui
 import { TextareaModule } from 'primeng/textarea';
 import { Router } from '@angular/router';
 import { Menu, MenuModule } from 'primeng/menu';
-import { SignaturePadComponent, NgSignaturePadOptions } from '@almothafar/angular-signature-pad';
 import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
 
 @Component({
@@ -85,8 +83,7 @@ import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsua
     DragScrollDirective,
     AvatarModule,
     TextareaModule,
-    MenuModule,
-    SignaturePadComponent
+    MenuModule
   ],
   providers: [DialogService, ConfirmationService],
 })
@@ -96,13 +93,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
   
-  public signaturePad = viewChild(SignaturePadComponent);
-  public signaturePadOptions: NgSignaturePadOptions = { // passed through to szimek/signature_pad constructor
-    minWidth: 1,
-    canvasWidth: 300,
-    canvasHeight: 150,
-    dotSize: 1
-  };
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
   @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
   @Output() OnShowFilter: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -190,9 +180,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    this.signaturePad()?.set('minWidth', 5); // set szimek/signature_pad options at runtime
-    this.signaturePad()?.clear();
-
 
     this.filter?.filters.subscribe((res: ColumnsFilterDto[]) => {
       this.filters = res;
@@ -363,8 +350,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   evtOnShowInfo(): void {
     this.ref = this.dialogService.open(MdlPrevisualizarGuiaRemisionComponent, {
-      width: '1200px',
-      height: '90vh',
+      width: '90%',
+      height: '90%',
       closable: true,
       maximizable: true,
       modal: true,
@@ -807,24 +794,5 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     }
   }
 
-
-  //
-
-  drawComplete(event: MouseEvent | Touch) {
-    // will be notified of szimek/signature_pad's onEnd event
-    console.log('Completed drawing', event);
-    console.log(this.signaturePad()?.toDataURL());
-    console.log(this.signaturePad()?.getCanvas());
-  }
-
-  drawStart(event: MouseEvent | Touch) {
-    // will be notified of szimek/signature_pad's onBegin event
-    console.log('Start drawing', event);
-  }
-
-  drawCleared() {
-    // will be notified when clear() is called on the pad
-    console.log('Pad cleared');
-  }
 
 }
