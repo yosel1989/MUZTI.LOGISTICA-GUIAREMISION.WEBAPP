@@ -30,24 +30,22 @@
                             <label for="" class="text-[14px] font-semibold text-primary uppercase">TIPO DE TRANSPORTE:</label>
                             <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-3.25!" pTooltip="Privado: Cuando el transporte de bienes es realizado por el propietario con vehículos propios. Público: Cuando se contrata a un transportista para que traslade los bienes." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
                             <div class="flex flex-row gap-1">
-                                <input #privado type="radio" name="tipo_transporte" formControlName="tipo_transporte" value="PUBLICO" class="hidden">
-                                <input #publico type="radio" name="tipo_transporte" formControlName="tipo_transporte" value="PRIVADO" class="hidden">
                                 <p-button 
                                     size="small" 
                                     class="text-xs! font-normal!" 
-                                    [styleClass]=" esTransportePrivado ? 'bg-primary-500! text-primary-100!' : 'bg-gray-200!'"
-                                    (click)="formDatosEnvio.get('tipo_transporte')?.setValue('PRIVADO')"
+                                    [styleClass]=" tipoTransporte === 'PRIVADO' ? 'bg-primary-500! text-primary-100!' : 'bg-gray-200!'"
+                                    (click)="setTipoTransporte('PRIVADO')"
                                     label="Privado" 
                                     [outlined]="true"
-                                    [severity]="esTransportePrivado ? 'primary' : 'secondary'"></p-button>
+                                    [severity]="tipoTransporte === 'PRIVADO' ? 'primary' : 'secondary'"></p-button>
                                 <p-button 
                                     size="small" 
                                     class="text-xs! font-normal!"
-                                    [styleClass]="!esTransportePrivado ? 'bg-primary-500! text-primary-100!' : 'bg-gray-200!'"
-                                    (click)="formDatosEnvio.get('tipo_transporte')?.setValue('PUBLICO')"
+                                    [styleClass]="tipoTransporte === 'PUBLICO' ? 'bg-primary-500! text-primary-100!' : 'bg-gray-200!'"
+                                    (click)="setTipoTransporte('PUBLICO')"
                                     label="Público" 
                                     [outlined]="true"
-                                    [severity]="!esTransportePrivado ? 'primary' : 'secondary'"></p-button>
+                                    [severity]="tipoTransporte === 'PUBLICO' ? 'primary' : 'secondary'"></p-button>
                             </div>
                         </div>
                     }
@@ -300,7 +298,7 @@
                     }
 
                     @if(
-                        (f_datosEnvio.tipo_transporte.value === 'PRIVADO' && 
+                        (tipoTransporte === 'PRIVADO' && 
                         !f_datosEnvio.traslado_vehiculo_categoria.value) || 
                         f_datosEnvio.registrar_vehiculos_conductores.value
                     ){
@@ -329,7 +327,7 @@
                                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                                                         }-->
                                                     </div>
-                                                    @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+                                                    @if(tipoTransporte === 'PUBLICO'){
                                                         <div class="flex flex-col">
                                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">TUCE o Cert. de habilitación vehicular *</label>
                                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
@@ -433,7 +431,7 @@
                     }
                     
                     @if(
-                        (f_datosEnvio.tipo_transporte.value === 'PRIVADO' && 
+                        ( tipoTransporte === 'PRIVADO' && 
                         !f_datosEnvio.traslado_vehiculo_categoria.value) || 
                         f_datosEnvio.registrar_vehiculos_conductores.value
                     ){
@@ -710,14 +708,14 @@
                     }
 
                     @if(
-                        f_datosEnvio.tipo_transporte.value === 'PUBLICO' && 
+                        tipoTransporte === 'PUBLICO' && 
                         !f_datosEnvio.traslado_vehiculo_categoria.value
                     ){
                         <div class="flex flex-col gap-4">
 
                             <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del transportista</label>
 
-                            @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
+                            @if(tipoTransporte === 'PUBLICO'){
                                 <div class="flex flex-wrap gap-x-2">
                                     <p-button 
                                         [outlined]="true"
@@ -822,7 +820,7 @@
                         <div class="flex flex-col">
 
                             @if(
-                                f_datosEnvio.tipo_transporte.value === 'PRIVADO' || 
+                                tipoTransporte === 'PRIVADO' || 
                                 tipoGuia === 'TRANSPORTISTA'
                             ){
                                 <div class="grid gri-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-2 gap-y-3 mt-6">

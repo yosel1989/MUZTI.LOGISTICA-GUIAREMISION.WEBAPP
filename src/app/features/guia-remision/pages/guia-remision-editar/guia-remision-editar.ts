@@ -28,7 +28,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
 import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
-import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionDetalleDto, GuiaRemisionDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_EnviarGuiaRemisionResponseDto, GuiaRemisionDetalleDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
@@ -49,7 +49,6 @@ import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-re
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
-import { MdlEditarEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
 
 @Component({
   selector: 'page-guia-remision-editar',
@@ -339,9 +338,14 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
                 fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
+                fecha_entrega_transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_entrega_transportista ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_entrega_transportista, 'yyyy-MM-dd', 'en-US') : null,
                 peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
                 unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_medida_id,
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
+
+                traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.f_datosEnvio.traslado_vehiculo_categoria,
+
+
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
@@ -382,7 +386,10 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
                     codigo_subnacional: x.codigo_subnacional,
                     bien_normalizado: x.bien_normalizado
                 };
-            })
+            }),
+
+            transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
+            transportista_id: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista.id
             
         }
     }

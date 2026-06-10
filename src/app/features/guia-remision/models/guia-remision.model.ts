@@ -3,8 +3,8 @@ import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
+import { TransportistaDto } from "@features/transportista/models/transportista";
 import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
-import { TransportistaDto } from '@features/Transportista/models/Transportista';
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
@@ -86,9 +86,13 @@ export interface GR_ProveedorRequestDto {
 export interface GR_DatosEnvioRequestDto {
   motivo_envio: string; 
   fecha_envio: string | null; 
+  fecha_entrega_transportista: string | null; 
   peso_bruto: string; 
   unidad_medida_id: number; 
   codigo_um: string; 
+
+  traslado_vehiculo_categoria: boolean;
+
   ruc_empresa_currier: string | null;
   razon_social_currier: string | null;
   registro_mtc_currier: string | null;

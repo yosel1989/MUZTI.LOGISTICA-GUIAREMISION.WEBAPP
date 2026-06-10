@@ -19,6 +19,7 @@ export interface ConductorDto{
     id_estado: number;
     ld_estado: boolean;
     ld_update: boolean;
+    job_title: string;
 }
 
 export interface ConductorByNumeroDocumento{

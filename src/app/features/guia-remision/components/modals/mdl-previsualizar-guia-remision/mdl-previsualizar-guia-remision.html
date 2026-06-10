@@ -135,33 +135,49 @@
             </div>
         </div>
 
-        <div>
-            <p class="block font-bold text-start ps-3 text-primary">DATOS DEL CONDUCTOR</p>   
-            <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
-                <p class="block font-semibold text-start">Principal:</p>
-                <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ps-3">
-                    <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">45846461</span></p></div>
-                    <div><p><span class="font-semibold">N° de licencia:</span><span class="ps-3">L234234234</span></p></div>
-                    <div><p><span class="font-semibold">Nombres y apellidos:</span><span class="ps-3">YOSEL EDWIN - AGUIRRE BALBIN</span></p></div>
-                </div> 
-            </div>
-        </div>
+        @if(localData()?.datos_envio?.conductor?.length ){
 
-        <div>
-            <p class="block font-bold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
-            <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
-                <p class="block font-semibold text-start">Principal:</p>
-                <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">ERT345</span></p>   
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">DATOS DEL CONDUCTOR</p>   
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
+                    @for(conductor of localData()?.datos_envio?.conductor; track conductor.id){
+                        <div>
+                            <p class="block font-semibold text-start">{{ conductor.job_title }}:</p>
+                            <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ps-3">
+                                <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">{{ conductor.numero_documento }}</span></p></div>
+                                <div><p><span class="font-semibold">N° de licencia:</span><span class="ps-3">{{ conductor.licencia }}</span></p></div>
+                                <div><p><span class="font-semibold">Nombres y apellidos:</span><span class="ps-3">{{ conductor.nombres }} - {{ conductor.apellidos }}</span></p></div>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
+
+        }
+
+        @if(localData()?.datos_envio?.unidad_transporte?.length ){
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
+                    @for(unidad_transporte of localData()?.datos_envio?.unidad_transporte; track unidad_transporte.id){
+                        <div>
+                            <p class="block font-semibold text-start">{{ unidad_transporte.job_title }}:</p>
+                            <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">{{ unidad_transporte.placa }}</span></p> 
+                        </div>
+                    }
+                </div>
+            </div>
+        }
 
         @if(localData()?.proveedor){
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL PROVEEDOR</p>   
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
                     <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                        <div><p><span class="font-semibold">Tipo de documento:</span><span class="ps-3">{{ localData()?.proveedor?.tipo_documento }}</span></p></div>
                         <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">{{ localData()?.proveedor?.numero_documento }}</span></p></div>
                         <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.proveedor?.razon_social }}</span></p></div>
+                        <div><p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.proveedor?.direccion }}, {{ localData()?.proveedor?.departamento }} - {{ localData()?.proveedor?.provincia }} - {{ localData()?.proveedor?.distrito }}</span></p></div>
                     </div>   
                 </div>
             </div>

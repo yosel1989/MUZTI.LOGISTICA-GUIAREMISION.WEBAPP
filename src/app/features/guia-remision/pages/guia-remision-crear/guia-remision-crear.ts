@@ -269,6 +269,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
+
+
+        console.log('datos_envio', this.tabDatosEnvioProveedor?.data);
+
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
@@ -296,16 +300,21 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             proveedor: null,
             proveedor_id: !this.tabDatosEnvioProveedor?.mostrarProveedor() ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
 
-            transportista: (!this.tabDatosEnvioProveedor?.esTransportePrivado && this.selectTipoGuiaComponent?.tipoGuiaSelected === this.tipoGuia.remitente) ? this.tabDatosEnvioProveedor?.transportista : null,
-            transportista_id: (!this.tabDatosEnvioProveedor?.esTransportePrivado && this.selectTipoGuiaComponent?.tipoGuiaSelected === this.tipoGuia.remitente) ? this.tabDatosEnvioProveedor?.transportista?.id : null,
+            transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
+            transportista_id: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista?.id,
 
             datos_envio: {
 
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
                 fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
+                fecha_entrega_transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_entrega_transportista ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_entrega_transportista, 'yyyy-MM-dd', 'en-US') : null,
                 peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
                 unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_medida_id,
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
+                
+                traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria,
+                
+                
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
@@ -376,6 +385,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return;
         if(!this.tabOrigenDestino?.evtOnSubmit()) return;
         if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return;
+
+        console.log('request guia de remisión', this.request);
 
         this.loadingSubmit.next(true);
         this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente!.selected()!.ruc! ).subscribe({

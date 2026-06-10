@@ -46,7 +46,7 @@ import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo
 import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida';
 import { TypingComponent } from '@features/shared/components/typing/typing';
 import { MdlListaTransportistaComponent } from '@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista';
-import { TransportistaDto } from '@features/Transportista/models/Transportista';
+import { TransportistaDto } from '@features/transportista/models/transportista';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -88,13 +88,14 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() tipoGuia: string | undefined = TipoGuiaRemisionEnum.remitente;
     @Input() emisora: EmpresaToSelectDto | null = null;
 
-    private _transportista = signal<TransportistaDto | null>(null);
     private _remitente = signal<EstablecimientoDTO | null>(null);
     private _destinatario = signal<EstablecimientoDTO | null>(null);
-    private _proveedor = signal<ProveedorDto | null>(null);
     private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
     private _conductores = signal<ConductorDto[]>([]);
     private _vehiculos = signal<UnidadTransporteDto[]>([]);
+    private _tipoTransporte = signal<string | 'PRIVADO' | 'PUBLICO'>('PRIVADO');
+    private _transportista = signal<TransportistaDto | null>(null);
+    private _proveedor = signal<ProveedorDto | null>(null);
 
     @Input() set remitente(value: EstablecimientoDTO | null) {
         if (this._remitente() !== value) {
@@ -121,6 +122,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() set motivoTraslado(value: SunatMotivoTrasladoDto | undefined) {
         if (this._motivoTraslado() !== value) {
             this._motivoTraslado.set(value);
+        }
+    }
+
+    @Input() set tipoTransporte(value: string | 'PRIVADO' | 'PUBLICO' | undefined) {
+        if (this._tipoTransporte() !== value) {
+            this._tipoTransporte.set(value!);
         }
     }
 
@@ -158,7 +165,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ){
 
         this.formDatosEnvio = this.fb.group({
-          tipo_transporte: new FormControl('PRIVADO', Validators.required),
+          //tipo_transporte: new FormControl('PRIVADO', Validators.required),
           fecha_inicio_traslado: new FormControl(new Date(), Validators.required),
           fecha_entrega_transportista: new FormControl(null),
           descripcion_traslado: new FormControl(null),
@@ -213,15 +220,16 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             this.handlerValueDestinatario(destinatario);
         });
 
-        /*effect(() => {
-            const proveedor = this._proveedor();
-            this.handlerValueProveedor(proveedor);
-        });*/
-
         effect(() => {
             const motivoTraslado = this._motivoTraslado();
             this.handlerValueMotivoTraslado(motivoTraslado);
         });
+
+        effect(()=>{
+          const tipoTransporte = this._tipoTransporte();
+          this.resetDatosEnvio(this.tipoGuia!, tipoTransporte);
+        })
+
 
         this.puertos.set([
             { value: 'PUB', label: 'PUB - Bayóvar' },
@@ -301,11 +309,19 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this._transportista(); 
     }
 
+    get tipoTransporte(): string | 'PRIVATE' | 'PUBLICO' | undefined { 
+      return this._tipoTransporte(); 
+    }
+
+    setTipoTransporte( value:  string | 'PRIVATE' | 'PUBLICO'): void{ 
+      this._tipoTransporte.set(value);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get data(): any{
       return {
         datosEnvio: {
-          tipo_transporte: this.f_datosEnvio.tipo_transporte.value,
+          tipo_transporte: this._tipoTransporte(),
           fecha_inicio_traslado: this.f_datosEnvio.fecha_inicio_traslado.value,
           fecha_entrega_transportista: this.f_datosEnvio.fecha_entrega_transportista.value,
           descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
@@ -319,10 +335,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           numero_documento_tercero: this.f_datosEnvio.numero_documento_tercero.value,
           nombre_rsocial_tercero: this.f_datosEnvio.nombre_rsocial_tercero.value,
 
-          ruc_transportista: this.f_datosEnvio.ruc_transportista.value,
+          /*ruc_transportista: this.f_datosEnvio.ruc_transportista.value,
           rsocial_transportista: this.f_datosEnvio.rsocial_transportista.value,
           num_mtc_transportista: this.f_datosEnvio.num_mtc_transportista.value,
-          email_transportista: this.f_datosEnvio.email_transportista.value,
+          email_transportista: this.f_datosEnvio.email_transportista.value,*/
 
           traslado_vehiculo_categoria: this.f_datosEnvio.traslado_vehiculo_categoria.value,
           traslado_vehiculo_categoria_placa_vehiculo: this.f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo.value,
@@ -367,7 +383,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     get esTransportePrivado(){
-      return this.f_datosEnvio.tipo_transporte.value === 'PRIVADO';
+      return this._tipoTransporte() === 'PRIVADO';
     }
 
     get tieneDatosContenedor(): boolean{
@@ -415,10 +431,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     ngOnInit(): void {
       this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
-
-      this.formDatosEnvio.get('tipo_transporte')?.valueChanges.subscribe((res: 'PRIVADO' | 'PUBLICO') => {
-        this.evtChangeValueTipoTransporte(res);
-      });
     }
 
     ngAfterViewInit(): void {
@@ -431,7 +443,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       if(changes['tipoGuia']){
         console.log('tipoGuia', changes['tipoGuia']);
         if(this.tipoGuia === 'TRANSPORTISTA'){
-          this.f_datosEnvio.tipo_transporte.setValue('PRIVADO');
+          this.setTipoTransporte('PRIVADO');
         }
         this.cdr.markForCheck();
       }
@@ -478,12 +490,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }, '¿Desea remover el vehículo seleccionado?', 'Confirmar la operación.');
     }
 
-    evtChangeValueTipoTransporte = (tipo: 'PRIVADO' | 'PUBLICO') => {
-
-      this.resetDatosEnvio();
-      this.cdr.markForCheck();
-    }
-
     evtChaneValueRegistrarVehiculosConductores = (value: boolean): void => {
       this._vehiculos.set([]);
       this._conductores.set([]);
@@ -521,6 +527,25 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             return false;
         }
 
+        // Validar transportista
+        if(this.tipoGuia === TipoGuiaRemisionEnum.remitente){
+          if(this.tipoTransporte === 'PUBLICO'){
+            console.log('transportista para validar', this._transportista());
+            if(!this._transportista()){
+              this.alertService.showToast({
+                  position: 'top-end',
+                  icon: "warning",
+                  title: "Tiene que seleccionar el transportista en (Datos de envío)",
+                  showCloseButton: true,
+                  timerProgressBar: true,
+                  timer: 4000
+              });
+              return false;
+            }
+
+          }
+        }
+
         return true;
     }
 
@@ -529,7 +554,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.formDatosEnvio.reset();
         this._proveedor.set(null);
     }
-
 
     evtOnShowListaUnidadTransporte(): void{
         this.modalRef = this.dialogService.open(MdlListaUnidadTransporteComponent, {
@@ -688,15 +712,93 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.subs.add(sub);
     }
 
-    resetDatosEnvio(): void{
+    resetDatosEnvio(tipoGuia: string, tipoTransporte: string | 'PRIVADO' | 'PUBLICO'): void{
+      // Quitamos los validadores de todos los controles del formulario
+      Object.keys(this.formDatosEnvio.controls).forEach(key => {
+        const ctrl = this.formDatosEnvio.get(key);
+        ctrl?.clearValidators();
+        ctrl?.updateValueAndValidity();
+      });
+
+      // Reseteamos los valores, pero dejamos descripcion, peso bruto, y unidad de medida
       this.formDatosEnvio.reset({
-        tipo_transporte: this.f_datosEnvio.tipo_transporte.value,
         descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
         peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
-        unidad_peso_bruto: this.f_datosEnvio.unidad_peso_bruto.value
+        unidad_medida_id: this.f_datosEnvio.unidad_medida_id.value,
       });
+
+      // Activamos los validadores dependiendo del tipo de guía y el tipo de transporte
+      switch(tipoGuia){
+
+        // REMITENTE
+        case TipoGuiaRemisionEnum.remitente: {
+
+          this.formDatosEnvio.get('traslado_vehiculo_categoria')?.addValidators(Validators.required);
+          this.formDatosEnvio.get('registrar_vehiculos_conductores')?.addValidators(Validators.required);
+          this.formDatosEnvio.get('peso_bruto')?.addValidators(Validators.required);
+
+          this.formDatosEnvio.patchValue({
+            traslado_vehiculo_categoria: false,
+            registrar_vehiculos_conductores: false
+          });
+
+          console.log('actualizado', this.formDatosEnvio);
+
+          // Aquí dependiendo el tipo de transporte
+          switch(tipoTransporte){
+
+            // PRIVADO
+            case 'PRIVADO': {
+              // Fecha de inicio de traslado
+              this.formDatosEnvio.get('fecha_inicio_traslado')?.addValidators(Validators.required);
+
+              break;
+            }
+
+            // PUBLICO
+            case 'PUBLICO': {
+              // Fecha de entrega al transportista
+              this.formDatosEnvio.get('fecha_entrega_transportista')?.addValidators(Validators.required);
+
+              break;
+            } 
+            default: break;
+          }
+
+          break;
+        }
+
+        // TRANSPORTISTA
+        case TipoGuiaRemisionEnum.transportista: {
+
+          // Aquí dependiendo el tipo de transporte
+          switch(tipoTransporte){
+
+            // PRIVADO
+            case 'PRIVADO': {
+
+              break;
+            } 
+            // PUBLICO
+            case 'PUBLICO': {
+
+              break;
+            } 
+            default: break;
+          }
+
+          break;
+        }
+
+        default: break;
+      }
+
+      this.formDatosEnvio.updateValueAndValidity();
+
       this._conductores.set([]);
       this._vehiculos.set([]);
+      this._proveedor.set(null);
+      this._transportista.set(null);
     }
 
 

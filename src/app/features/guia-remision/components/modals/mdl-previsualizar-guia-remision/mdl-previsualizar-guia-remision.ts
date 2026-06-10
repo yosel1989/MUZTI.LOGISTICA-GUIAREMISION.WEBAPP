@@ -30,7 +30,6 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
   private alertService = inject(AlertService);
   @Input() data!: GuiaRemisionDto;
 
-
   loading = signal(false);
   subs = new Subscription();
 
