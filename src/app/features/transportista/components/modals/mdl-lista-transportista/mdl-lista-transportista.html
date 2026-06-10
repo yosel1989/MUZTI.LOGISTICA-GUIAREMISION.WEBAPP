@@ -39,8 +39,9 @@
         selectionMode="single"
         [tableStyle]="{ 'min-width': '100px' }"
         [scrollable]="true"
-        
-        scrollDirection="horizontal"
+        [showLoader]="true"
+        [loading]="ldSelected() || ldDataById()"
+
         [metaKeySelection]="true"
         dataKey="id"
     
@@ -48,8 +49,7 @@
         [rowHover]="true"
         scrollHeight="400px"
         class="border-0! text-[12px]!"
-      
-    >
+        >
         
             <ng-template pTemplate="header" let-columns>
                     <tr>
@@ -80,12 +80,7 @@
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){
-                                    <td class="text-nowrap font-light! truncate w-[40px]" >
-                                        <p-avatar icon="pi pi-user" style="background-color: #dee9fc; color: #1a2551" />
-                                    </td>
-                                }
-                                @case('nombre'){
-                                    <td class="uppercase text-nowrap font-light! truncate" >{{ rowData[col.field] }}, {{ rowData['apellido'] }}</td>
+                                    <td class="text-nowrap font-light! truncate" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
                                 }
                                 @default {
                                     <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
@@ -100,7 +95,7 @@
                 <tr>
                     <td [colSpan]="cols.length" class="text-center!">
                         <div class="py-6">
-                            <img src="assets/media/bg/buscar-personal.png" alt="No hay datos" class="opacity-50 mx-auto w-[100px]! h-auto!">
+                            <img src="assets/media/bg/buscar-transportista.png" alt="No hay datos" class="opacity-50 mx-auto w-[100px]! h-auto!">
                             @if(ldData()){
                                 <p-progressbar mode="indeterminate" class="mx-auto! mt-3" [style]="{ height: '6px', width: '150px' }" />
                                 <span>Buscando...</span>
@@ -116,6 +111,6 @@
 
 <div class="flex gap-2 justify-end pt-6">
     <p-button (click)="evtOnClose()" size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
-    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldSelected()" [disabled]="!selected" size="small" [label]="!ldSelected() ? 'Seleccionar' : ''" severity="primary"></p-button>
+    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldDataById()" [disabled]="!selected" size="small" [label]="!ldSelected() ? 'Seleccionar' : ''" severity="primary"></p-button>
 </div>
 

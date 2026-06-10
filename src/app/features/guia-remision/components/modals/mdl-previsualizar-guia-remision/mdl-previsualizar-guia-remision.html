@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-2 text-[11px]!">
+<div class="flex flex-col gap-4 text-[11px]!">
 
     @if(loading()){
         <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-2">
@@ -43,7 +43,7 @@
     }
     @else {
 
-        <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-2">
+        <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="flex flex-col p-4 border border-gray-300 rounded-lg h-full col-span-2 text-[14px]!" >
                 <div class="text-center my-auto">
                     <p class="font-semibold">{{ localData()?.empresa?.razon_social }}</p>
@@ -53,7 +53,7 @@
             
             <div class="text-center p-4 border border-gray-300 rounded-lg h-full text-[14px]!" >
                 <p class="font-semibold text-gray-400">RUC: {{ localData()?.empresa?.ruc }}</p>
-                <p class="font-semibold">GUIA DE REMISIÓN ELECTRÓNICA</p>
+                <p class="font-semibold">GUIA DE REMISIÓN {{ localData()?.tipo_guia }} ELECTRÓNICA</p>
                 <p>N° {{ localData()?.serie_correlativo }}</p>
             </div>
         </div>
@@ -61,79 +61,82 @@
         <div>
             <p class="font-bold text-start ps-3 text-primary">DETALLE DE LA GUÍA</p>
             <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-4 border border-gray-300 rounded-lg">
-                <div><p><span class="font-semibold">Fecha Emisión:</span><span class="ps-3">{{ localData()?.fecha_emision }}</span></p></div>
-                <div><p><span class="font-semibold">Tipo de Transportista:</span><span class="ps-3">{{ localData()?.datos_envio?.motivo_envio }}</span></p></div>
+                <div><p><span class="font-semibold">Motivo traslado:</span><span class="ps-3">{{ localData()?.motivo_traslado | uppercase }}</span></p></div>
+                <div><p><span class="font-semibold">Fecha Emisión:</span><span class="ps-3">{{ localData()?.fecha_emision | date:'dd/MM/yyyy' }}</span></p></div>
                 <div><p><span class="font-semibold">Fecha Inicio Traslado:</span><span class="ps-3">{{ localData()?.datos_envio?.fecha_envio }}</span></p></div>
+                <div><p><span class="font-semibold">Tipo de Transportista:</span><span class="ps-3">{{ localData()?.datos_envio?.motivo_envio }}</span></p></div>
                 <div><p><span class="font-semibold">Und. de Medida:</span><span class="ps-3">{{ localData()?.datos_envio?.unidad_medida }}</span></p></div>
                 <div><p><span class="font-semibold">Peso Bruto:</span><span class="ps-3">{{ localData()?.datos_envio?.peso_bruto | number:'1.2-2' }}</span></p></div>
-                <div><p><span class="font-semibold">Motivo traslado:</span><span class="ps-3">{{ localData()?.motivo_traslado }}</span></p></div>
             </div>
         </div>
 
-        <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-2 ">
+        <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-6 ">
             <div>
                 <p class="font-bold text-start ps-3 text-primary">ORIGEN</p>
-                <div class="flex flex-col p-4 border border-gray-300 rounded-lg " >
-                    <p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.remitente?.direccion }} , {{ localData()?.remitente?.departamento }} - {{ localData()?.remitente?.provincia }} - {{ localData()?.remitente?.distrito }} <span class="font-semibold">({{ localData()?.remitente?.descripcion }})</span></span></p>
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-2" >
+                    <p><span class="font-semibold">Razón Social / Nombre:</span><span class="ps-3">{{ localData()?.remitente?.razon_social }}</span></p>
+                    <p><span class="font-semibold">Alias:</span><span class="ps-3">{{ localData()?.remitente?.descripcion }}</span></p>
+                    <p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.remitente?.direccion }} , {{ localData()?.remitente?.departamento }} - {{ localData()?.remitente?.provincia }} - {{ localData()?.remitente?.distrito }}</span></p>
                     <p><span class="font-semibold">RUC y Cod. de establecimiento:</span><span class="ps-3">{{ localData()?.remitente?.ruc }} - {{ localData()?.remitente?.codigo_sunat  }}</span></p>
                 </div>
             </div>
             
             <div>
-                <p class="font-semibold text-start ps-3 text-primary">DESTINO</p>
-                <div class="flex flex-col p-4 border border-gray-300 rounded-lg " >
-                    <p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.destinatario?.direccion }} , {{ localData()?.destinatario?.departamento }} - {{ localData()?.destinatario?.provincia }} - {{ localData()?.destinatario?.distrito }} <span class="font-semibold">({{ localData()?.destinatario?.descripcion }})</span></span></p>
+                <p class="font-bold text-start ps-3 text-primary">DESTINO</p>
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-2" >
+                    <p><span class="font-semibold">Razón Social / Nombre:</span><span class="ps-3">{{ localData()?.destinatario?.razon_social }}</span></p>
+                    <p><span class="font-semibold">Alias:</span><span class="ps-3">{{ localData()?.destinatario?.descripcion }}</span></p>
+                    <p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.destinatario?.direccion }} , {{ localData()?.destinatario?.departamento }} - {{ localData()?.destinatario?.provincia }} - {{ localData()?.destinatario?.distrito }}</span></p>
                     <p><span class="font-semibold">RUC y Cod. de establecimiento:</span><span class="ps-3">{{ localData()?.destinatario?.ruc }} - {{ localData()?.destinatario?.codigo_sunat  }}</span></p>
                 </div>
             </div>
-
-            <div class="col-span-2">
-                <p class="font-semibold text-start ps-3 text-primary">PRODUCTOS</p>
-                <div class="border border-gray-300 rounded-lg overflow-hidden ">
-                    <p-table
-                        [value]="localData()?.productos ?? []"
-                        [showGridlines]="true"
-                    >
-                        <ng-template pTemplate="header" let-columns>
-                            <tr class="text-nowrap">
-                                <th class="border-t-0! border-s-0! font-medium w-[40px]!">#</th>
-                                <th class="border-t-0! font-medium w-[40px]!">CANT.</th>
-                                <th class="border-t-0! font-medium w-[40px]!">UNID.</th>
-                                <th class="border-t-0! font-medium w-[40px]!">CÓDIGO</th>
-                                <th class="border-t-0! font-medium">DESCRIPCIÓN</th>
-                                <th class="border-t-0! font-medium w-[100px]! text-wrap text-center!">COD. DE PRD. SUNAT</th>
-                                <th class="border-t-0! font-medium w-[40px]!">GTIN</th>
-                                <th class="border-t-0! border-e-0! font-medium w-[50px]! text-wrap text-center!">BIEN NORMALIZADO</th>
-                            </tr>
-                        </ng-template>
-
-                        <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
-                            <tr>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="border-s-0!">{{ (rowIndex + 1).toString().padStart(2, '0') }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center!">{{ rowData['cantidad'] }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center!">{{ rowData['unidad_medida'] }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" >{{ rowData['codigo'] }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['descripcion'] }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['codigo_sunat'] }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['gtin'] }}</td>
-                                <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center! border-e-0!">{{ rowData['bien_normlizado'] ? 'NO' : 'SI' }}</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </div>
-            </div>
-            
         </div>
 
         <div>
-            <p class="block font-semibold text-start ps-3 text-primary">OBSERVACIONES</p>
+            <p class="font-bold text-start ps-3 text-primary">PRODUCTOS</p>
+            <div class="border border-gray-300 rounded-lg overflow-hidden ">
+                <p-table
+                    [value]="localData()?.productos ?? []"
+                    [showGridlines]="true"
+                >
+                    <ng-template pTemplate="header" let-columns>
+                        <tr class="text-nowrap">
+                            <th class="border-t-0! border-s-0! font-medium w-[40px]!">#</th>
+                            <th class="border-t-0! font-medium w-[40px]!">CANT.</th>
+                            <th class="border-t-0! font-medium w-[40px]!">UNID.</th>
+                            <th class="border-t-0! font-medium w-[40px]!">CÓDIGO</th>
+                            <th class="border-t-0! font-medium">DESCRIPCIÓN</th>
+                            <th class="border-t-0! font-medium w-[100px]! text-wrap text-center!">COD. DE PRD. SUNAT</th>
+                            <th class="border-t-0! font-medium w-[40px]!">GTIN</th>
+                            <th class="border-t-0! border-e-0! font-medium w-[50px]! text-wrap text-center!">BIEN NORMALIZADO</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr class="odd:bg-gray-100!">
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="border-s-0! font-semibold">{{ (rowIndex + 1).toString().padStart(2, '0') }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center!">{{ rowData['cantidad'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center!">{{ rowData['unidad_medida'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" >{{ rowData['codigo'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['descripcion'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['codigo_sunat'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['gtin'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center! border-e-0!">{{ rowData['bien_normlizado'] ? 'NO' : 'SI' }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div>
+            <p class="block font-bold text-start ps-3 text-primary">OBSERVACIONES</p>
             <div class="text-start p-4 border border-gray-300 rounded-lg " >
                 <p>{{ localData()?.observacion }}</p>
             </div>
         </div>
 
         <div>
-            <p class="block font-semibold text-start ps-3 text-primary">DATOS DEL CONDUCTOR</p>   
+            <p class="block font-bold text-start ps-3 text-primary">DATOS DEL CONDUCTOR</p>   
             <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
                 <p class="block font-semibold text-start">Principal:</p>
                 <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ps-3">
@@ -145,22 +148,23 @@
         </div>
 
         <div>
-            <p class="block font-semibold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
+            <p class="block font-bold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
             <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
                 <p class="block font-semibold text-start">Principal:</p>
                 <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">ERT345</span></p>   
             </div>
         </div>
 
-        <div>
-            <p class="block font-semibold text-start ps-3 text-primary">DATOS DEL PROVEEDOR</p>   
-            <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
-                <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
-                    <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">{{ localData()?.proveedor?.numero_documento }}</span></p></div>
-                    <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.proveedor?.razon_social }}</span></p></div>
-                </div>   
+        @if(localData()?.proveedor){
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">DATOS DEL PROVEEDOR</p>   
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
+                    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                        <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">{{ localData()?.proveedor?.numero_documento }}</span></p></div>
+                        <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.proveedor?.razon_social }}</span></p></div>
+                    </div>   
+                </div>
             </div>
-        </div>
-
+        }
     }
 </div>

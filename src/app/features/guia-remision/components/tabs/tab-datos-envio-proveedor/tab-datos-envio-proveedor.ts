@@ -45,6 +45,8 @@ import { EstablecimientoDTO } from '@features/establecimiento/models/establecimi
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida';
 import { TypingComponent } from '@features/shared/components/typing/typing';
+import { MdlListaTransportistaComponent } from '@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista';
+import { TransportistaDto } from '@features/Transportista/models/Transportista';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -86,6 +88,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() tipoGuia: string | undefined = TipoGuiaRemisionEnum.remitente;
     @Input() emisora: EmpresaToSelectDto | null = null;
 
+    private _transportista = signal<TransportistaDto | null>(null);
     private _remitente = signal<EstablecimientoDTO | null>(null);
     private _destinatario = signal<EstablecimientoDTO | null>(null);
     private _proveedor = signal<ProveedorDto | null>(null);
@@ -106,6 +109,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() set proveedor(value: ProveedorDto | null) {
         if (this._proveedor() !== value) {
             this._proveedor.set(value);
+        }
+    }
+
+    @Input() set transportista(value: TransportistaDto | null) {
+        if (this._transportista() !== value) {
+            this._transportista.set(value);
         }
     }
 
@@ -134,6 +143,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
 
     mostrarProveedor = signal(false);
+    mostrarTransportista = signal(false);
     puertos = signal<{value: string, label: string}[]>([]);
     aereopuertos = signal<{value: string, label: string}[]>([]);
 
@@ -166,10 +176,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           numero_documento_tercero: new FormControl(null),
           nombre_rsocial_tercero: new FormControl(null),
 
-          ruc_transportista: new FormControl(null),
-          rsocial_transportista: new FormControl(null),
-          num_mtc_transportista: new FormControl(null),
-          email_transportista: new FormControl(null),
+          //ruc_transportista: new FormControl(null),
+          //rsocial_transportista: new FormControl(null),
+          //num_mtc_transportista: new FormControl(null),
+          //email_transportista: new FormControl(null),
 
           traslado_vehiculo_categoria: new FormControl(false),
           traslado_vehiculo_categoria_placa_vehiculo: new FormControl(null),
@@ -287,6 +297,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this._vehiculos(); 
     }
 
+    get transportista(): TransportistaDto | null { 
+      return this._transportista(); 
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get data(): any{
       return {
@@ -345,6 +359,9 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         },
         proveedor: {
           proveedor_id: this._proveedor()?.id
+        },
+        transportista: {
+          transportista_id: this._transportista()?.id
         }
       };
     }
@@ -638,7 +655,37 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     evtOnShowListaTransportista(): void{
-      
+      this.modalRef = this.dialogService.open(MdlListaTransportistaComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Lista de transportistas registrados`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+              'padding': "0 !important"
+            },
+            appendTo: 'body'
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaTransportistaComponent) => {
+            const sub2 = cmp?.OnSelect.subscribe(( t: TransportistaDto) => {
+                this._transportista.set(t);
+                this.modalRef?.close();
+            });
+
+            const sub3 = cmp?.OnClose.subscribe(() => {
+            this.modalRef?.close();
+        });
+            
+            this.subs.add(sub2);
+            this.subs.add(sub3);
+        });
+
+        this.subs.add(sub);
     }
 
     resetDatosEnvio(): void{

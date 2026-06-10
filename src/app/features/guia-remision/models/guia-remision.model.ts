@@ -4,6 +4,7 @@ import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
+import { TransportistaDto } from '@features/Transportista/models/Transportista';
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
@@ -25,6 +26,9 @@ export interface GuiaRemisionRemitenteRequestDto {
 
   proveedor: GR_ProveedorRequestDto | null;
   proveedor_id: number | null;
+
+  transportista: TransportistaDto | null | undefined;
+  transportista_id: number | null | undefined;
 
   datos_envio: GR_DatosEnvioRequestDto;
 

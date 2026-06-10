@@ -22,6 +22,8 @@ import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
 import { RegistrarTransportistaRequestDto } from '@features/transportista/models/transportista';
 import { TransportistaApiService } from '@features/transportista/services/transportista-api.service';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
+import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
 
 @Component({
   selector: 'app-mdl-registrar-transportista',
@@ -41,7 +43,8 @@ import { TransportistaApiService } from '@features/transportista/services/transp
     SelectDistritoComponent,
     OnlyNumberDirective,
     OnlyUpperDirective,
-    DividerModule
+    DividerModule,
+    SelectTipoDocumentoComponent
   ],
   templateUrl: './mdl-registrar-transportista.component.html',
   styleUrl: './mdl-registrar-transportista.component.scss',
@@ -73,7 +76,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
 
   ngOnInit(): void {
     this.frm = new FormGroup({
-      tipo_documento: new FormControl('RUC', [Validators.required]),
+      tipo_documento_id: new FormControl({value: 4, disabled: true}, [Validators.required]),
       numero_documento: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       departamento: new FormControl(null, Validators.required),
@@ -108,7 +111,7 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
     const form = this.frm.value;
 
     return {
-      tipo_documento: form.tipo_documento,
+      tipo_documento_id: form.tipo_documento_id,
       numero_documento: form.numero_documento,
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
@@ -132,12 +135,10 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
         message: 'Confirmar la operación.',
         accept: () => {
 
-            this.frm.disable();
             this.ldSubmit.set(true);
             
             const subs = this.api.registrar(this.request).subscribe({
               next: () => {
-                this.frm.enable();
                 this.ldSubmit.set(false);
 
                 this.alertService.showToast({
@@ -152,7 +153,6 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.frm.enable();
                 this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
@@ -179,6 +179,16 @@ export class MdlRegistrarTransportistaComponent implements OnInit, AfterViewInit
 
   evtOnClose(): void{
     this.OnCanceled.emit(true);
+  }
+
+  evtSelectedChangeTipoDocumento(evt: TipoDocumentoDTO | undefined){
+    this.frm.get('numero_documento')?.clearValidators();
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+
+    this.frm.get('numero_documento')?.addValidators(Validators.required);
+    if(evt?.min) this.frm.get('numero_documento')?.addValidators(Validators.minLength(evt.min));
+    if(evt?.max) this.frm.get('numero_documento')?.addValidators(Validators.maxLength(evt.max));
+    this.frm.get('numero_documento')?.updateValueAndValidity();
   }
 
 }

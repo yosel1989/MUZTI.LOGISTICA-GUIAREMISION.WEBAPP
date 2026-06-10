@@ -1,6 +1,7 @@
 export interface TransportistaDto {
   id: number;
-  tipo_documento: "DNI" | "CE" | "RUC" | "PASAPORTE";
+  tipo_documento: string;
+  tipo_documento_id: number;
   numero_documento: string;
   razon_social: string | null;
   ubigeo_id: string | null;
@@ -27,7 +28,7 @@ export interface TransportistaDto {
 
 
 export interface RegistrarTransportistaRequestDto{
-  tipo_documento: string;
+  tipo_documento_id: string;
   numero_documento: string;
   razon_social: string;
   ubigeo_id: string;
@@ -45,7 +46,7 @@ export interface RegistrarTransportistaResponseDto {
 
 
 export interface EditarTransportistaRequestDto{
-  tipo_documento: string;
+  tipo_documento_id: number;
   numero_documento: string;
   razon_social: string;
   ubigeo_id: string;
@@ -54,4 +55,12 @@ export interface EditarTransportistaRequestDto{
   codigo_sunat: string | null;
   registro_mtc: string | null;
   email_contacto: string | null;
+}
+
+export interface TransportistaSugeridoDto{
+  id: number;
+  tipo_documento_id: number;
+  tipo_documento: string;
+  numero_documento: string;
+  razon_social: string;
 }

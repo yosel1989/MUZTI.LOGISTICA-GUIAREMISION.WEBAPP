@@ -25,6 +25,9 @@ import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive"
 import { EditarTransportistaRequestDto, TransportistaDto } from '@features/transportista/models/transportista';
 import { TransportistaApiService } from '@features/transportista/services/transportista-api.service';
 import { OnlyUpperDirective } from "@core/directives/only-uppers.directive";
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
+import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 
 @Component({
   selector: 'app-mdl-editar-transportista',
@@ -45,7 +48,8 @@ import { OnlyUpperDirective } from "@core/directives/only-uppers.directive";
     SkeletonModule,
     DividerModule,
     OnlyNumberDirective,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+    SelectTipoDocumentoComponent
 ],
   templateUrl: './mdl-editar-transportista.component.html',
   styleUrl: './mdl-editar-transportista.component.scss',
@@ -56,6 +60,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   private api = inject(TransportistaApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private catalogoApiService = inject(CatalogoApiService);
 
   @Input() id!: number;
   @Output() OnCreated: EventEmitter<TransportistaDto> = new EventEmitter<TransportistaDto>();
@@ -84,12 +89,15 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   ldData = signal(false);
   data = signal<TransportistaDto | undefined>(undefined);
 
+  tiposDocumento = signal<TipoDocumentoDTO[]>([]);
+  ldTiposDocumento = signal(false);
+
   constructor( public config: DynamicDialogConfig ) {}
 
   ngOnInit(): void {
     this.frm = new FormGroup({
       codigo: new FormControl({value:null, disabled: true}),
-      tipo_documento: new FormControl(null, Validators.required),
+      tipo_documento_id: new FormControl({value: null, disabled: true}, Validators.required),
       numero_documento: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       razon_social: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       departamento: new FormControl(null, Validators.required),
@@ -106,6 +114,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     this.headerValue = this.config.header ?? '';
 
     this.loadData();
+    this.loadTiposDocumento();
   }
 
   ngAfterViewInit(): void {
@@ -131,7 +140,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     const form = this.frm.value;
 
     return {
-      tipo_documento: form.tipo_documento,
+      tipo_documento_id: form.tipo_documento_id,
       numero_documento: form.numero_documento,
       razon_social: form.razon_social,
       ubigeo_id: form.distrito,
@@ -209,10 +218,21 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     this.OnCanceled.emit(true);
   }
 
+  evtSelectedChangeTipoDocumento(evt: TipoDocumentoDTO | undefined){
+    this.frm.get('numero_documento')?.clearValidators();
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+
+    this.frm.get('numero_documento')?.addValidators(Validators.required);
+    if(evt?.min) this.frm.get('numero_documento')?.addValidators(Validators.minLength(evt.min));
+    if(evt?.max) this.frm.get('numero_documento')?.addValidators(Validators.maxLength(evt.max));
+    this.frm.get('numero_documento')?.updateValueAndValidity();
+  }
+
   // data
+  
   loadData(): void{
     this.ldData.set(true);
-    const sub = this.api.obtener(this.id)
+    const sub = this.api.obtenerPorId(this.id)
     .pipe(finalize(() => this.ldData.set(false)))
     .subscribe({
       next: (res: TransportistaDto) => {
@@ -237,13 +257,36 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
     this.subs.add(sub);
   }
 
+  loadTiposDocumento(): void{
+    this.ldTiposDocumento.set(true);
+    const s = this.catalogoApiService.getTiposDocumento(null)
+    .pipe(finalize(()=>{
+      this.ldTiposDocumento.set(false);
+    }))
+    .subscribe({
+      next: (value: TipoDocumentoDTO[]) => {
+        this.tiposDocumento.set(value);
+      },
+      error: (err) =>  {
+        this.alertService.showToast({
+          title: err.error.detalle,
+          icon: 'error',
+          timer:4000,
+          timerProgressBar: true,
+          showCloseButton: true
+        });
+      },
+    });
+    this.subs.add(s);
+  }
+
 
   // handlers
   handlerLoadData(res: TransportistaDto): void{
     this.data.set(res);
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
-      tipo_documento: res.tipo_documento,
+      tipo_documento_id: res.tipo_documento_id,
       numero_documento: res.numero_documento,
       razon_social: res.razon_social?.toUpperCase(),
       direccion: res.direccion?.toUpperCase(),

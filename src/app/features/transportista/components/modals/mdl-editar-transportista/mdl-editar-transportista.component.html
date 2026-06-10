@@ -4,7 +4,7 @@
         <div >
             
             <div class="grid grid-cols-2 gap-3 py-10!">
-                <div class="flex flex-col">
+                <div>
                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código</label>
                     @if(!ldData()){
                         <input 
@@ -19,8 +19,26 @@
                     }
                 </div>
 
+                <div>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
+                    @if(!ldData()){
+                        <app-select-tipo-documento
+                            #tipoDocumento
+                            [control]="f.tipo_documento_id"
+                            [invalid]="f.tipo_documento_id.invalid && ( f.tipo_documento_id.touched || submitted())"
+                            (selectedChange)="evtSelectedChangeTipoDocumento($event)"
+                            type="short"
+                        ></app-select-tipo-documento>
+                    }@else{
+                        <p-skeleton width="100%" height="32px"></p-skeleton>
+                    }
+                    @if (frm.get('tipo_documento_id')?.invalid && (frm.get('tipo_documento_id')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                </div>
+
                 <div class="flex flex-col">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° RUC *</label>
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Documento *</label>
                     @if(!ldData()){
                     <input 
                         pSize="small" 

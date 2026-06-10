@@ -720,66 +720,84 @@
                             @if(f_datosEnvio.tipo_transporte.value === 'PUBLICO'){
                                 <div class="flex flex-wrap gap-x-2">
                                     <p-button 
-                                        size="small"
-                                        icon="fa-duotone fa-light fa-angle-down"
+                                        [outlined]="true"
+                                        (click)="evtOnShowListaTransportista()" 
+                                        size="small" 
+                                        styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                        class="text-xs!" 
+                                        icon="pi pi-search text-xs!" 
+                                        severity="primary" 
                                         label="Seleccionar transportista"
-                                        iconPos="right"
-                                        outlined="true"
-                                        (click)="evtOnShowListaTransportista()"
-                                    >
-                                    </p-button>
+                                    ></p-button>
 
                                     <a href="/admin/tranportista" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium">Administrar</a>
 
                                 </div>
                             }
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-3 gap-x-8">
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">RUC *</label>
-                                    <input 
-                                    placeholder="" 
-                                    pSize="small" 
-                                    fluid 
-                                    pInputText 
-                                    formControlName="ruc_transportista" 
-                                    [class]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted()) ? 'text-xs! shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted())" />
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="transportista?.numero_documento"></app-typing>
+                                    </div>
+
+                                    <!--<input 
+                                        placeholder="" 
+                                        pSize="small" 
+                                        fluid 
+                                        pInputText 
+                                        formControlName="ruc_transportista" 
+                                        [class]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted()) ? 'text-xs! shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                        [invalid]="f_datosEnvio.ruc_transportista.invalid && (f_datosEnvio.ruc_transportista.touched || submitted())" 
+                                    />
                                     @if (f_datosEnvio.ruc_transportista?.invalid && (f_datosEnvio.ruc_transportista?.touched || submitted())) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                    }
+                                    }-->
                                 </div>
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Razón social o denominación *</label>
-                                    <input 
-                                    pSize="small" 
-                                    fluid 
-                                    pInputText 
-                                    formControlName="rsocial_transportista" 
-                                    [class]="f_datosEnvio.rsocial_transportista.invalid && (submitted() || f_datosEnvio.rsocial_transportista.touched) ? 'text-xs!  shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    [invalid]="f_datosEnvio.rsocial_transportista.invalid && (submitted() || f_datosEnvio.rsocial_transportista.touched)" />
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="transportista?.razon_social"></app-typing>
+                                    </div>
+                                    
+                                    <!--<input 
+                                        pSize="small" 
+                                        fluid 
+                                        pInputText 
+                                        formControlName="rsocial_transportista" 
+                                        [class]="f_datosEnvio.rsocial_transportista.invalid && (submitted() || f_datosEnvio.rsocial_transportista.touched) ? 'text-xs!  shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                        [invalid]="f_datosEnvio.rsocial_transportista.invalid && (submitted() || f_datosEnvio.rsocial_transportista.touched)" 
+                                    />
                                     @if (f_datosEnvio.rsocial_transportista?.invalid && (f_datosEnvio.rsocial_transportista?.touched || submitted())) {
                                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                                    }
+                                    }-->
                                 </div>
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500">N° de registro MTC<ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el código de registro del Ministerio de Transportes y Comunicaciones que tenga actualmente el vehículo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="transportista?.registro_mtc"></app-typing>
+                                    </div>
 
-                                    <input 
+                                    <!--<input 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
                                     formControlName="num_mtc_transportista" 
-                                    class="text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
+                                    class="text-xs! min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />-->
                                 </div>
                                 <div class="flex flex-col">
                                     <label class="text-[11px]! h-4.5! text-gray-500">E-mail del Transportista</label>
-                                    <input 
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="transportista?.email_contacto"></app-typing>
+                                    </div>
+
+                                    <!--<input 
                                     pSize="small" 
                                     fluid 
                                     pInputText 
                                     formControlName="email_transportista" 
-                                    class="text-xs! min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />
+                                    class="text-xs! min-h-9! shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" />-->
                                 </div>
                             </div>
 

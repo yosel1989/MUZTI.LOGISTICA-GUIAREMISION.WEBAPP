@@ -296,6 +296,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             proveedor: null,
             proveedor_id: !this.tabDatosEnvioProveedor?.mostrarProveedor() ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
 
+            transportista: (!this.tabDatosEnvioProveedor?.esTransportePrivado && this.selectTipoGuiaComponent?.tipoGuiaSelected === this.tipoGuia.remitente) ? this.tabDatosEnvioProveedor?.transportista : null,
+            transportista_id: (!this.tabDatosEnvioProveedor?.esTransportePrivado && this.selectTipoGuiaComponent?.tipoGuiaSelected === this.tipoGuia.remitente) ? this.tabDatosEnvioProveedor?.transportista?.id : null,
+
             datos_envio: {
 
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,

@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, AfterViewInit, Input, signal, EventEmitte
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { AvatarModule } from 'primeng/avatar';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 
@@ -13,7 +14,8 @@ import { SkeletonModule } from 'primeng/skeleton';
     SelectModule, 
     ReactiveFormsModule, 
     FormsModule,
-    SkeletonModule
+    SkeletonModule,
+    AvatarModule
   ]
 })
 

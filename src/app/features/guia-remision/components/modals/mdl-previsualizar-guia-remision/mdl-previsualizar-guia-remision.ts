@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '@core/services/alert.service';
 import { finalize, Subscription } from 'rxjs';
 import { SkeletonModule } from 'primeng/skeleton';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, UpperCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-mdl-previsualizar-guia-remision',
@@ -18,7 +18,9 @@ import { DecimalPipe } from '@angular/common';
     CardModule,
     TableModule,
     SkeletonModule,
-    DecimalPipe
+    DecimalPipe,
+    UpperCasePipe,
+    DatePipe
   ],
 })
 

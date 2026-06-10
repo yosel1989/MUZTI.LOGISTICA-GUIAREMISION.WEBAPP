@@ -4,7 +4,7 @@ import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
 import { ActualizarEstadoResponseDto, EliminarResponseDto, ResponseDTO } from "@features/shared/models/shared";
-import { EditarTransportistaRequestDto, RegistrarTransportistaRequestDto, RegistrarTransportistaResponseDto, TransportistaDto } from "../models/transportista";
+import { EditarTransportistaRequestDto, RegistrarTransportistaRequestDto, RegistrarTransportistaResponseDto, TransportistaDto, TransportistaSugeridoDto } from "../models/transportista";
 import { EstadoActualizarRequestDTO } from "app/shared/models/request";
 
 @Injectable({
@@ -66,7 +66,7 @@ export class TransportistaApiService {
     );
   }
 
-  obtener(id: number): Observable<TransportistaDto> {
+  obtenerPorId(id: number): Observable<TransportistaDto> {
     return this.http.get<TransportistaDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
       map(response =>{ return response as TransportistaDto }),
       catchError((error: HttpErrorResponse) => {
@@ -111,6 +111,20 @@ export class TransportistaApiService {
         return throwError(() => error);
       })
     );
+  }
+
+  buscarSugerido(texto: string | null): Observable<TransportistaSugeridoDto[]> {
+      let params = new HttpParams();
+      if (texto) {
+          params = params.set('numeroDoc', texto);
+      }
+
+      return this.http.get<TransportistaSugeridoDto[]>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
+          map(response =>{ return response as TransportistaSugeridoDto[] }),
+          catchError((error: HttpErrorResponse) => {
+              return throwError(() => error);
+          })
+      );
   }
 
 }

@@ -13,9 +13,41 @@
     appendTo="body"
     [invalid]="invalid"
 >
-    <!--<ng-template let-item #item>
+    <ng-template #selectedItem let-selectedOption>
         <div class="flex items-center">
-            {{item.descripcion}}
+            @switch(type){
+                @case('short'){
+                    {{selectedOption.descripcion_corta}}
+                }
+                @case('normal'){
+                    {{selectedOption.descripcion}}
+                }
+                @case('large'){
+                    ({{selectedOption.descripcion_corta}}) {{selectedOption.descripcion}}
+                }
+                @default{
+                    {{selectedOption.descripcion}}
+                }
+            }
+            
         </div>
-    </ng-template>-->
+    </ng-template>
+    <ng-template let-item #item>
+        <div class="flex items-center">
+            @switch(type){
+                @case('short'){
+                    {{item.descripcion_corta}}
+                }
+                @case('normal'){
+                    {{item.descripcion}}
+                }
+                @case('large'){
+                    ({{item.descripcion_corta}}) {{item.descripcion}}
+                }
+                @default{
+                    {{item.descripcion}}
+                }
+            }
+        </div>
+    </ng-template>
 </p-select>

@@ -38,6 +38,8 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
 
     @Input() optionLabel: string = 'descripcion';
     @Input() optionValue: string = 'id';
+    @Input() type: string | 'short' | 'normal' | 'large' = 'normal';
+
     @Output() selectedChange = new EventEmitter<TipoDocumentoDTO | undefined>;
 
     data = signal<TipoDocumentoDTO[]>([]);
