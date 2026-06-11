@@ -47,6 +47,7 @@ import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selec
 import { TypingComponent } from '@features/shared/components/typing/typing';
 import { MdlListaTransportistaComponent } from '@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista';
 import { TransportistaDto } from '@features/transportista/models/transportista';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -70,6 +71,7 @@ import { TransportistaDto } from '@features/transportista/models/transportista';
     ConfirmDialogModule,
     CheckboxModule,
     OnlyNumberDirective,
+    OnlyUpperDirective,
     SelectUnidadMedidaComponent,
     TypingComponent
 ],
@@ -86,8 +88,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @ViewChild('distritoProveedor') distritoProveedor: SelectDistritoComponent | undefined;
 
     @Input() tipoGuia: string | undefined = TipoGuiaRemisionEnum.remitente;
-    @Input() emisora: EmpresaToSelectDto | null = null;
-
+  
+    private _emisora = signal<EmpresaToSelectDto | null>(null); 
     private _remitente = signal<EstablecimientoDTO | null>(null);
     private _destinatario = signal<EstablecimientoDTO | null>(null);
     private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
@@ -96,6 +98,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     private _tipoTransporte = signal<string | 'PRIVADO' | 'PUBLICO'>('PRIVADO');
     private _transportista = signal<TransportistaDto | null>(null);
     private _proveedor = signal<ProveedorDto | null>(null);
+
+    @Input() set emisora(value: EmpresaToSelectDto | null) {
+        if (this._emisora() !== value) {
+            this._emisora.set(value);
+        }
+    }
 
     @Input() set remitente(value: EstablecimientoDTO | null) {
         if (this._remitente() !== value) {
@@ -208,6 +216,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
 
+        this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((val: boolean) => {
+
+        });
+
         this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
 
         effect(() => {
@@ -228,6 +240,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         effect(()=>{
           const tipoTransporte = this._tipoTransporte();
           this.resetDatosEnvio(this.tipoGuia!, tipoTransporte);
+        })
+
+        effect(()=>{
+          this._emisora();
+          this.resetDatosEnvio(this.tipoGuia!, this._tipoTransporte());
+          this._proveedor.set(null);
         })
 
 
@@ -311,6 +329,14 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     get tipoTransporte(): string | 'PRIVATE' | 'PUBLICO' | undefined { 
       return this._tipoTransporte(); 
+    }
+
+    get remitente(): string | 'PRIVATE' | 'PUBLICO' | undefined { 
+      return this._tipoTransporte(); 
+    }
+
+    get emisora(): EmpresaToSelectDto | null {
+      return this._emisora();
     }
 
     setTipoTransporte( value:  string | 'PRIVATE' | 'PUBLICO'): void{ 
@@ -530,8 +556,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         // Validar transportista
         if(this.tipoGuia === TipoGuiaRemisionEnum.remitente){
           if(this.tipoTransporte === 'PUBLICO'){
-            console.log('transportista para validar', this._transportista());
-            if(!this._transportista()){
+
+            if(!this._transportista() && !this.f_datosEnvio.traslado_vehiculo_categoria.value){
               this.alertService.showToast({
                   position: 'top-end',
                   icon: "warning",

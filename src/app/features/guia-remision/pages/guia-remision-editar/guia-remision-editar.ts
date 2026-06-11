@@ -344,6 +344,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
 
                 traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.f_datosEnvio.traslado_vehiculo_categoria,
+                traslado_vehiculo_categoria_placa_vehiculo: this.tabDatosEnvioProveedor?.f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo,
 
 
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,

@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
@@ -157,25 +157,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             motivo_traslado_id: new FormControl(null, Validators.required),
 
             remitente_id: new FormControl(null, Validators.required),
-            tipo_documento_remitente: new FormControl({value: 'RUC', disabled: true}, Validators.required),
-            numero_documento_remitente: new FormControl({value: null, disabled: true}, Validators.required),
-            razon_social_remitente: new FormControl({value: null, disabled: true}, Validators.required),
-            nombres_apellidos_remitente: new FormControl({value: null, disabled: true}),
-            direccion_remitente: new FormControl({value: null, disabled: true}),
-            departamento_remitente: new FormControl({value: null, disabled: true}),
-            provincia_remitente: new FormControl({value: null, disabled: true}),
-            distrito_remitente: new FormControl({value: null, disabled: true}),
             contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
 
             destinatario_id: new FormControl(null, Validators.required),
-            tipo_documento_destinatario: new FormControl({value: 'RUC', disabled: true}, Validators.required),
-            numero_documento_destinatario: new FormControl({value: null, disabled: true}),
-            razon_social_destinatario: new FormControl({value: null, disabled: true}),
-            nombres_apellidos_destinatario: new FormControl({value: null, disabled: true}),
-            direccion_destinatario: new FormControl({value: null, disabled: true}),
-            departamento_destinatario: new FormControl({value: null, disabled: true}),
-            provincia_destinatario: new FormControl({value: null, disabled: true}),
-            distrito_destinatario: new FormControl({value: null, disabled: true}),
             contactos_destinatario: new FormControl([], [this.maxEmailsValidator(3)]),
 
             fecha_emision: new FormControl(new Date(), Validators.required),
@@ -193,7 +177,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             this.destinatario.set(null);
         });
 
-        this.formGroup.get('tipo_documento_remitente')?.valueChanges.subscribe((value: string) => { 
+        /*this.formGroup.get('tipo_documento_remitente')?.valueChanges.subscribe((value: string) => { 
             this.formGroup.get('numero_documento_remitente')?.clearValidators();
             this.formGroup.get('razon_social_remitente')?.clearValidators();
             this.formGroup.get('nombres_apellidos_remitente')?.clearValidators();
@@ -222,17 +206,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             }
 
             this.cdr.markForCheck();
-        });
+        });*/
 
         /*effect(() => {
             const remitente = this.remitente();
             //this.handlerValueRemitente(remitente);
         });*/
 
-        /*effect(() => {
-            const destinatario = this.destinatario();
-            //this.handlerValueDestinatario(destinatario);
-        });*/
+        effect(() => {
+            this.empresa();
+            this.resetRemitenteForm();
+            this.resetDestinatarioForm();
+        });
     }
 
     ngOnInit(): void{
@@ -313,6 +298,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
                 
                 traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria,
+                traslado_vehiculo_categoria_placa_vehiculo: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria_placa_vehiculo,
                 
                 
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
@@ -382,11 +368,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         this.submitted.set(true);
 
-        if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return;
-        if(!this.tabOrigenDestino?.evtOnSubmit()) return;
-        if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return;
-
-        console.log('request guia de remisión', this.request);
+        if( !this.handlerValidation() ) return;
 
         this.loadingSubmit.next(true);
         this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente!.selected()!.ruc! ).subscribe({
@@ -647,6 +629,47 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
       });
     }
 
+    handlerValidation(): boolean{
+        if(!this.f.motivo_traslado_id.value){
+            this.alertService.showToast({
+                title: "Debe seleccionar el motivo de traslado",
+                icon: 'error',
+                timer: 4000,
+                timerProgressBar: true,
+                showCloseButton: true
+            });
+            return false;
+        }
+
+        if(!this.remitente()){
+            this.alertService.showToast({
+                title: "Debe seleccionar el remitente",
+                icon: 'error',
+                timer: 4000,
+                timerProgressBar: true,
+                showCloseButton: true
+            });
+            return false;
+        }
+
+        if(!this.destinatario()){
+            this.alertService.showToast({
+                title: "Debe seleccionar el destinatario",
+                icon: 'error',
+                timer: 4000,
+                timerProgressBar: true,
+                showCloseButton: true
+            });
+            return false;
+        }
+
+        if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return false;
+        if(!this.tabOrigenDestino?.evtOnSubmit()) return false;
+        if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return false;
+
+        return true;
+    }
+
   
     // functions
 
@@ -666,32 +689,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     resetDestinatarioForm(): void{
+        this.destinatario.set(null);
         this.formGroup.patchValue({
             destinatario_id: null,
-            tipo_documento_destinatario: 'RUC',
-            numero_documento_destinatario: null,
-            razon_social_destinatario: null,
-            nombres_apellidos_destinatario: null,
-            direccion_destinatario: null,
-            departamento_destinatario: null,
-            provincia_destinatario: null,
-            distrito_destinatario: null,
             contactos_destinatario: [],
         });
         //(this.formGroup.get('docs_ref') as FormArray).clear();
     }
 
     resetRemitenteForm(): void{
+        this.remitente.set(null);
         this.formGroup.patchValue({
             remitente_id: null,
-            tipo_documento_remitente: 'RUC',
-            numero_documento_remitente: null,
-            razon_social_remitente: null,
-            nombres_apellidos_remitente: null,
-            direccion_remitente: null,
-            departamento_remitente: null,
-            provincia_remitente: null,
-            distrito_remitente: null,
             contactos_remitente: [],
         });
         //(this.formGroup.get('docs_ref') as FormArray).clear();

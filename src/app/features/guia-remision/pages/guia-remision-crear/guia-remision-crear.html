@@ -111,110 +111,27 @@
                                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                     <app-typing [text]="remitente() ? 'RUC' : '--'"></app-typing>
                                                 </div>
-                                                <!--<app-select-tipo-documento 
-                                                    class="flex flex-col cursor-not-allowed" 
-                                                    [control]="f.tipo_documento_remitente" 
-                                                    classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
-                                                    optionLabel="descripcion_corta"
-                                                />-->
-                                                
                                             </div>
+
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nro. de Documento<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
                                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                     <app-typing [text]="remitente()?.ruc ?? '--'"></app-typing>
                                                 </div>
-
-                                                <!--<input 
-                                                formControlName="numero_documento_remitente" 
-                                                onlyNumber 
-                                                pSize="small" 
-                                                [invalid]="f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted())"
-                                                [minlength]="f.tipo_documento_remitente.value === 'RUC' ? 11 : f.tipo_documento_remitente.value === 'DNI' ? 8 : null"
-                                                [maxlength]="f.tipo_documento_remitente.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_remitente.value === 'PASAPORTE' ? 12 : f.tipo_documento_remitente.value === 'DNI' ? 8 : f.tipo_documento_remitente.value === 'RUC' ? 11 : null"
-                                                fluid 
-                                                pInputText />
-                                                @if (f.numero_documento_remitente.invalid && (f.numero_documento_remitente.touched || submitted())) {
-                                                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                                        @if(f.numero_documento_remitente.errors?.['required']){
-                                                            Este campo es requerido.
-                                                        }@else if(f.numero_documento_remitente.errors?.['minlength']){
-                                                            El documento debe tener mínimo 
-                                                            @switch(f.tipo_documento_remitente.value){
-                                                                @case('DNI'){ 8 }
-                                                                @case('RUC'){ 11 }    
-                                                                @default { 11 }
-                                                            }
-                                                            caracteres.
-                                                        }@else{
-                                                            El documento debe tener máximo
-                                                            @switch(f.tipo_documento_remitente.value){
-                                                                @case('DNI'){ 8 }
-                                                                @case('CARNET DE EXTRANJERIA'){ 12 }
-                                                                @case('PASAPORTE'){ 12 }    
-                                                                @default { 11 }
-                                                            }
-                                                            caracteres.
-                                                        }
-                                                    </span></p-message>
-                                                }-->
                                             </div>
-                                            @if(f.tipo_documento_remitente.value === 4){
-                                                <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                                        <app-typing [text]="remitente()?.razon_social ?? '--'"></app-typing>
-                                                    </div>
-                                                    <!--<input 
-                                                    formControlName="razon_social_remitente" 
-                                                    placeholder="" 
-                                                    pSize="small" 
-                                                    fluid 
-                                                    [invalid]="f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted())"
-                                                    pInputText />
-                                                    @if (f.razon_social_remitente.invalid && (f.razon_social_remitente.touched || submitted())) {
-                                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                                            @if(f.razon_social_remitente.errors?.['required']){
-                                                                Este campo es requerido.
-                                                            }
-                                                        </span></p-message>
-                                                    }-->
+
+                                            <div class="flex flex-col lg:col-span-2">
+                                                <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="remitente()?.razon_social ?? '--'"></app-typing>
                                                 </div>
-                                            }
-                                            @else{
-                                                <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre ó Razón Social<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
-                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                                        <app-typing [text]="remitente()?.razon_social ?? '--'"></app-typing>
-                                                    </div>
-                                                    <!--<input 
-                                                    formControlName="nombres_apellidos_remitente" 
-                                                    placeholder="" 
-                                                    pSize="small" 
-                                                    fluid 
-                                                    [invalid]="f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted())"
-                                                    pInputText />
-                                                    @if (f.nombres_apellidos_remitente.invalid && (f.nombres_apellidos_remitente.touched || submitted())) {
-                                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                                            @if(f.nombres_apellidos_remitente.errors?.['required']){
-                                                                Este campo es requerido.
-                                                            }
-                                                        </span></p-message>
-                                                    }-->
-                                                </div>
-                                            }
+                                            </div>
 
                                             <div class="flex flex-col md:col-span-2">
                                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección<span class="ml-1 text-[10px]! text-gray-400! font-normal!">(Remitente)</span></label>
                                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                     <app-typing [text]="remitente()?.direccion ? remitente()?.direccion + ' (' + remitente()?.descripcion + ')' : '--'"></app-typing>
                                                 </div>
-                                                <!--<input 
-                                                formControlName="direccion_remitente"
-                                                placeholder="" 
-                                                pSize="small" 
-                                                fluid 
-                                                pInputText />-->
                                             </div>
                                         </div>
                                     </div>
@@ -225,67 +142,35 @@
                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                 <app-typing [text]="remitente()?.departamento ?? '--'"></app-typing>
                                             </div>
-                                            <!--<app-select-departamento 
-                                                #departamentoRemitente
-                                                [control]="f.departamento_remitente" 
-                                                class="cursor-not-allowed"
-                                                classLabel="text-[11px]! text-gray-500 font-semibold"
-                                            ></app-select-departamento>
-                                            @if (formGroup.get('departamento_remitente')?.invalid && (formGroup.get('departamento_remitente')?.touched || submitted())) {
-                                                <p-message severity="error" size="small" variant="simple" >
-                                                    <span class="text-[10px]! ">Este campo es requerido.</span>
-                                                </p-message>
-                                            }-->
                                         </div>
+
                                         <div>
                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                 <app-typing [text]="remitente()?.provincia ?? '--'"></app-typing>
                                             </div>
-                                            <!--<app-select-provincia 
-                                                #provinciaRemitente
-                                                [control]="f.provincia_remitente" 
-                                                [idUbigeoDepartamento]="f.departamento_remitente.value" 
-                                                class="cursor-not-allowed"
-                                                classLabel="text-[11px]! text-gray-500 font-semibold"
-                                            ></app-select-provincia>
-                                            @if (formGroup.get('provincia_remitente')?.invalid && (formGroup.get('provincia_remitente')?.touched || submitted())) {
-                                                <p-message severity="error" size="small" variant="simple" >
-                                                    <span class="text-[10px]! ">Este campo es requerido.</span>
-                                                </p-message>
-                                            }-->
                                         </div>
+
                                         <div>
                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                 <app-typing [text]="remitente()?.distrito ?? '--'"></app-typing>
                                             </div>
-                                            <!--<app-select-distrito 
-                                                #distritoRemitente
-                                                [control]="f.distrito_remitente" 
-                                                [idUbigeoProvincia]="f.provincia_remitente.value"
-                                                class="cursor-not-allowed" 
-                                                classLabel="text-[11px]! text-gray-500 font-semibold"
-                                            ></app-select-distrito>
-                                            @if (formGroup.get('distrito_remitente')?.invalid && (formGroup.get('distrito_remitente')?.touched || submitted())) {
-                                                <p-message severity="error" size="small" variant="simple" >
-                                                    <span class="text-[10px]! ">Este campo es requerido.</span>
-                                                </p-message>
-                                            }-->
                                         </div>
                                     </div>
 
                                     <div>
                                         <label class="text-[11px]! h-4.5! text-gray-500">Correo<span class="ml-1 text-[10px]! text-gray-400!">(Remitente)</span></label>
                                         <p-autocomplete
-                                        formControlName="contactos_remitente"
-                                        size="small" 
-                                        inputId="chips-tab" 
-                                        multiple 
-                                        fluid 
-                                        [typeahead]="false" 
-                                        [addOnTab]="true" 
-                                        placeholder="Escribe y presiona Tab para añadir..." />
+                                            formControlName="contactos_remitente"
+                                            size="small" 
+                                            inputId="chips-tab" 
+                                            multiple 
+                                            fluid 
+                                            [typeahead]="false" 
+                                            [addOnTab]="true" 
+                                            placeholder="Escribe y presiona Tab para añadir..." 
+                                        />
                                     </div>
                                 </div>
                             </p-tabpanel>
@@ -321,114 +206,29 @@
                                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                     <app-typing [text]="destinatario() ? 'RUC' : '--'"></app-typing>
                                                 </div>
-                                                <!--<app-select-tipo-documento 
-                                                    class="flex flex-col cursor-not-allowed" 
-                                                    [control]="f.tipo_documento_destinatario"
-                                                    [disabled]="true"
-                                                    classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
-                                                    optionLabel="descripcion_corta"
-                                                />-->
                                             </div>
+
                                             <div class="flex flex-col">
                                                 <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nro. de Documento</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                     <app-typing [text]="destinatario()?.ruc ?? '--'"></app-typing>
                                                 </div>
-
-                                                <!--<input 
-                                                    formControlName="numero_documento_destinatario" 
-                                                    onlyNumber  
-                                                    pSize="small" 
-                                                    [invalid]="f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted())"
-                                                    [minlength]="f.tipo_documento_destinatario.value === 'RUC' ? 11 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : null"
-                                                    [maxlength]="f.tipo_documento_destinatario.value === 'CARNET DE EXTRANJERIA' || f.tipo_documento_destinatario.value === 'PASAPORTE' ? 12 : f.tipo_documento_destinatario.value === 'DNI' ? 8 : f.tipo_documento_destinatario.value === 'RUC' ? 11 : null"
-                                                    fluid 
-                                                    pInputText 
-                                                />
-                                                @if (f.numero_documento_destinatario.invalid && (f.numero_documento_destinatario.touched || submitted())) {
-                                                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                                        @if(f.numero_documento_destinatario.errors?.['required']){
-                                                            Este campo es requerido.
-                                                        }@else if(f.numero_documento_destinatario.errors?.['minlength']){
-                                                            El documento debe tener mínimo 
-                                                            @switch(f.tipo_documento_destinatario.value){
-                                                                @case('DNI'){ 8 }
-                                                                @case('RUC'){ 11 }    
-                                                                @default { 11 }
-                                                            }
-                                                            caracteres.
-                                                        }@else{
-                                                            El documento debe tener máximo
-                                                            @switch(f.tipo_documento_destinatario.value){
-                                                                @case('DNI'){ 8 }
-                                                                @case('CARNET DE EXTRANJERIA'){ 12 }
-                                                                @case('PASAPORTE'){ 12 }    
-                                                                @default { 11 }
-                                                            } 
-                                                            caracteres.
-                                                        }
-                                                    </span></p-message>
-                                                }-->
                                             </div>
-                                            @if(f.tipo_documento_destinatario.value === 4){
-                                                <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                                        <app-typing [text]="destinatario()?.razon_social ?? '--'"></app-typing>
-                                                    </div>
-                                                    <!--<input 
-                                                        formControlName="razon_social_destinatario" 
-                                                        pSize="small" 
-                                                        fluid 
-                                                        [invalid]="f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted())"
-                                                        pInputText 
-                                                    />
-                                                    @if (f.razon_social_destinatario.invalid && (f.razon_social_destinatario.touched || submitted())) {
-                                                        <p-message 
-                                                            severity="error" 
-                                                            size="small" 
-                                                            variant="simple"
-                                                        ><span class="text-[10px]! ">
-                                                            @if(f.razon_social_destinatario.errors?.['required']){
-                                                                Este campo es requerido.
-                                                            }
-                                                        </span></p-message>
-                                                    }-->
+
+                                            <div class="flex flex-col lg:col-span-2">
+                                                <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
+                                                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                                    <app-typing [text]="destinatario()?.razon_social ?? '--'"></app-typing>
                                                 </div>
-                                            }
-                                            @else{
-                                                <div class="flex flex-col lg:col-span-2">
-                                                    <label  class="text-[11px]! h-4.5! text-gray-500"><span class="font-semibold">Nombre ó Razón Social</span><span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
-                                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                                        <app-typing [text]="destinatario()?.razon_social ?? '--'"></app-typing>
-                                                    </div>
-                                                    <!--<input 
-                                                    formControlName="nombres_apellidos_destinatario" 
-                                                    pSize="small" 
-                                                    fluid 
-                                                    [invalid]="f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted())"
-                                                    pInputText />
-                                                    @if (f.nombres_apellidos_destinatario.invalid && (f.nombres_apellidos_destinatario.touched || submitted())) {
-                                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                                            @if(f.nombres_apellidos_destinatario.errors?.['required']){
-                                                                Este campo es requerido.
-                                                            }
-                                                        </span></p-message>
-                                                    }-->
-                                                </div>
-                                            }
+                                            </div>
 
                                             <div class="flex flex-col lg:col-span-2">
                                                 <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                     <app-typing [text]="destinatario()?.direccion ? destinatario()?.direccion + ' (' + destinatario()?.descripcion + ')' : '--'"></app-typing>
                                                 </div>
-                                                <!--<input 
-                                                formControlName="direccion_destinatario"
-                                                pSize="small" 
-                                                fluid 
-                                                pInputText />-->
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -438,64 +238,35 @@
                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                 <app-typing [text]="destinatario()?.departamento ?? '--'"></app-typing>
                                             </div>
-                                            <!--<app-select-departamento 
-                                            #departamentoDestinatario
-                                            [control]="f.departamento_destinatario" 
-                                            class="cursor-not-allowed"
-                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-departamento>-->
-                                            <!--@if (formGroup.get('departamento_destinatario')?.invalid && (formGroup.get('departamento_destinatario')?.touched || submitted())) {
-                                                <p-message severity="error" size="small" variant="simple" >
-                                                    <span class="text-[10px]! ">Este campo es requerido.</span>
-                                                </p-message>
-                                            }-->
                                         </div>
+
                                         <div>
                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                 <app-typing [text]="destinatario()?.provincia ?? '--'"></app-typing>
                                             </div>
-                                            <!--<app-select-provincia 
-                                            #provinciaDestinatario
-                                            [control]="f.provincia_destinatario" 
-                                            class="cursor-not-allowed"
-                                            [idUbigeoDepartamento]="f.departamento_destinatario.value" 
-                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-provincia>-->
-                                            <!--@if (formGroup.get('provincia_destinatario')?.invalid && (formGroup.get('provincia_destinatario')?.touched || submitted())) {
-                                                <p-message severity="error" size="small" variant="simple" >
-                                                    <span class="text-[10px]! ">Este campo es requerido.</span>
-                                                </p-message>
-                                            }-->
                                         </div>
+
                                         <div>
                                             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                             <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
                                                 <app-typing [text]="destinatario()?.distrito ?? '--'"></app-typing>
                                             </div>
-                                            <!--<app-select-distrito 
-                                            #distritoDestinatario
-                                            class="cursor-not-allowed"
-                                            [control]="f.distrito_destinatario" 
-                                            [idUbigeoProvincia]="f.provincia_destinatario.value" 
-                                            classLabel="text-xs text-gray-500 font-semibold"></app-select-distrito>-->
-                                            <!--@if (formGroup.get('distrito_destinatario')?.invalid && (formGroup.get('distrito_destinatario')?.touched || submitted())) {
-                                                <p-message severity="error" size="small" variant="simple" >
-                                                    <span class="text-[10px]! ">Este campo es requerido.</span>
-                                                </p-message>
-                                            }-->
                                         </div>
                                     </div>
 
                                     <div>
                                         <label class="text-[11px]! h-4.5! text-gray-500">Correo<span class="ml-1 text-[10px]! text-gray-400!">(Destinatario)</span></label>
                                         <p-autocomplete
-                                        formControlName="contactos_destinatario"
-                                        size="small" 
-                                        inputId="chips-tab" 
-                                        multiple 
-                                        fluid 
-                                        [typeahead]="false" 
-                                        [addOnTab]="true" 
-                                        placeholder="Escribe y presiona Tab para añadir..." />
+                                            formControlName="contactos_destinatario"
+                                            size="small" 
+                                            inputId="chips-tab" 
+                                            multiple 
+                                            fluid 
+                                            [typeahead]="false" 
+                                            [addOnTab]="true" 
+                                            placeholder="Escribe y presiona Tab para añadir..." 
+                                        />
                                         @if (f.contactos_destinatario.invalid && (f.contactos_destinatario.touched || submitted())) {
                                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                                 @if(f.contactos_destinatario.hasError('maxEmails')){
