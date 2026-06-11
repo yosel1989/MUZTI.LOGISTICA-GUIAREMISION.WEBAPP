@@ -522,7 +522,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAprobarGuia();
         },
-        visible: this.tieneAccion(selected?.acciones, 'APE')
+        //visible: this.tieneAccion(selected?.acciones, 'APE')
       },
       {
         label: 'Confirmar',

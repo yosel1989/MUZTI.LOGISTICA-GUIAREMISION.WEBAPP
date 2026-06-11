@@ -297,7 +297,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_medida_id,
                 codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
                 
-                traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria,
+                indicador_traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria,
                 traslado_vehiculo_categoria_placa_vehiculo: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria_placa_vehiculo,
                 
                 
@@ -305,7 +305,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
 
-                indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.registrar_vehiculos_conductores,
+                indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_registrar_vehiculos_conductores,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.map((d: any) => {
                     return d.id

@@ -202,7 +202,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           cod_puerto: new FormControl(null),
           cod_aeropuerto: new FormControl(null),
 
-          registrar_vehiculos_conductores: new FormControl(false),
+          indic_registrar_vehiculos_conductores: new FormControl(false),
 
           cod_establecimiento_origen: new FormControl({value: null, disabled: true}, [Validators.minLength(4), Validators.maxLength(4)]),
           ruc_establecimiento_origen: new FormControl({value: null, disabled: true}),
@@ -212,12 +212,17 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           num_autoriza_especial_adicional: new FormControl(null),
           ent_emisora_especial_adicional: new FormControl(null),
           indic_retorno_vehiculo_envase_adicional: new FormControl(false),
-          transbordo_programado_adicional: new FormControl(false),
+          indic_transbordo_programado_adicional: new FormControl(false),
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
 
+        // Validar el cambio de estado del traslado en vehiculo de carga pesada
         this.formDatosEnvio.get('traslado_vehiculo_categoria')?.valueChanges.subscribe((val: boolean) => {
-
+          this.formDatosEnvio.get('traslado_vehiculo_categoria_placa_vehiculo')?.clearValidators();
+          if(val){
+            this.formDatosEnvio.get('traslado_vehiculo_categoria_placa_vehiculo')?.addValidators(Validators.required)
+          }
+          this.formDatosEnvio.get('traslado_vehiculo_categoria_placa_vehiculo')?.updateValueAndValidity();
         });
 
         this.minFechaEntregaTraslado.setDate(this.minFechaEntregaTraslado.getDate() - 1);
@@ -369,7 +374,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           traslado_vehiculo_categoria: this.f_datosEnvio.traslado_vehiculo_categoria.value,
           traslado_vehiculo_categoria_placa_vehiculo: this.f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo.value,
 
-          registrar_vehiculos_conductores: this.f_datosEnvio.registrar_vehiculos_conductores.value,
+          indic_registrar_vehiculos_conductores: this.f_datosEnvio.indic_registrar_vehiculos_conductores.value,
 
           cod_establecimiento_origen: this.f_datosEnvio.cod_establecimiento_origen.value,
           ruc_establecimiento_origen: this.f_datosEnvio.ruc_establecimiento_origen.value,
@@ -396,7 +401,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           num_autoriza_especial_adicional: this.f_datosEnvio.num_autoriza_especial_adicional.value,
           ent_emisora_especial_adicional: this.f_datosEnvio.ent_emisora_especial_adicional.value,
           indic_retorno_vehiculo_envase_adicional: this.f_datosEnvio.indic_retorno_vehiculo_envase_adicional.value,
-          transbordo_programado_adicional: this.f_datosEnvio.transbordo_programado_adicional.value,
+          indic_transbordo_programado_adicional: this.f_datosEnvio.indic_transbordo_programado_adicional.value,
           indic_retorno_vehiculo_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_vacio_adicional.value
         },
         proveedor: {
@@ -456,7 +461,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     ngOnInit(): void {
-      this.formDatosEnvio.get('registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
+      this.formDatosEnvio.get('indic_registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
     }
 
     ngAfterViewInit(): void {
@@ -760,12 +765,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         case TipoGuiaRemisionEnum.remitente: {
 
           this.formDatosEnvio.get('traslado_vehiculo_categoria')?.addValidators(Validators.required);
-          this.formDatosEnvio.get('registrar_vehiculos_conductores')?.addValidators(Validators.required);
+          this.formDatosEnvio.get('indic_registrar_vehiculos_conductores')?.addValidators(Validators.required);
           this.formDatosEnvio.get('peso_bruto')?.addValidators(Validators.required);
 
           this.formDatosEnvio.patchValue({
             traslado_vehiculo_categoria: false,
-            registrar_vehiculos_conductores: false
+            indic_registrar_vehiculos_conductores: false
           });
 
           console.log('actualizado', this.formDatosEnvio);

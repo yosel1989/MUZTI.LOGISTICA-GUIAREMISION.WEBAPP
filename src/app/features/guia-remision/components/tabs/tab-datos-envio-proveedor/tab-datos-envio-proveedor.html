@@ -281,10 +281,10 @@
 
                     @if(f_datosEnvio.traslado_vehiculo_categoria.value){
                         <div class="flex flex-col gap-4">
-                            <label for="" class="text-md font-semibold text-primary bg-gray-50 w-full py-2 ps-3 my-3 rounded-lg">Datos del vehículo</label>
+                            <label for="" class="text-md font-semibold text-primary bg-gray-50 w-full py-2 ps-3 mt-3 rounded-lg">Datos del vehículo</label>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 <div class="flex flex-col">
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Placa</label>
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Placa *</label>
                                     <input 
                                         pSize="small" 
                                         fluid 
@@ -292,7 +292,11 @@
                                         class="min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                                         formControlName="traslado_vehiculo_categoria_placa_vehiculo" 
                                         onlyUpper
+                                        [invalid]="f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo?.invalid && (f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo?.touched || submitted())"
                                     />
+                                    @if (f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo?.invalid && (f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo?.touched || submitted())) {
+                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -301,7 +305,7 @@
                     @if(
                         (tipoTransporte === 'PRIVADO' && 
                         !f_datosEnvio.traslado_vehiculo_categoria.value) || 
-                        f_datosEnvio.registrar_vehiculos_conductores.value
+                        f_datosEnvio.indic_registrar_vehiculos_conductores.value
                     ){
                         <div class="flex flex-col gap-4">
                             <label for="" class="text-md font-semibold text-primary bg-gray-100 w-full py-2 ps-3 my-3 rounded-lg">Datos del vehículo</label>
@@ -434,7 +438,7 @@
                     @if(
                         ( tipoTransporte === 'PRIVADO' && 
                         !f_datosEnvio.traslado_vehiculo_categoria.value) || 
-                        f_datosEnvio.registrar_vehiculos_conductores.value
+                        f_datosEnvio.indic_registrar_vehiculos_conductores.value
                     ){
                         <div class="flex flex-col gap-4">
                             <label for="" class="text-md font-semibold text-primary bg-gray-100 w-full py-2 ps-3 my-3 rounded-lg">Datos del conductor</label>
@@ -802,8 +806,8 @@
 
                             @if(!f_datosEnvio.traslado_vehiculo_categoria.value){
                                 <div class="flex items-center gap-2">
-                                    <p-checkbox formControlName="registrar_vehiculos_conductores" inputId="registrar_vehiculos_conductores" size="large" [binary]="true"/>
-                                    <label for="registrar_vehiculos_conductores" class="text-xs! font-semibold cursor-pointer">Registrar vehículos y conductores del transportista</label>
+                                    <p-checkbox formControlName="indic_registrar_vehiculos_conductores" inputId="indic_registrar_vehiculos_conductores" size="large" [binary]="true"/>
+                                    <label for="indic_registrar_vehiculos_conductores" class="text-xs! font-semibold cursor-pointer">Registrar vehículos y conductores del transportista</label>
                                 </div>
                             }
 
@@ -884,10 +888,11 @@
 
                                 <div class="flex items-center gap-2">
                                     <p-checkbox 
-                                    formControlName="transbordo_programado_adicional" inputId="transbordo_programado_adicional" 
-                                    size="large" 
-                                    [binary]="true"/>
-                                    <label for="transbordo_programado_adicional" class="text-xs! font-semibold text-gray-500! cursor-pointer">Transbordo Programado</label>
+                                        formControlName="indic_transbordo_programado_adicional" inputId="indic_transbordo_programado_adicional" 
+                                        size="large" 
+                                        [binary]="true"
+                                    />
+                                    <label for="indic_transbordo_programado_adicional" class="text-xs! font-semibold text-gray-500! cursor-pointer">Transbordo Programado</label>
                                 </div>
 
                                 @if(!f_datosEnvio.traslado_vehiculo_categoria.value){

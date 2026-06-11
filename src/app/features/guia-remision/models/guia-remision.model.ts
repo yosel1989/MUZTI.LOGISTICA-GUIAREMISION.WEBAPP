@@ -91,7 +91,7 @@ export interface GR_DatosEnvioRequestDto {
   unidad_medida_id: number; 
   codigo_um: string; 
 
-  traslado_vehiculo_categoria: boolean;
+  indicador_traslado_vehiculo_categoria: boolean;
   traslado_vehiculo_categoria_placa_vehiculo: string | null;
 
   ruc_empresa_currier: string | null;
