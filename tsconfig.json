@@ -28,8 +28,7 @@
       "@features/*": ["app/features/*"],
       "@core/*": ["app/core/*"]
     },
-
-    "ignoreDeprecations": "6.0",
+    
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true
   },
