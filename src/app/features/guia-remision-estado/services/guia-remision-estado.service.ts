@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { environment } from "environments/environment.development";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { EstadoAsignarPermisosDTO, GuiaRemisionEstadoDTO, GuiaRemisionEstadoWithPermisosDTO } from "../models/guia-remision-estado.model";
+import { environment } from "environments/environment";
 
 @Injectable({
     providedIn: "root",
@@ -10,11 +10,13 @@ import { EstadoAsignarPermisosDTO, GuiaRemisionEstadoDTO, GuiaRemisionEstadoWith
 
 export class GuiaRemisionEstadoApiService {
 
-    private baseUrl = `${environment.apiUrl}/guia-remision-estados`;
+    private baseUrl = "";
 
     constructor(
         private http: HttpClient
-    ) {}   
+    ) {
+        this.baseUrl = `${environment.apiUrl}/guia-remision-estados`;
+    }   
     
     getAll(): Observable<GuiaRemisionEstadoDTO[]>{
         return this.http.get<any>(`${this.baseUrl}`).pipe(
