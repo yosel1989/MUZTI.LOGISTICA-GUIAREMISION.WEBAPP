@@ -11,7 +11,7 @@ import { PermisoAsignarPerfilesDTO } from '@features/permiso/models/permiso.mode
 
 export class PermisoApiService {
 
-    private readonly API_URL = environment.apiUrl + "/permisos";
+    private API_URL = environment.apiUrl + "/permisos";
 
     constructor(
         private http: HttpClient

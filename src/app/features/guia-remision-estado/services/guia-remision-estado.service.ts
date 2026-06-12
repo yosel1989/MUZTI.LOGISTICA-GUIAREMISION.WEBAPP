@@ -10,14 +10,14 @@ import { EstadoAsignarPermisosDTO, GuiaRemisionEstadoDTO, GuiaRemisionEstadoWith
 
 export class GuiaRemisionEstadoApiService {
 
-    private readonly API_URL = environment.apiUrl + "/guia-remision-estados";
+    private baseUrl = `${environment.apiUrl}/guia-remision-estados`;
 
     constructor(
         private http: HttpClient
     ) {}   
     
     getAll(): Observable<GuiaRemisionEstadoDTO[]>{
-        return this.http.get<any>(`${this.API_URL}`).pipe(
+        return this.http.get<any>(`${this.baseUrl}`).pipe(
             map((response: GuiaRemisionEstadoDTO[]) => response || []),
             catchError((error) => {
                 return throwError(() => error);
@@ -26,7 +26,7 @@ export class GuiaRemisionEstadoApiService {
     }
 
     getAllWithPermisos(): Observable<GuiaRemisionEstadoWithPermisosDTO[]>{
-        return this.http.get<any>(`${this.API_URL}/permisos`).pipe(
+        return this.http.get<any>(`${this.baseUrl}/permisos`).pipe(
             map((response: GuiaRemisionEstadoWithPermisosDTO[]) => response || []),
             catchError((error) => {
                 return throwError(() => error);
@@ -35,7 +35,7 @@ export class GuiaRemisionEstadoApiService {
     }
 
     postAsignarPermisos(permisos: EstadoAsignarPermisosDTO[]): Observable<boolean>{
-        return this.http.post<boolean>(`${this.API_URL}/asignar-permisos`, permisos).pipe(
+        return this.http.post<boolean>(`${this.baseUrl}/asignar-permisos`, permisos).pipe(
             map((response: boolean) => response || false),
             catchError((error) => {
                 return throwError(() => error);
