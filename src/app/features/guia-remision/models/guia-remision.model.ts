@@ -27,9 +27,6 @@ export interface GuiaRemisionRemitenteRequestDto {
   proveedor: GR_ProveedorRequestDto | null;
   proveedor_id: number | null;
 
-  transportista: TransportistaDto | null | undefined;
-  transportista_id: number | null | undefined;
-
   datos_envio: GR_DatosEnvioRequestDto;
 
   origen: GR_OrigenRequestDto;
@@ -97,6 +94,9 @@ export interface GR_DatosEnvioRequestDto {
   ruc_empresa_currier: string | null;
   razon_social_currier: string | null;
   registro_mtc_currier: string | null;
+
+  transportista: TransportistaDto | null | undefined;
+  transportista_id: number | null | undefined;
 
   indicador_vehiculo_conductor: boolean;
 

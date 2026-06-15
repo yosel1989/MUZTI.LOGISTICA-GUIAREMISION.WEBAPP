@@ -351,6 +351,9 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
 
+                transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
+                transportista_id: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista.id,
+
                 indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.registrar_vehiculos_conductores,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.map((d: any) => {
@@ -387,11 +390,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
                     codigo_subnacional: x.codigo_subnacional,
                     bien_normalizado: x.bien_normalizado
                 };
-            }),
-
-            transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
-            transportista_id: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista.id
-            
+            })
         }
     }
 

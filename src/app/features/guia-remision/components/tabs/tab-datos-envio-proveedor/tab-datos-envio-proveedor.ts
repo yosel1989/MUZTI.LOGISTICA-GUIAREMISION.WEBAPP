@@ -371,6 +371,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           num_mtc_transportista: this.f_datosEnvio.num_mtc_transportista.value,
           email_transportista: this.f_datosEnvio.email_transportista.value,*/
 
+          transportista_id: this._transportista()?.id,
+
           traslado_vehiculo_categoria: this.f_datosEnvio.traslado_vehiculo_categoria.value,
           traslado_vehiculo_categoria_placa_vehiculo: this.f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo.value,
 
@@ -407,9 +409,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         proveedor: {
           proveedor_id: this._proveedor()?.id
         },
-        transportista: {
-          transportista_id: this._transportista()?.id
-        }
       };
     }
 

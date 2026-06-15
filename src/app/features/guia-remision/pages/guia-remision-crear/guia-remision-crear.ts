@@ -255,9 +255,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     get request(): GuiaRemisionRemitenteRequestDto{
 
-
-        console.log('datos_envio', this.tabDatosEnvioProveedor?.data);
-
         return {
             tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
             motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
@@ -285,9 +282,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             proveedor: null,
             proveedor_id: !this.tabDatosEnvioProveedor?.mostrarProveedor() ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
 
-            transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
-            transportista_id: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista?.id,
-
             datos_envio: {
 
                 motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
@@ -304,6 +298,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
+
+                transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
+                transportista_id: this.tabDatosEnvioProveedor?.transportista?.id,
 
                 indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_registrar_vehiculos_conductores,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -369,6 +366,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.submitted.set(true);
 
         if( !this.handlerValidation() ) return;
+
+        console.log('request', this.request);
 
         this.loadingSubmit.next(true);
         this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente!.selected()!.ruc! ).subscribe({
