@@ -98,7 +98,10 @@ export interface GR_DatosEnvioRequestDto {
   transportista: TransportistaDto | null | undefined;
   transportista_id: number | null | undefined;
 
-  indicador_vehiculo_conductor: boolean;
+  indicador_registro_vehiculo_conductor: boolean;
+  indicador_transbordo_programado: boolean;
+  indicador_retorno_vehiculo_vacio: boolean;
+  indicador_retorno_vehiculo_envases_vacios: boolean;
 
   conductor: number[] | null;
   transporte: number[] | null;
@@ -227,7 +230,7 @@ export interface GuiaRemisionDetalleDto{
   codigo_sunat: string | null;
   gtin: string | null;
   codigo_subnacional: string | null;
-  bien_normalizado: boolean;
+  indicador_bien_normalizado: boolean;
 }
 
 export interface GuiaRemisionDatosEnvioDto{
@@ -241,7 +244,17 @@ export interface GuiaRemisionDatosEnvioDto{
   ruc_empresa_currier: string | null;
   razon_social_currier: string | null;
   registro_mtc_currier: string | null;
-  indicador_vehiculo_conductor: boolean;
+
+  indicador_registro_vehiculo_conductor: boolean;
+  indicador_traslado_vehiculo_categoria: boolean;
+  indicador_transbordo_programado: boolean;
+  indicador_retorno_vehiculo_envases_vacios: boolean;
+  indicador_retorno_vehiculo_vacio: boolean;
+  indicador_traslado_total_dam: boolean;
+
   conductor: ConductorDto[];
   unidad_transporte: UnidadTransporteDto[];
+
+  transportista_id: number | null;
+  transportista: TransportistaDto | null;
 }

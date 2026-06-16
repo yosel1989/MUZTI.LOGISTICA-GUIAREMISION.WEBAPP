@@ -93,8 +93,6 @@ export interface Puerto{
 
 export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    
-
     @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
@@ -302,7 +300,10 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
                 transportista_id: this.tabDatosEnvioProveedor?.transportista?.id,
 
-                indicador_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_registrar_vehiculos_conductores,
+                indicador_registro_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_registrar_vehiculos_conductores,
+                indicador_transbordo_programado: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_transbordo_programado_adicional,
+                indicador_retorno_vehiculo_vacio: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_vacio_adicional,
+                indicador_retorno_vehiculo_envases_vacios: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_envase_vacio_adicional,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.map((d: any) => {
                     return d.id

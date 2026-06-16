@@ -121,7 +121,7 @@
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['descripcion'] }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['codigo_sunat'] }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['gtin'] }}</td>
-                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center! border-e-0!">{{ rowData['bien_normlizado'] ? 'NO' : 'SI' }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center! border-e-0!">{{ rowData['indicador_bien_normalizado'] ? 'SI' : 'NO' }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -135,12 +135,43 @@
             </div>
         </div>
 
-        @if(localData()?.datos_envio?.conductor?.length ){
+        @if(
+            localData()?.datos_envio?.indicador_registro_vehiculo_conductor ||
+            localData()?.datos_envio?.indicador_traslado_vehiculo_categoria ||
+            localData()?.datos_envio?.indicador_transbordo_programado ||
+            localData()?.datos_envio?.indicador_retorno_vehiculo_envases_vacios ||
+            localData()?.datos_envio?.indicador_retorno_vehiculo_vacio ||
+            localData()?.datos_envio?.indicador_traslado_total_dam 
+        ){
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">INDICADORES</p>   
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
+                    
+                    @if(localData()?.datos_envio?.indicador_traslado_vehiculo_categoria){
+                        <div><p>Traslado en vehículos de categoría M1 o L: <span class="font-semibold">SI</span></p></div>
+                    }
+                    @if(localData()?.datos_envio?.indicador_retorno_vehiculo_vacio){
+                        <div><p>Retorno de vehículo vacío: <span class="font-semibold">SI</span></p></div>
+                    }
+                    @if(localData()?.datos_envio?.indicador_retorno_vehiculo_envases_vacios){
+                        <div><p>Retorno de vehículo con envases o embalajes vacíos: <span class="font-semibold">SI</span></p></div>
+                    }
+                    @if(localData()?.datos_envio?.indicador_transbordo_programado){
+                        <div><p>Transbordo programado: <span class="font-semibold">SI</span></p></div>
+                    }
+                    @if(localData()?.datos_envio?.indicador_registro_vehiculo_conductor){
+                        <div><p>Registrar vehículos y conductores del transportista: <span class="font-semibold">SI</span></p></div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if( localData()?.datos_envio?.conductor?.length ){
 
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL CONDUCTOR</p>   
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
-                    @for(conductor of localData()?.datos_envio?.conductor; track conductor.id){
+                    @for(conductor of localData()?.datos_envio!.conductor; track conductor.id){
                         <div>
                             <p class="block font-semibold text-start">{{ conductor.job_title }}:</p>
                             <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ps-3">
@@ -159,12 +190,24 @@
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
-                    @for(unidad_transporte of localData()?.datos_envio?.unidad_transporte; track unidad_transporte.id){
+                    @for(unidad_transporte of localData()?.datos_envio!.unidad_transporte; track unidad_transporte.id){
                         <div>
                             <p class="block font-semibold text-start">{{ unidad_transporte.job_title }}:</p>
                             <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">{{ unidad_transporte.placa }}</span></p> 
                         </div>
                     }
+                </div>
+            </div>
+        }
+
+        @if(localData()?.datos_envio?.transportista){
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">DATOS DEL TRANSPORTISTA</p>   
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
+                    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                        <div><p><span class="font-semibold">RUC:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.numero_documento }}</span></p></div>
+                        <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.razon_social }}</span></p></div>
+                    </div>   
                 </div>
             </div>
         }

@@ -211,7 +211,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
           num_autoriza_especial_adicional: new FormControl(null),
           ent_emisora_especial_adicional: new FormControl(null),
-          indic_retorno_vehiculo_envase_adicional: new FormControl(false),
+
+          indic_retorno_vehiculo_envase_vacio_adicional: new FormControl(false),
           indic_transbordo_programado_adicional: new FormControl(false),
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
         });
@@ -402,7 +403,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
           num_autoriza_especial_adicional: this.f_datosEnvio.num_autoriza_especial_adicional.value,
           ent_emisora_especial_adicional: this.f_datosEnvio.ent_emisora_especial_adicional.value,
-          indic_retorno_vehiculo_envase_adicional: this.f_datosEnvio.indic_retorno_vehiculo_envase_adicional.value,
+          indic_retorno_vehiculo_envase_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_envase_vacio_adicional.value,
           indic_transbordo_programado_adicional: this.f_datosEnvio.indic_transbordo_programado_adicional.value,
           indic_retorno_vehiculo_vacio_adicional: this.f_datosEnvio.indic_retorno_vehiculo_vacio_adicional.value
         },
@@ -581,7 +582,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     evtOnReset(): void {
         this.submitted.set(false);
-        this.formDatosEnvio.reset();
+        this.formDatosEnvio.reset({
+          traslado_vehiculo_categoria: false,
+          indic_retorno_vehiculo_envase_vacio_adicional: false,
+          indic_transbordo_programado_adicional: false,
+          indic_retorno_vehiculo_vacio_adicional: false,
+          indic_registrar_vehiculos_conductores: false
+        });
         this._proveedor.set(null);
     }
 
@@ -755,6 +762,11 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
         peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
         unidad_medida_id: this.f_datosEnvio.unidad_medida_id.value,
+        traslado_vehiculo_categoria: false,
+          indic_retorno_vehiculo_envase_vacio_adicional: false,
+          indic_transbordo_programado_adicional: false,
+          indic_retorno_vehiculo_vacio_adicional: false,
+          indic_registrar_vehiculos_conductores: false
       });
 
       // Activamos los validadores dependiendo del tipo de guía y el tipo de transporte

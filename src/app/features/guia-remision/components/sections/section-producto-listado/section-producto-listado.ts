@@ -211,7 +211,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       codigo_sunat: [detalle.codigo_sunat],
       gtin: [detalle.gtin],
       codigo_subnacional: [detalle.codigo_subnacional],
-      bien_normalizado: [detalle.bien_normalizado],
+      bien_normalizado: [detalle.indicador_bien_normalizado],
     }) : this.fb.group({
       cantidad: [1, Validators.required],
       unidad_medida_id: [24, Validators.required],
