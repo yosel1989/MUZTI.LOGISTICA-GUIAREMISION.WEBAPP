@@ -44,14 +44,14 @@
     @else {
 
         <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="flex flex-col p-4 border border-gray-300 rounded-lg h-full col-span-2 text-[14px]!" >
+            <div class="flex flex-col p-4 border-2 border-primary rounded-lg h-full lg:col-span-2 text-[14px]!" >
                 <div class="text-center my-auto">
                     <p class="font-semibold">{{ localData()?.empresa?.razon_social }}</p>
                     <p>{{ localData()?.empresa?.direccion }}</p>
                 </div>
             </div>
             
-            <div class="text-center p-4 border border-gray-300 rounded-lg h-full text-[14px]!" >
+            <div class="text-center p-4 border-2 border-primary rounded-lg h-full text-[14px]!" >
                 <p class="font-semibold text-gray-400">RUC: {{ localData()?.empresa?.ruc }}</p>
                 <p class="font-semibold">GUIA DE REMISIÓN {{ localData()?.tipo_guia }} ELECTRÓNICA</p>
                 <p>N° {{ localData()?.serie_correlativo }}</p>
@@ -62,8 +62,16 @@
             <p class="font-bold text-start ps-3 text-primary">DETALLE DE LA GUÍA</p>
             <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-4 border border-gray-300 rounded-lg">
                 <div><p><span class="font-semibold">Motivo traslado:</span><span class="ps-3">{{ localData()?.motivo_traslado | uppercase }}</span></p></div>
-                <div><p><span class="font-semibold">Fecha Emisión:</span><span class="ps-3">{{ localData()?.fecha_emision | date:'dd/MM/yyyy' }}</span></p></div>
-                <div><p><span class="font-semibold">Fecha Inicio Traslado:</span><span class="ps-3">{{ localData()?.datos_envio?.fecha_envio }}</span></p></div>
+                <div><p><span class="font-semibold">Fecha Emisión:</span><span class="ps-3">{{ localData()?.fecha_emision | date:'dd-MMM-yyyy' | uppercase }}</span></p></div>
+
+                <div><p><span class="font-semibold">Fecha Inicio Traslado:</span><span class="ps-3">
+                    @if(localData()?.datos_envio?.fecha_envio){
+                        {{ localData()?.datos_envio?.fecha_envio  | date:'dd-MMM-yyyy' | uppercase}}
+                    }@else{
+                        {{ localData()?.datos_envio?.fecha_entrega_transportista | date:'dd-MMM-yyyy' | uppercase}}
+                    } 
+                </span></p></div>
+
                 <div><p><span class="font-semibold">Tipo de Transportista:</span><span class="ps-3">{{ localData()?.datos_envio?.motivo_envio }}</span></p></div>
                 <div><p><span class="font-semibold">Und. de Medida:</span><span class="ps-3">{{ localData()?.datos_envio?.unidad_medida }}</span></p></div>
                 <div><p><span class="font-semibold">Peso Bruto:</span><span class="ps-3">{{ localData()?.datos_envio?.peso_bruto | number:'1.2-2' }}</span></p></div>
@@ -74,8 +82,8 @@
             <div>
                 <p class="font-bold text-start ps-3 text-primary">ORIGEN</p>
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-2" >
+                    <p><span class="font-semibold">Alias:</span><span class="ps-3 font-semibold italic">{{ localData()?.remitente?.descripcion }}</span></p>
                     <p><span class="font-semibold">Razón Social / Nombre:</span><span class="ps-3">{{ localData()?.remitente?.razon_social }}</span></p>
-                    <p><span class="font-semibold">Alias:</span><span class="ps-3">{{ localData()?.remitente?.descripcion }}</span></p>
                     <p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.remitente?.direccion }} , {{ localData()?.remitente?.departamento }} - {{ localData()?.remitente?.provincia }} - {{ localData()?.remitente?.distrito }}</span></p>
                     <p><span class="font-semibold">RUC y Cod. de establecimiento:</span><span class="ps-3">{{ localData()?.remitente?.ruc }} - {{ localData()?.remitente?.codigo_sunat  }}</span></p>
                 </div>
@@ -84,8 +92,8 @@
             <div>
                 <p class="font-bold text-start ps-3 text-primary">DESTINO</p>
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-2" >
+                    <p><span class="font-semibold">Alias:</span><span class="ps-3 font-semibold italic">{{ localData()?.destinatario?.descripcion }}</span></p>
                     <p><span class="font-semibold">Razón Social / Nombre:</span><span class="ps-3">{{ localData()?.destinatario?.razon_social }}</span></p>
-                    <p><span class="font-semibold">Alias:</span><span class="ps-3">{{ localData()?.destinatario?.descripcion }}</span></p>
                     <p><span class="font-semibold">Dirección:</span><span class="ps-3">{{ localData()?.destinatario?.direccion }} , {{ localData()?.destinatario?.departamento }} - {{ localData()?.destinatario?.provincia }} - {{ localData()?.destinatario?.distrito }}</span></p>
                     <p><span class="font-semibold">RUC y Cod. de establecimiento:</span><span class="ps-3">{{ localData()?.destinatario?.ruc }} - {{ localData()?.destinatario?.codigo_sunat  }}</span></p>
                 </div>
@@ -128,13 +136,15 @@
             </div>
         </div>
 
-        <div>
-            <p class="block font-bold text-start ps-3 text-primary">OBSERVACIONES</p>
-            <div class="text-start p-4 border border-gray-300 rounded-lg " >
-                <p>{{ localData()?.observacion }}</p>
+        @if( localData()?.observacion ){
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">OBSERVACIONES</p>
+                <div class="text-start p-4 border border-gray-300 rounded-lg " >
+                    <p>{{ localData()?.observacion }}</p>
+                </div>
             </div>
-        </div>
-
+        }
+        
         @if(
             localData()?.datos_envio?.indicador_registro_vehiculo_conductor ||
             localData()?.datos_envio?.indicador_traslado_vehiculo_categoria ||
@@ -162,6 +172,18 @@
                     @if(localData()?.datos_envio?.indicador_registro_vehiculo_conductor){
                         <div><p>Registrar vehículos y conductores del transportista: <span class="font-semibold">SI</span></p></div>
                     }
+                </div>
+            </div>
+        }
+
+        @if(localData()?.datos_envio?.transportista){
+            <div>
+                <p class="block font-bold text-start ps-3 text-primary">DATOS DEL TRANSPORTISTA</p>   
+                <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
+                    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                        <div><p><span class="font-semibold">RUC:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.numero_documento }}</span></p></div>
+                        <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.razon_social }}</span></p></div>
+                    </div>   
                 </div>
             </div>
         }
@@ -194,20 +216,11 @@
                         <div>
                             <p class="block font-semibold text-start">{{ unidad_transporte.job_title }}:</p>
                             <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">{{ unidad_transporte.placa }}</span></p> 
+                            @if(unidad_transporte.nro_autorizacion){
+                                <p class="ps-3"><span class="font-semibold">N° de Autorización vehicular:</span><span class="ps-3">{{ unidad_transporte.nro_autorizacion }} - {{ unidad_transporte.emisor_vehicular }}</span></p>
+                            }
                         </div>
                     }
-                </div>
-            </div>
-        }
-
-        @if(localData()?.datos_envio?.transportista){
-            <div>
-                <p class="block font-bold text-start ps-3 text-primary">DATOS DEL TRANSPORTISTA</p>   
-                <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
-                    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
-                        <div><p><span class="font-semibold">RUC:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.numero_documento }}</span></p></div>
-                        <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.razon_social }}</span></p></div>
-                    </div>   
                 </div>
             </div>
         }

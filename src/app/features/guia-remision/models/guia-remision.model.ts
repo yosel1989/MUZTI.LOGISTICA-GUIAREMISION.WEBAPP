@@ -236,7 +236,8 @@ export interface GuiaRemisionDetalleDto{
 export interface GuiaRemisionDatosEnvioDto{
   datos_envio_id: number;
   motivo_envio: string | 'PRIVADO' | 'PUBLICO';
-  fecha_envio: string;
+  fecha_envio: string | null;
+  fecha_entrega_transportista: string | null;
   peso_bruto: number;
   unidad_medida_id: number;
   unidad_medida: string;

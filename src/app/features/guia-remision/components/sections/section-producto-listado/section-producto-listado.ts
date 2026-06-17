@@ -48,7 +48,8 @@ import { CardModule } from 'primeng/card';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
-import { UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
+import { BienNormalizadoDTO, UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
+import { SelectBienNormalizadoComponent } from '@features/catalogo/components/selects/select-bien-normalizado/select-bien-normalizado';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -74,7 +75,8 @@ import { UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
     TextareaModule,
     SelectModule,
     CardModule,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+    SelectBienNormalizadoComponent
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService],
@@ -278,9 +280,9 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  evtSelectSubNationalCode(event: any, form: any): void {
+  evtSelectSubNationalCode(event: BienNormalizadoDTO | undefined | null, form: any): void {
     const fg = form as FormGroup;
-    fg.get('codigo_sunat')?.setValue(event.value);
+    fg.get('codigo_sunat')?.setValue(event?.codigo_sunat);
   }
 
   // handlers

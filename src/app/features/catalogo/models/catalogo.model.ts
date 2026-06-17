@@ -36,3 +36,11 @@ export interface UnidadMedidaDTO{
     descripcion_corta: string;
     codigo_sunat: string;
 }
+
+export interface BienNormalizadoDTO{
+    id: number;
+    descripcion: string;
+    familia: string;
+    codigo_sunat: string;
+    partida_arancelaria: string;
+}
