@@ -41,7 +41,7 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     ngOnInit(): void {
-        
+        this.frmCtrlTipoGuia.setValue('REMITENTE');
     }
 
     ngAfterViewInit(): void {

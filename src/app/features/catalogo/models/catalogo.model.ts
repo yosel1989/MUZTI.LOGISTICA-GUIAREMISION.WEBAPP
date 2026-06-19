@@ -44,3 +44,10 @@ export interface BienNormalizadoDTO{
     codigo_sunat: string;
     partida_arancelaria: string;
 }
+
+export interface DocumentoRelacionadoDTO{
+    id: number;
+    descripcion: string;
+    descripcion_corta: string;
+    codigo_sunat: string;
+}

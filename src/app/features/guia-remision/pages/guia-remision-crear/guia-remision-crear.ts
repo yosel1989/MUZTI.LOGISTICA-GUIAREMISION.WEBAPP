@@ -230,6 +230,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     ngOnDestroy(): void{
         this.subs.unsubscribe();
+        this.modalRef?.close();
     }
 
     // Getters
@@ -265,6 +266,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
                 return {
+                    tipo_doc_ref_id: element.get('tipo_comprobante_id')?.value,
+                    tipo_doc_ref_codigo: element.get('tipo_comprobante_codigo')?.value,
                     tipo_doc_ref: element.get('tipo_comprobante')?.value,
                     numero_doc_ref: element.get('serie_correlativo')?.value,
                     ruc_doc_ref: element.get('ruc_documento')?.value
@@ -408,6 +411,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     evtShowAddDocRef(): void{
+        if(!this.selectMotivoTraslado?.selected()){
+            this.alertService.showToast({
+                title: "Debe seleccionar un motivo de traslado",
+                icon: 'warning',
+                timer: 4000,
+                timerProgressBar: true,
+                showCloseButton: true
+            });
+            return;
+        }
+
+        const tipoGuia =  this.selectTipoGuiaComponent!.tipoGuiaSelected;
         this.modalRef = this.dialogService.open(MdlComprobanteReferenciaComponent, {
             width: '1000px',
             keepInViewport: false,
@@ -419,14 +434,19 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             styleClass: 'max-h-none!',
             maskStyleClass: 'py-4',
             contentStyle: {
-            'padding': "0 !important"
+                'padding': "0 !important"
             },
-            appendTo: 'body'
+            appendTo: 'body',
+            inputValues: {
+                tipo: tipoGuia,
+                motivoTraslado: this.selectMotivoTraslado?.selected()?.codigo_sunat
+            }
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlComprobanteReferenciaComponent) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const sub2 = cmp?.OnAdded.subscribe(( s: any) => {
+                console.log('documento relacional', s);
                 this.evtAddDocRef(s);
                 this.modalRef?.close();
             });
@@ -676,6 +696,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newDocRef(data: any): FormGroup { 
       return this.formBuilder.group({ 
+        tipo_comprobante_id: new FormControl(data.tipo_comprobante_id, Validators.required),
+        tipo_comprobante_codigo: new FormControl(data.tipo_comprobante_codigo, Validators.required),
         tipo_comprobante: new FormControl(data.tipo_comprobante, Validators.required),
         ruc_documento: new FormControl(data.ruc_documento, Validators.required),
         serie_correlativo: new FormControl(data.serie_correlativo, Validators.required)

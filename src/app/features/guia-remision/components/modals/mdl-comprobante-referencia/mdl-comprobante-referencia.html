@@ -3,7 +3,13 @@
     
         <div class="flex flex-col">
             <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de comprobante *</label>
-            <p-select 
+            <app-select-documento-relacionado
+                [tipo]="tipo"
+                [control]="f.tipo_comprobante_id"
+                (selectedChange)="evtSelectTipoDocumentoRelacionado($event)"
+                #selectDocumentoRelacionado
+            ></app-select-documento-relacionado>
+            <!--<p-select 
             fluid
             size="small" 
             [inputSize]="2" 
@@ -15,8 +21,8 @@
             optionValue="value" 
             optionLabel="description" 
             appendTo="body"
-            />
-            @if (f.tipo_comprobante.invalid && (f.tipo_comprobante.touched || submitted)) {
+            />-->
+            @if (f.tipo_comprobante_id.invalid && (f.tipo_comprobante_id.touched || submitted)) {
                 <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
             }
         </div>
@@ -76,12 +82,22 @@
             }
         </div>
 
-        <div class="md:col-span-3">
-            <div class="flex flex-row gap-3 items-center">
-                <p-toggleswitch formControlName="checked" [disabled]="true" />
-                <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Agregar {{ f.tipo_comprobante.value === 'BOLETA' ? 'Boleta de Venta' : 'Factura' }} manualmente</label>
+        @if([1,2,4,6].includes(f.tipo_comprobante_id.value)){
+            <div class="md:col-span-3">
+                <div class="flex flex-row gap-3 items-center">
+                    <p-toggleswitch formControlName="checked" />
+                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Agregar 
+                        @switch(f.tipo_comprobante_id.value){
+                            @case(1){ 'Factura' }
+                            @case(2){ 'Boleta de Venta' }
+                            @case(4){ 'Guía de Remisión Remitente' }
+                            @case(6){ 'Guía de Remisión Transportista' }
+                        }
+                    manualmente</label>
+                </div>
             </div>
-        </div>
+        }
+        
 
     </div>
 

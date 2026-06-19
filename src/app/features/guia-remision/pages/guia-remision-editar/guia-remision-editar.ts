@@ -288,7 +288,8 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
             doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: AbstractControl<unknown>) => {
                 return {
-                    tipo_doc_ref: element.get('tipo_comprobante')?.value,
+                    tipo_doc_ref_id: element.get('tipo_comprobante_id')?.value,
+                    tipo_doc_ref_codigo: element.get('tipo_comprobante_codigo')?.value,
                     numero_doc_ref: element.get('serie_correlativo')?.value,
                     ruc_doc_ref: element.get('ruc_documento')?.value
                 };

@@ -40,7 +40,8 @@ export interface GuiaRemisionRemitenteRequestDto {
 
 
 export interface GR_DocRelacionadoDto{
-  tipo_doc_ref: 'FACTURA' | 'BOLETA' | 'NOTA DE CREDITO' | 'NOTA DE DEBITO';
+  tipo_doc_ref_id: number;
+  tipo_doc_ref_codigo: string;
   numero_doc_ref: string;
   ruc_doc_ref: string;
 }
@@ -213,6 +214,7 @@ export interface GuiaRemisionDto {
   datos_envio: GuiaRemisionDatosEnvioDto;
   proveedor: ProveedorDto | null;
   productos: GuiaRemisionDetalleDto[];
+  documentos_relacionados: GuiaRemisionDocumentoRelacionadoDto[];
 }
 
 
@@ -258,4 +260,13 @@ export interface GuiaRemisionDatosEnvioDto{
 
   transportista_id: number | null;
   transportista: TransportistaDto | null;
+}
+
+export interface GuiaRemisionDocumentoRelacionadoDto{
+  doc_relacionado_id: number;
+  tipo_doc_ref_id: number;
+  tipo_doc_ref: string;
+  tipo_doc_ref_codigo: string;
+  numero_doc_ref: string;
+  ruc_doc_ref: string;
 }

@@ -472,7 +472,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ngOnChanges(changes: SimpleChanges): void {
 
       if(changes['tipoGuia']){
-        console.log('tipoGuia', changes['tipoGuia']);
+        //console.log('tipoGuia', changes['tipoGuia']);
         if(this.tipoGuia === 'TRANSPORTISTA'){
           this.setTipoTransporte('PRIVADO');
         }
@@ -784,7 +784,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             indic_registrar_vehiculos_conductores: false
           });
 
-          console.log('actualizado', this.formDatosEnvio);
+          //console.log('actualizado', this.formDatosEnvio);
 
           // Aquí dependiendo el tipo de transporte
           switch(tipoTransporte){

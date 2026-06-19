@@ -1,0 +1,22 @@
+@if(label){<label [attr.class]="classLabel">{{ label }}</label>}
+<p-select 
+    panelStyleClass="text-[.875rem]!"
+    size="small" 
+    fluid 
+    [options]="data()"
+    [loading]="ldData()" 
+    [formControl]="control"  
+    optionLabel="descripcion_corta" 
+    optionValue="id"  
+    class="p-inputwrapper-filled min-h-9!" 
+    placeholder="--SELECCIONAR--"
+    appendTo="body"
+    [invalid]="invalid"
+    [checkmark]="true"
+>
+    <ng-template let-item #item>
+        <div class="flex items-center">
+            {{item.descripcion_corta}}
+        </div>
+    </ng-template>
+</p-select>

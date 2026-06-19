@@ -72,7 +72,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     ngOnInit(): void {
 
-        console.log(this.tipo, this.motivoTraslado, this.remitente);
+        //console.log(this.tipo, this.motivoTraslado, this.remitente);
 
         if(this.tipo === 'remitente'){
             this.ctrlRuc.setValue(this.ruc);
@@ -89,7 +89,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                     this.ctrlRuc.setValue(this.ruc);
                     break;
                 case SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa: 
-                console.log('misma empresa');
+                    //console.log('misma empresa');
                     this.ctrlRuc.setValue(this.ruc);
                     break;
                 case SunatMotivoTrasladoEnum.importacion: break;
@@ -188,7 +188,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     }
 
     loadDataById(): void{
-        console.log('cargando establecimiento por id', this.selected!.id);
+        //console.log('cargando establecimiento por id', this.selected!.id);
         this.ldDataById.set(true);
         const s = this.api.getById(this.selected!.id!)
         .pipe(finalize(() => {
@@ -197,7 +197,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         }))
         .subscribe({
             next: (value: EstablecimientoDTO) => {
-                console.log('establecimiento seleccionado', value);
+                //console.log('establecimiento seleccionado', value);
                 this.OnSelected.emit(value);
             },
             error: (err: HttpErrorResponse) =>  {
@@ -215,7 +215,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     // events 
     
     evtSelect(): void{
-        console.log('establecimiento seleccionado', this.selected!);
+        //console.log('establecimiento seleccionado', this.selected!);
         this.ldSelected.set(true);
         this.loadDataById();
     }

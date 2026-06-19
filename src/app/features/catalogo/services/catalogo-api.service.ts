@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { BienNormalizadoDTO, EmisorVehicularDto, EntidadReguladoraDTO, PaisDto, TipoDocumentoDTO, TipoEstablecimientoDTO, UnidadMedidaDTO } from "../models/catalogo.model";
+import { BienNormalizadoDTO, DocumentoRelacionadoDTO, EmisorVehicularDto, EntidadReguladoraDTO, PaisDto, TipoDocumentoDTO, TipoEstablecimientoDTO, UnidadMedidaDTO } from "../models/catalogo.model";
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +80,22 @@ export class CatalogoApiService {
 
   getBienesNormalizados(): Observable<BienNormalizadoDTO[]>{
     return this.http.get<BienNormalizadoDTO[]>(`${this.baseUrl}/bienes-normalizados`).pipe(
+      map(response => response),
+      catchError(error => {
+        return throwError(() => error);
+      })
+    )
+  }
+
+  getDocumentoRelacionados(tipo: string | 'REMITENTE' | 'TRANSPORTISTA' | null): Observable<DocumentoRelacionadoDTO[]>{
+    let httpParams = new HttpParams();
+    httpParams = tipo 
+      ? httpParams.set('tipo', tipo) 
+      : httpParams;
+
+    return this.http.get<DocumentoRelacionadoDTO[]>(`${this.baseUrl}/documentos-relacionados`,{
+      params: httpParams
+    }).pipe(
       map(response => response),
       catchError(error => {
         return throwError(() => error);
