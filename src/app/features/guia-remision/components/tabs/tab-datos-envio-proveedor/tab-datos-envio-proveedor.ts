@@ -897,7 +897,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
       const motivosTraslado = [
         SunatMotivoTrasladoEnum.compra,
-        SunatMotivoTrasladoEnum.otros
+        SunatMotivoTrasladoEnum.otros,
+        SunatMotivoTrasladoEnum.recojo_bienes_transformados
       ];
 
       if( motivosTraslado.includes(item.codigo_sunat) ){

@@ -75,24 +75,32 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         //console.log(this.tipo, this.motivoTraslado, this.remitente);
 
         if(this.tipo === 'remitente'){
-            this.ctrlRuc.setValue(this.ruc);
+            switch(this.motivoTraslado?.codigo_sunat){
+                case SunatMotivoTrasladoEnum.recojo_bienes_transformados:
+                    this.ctrlRuc.enable();
+                    break;
+                default:
+                    this.ctrlRuc.setValue(this.ruc);
+                    break;
+            }
         }
 
         if(this.tipo === 'destinatario'){
 
             switch(this.motivoTraslado?.codigo_sunat){
                 case SunatMotivoTrasladoEnum.venta: 
-                 
+                case SunatMotivoTrasladoEnum.consignacion: 
+                case SunatMotivoTrasladoEnum.devolucion: 
                     this.ctrlRuc.enable();
                     break;
                 case SunatMotivoTrasladoEnum.compra: 
                     this.ctrlRuc.setValue(this.ruc);
                     break;
                 case SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa: 
-                    //console.log('misma empresa');
+                case SunatMotivoTrasladoEnum.recojo_bienes_transformados: 
+                case SunatMotivoTrasladoEnum.importacion:
                     this.ctrlRuc.setValue(this.ruc);
                     break;
-                case SunatMotivoTrasladoEnum.importacion: break;
                 case SunatMotivoTrasladoEnum.exportacion: break;
                 case SunatMotivoTrasladoEnum.otros: break;
                 case SunatMotivoTrasladoEnum.venta_sujeta_confirmacion_comprador: break;
@@ -146,7 +154,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
             next: (value: EmpresaToSelectDto[]) => {
                 this.empresas.set(value.map(x => ({
                     ...x,
-                    disabled: (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.venta && this.remitente) ? this.remitente.ruc === x.ruc : false
+                    disabled: this.disabledOptions(x)
                 })));
                 this.ldEmpresas.set(false);
             },
@@ -227,5 +235,17 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     evtChangeEmpresa(): void{
         this.selected = null;
         this.loadData();
+    }
+
+    // functions
+
+    disabledOptions(item: EmpresaToSelectDto): boolean{
+        // Solo sí el motivo de traslado es igual a 'Recojo de bienes transformados' y es para seleccionar el remitente, se deshabilita la opción que tenga el mismo ruc al emisor
+        if( (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.recojo_bienes_transformados && this.tipo === 'remitente') && this.ruc === item.ruc)
+            return true;
+
+        if( (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.venta && this.remitente) && this.remitente.ruc === item.ruc ) 
+            return true;
+        return false;
     }
 }

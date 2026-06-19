@@ -214,7 +214,7 @@ export interface GuiaRemisionDto {
   datos_envio: GuiaRemisionDatosEnvioDto;
   proveedor: ProveedorDto | null;
   productos: GuiaRemisionDetalleDto[];
-  documentos_relacionados: GuiaRemisionDocumentoRelacionadoDto[];
+  doc_relacionado: GuiaRemisionDocumentoRelacionadoDto[];
 }
 
 

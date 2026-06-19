@@ -413,7 +413,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     evtShowAddDocRef(): void{
         if(!this.selectMotivoTraslado?.selected()){
             this.alertService.showToast({
-                title: "Debe seleccionar un motivo de traslado",
+                title: 'Debe seleccionar un motivo de traslado',
                 icon: 'warning',
                 timer: 4000,
                 timerProgressBar: true,

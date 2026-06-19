@@ -26,10 +26,10 @@
                         </th>
                         <th class="text-xs text-gray-500! font-semibold px-1!">Código</th>
                         <th class="text-xs text-gray-500! font-semibold min-w-70 px-1!">Descripción *</th>
-                        <th class="text-xs text-gray-500! font-semibold px-1!">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
                             <span class="inline-flex items-center gap-2">Cod. SUNAT <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Si conoces el código de producto SUNAT puedes ingresarlo en este campo, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
-                        <th class="text-xs text-gray-500! font-semibold px-1!">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
                             <span class="inline-flex items-center gap-2">GTIN <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Este campo puede ser usado para ingresar el código de barras de tu producto, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
                         <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
@@ -95,15 +95,26 @@
                             formControlName="codigo" 
                             pInputText />
                         </td>
-                        <td class="px-1!">
-                            <input 
+                        <td class="px-1! align-middle items-center">
+                            <textarea 
+                                onlyUpper
+                                rows="1" 
+                                fluid 
+                                pTextarea 
+                                autoResize="true"
+                                [class]=" row.get('descripcion')?.invalid && submitted ? 'block min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'block min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                                pSize="small" 
+                                formControlName="descripcion"
+                                (keydown.enter)="$event.preventDefault()"
+                            ></textarea>
+                            <!--<input 
                                 onlyUpper 
                                 [class]=" row.get('descripcion')?.invalid && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
                                 pSize="small" 
                                 fluid 
                                 formControlName="descripcion" 
                                 pInputText 
-                            />
+                            />-->
                         </td>
                         <td class="px-1! w-35!">
                             <input 

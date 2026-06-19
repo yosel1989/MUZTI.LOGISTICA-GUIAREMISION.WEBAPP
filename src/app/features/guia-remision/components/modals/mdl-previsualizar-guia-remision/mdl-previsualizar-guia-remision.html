@@ -100,8 +100,34 @@
             </div>
         </div>
 
-        @if(localData()?.){
+        @if(localData()?.doc_relacionado && localData()?.doc_relacionado?.length){
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                <div>
+                    <p class="font-bold text-start ps-3 text-primary">DOCUMENTOS RELACIONADOS</p>
+                    <div class="border border-gray-300 rounded-lg overflow-hidden ">
+                        <p-table
+                            [value]="localData()?.doc_relacionado ?? []"
+                            [showGridlines]="true"
+                        >
+                            <ng-template pTemplate="header" let-columns>
+                                <tr class="text-nowrap">
+                                    <th class="border-t-0! border-s-0! font-medium w-[30px]!">#</th>
+                                    <th class="border-t-0! font-medium ">TIPO DE DOCUMENTO</th>
+                                    <th class="border-t-0! font-medium ">NÚMERO DE DOCUMENTO</th>
+                                </tr>
+                            </ng-template>
 
+                            <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                                <tr class="odd:bg-gray-100!">
+                                    <td [class.border-b-0!]="(rowIndex+1) === localData()?.doc_relacionado?.length" class="border-s-0! font-semibold">{{ (rowIndex + 1).toString().padStart(2, '0') }}</td>
+                                    <td [class.border-b-0!]="(rowIndex+1) === localData()?.doc_relacionado?.length" >{{ rowData['tipo_doc_ref'] | uppercase}}</td>
+                                    <td [class.border-b-0!]="(rowIndex+1) === localData()?.doc_relacionado?.length" >{{ rowData['numero_doc_ref'] }}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
         }
 
         <div>
@@ -215,7 +241,7 @@
         @if(localData()?.datos_envio?.unidad_transporte?.length ){
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
-                <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
+                <div class="grid grid-cols-1 lg:grid-cols-3 p-4 border border-gray-300 rounded-lg gap-y-2">
                     @for(unidad_transporte of localData()?.datos_envio!.unidad_transporte; track unidad_transporte.id){
                         <div>
                             <p class="block font-semibold text-start">{{ unidad_transporte.job_title }}:</p>
