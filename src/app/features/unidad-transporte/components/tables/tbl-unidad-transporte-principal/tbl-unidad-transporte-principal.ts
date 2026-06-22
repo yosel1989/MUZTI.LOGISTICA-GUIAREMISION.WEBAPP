@@ -127,6 +127,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     ngOnDestroy(): void{
       this.subs.unsubscribe();
       this.subData?.unsubscribe();
+      this.ref?.close();
     }
 
     // getters

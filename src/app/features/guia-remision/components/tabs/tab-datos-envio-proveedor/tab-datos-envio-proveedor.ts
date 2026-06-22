@@ -98,6 +98,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     private _tipoTransporte = signal<string | 'PRIVADO' | 'PUBLICO'>('PRIVADO');
     private _transportista = signal<TransportistaDto | null>(null);
     private _proveedor = signal<ProveedorDto | null>(null);
+    tabIndex = signal<string | '0' | '1'>('0');
 
     @Input() set emisora(value: EmpresaToSelectDto | null) {
         if (this._emisora() !== value) {
@@ -131,6 +132,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         if (this._motivoTraslado() !== value) {
             this._motivoTraslado.set(value);
         }
+        this.tabIndex.set('0');
     }
 
     @Input() set tipoTransporte(value: string | 'PRIVADO' | 'PUBLICO' | undefined) {
@@ -482,7 +484,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     ngOnDestroy(): void {
-
+        this.modalRef?.close();
     }
 
     // functions
@@ -707,6 +709,42 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             const sub3 = cmp?.OnClose.subscribe(() => {
             this.modalRef?.close();
         });
+            
+            this.subs.add(sub2);
+            this.subs.add(sub3);
+        });
+
+        this.subs.add(sub);
+    }
+
+    evtOnShowListaProveedorEstablecimiento(): void{
+
+        this.modalRef = this.dialogService.open(MdlListaProveedorComponent, {
+            width: '1000px',
+            keepInViewport: false,
+            closable: true,
+            modal: true,
+            draggable: false,
+            position: 'top',
+            header: `Lista de proveedores registrados`,
+            styleClass: 'max-h-none!',
+            maskStyleClass: 'py-4',
+            contentStyle: {
+              'padding': "0 !important"
+            },
+            appendTo: 'body'
+        });
+
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaProveedorComponent) => {
+            const sub2 = cmp?.OnSelect.subscribe(( c: ProveedorDto) => {
+              this.f_datosEnvio.cod_establecimiento_origen.setValue(c.codigo_sunat);
+              this.f_datosEnvio.ruc_establecimiento_origen.setValue(c.numero_documento);
+              this.modalRef?.close();
+            });
+
+            const sub3 = cmp?.OnClose.subscribe(() => {
+                this.modalRef?.close();
+            });
             
             this.subs.add(sub2);
             this.subs.add(sub3);

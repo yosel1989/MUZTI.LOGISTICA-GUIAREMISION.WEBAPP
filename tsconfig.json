@@ -26,7 +26,8 @@
     "paths": {
       "@assets/*": ["assets/*"],
       "@features/*": ["app/features/*"],
-      "@core/*": ["app/core/*"]
+      "@core/*": ["app/core/*"],
+      "@public/*": ["public/*"]
     },
     
     "forceConsistentCasingInFileNames": true,

@@ -126,6 +126,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     ngOnDestroy(): void{
       this.subs.unsubscribe();
       this.subData?.unsubscribe();
+      this.ref?.close();
     }
 
     // getters

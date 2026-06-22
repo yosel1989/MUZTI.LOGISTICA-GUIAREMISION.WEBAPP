@@ -1,16 +1,16 @@
 <div class="p-card rounded-xl overflow-hidden">
 
-    <p-tabs value="0" lazy="true">
+    <p-tabs [(value)]="tabIndex" lazy="true">
         <p-tablist>
             <p-tab value="0" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:font-semibold! data-[p-active=true]:text-white!">
                 <div class="flex items-center gap-2">
                     <label for="" class="text-[12px] pointer-events-none">Datos de envío</label>
-                    @if(formDatosEnvio.invalid && (formDatosEnvio.touched || submitted()) ) {
+                    @if( formDatosEnvio.invalid && (formDatosEnvio.touched || submitted()) ) {
                         <ng-icon name="tablerAlertCircle" />
                     }
                 </div>
             </p-tab>
-            @if(mostrarProveedor()){
+            @if( mostrarProveedor() ){
                 <p-tab value="1" class="py-3! data-[p-active=false]:bg-gray-100! data-[p-active=true]:bg-primary! data-[p-active=true]:text-white!">
                     <div class="flex items-center gap-2">
                         <label for="" class="text-[12px] pointer-events-none ">Datos del proveedor</label>
@@ -647,69 +647,101 @@
 
                             <label for="" class="text-md font-semibold text-primary bg-primary-50 w-full py-2 ps-2">Datos de establecimiento</label>
 
-                            <div class="grid grid-cols-4 gap-2">
-                                <div>
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Establec. Punto Partida *</label>
-                                    <input 
-                                        onlyNumber
-                                        formControlName="cod_establecimiento_origen"
-                                        placeholder="" 
-                                        pSize="small" 
-                                        fluid 
-                                        pInputText 
-                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
-                                        [invalid]="f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted())"
-                                    />
-                                    @if (f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted())) {
-                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]!">
-                                            El código debe tener 4 digitos
-                                        </span></p-message>
-                                    }
-                                </div>
-                                <div>
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Ruc. del establecimiento *</label>
-                                    <input 
-                                        formControlName="ruc_establecimiento_origen"
-                                        placeholder="" 
-                                        pSize="small" 
-                                        fluid 
-                                        pInputText 
-                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    />
-                                </div>
-                            </div>
+                            @if(motivoTraslado!.codigo_sunat === sunatMotivoTrasladoEnum.importacion){
+                                <p-button 
+                                    [outlined]="true"
+                                    (onClick)="evtOnShowListaProveedorEstablecimiento()" 
+                                    size="small" 
+                                    styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                    class="text-xs!" 
+                                    icon="pi pi-search text-xs!" 
+                                    severity="primary" 
+                                    label="Seleccionar proveedor"
+                                ></p-button>
+                            }
 
-                            <div class="grid grid-cols-4 gap-2">
-                                <div>
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Establec. Punto Llegada *</label>
-                                    <input 
-                                        onlyNumber
-                                        formControlName="cod_establecimiento_destino"
-                                        placeholder="" 
-                                        pSize="small" 
-                                        fluid 
-                                        pInputText 
-                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                        [invalid]="f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted())"
-                                    />
-                                    @if (f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted())) {
-                                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                            El código debe tener 4 digitos
-                                        </span></p-message>
-                                    }
+                            @if(
+                                motivoTraslado!.codigo_sunat === sunatMotivoTrasladoEnum.importacion || 
+                                motivoTraslado!.codigo_sunat === sunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
+                            ){
+                                <div class="grid grid-cols-4 gap-2">
+                                    <div>
+                                        <label 
+                                            class="text-[11px]! h-4.5! text-gray-500"
+                                            [class.font-semibold]="!(f_datosEnvio.cod_puerto.value || f_datosEnvio.cod_aeropuerto.value)"
+                                        >Cod. Establec. Punto Partida 
+                                        @if(!(f_datosEnvio.cod_puerto.value || f_datosEnvio.cod_aeropuerto.value)){*}</label>
+                                        <input 
+                                            onlyNumber
+                                            formControlName="cod_establecimiento_origen"
+                                            placeholder="" 
+                                            pSize="small" 
+                                            fluid 
+                                            pInputText 
+                                            [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                                            [invalid]="f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted())"
+                                        />
+                                        @if (f_datosEnvio.cod_establecimiento_origen?.invalid && (f_datosEnvio.cod_establecimiento_origen?.touched || submitted())) {
+                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]!">
+                                                El código debe tener 4 digitos
+                                            </span></p-message>
+                                        }
+                                    </div>
+                                    <div>
+                                        <label 
+                                            class="text-[11px]! h-4.5! text-gray-500"
+                                            [class.font-semibold]="!(f_datosEnvio.cod_puerto.value || f_datosEnvio.cod_aeropuerto.value)"
+                                        >Ruc. del establecimiento 
+                                        @if(!(f_datosEnvio.cod_puerto.value || f_datosEnvio.cod_aeropuerto.value)){*}
+                                        </label>
+                                        <input 
+                                            formControlName="ruc_establecimiento_origen"
+                                            placeholder="" 
+                                            pSize="small" 
+                                            fluid 
+                                            pInputText 
+                                            [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Ruc. del establecimiento *</label>
-                                    <input 
-                                        formControlName="ruc_establecimiento_destino"
-                                        placeholder="" 
-                                        pSize="small" 
-                                        fluid 
-                                        pInputText 
-                                        [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                                    />
+                            }
+                            
+
+                            @if(
+                                motivoTraslado!.codigo_sunat === sunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
+                            ){
+                                <div class="grid grid-cols-4 gap-2">
+                                    <div>
+                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Establec. Punto Llegada *</label>
+                                        <input 
+                                            onlyNumber
+                                            formControlName="cod_establecimiento_destino"
+                                            placeholder="" 
+                                            pSize="small" 
+                                            fluid 
+                                            pInputText 
+                                            [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                            [invalid]="f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted())"
+                                        />
+                                        @if (f_datosEnvio.cod_establecimiento_destino?.invalid && (f_datosEnvio.cod_establecimiento_destino?.touched || submitted())) {
+                                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                                El código debe tener 4 digitos
+                                            </span></p-message>
+                                        }
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Ruc. del establecimiento *</label>
+                                        <input 
+                                            formControlName="ruc_establecimiento_destino"
+                                            placeholder="" 
+                                            pSize="small" 
+                                            fluid 
+                                            pInputText 
+                                            [class]="'shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     }
 

@@ -129,6 +129,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     ngOnDestroy(): void{
       this.subs.unsubscribe();
       this.subData?.unsubscribe();
+      this.ref?.close();
     }
 
     // getters

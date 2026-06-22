@@ -17,12 +17,13 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "baseHref": "/guia-remision/",
             "allowedCommonJsDependencies": [
                 "sweetalert2",
                 "quill-delta",
                 "file-saver",
                 "pdfmake/build/pdfmake",
-                "pdfmake/build/vfs_fonts",
+                "pdfmake/build/vfs_fonts"
             ],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
@@ -60,6 +61,7 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "baseHref": "/guia-remision/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
