@@ -1,0 +1,23 @@
+<div class="flex justify-content-between align-items-center">
+    <span class="text-xl font-semibold flex flex-row items-center gap-x-2">
+        {{config.data.guia?.numero_guia}}
+        @if(config.data.guia?.id_estado){
+                <span class="text-sm! uppercase font-semibold w-35 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-md">
+                        {{config.data.guia?.estado}}
+                </span>
+        }@else{
+                <span class="text-sm! uppercase font-semibold w-35 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-md"
+                >
+                        {{config.data.guia?.estado}}
+                </span>
+        }
+    </span>
+    <div class="flex gap-2">
+    <button pButton icon="pi pi-window-maximize"
+            (click)="dialogRef.maximize(true)"
+            class="p-button-rounded p-button-text"></button>
+    <button pButton icon="pi pi-times"
+            (click)="dialogRef.close()"
+            class="p-button-rounded p-button-text"></button>
+    </div>
+</div>

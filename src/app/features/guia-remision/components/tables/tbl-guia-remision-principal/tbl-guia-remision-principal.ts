@@ -11,7 +11,8 @@ import {
   ViewChild,
   ElementRef,
   signal,
-  inject
+  inject,
+  TemplateRef
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -55,6 +56,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { Router } from '@angular/router';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
+import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/headers/mdl-header-previsualizar-guia-remision/mdl-header-previsualizar-guia-remision';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -367,6 +369,12 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       inputValues: {
         data: this.selected!,
       },
+      data: {
+        guia: this.selected
+      },
+      templates: {
+        header: MdlHeaderPrevisualizarGuiaRemisionComponent,
+      }
     });
   }
 

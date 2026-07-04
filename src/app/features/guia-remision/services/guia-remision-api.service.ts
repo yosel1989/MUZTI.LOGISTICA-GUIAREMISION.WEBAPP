@@ -9,6 +9,7 @@ import { ColumnsFilterDto } from "app/core/models/filter";
 @Injectable({
   providedIn: 'root'
 })
+
 export class GuiaRemisionApiService {
   private baseUrl = `${environment.apiUrl}/GuiaRemision`;
 

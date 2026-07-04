@@ -8,7 +8,10 @@ import {
   signal,
   Input,
   effect,
-  inject
+  inject,
+  QueryList,
+  ElementRef,
+  ViewChildren
 } from '@angular/core';
 import {
   AbstractControl,
@@ -82,6 +85,7 @@ import { SelectBienNormalizadoComponent } from '@features/catalogo/components/se
   providers: [DialogService],
 })
 export class SectionProductoListadoComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChildren('descripcionInput') descripcionInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   public dialogService = inject(DialogService);
   private alertService = inject(AlertService);
@@ -255,6 +259,11 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       });
 
       this.items.push(row);
+
+      setTimeout(() => {
+        const lastInput = this.descripcionInputs.last;
+        lastInput?.nativeElement.focus();
+      });
     }
   }
 
