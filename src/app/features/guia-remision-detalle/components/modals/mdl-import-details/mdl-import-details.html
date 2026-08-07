@@ -1,0 +1,16 @@
+<p-progressbar class="mb-5!" mode="indeterminate" [style]="{ height: '6px' }" />
+
+
+
+<div class="drop-zone bg-gray-100 rounded-2xl "
+     [class.drop-zone-active]="isDragOver"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave($event)"
+     (drop)="onDrop($event)">
+  <label class="group w-full flex flex-col justify-center items-center bg-gray-100 border-0 p-0 text-4xl cursor-pointer text-center">
+    <img src="/guia-remision/assets/media/svg/excel-upload-animation.svg" width="150px" height="auto">
+    <p class="text-sm text-gray-500">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
+    <input type="file" accept=".xls,.xlsx" hidden (change)="onFileSelected($event)" #fileInput>
+  </label>
+</div>
+

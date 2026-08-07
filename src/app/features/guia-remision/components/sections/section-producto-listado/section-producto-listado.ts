@@ -53,6 +53,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { BienNormalizadoDTO, UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
 import { SelectBienNormalizadoComponent } from '@features/catalogo/components/selects/select-bien-normalizado/select-bien-normalizado';
+import { MdlImportDetails } from '@features/guia-remision-detalle/components/modals/mdl-import-details/mdl-import-details';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -292,6 +293,20 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   evtSelectSubNationalCode(event: BienNormalizadoDTO | undefined | null, form: any): void {
     const fg = form as FormGroup;
     fg.get('codigo_sunat')?.setValue(event?.codigo_sunat);
+  }
+
+  evtDownloadFormat(): void{
+    
+  }
+
+  evtImportItems(): void{
+    this.dialogService.open(MdlImportDetails, {
+      width: '600px',
+      header: 'Importar items',
+      modal: true,
+      closable: true,
+      draggable: false,
+    })
   }
 
   // handlers
