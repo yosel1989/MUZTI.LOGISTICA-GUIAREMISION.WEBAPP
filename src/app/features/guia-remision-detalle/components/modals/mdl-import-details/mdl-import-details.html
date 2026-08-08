@@ -1,16 +1,33 @@
-<p-progressbar class="mb-5!" mode="indeterminate" [style]="{ height: '6px' }" />
+<div class="p-4">
+  <div 
+      class="drop-zone bg-gray-100 rounded-2xl "
+      [class.drop-zone-active]="isDragOver"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      [class.border-red-300!]="ctrlFile.errors"
+      [class.bg-red-50!]="ctrlFile.errors"
+  >
+    <label class="group w-full flex flex-col justify-center items-center border-0 p-0 text-4xl cursor-pointer text-center">
 
+      @if(loading()){
+        <img src="/guia-remision/assets/media/svg/loading-file-animation.svg" width="150px" height="auto">
+        <p class="text-sm text-gray-500">Analizando...</p>
+      }@else{
+        <img src="/guia-remision/assets/media/svg/excel-upload-animation.svg" width="150px" height="auto">
+        <p class="text-sm text-gray-500">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
+      }
+      <input [multiple]="false" type="file" accept=".xls,.xlsx" hidden (change)="onFileSelected($event)">
+    </label>
+  </div>
 
-
-<div class="drop-zone bg-gray-100 rounded-2xl "
-     [class.drop-zone-active]="isDragOver"
-     (dragover)="onDragOver($event)"
-     (dragleave)="onDragLeave($event)"
-     (drop)="onDrop($event)">
-  <label class="group w-full flex flex-col justify-center items-center bg-gray-100 border-0 p-0 text-4xl cursor-pointer text-center">
-    <img src="/guia-remision/assets/media/svg/excel-upload-animation.svg" width="150px" height="auto">
-    <p class="text-sm text-gray-500">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
-    <input type="file" accept=".xls,.xlsx" hidden (change)="onFileSelected($event)" #fileInput>
-  </label>
+  @if(ctrlFile.errors){
+    <p-message severity="error" size="small" variant="simple" fluid class="justify-center items-center">
+      <span class="text-[10px]!">
+        @if(ctrlFile.hasError('invalidExtension')){
+          El tipo de archivo no esta permitido.
+        }
+      </span>
+    </p-message>
+  }
 </div>
-
