@@ -10,8 +10,6 @@ import { MessageModule } from 'primeng/message';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { SelectDocumentoRelacionadoComponent } from '@features/catalogo/components/selects/select-documento-relacionado/select-documento-relacionado';
-import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
-import { AlertService } from '@core/services/alert.service';
 import { Subscription } from 'rxjs';
 import { DocumentoRelacionadoDTO } from '@features/catalogo/models/catalogo.model';
 

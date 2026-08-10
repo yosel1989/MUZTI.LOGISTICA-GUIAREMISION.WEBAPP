@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { GuiaRemisionDetalleDto } from "@features/guia-remision/models/guia-remision.model";
 import { environment } from "environments/environment";
@@ -25,15 +25,38 @@ export class GuiaRemisionDetalleApiService {
 
         return this.http.post<GuiaRemisionDetalleDto[]>(`${this.baseUrl}/import-data`, formData, {
             headers: new HttpHeaders({
-                'Content-Type': 'multipart/form-data',
                 'Accept': 'application/json'
             })
-        } ).pipe(
+        }).pipe(
             map(response =>{ return response }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
         )
     }
+
+
+    downloadFormatExcelImport(): Observable<{ blob: Blob, filename: string }> {
+        return this.http.get(`${this.baseUrl}/download-template-import`, {
+            responseType: 'blob',
+            observe: 'response'
+        }).pipe(
+            map( response => {
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'plantilla-importar-items.xlsx'; // valor por defecto
+
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (match && match[1]) {
+                    filename = match[1];
+                    }
+                }
+
+                return { blob: response.body as Blob, filename };
+            })
+        );
+    }
+
+
 
 }

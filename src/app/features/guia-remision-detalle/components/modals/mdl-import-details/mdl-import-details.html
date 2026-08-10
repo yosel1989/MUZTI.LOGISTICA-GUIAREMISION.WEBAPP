@@ -1,4 +1,26 @@
-<div class="p-4">
+<div class="p-4 text-center">
+  @if( !file() ){
+    <p-message fluid severity="success" class="w-full! mb-3">
+        <ng-template #icon>
+            <i class="fa-duotone fa-solid fa-circle-info text-[30px]!"></i>
+        </ng-template>
+        <div class="text-start">
+          <span class="ml-2 text-sm! font-normal! block mb-2">Debe importar los datos con un formato correcto.</span>
+
+          <p-button 
+            (onClick)="evtDownloadFormat()"
+            size="small" 
+            severity="success" 
+            icon="fa-duotone fa-light fa-arrow-down-to-line" 
+            label="Descargar formato"
+            styleClass="ml-2"
+            [loading]="loadingDownload()"
+          ></p-button>
+        </div>
+        
+    </p-message>
+  }
+  
   <div 
       class="drop-zone bg-gray-100 rounded-2xl "
       [class.drop-zone-active]="isDragOver"
@@ -14,8 +36,25 @@
         <img src="/guia-remision/assets/media/svg/loading-file-animation.svg" width="150px" height="auto">
         <p class="text-sm text-gray-500">Analizando...</p>
       }@else{
-        <img src="/guia-remision/assets/media/svg/excel-upload-animation.svg" width="150px" height="auto">
-        <p class="text-sm text-gray-500">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
+        @if(importDetails().length){
+          <img src="/guia-remision/assets/media/svg/checked-animation.svg" width="150px" height="auto">
+          <div class="flex flex-col w-full">
+            <div class="text-start text-sm! self-center">
+              <p><span class="font-semibold">Archivo: </span>{{ file()?.name }}</p>
+              <p><span class="font-semibold">Tamaño: </span>{{ file()?.size }}</p>
+              <p><span class="font-semibold">N° Registros: </span>{{ importDetails().length }}</p>
+            </div>
+            <div class="items-center">
+              <div class="flex flex-col my-auto">
+                <p-button (onClick)="evtAccept()" fluid small="small" severity="primary" label="Importar"></p-button>
+                <p-button (onClick)="evtClear()" fluid [outlined]="true" small="small" severity="secondary" label="Cancelar"></p-button>
+              </div>
+            </div>
+          </div>
+        }@else {
+          <img src="/guia-remision/assets/media/svg/excel-upload-animation.svg" width="150px" height="auto">
+          <p class="text-sm text-gray-500">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
+        }
       }
       <input [multiple]="false" type="file" accept=".xls,.xlsx" hidden (change)="onFileSelected($event)">
     </label>

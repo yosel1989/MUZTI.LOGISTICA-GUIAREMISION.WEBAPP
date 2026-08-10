@@ -20,15 +20,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const authReq = token
-    ? req.clone({
-        setHeaders: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-          AppId: environment.appId
-        }
-      })
-    : req;
+  const headers: { [key: string]: string } = {
+    Authorization: token ? `Bearer ${token}` : '',
+    AppId: environment.appId
+  };
+
+  if (!(req.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const authReq = req.clone({
+    setHeaders: headers
+  });
 
   return next(authReq).pipe(
       catchError(error => {

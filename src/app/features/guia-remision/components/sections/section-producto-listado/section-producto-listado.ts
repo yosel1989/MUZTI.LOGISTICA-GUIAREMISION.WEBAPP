@@ -2,7 +2,6 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  AfterViewInit,
   ViewChild,
   ChangeDetectorRef,
   signal,
@@ -11,7 +10,8 @@ import {
   inject,
   QueryList,
   ElementRef,
-  ViewChildren
+  ViewChildren,
+  DestroyRef
 } from '@angular/core';
 import {
   AbstractControl,
@@ -39,7 +39,7 @@ import { OverlayModule } from 'primeng/overlay';
 import { DividerModule } from 'primeng/divider';
 import { TextareaModule } from 'primeng/textarea';
 import { DialogService } from 'primeng/dynamicdialog';
-import { finalize, Subscription } from 'rxjs';
+import { finalize, Subscription, map, pairwise, startWith } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
 import { SubNationalCode } from 'app/features/items/models/sub-national-code';
@@ -54,6 +54,8 @@ import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.ser
 import { BienNormalizadoDTO, UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
 import { SelectBienNormalizadoComponent } from '@features/catalogo/components/selects/select-bien-normalizado/select-bien-normalizado';
 import { MdlImportDetails } from '@features/guia-remision-detalle/components/modals/mdl-import-details/mdl-import-details';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -80,12 +82,16 @@ import { MdlImportDetails } from '@features/guia-remision-detalle/components/mod
     SelectModule,
     CardModule,
     OnlyUpperDirective,
-    SelectBienNormalizadoComponent
+    SelectBienNormalizadoComponent,
+    NgClass
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService],
 })
-export class SectionProductoListadoComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SectionProductoListadoComponent implements OnInit, OnDestroy {
+
+  destroyRef = inject(DestroyRef);
+
   @ViewChildren('descripcionInput') descripcionInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   public dialogService = inject(DialogService);
@@ -131,6 +137,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   subNationalCodes: SubNationalCode[] = [];
 
   private subs = new Subscription();
+  private itemsValueChangesSub = new Subscription();
 
   submitted = false;
 
@@ -148,7 +155,6 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     effect(() => {
         const detalle = this._detalle();
         if(detalle.length){
-          (this.form.get('items') as FormArray).clear();
           this.handlerValueDetalle(detalle);
         }
     });
@@ -193,10 +199,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     this.loadUnidadesMedida();
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
     this.handlerInit(5);
-  }
-
-  ngAfterViewInit(): void {
-
+    this.watchItemsValueChanges();
   }
 
   ngOnDestroy(): void {
@@ -232,34 +235,75 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     });
   }
 
+  private setBienNormalizadoValidators(row: FormGroup, value: boolean): void {
+    const codigoSubnacional = row.get('codigo_subnacional');
+    const codigoSunat = row.get('codigo_sunat');
+
+    if (value) {
+      codigoSubnacional?.setValidators([Validators.required]);
+      codigoSunat?.setValidators([Validators.required]);
+    } else {
+      codigoSubnacional?.clearValidators();
+      codigoSunat?.clearValidators();
+    }
+
+    codigoSubnacional?.updateValueAndValidity({ emitEvent: false });
+    codigoSunat?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private buildItemsFormArray(details: GuiaRemisionDetalleDto[]): FormArray<FormGroup> {
+    const array = this.fb.array<FormGroup>([]);
+
+    details.forEach((element) => {
+      const row = this.newItem(element);
+      this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
+      array.push(row);
+    });
+
+    return array;
+  }
+
+  private watchItemsValueChanges(): void {
+    this.itemsValueChangesSub.unsubscribe();
+    this.itemsValueChangesSub = this.items.valueChanges
+      .pipe(
+        
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        map((items: any[]) => items.map(item => !!item?.bien_normalizado)),
+        startWith(this.items.controls.map((row) => !!(row as FormGroup).get('bien_normalizado')?.value)),
+        pairwise()
+      )
+      .subscribe(([previous, current]) => {
+        const lastIndex = Math.min(previous.length, current.length);
+        for (let i = 0; i < lastIndex; i++) {
+          if (previous[i] !== current[i]) {
+            const row = this.items.at(i) as FormGroup;
+            this.setBienNormalizadoValidators(row, current[i]);
+          }
+        }
+
+        if (current.length > previous.length) {
+          for (let i = previous.length; i < current.length; i++) {
+            const row = this.items.at(i) as FormGroup;
+            if (row) {
+              this.setBienNormalizadoValidators(row, current[i]);
+            }
+          }
+        }
+      });
+  }
+
+  trackByIndex(_index: number): number {
+    return _index;
+  }
 
   // events
   evtAddItem(submitted: boolean = false): void {
     this.submitted = submitted;
     if (this.items.valid) {
       const row = this.newItem();
-
-      row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => {
-        row.get('codigo_subnacional')?.setValue(null);
-        row.get('codigo_sunat')?.setValue(null);
-
-        if (value) {
-          //row.get('codigo_sunat')?.disable();
-          row.get('codigo_subnacional')?.addValidators(Validators.required);
-          row.get('codigo_sunat')?.addValidators(Validators.required);
-        } else {
-          //row.get('codigo_sunat')?.enable();
-          row.get('codigo_subnacional')?.clearValidators();
-          row.get('codigo_sunat')?.clearValidators();
-        }
-
-        row.get('codigo_subnacional')?.updateValueAndValidity();
-        row.get('codigo_sunat')?.updateValueAndValidity();
-
-        this.cdr.markForCheck();
-      });
-
       this.items.push(row);
+      this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
 
       setTimeout(() => {
         const lastInput = this.descripcionInputs.last;
@@ -274,6 +318,8 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   evtOnSubmit(): boolean {
     this.submitted = true;
+    this.removeEmptyRows();
+
     if (this.form.invalid) {
       this.alertService.showToast({
         position: 'top-end',
@@ -283,6 +329,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
         timerProgressBar: true,
         timer: 4000
       });
+      console.log(this.form);
       return false;
     }
 
@@ -300,13 +347,36 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   }
 
   evtImportItems(): void{
-    this.dialogService.open(MdlImportDetails, {
+    this.ref = this.dialogService.open(MdlImportDetails, {
       width: '600px',
       header: 'Importar items',
       modal: true,
       closable: true,
       draggable: false,
-    })
+      styleClass: 'max-h-none! slide-down-dialog',
+      maskStyleClass: 'overflow-y-auto py-4',
+      appendTo: 'body'
+    });
+
+    this.ref?.onChildComponentLoaded
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((mdl: MdlImportDetails) => {
+        mdl?.OnImport
+          .subscribe((details: GuiaRemisionDetalleDto[]) => {
+            const detailsImported = details;
+            this.ref?.close();
+            setTimeout(() => {
+              const itemsArray = this.form.get('items') as FormArray;
+              itemsArray.clear();
+              this.handlerValueDetalle(detailsImported);
+            });
+          });
+      });
+  }
+
+  evtClear(): void{
+    (this.form.get('items') as FormArray).clear();
+    this.cdr.markForCheck();
   }
 
   // handlers
@@ -316,28 +386,8 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     while(count < num_items){
 
       const row = this.newItem();
-
-      row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => {
-        row.get('codigo_subnacional')?.setValue(null);
-        row.get('codigo_sunat')?.setValue(null);
-
-        if (value) {
-          //row.get('codigo_sunat')?.disable();
-          row.get('codigo_subnacional')?.addValidators(Validators.required);
-          row.get('codigo_sunat')?.addValidators(Validators.required);
-        } else {
-          //row.get('codigo_sunat')?.enable();
-          row.get('codigo_subnacional')?.clearValidators();
-          row.get('codigo_sunat')?.clearValidators();
-        }
-
-        row.get('codigo_subnacional')?.updateValueAndValidity();
-        row.get('codigo_sunat')?.updateValueAndValidity();
-
-        this.cdr.markForCheck();
-      });
-
       this.items.push(row);
+      this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
 
       count++;
     }
@@ -345,37 +395,13 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
 
   handlerValueDetalle(s: GuiaRemisionDetalleDto[]): void{
-      if(!s.length){
-          return;
-      }
-
-      s.forEach(element => {
-        const row = this.newItem(element);
-
-        row.get('bien_normalizado')?.valueChanges.subscribe((value: boolean) => {
-          row.get('codigo_subnacional')?.setValue(null);
-          row.get('codigo_sunat')?.setValue(null);
-
-          if (value) {
-
-            row.get('codigo_subnacional')?.addValidators(Validators.required);
-            row.get('codigo_sunat')?.addValidators(Validators.required);
-          } else {
-
-            row.get('codigo_subnacional')?.clearValidators();
-            row.get('codigo_sunat')?.clearValidators();
-          }
-
-          row.get('codigo_subnacional')?.updateValueAndValidity();
-          row.get('codigo_sunat')?.updateValueAndValidity();
-
-          this.cdr.markForCheck();
-        });
-
-        this.items.push(row);
-      });
+      const newItems = this.buildItemsFormArray(s);
+      this.form.setControl('items', newItems);
+      newItems.controls.forEach((row) => row.updateValueAndValidity({ emitEvent: false }));
+      this.form.updateValueAndValidity({ emitEvent: false });
+      this.watchItemsValueChanges();
+      this.cdr.markForCheck();
   }
-
 
   // Data
 
@@ -401,5 +427,34 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       });
 
     this.subs.add(s);
+  }
+
+  // Functions
+
+  isInvalid(index: number, controlName: string): boolean {
+    const row = this.items.at(index) as FormGroup;
+    return (row.get(controlName)?.invalid ?? false) && this.submitted;
+  }
+
+  private isEmptyRow(row: FormGroup): boolean {
+    return !row.get('descripcion')?.value
+      && !row.get('codigo')?.value
+      && !row.get('codigo_sunat')?.value
+      && !row.get('gtin')?.value
+      && !row.get('codigo_subnacional')?.value
+      && !row.get('bien_normalizado')?.value;
+  }
+
+  private removeEmptyRows(): void {
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      const row = this.items.at(i) as FormGroup;
+      if (this.isEmptyRow(row)) {
+        this.items.removeAt(i);
+      }
+    }
+  }
+
+  isBienNormalizado(index: number): boolean {
+    return !!this.items.at(index).get('bien_normalizado')?.value;
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, DestroyRef, inject, signal} from "@angular/core";
+import { Component, DestroyRef, inject, output, signal} from "@angular/core";
 import { AbstractControl, FormControl, ReactiveFormsModule, ValidationErrors, ValidatorFn } from "@angular/forms";
 import { GuiaRemisionDetalleApiService } from "@features/guia-remision-detalle/services/guia-remision-detalle-api-service";
 import { GuiaRemisionDetalleDto } from "@features/guia-remision/models/guia-remision.model";
@@ -12,6 +12,8 @@ import { finalize } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HttpErrorResponse } from "@angular/common/http";
 import { AlertService } from "@core/services/alert.service";
+import { AvatarModule } from "primeng/avatar";
+import saveAs from "file-saver";
 
 
 @Component({
@@ -23,12 +25,15 @@ import { AlertService } from "@core/services/alert.service";
         ToastModule, 
         CommonModule,
         ReactiveFormsModule,
-        MessageModule
+        MessageModule,
+        AvatarModule
     ],
     providers: [MessageService]
 })
 
 export class MdlImportDetails  {
+
+    OnImport = output<GuiaRemisionDetalleDto[]>();
 
     api = inject(GuiaRemisionDetalleApiService);
     destroyRef = inject(DestroyRef);
@@ -42,13 +47,17 @@ export class MdlImportDetails  {
 
     isDragOver = false;
 
-    files : File | undefined = undefined;
+    file = signal<File | undefined>(undefined);
 
     totalSize : number = 0;
 
     totalSizePercent : number = 0;
 
     loading = signal(false);
+
+    loadingDownload = signal(false);
+
+    importDetails = signal<GuiaRemisionDetalleDto[]>([]);
 
     constructor(private config: PrimeNG, private messageService: MessageService) {}
 
@@ -73,6 +82,38 @@ export class MdlImportDetails  {
 
     // Events
 
+    evtClear(): void{
+        this.file.set(undefined);
+        this.importDetails.set([]);
+    }
+
+    evtAccept(): void{
+        this.OnImport.emit(this.importDetails());
+    }
+
+    evtDownloadFormat(): void{
+        this.loadingDownload.set(true);
+        this.api.downloadFormatExcelImport()
+            .pipe(
+                finalize(()=>{this.loadingDownload.set(false)}),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe({
+                next: (val: { blob: Blob, filename: string }) => {
+                    saveAs(val.blob, val.filename);
+                },
+                error: (e) => {
+                    this.alertService.showToast({
+                        title: e.error.detalle,
+                        icon: 'error',
+                        timer: 4000,
+                        timerProgressBar: true,
+                        showCloseButton: true,
+                        target: 'body'
+                    });
+                }
+            });
+    }
 
     onDragOver(event: DragEvent) {
         console.log('onDragOver');
@@ -96,6 +137,7 @@ export class MdlImportDetails  {
             // Asignar los archivos al FormControl
             this.ctrlFile.setValue(files);
             this.ctrlFile.updateValueAndValidity();
+            this.file.set(files[0]);
             this.importData(files[0]);
         }
     }
@@ -107,6 +149,7 @@ export class MdlImportDetails  {
             console.log('files', files);
             this.ctrlFile.setValue(files);
             this.ctrlFile.updateValueAndValidity();
+            this.file.set(input.files[0]);
             this.importData(input.files[0]);
         }
     }
@@ -180,6 +223,7 @@ export class MdlImportDetails  {
     // Data
 
     importData(file: File): void{
+        this.importDetails.set([]);
         this.loading.set(true);
         this.api.importData(file)
             .pipe(
@@ -188,7 +232,7 @@ export class MdlImportDetails  {
             )
             .subscribe({
                 next: (value: GuiaRemisionDetalleDto[]) => {
-                    console.log(value);
+                    this.importDetails.set(value);
                 },
                 error: (e: HttpErrorResponse) => {
                     this.alertService.showToast({
