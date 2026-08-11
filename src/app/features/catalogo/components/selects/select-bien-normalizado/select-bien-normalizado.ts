@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output } from '@angular/core';
-import { AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@core/services/alert.service';
 import { BienNormalizadoDTO } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
@@ -14,7 +14,7 @@ import { finalize, Subscription } from 'rxjs';
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
-    FormsModule
+    FormsModule 
   ]
 })
 
@@ -25,7 +25,7 @@ export class SelectBienNormalizadoComponent implements OnInit, AfterViewInit, On
 
     @Input() classLabel: string = 'text-xs';
     @Input() label: string | null = null;
-    @Input() control!: AbstractControl;
+    @Input() control!: FormControl;
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;

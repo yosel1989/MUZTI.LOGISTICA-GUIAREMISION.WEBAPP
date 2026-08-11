@@ -523,7 +523,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       }, '¿Desea remover el vehículo seleccionado?', 'Confirmar la operación.');
     }
 
-    evtChaneValueRegistrarVehiculosConductores = (value: boolean): void => {
+    evtChaneValueRegistrarVehiculosConductores = (): void => {
       this._vehiculos.set([]);
       this._conductores.set([]);
     }
@@ -800,6 +800,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         descripcion_traslado: this.f_datosEnvio.descripcion_traslado.value,
         peso_bruto_total: this.f_datosEnvio.peso_bruto_total.value,
         unidad_medida_id: this.f_datosEnvio.unidad_medida_id.value,
+        fecha_inicio_traslado: this.f_datosEnvio.fecha_inicio_traslado.value,
         traslado_vehiculo_categoria: false,
           indic_retorno_vehiculo_envase_vacio_adicional: false,
           indic_transbordo_programado_adicional: false,

@@ -132,7 +132,7 @@
                                     />
                                 }@else{
                                     <app-select-bien-normalizado
-                                        [control]="row.get('codigo_subnacional')!"
+                                        [control]="getCodigoSubnacionalControl(row)"
                                         (selectedChange)="evtSelectSubNationalCode($event, row)"
                                     >
                                     </app-select-bien-normalizado>

@@ -39,10 +39,10 @@
         @if(importDetails().length){
           <img src="/guia-remision/assets/media/svg/checked-animation.svg" width="150px" height="auto">
           <div class="flex flex-col w-full">
-            <div class="text-start text-sm! self-center">
-              <p><span class="font-semibold">Archivo: </span>{{ file()?.name }}</p>
-              <p><span class="font-semibold">Tamaño: </span>{{ file()?.size }}</p>
-              <p><span class="font-semibold">N° Registros: </span>{{ importDetails().length }}</p>
+            <div class="text-center text-sm! self-center">
+              <p><span class="font-semibold"> {{ file()?.name }}</span></p>
+              <!--<p><span class="font-semibold">Tamaño: </span>{{ file()?.size }}</p>-->
+              <p><span class="font-semibold"></span>{{ importDetails().length }} registros</p>
             </div>
             <div class="items-center">
               <div class="flex flex-col my-auto">

@@ -155,8 +155,8 @@
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="border-s-0! font-semibold">{{ (rowIndex + 1).toString().padStart(2, '0') }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center!">{{ rowData['cantidad'] }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center!">{{ rowData['unidad_medida'] }}</td>
-                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" >{{ rowData['codigo'] }}</td>
-                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['descripcion'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-nowrap!">{{ rowData['codigo'] }}</td>
+                            <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="uppercase!">{{ rowData['descripcion'] }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['codigo_sunat'] }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length">{{ rowData['gtin'] }}</td>
                             <td [class.border-b-0!]="(rowIndex+1) === localData()?.productos?.length" class="text-center! border-e-0!">{{ rowData['indicador_bien_normalizado'] ? 'SI' : 'NO' }}</td>

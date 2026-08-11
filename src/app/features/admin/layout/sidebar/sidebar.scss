@@ -13,6 +13,7 @@ body {
   height: 100vh;
   background: #ab4141;
   transition: all 0.4s ease;
+  box-shadow: 0 0 3px #000;
 }
 .sidebar .sidebar-header {
   display: flex;
@@ -57,7 +58,7 @@ body {
   list-style: none;
   display: flex;
   gap: 4px;
-  padding: 0 15px;
+  padding: 0 0 0 15px;
   flex-direction: column;
   transform: translateY(15px);
   transition: 0.4s ease;
@@ -78,7 +79,7 @@ body {
   display: flex;
   gap: 12px;
   white-space: nowrap;
-  border-radius: 8px;
+  border-radius: 8px 0 0 8px;
   padding: 11px 15px;
   align-items: center;
   text-decoration: none;

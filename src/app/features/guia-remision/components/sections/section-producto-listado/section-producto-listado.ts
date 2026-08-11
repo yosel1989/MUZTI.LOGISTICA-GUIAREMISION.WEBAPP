@@ -17,6 +17,7 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -210,6 +211,42 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     return this.items.at(index).get('cantidad')!;
   }
 
+  getCodigoSubnacionalControl(row: AbstractControl): FormControl {
+    return (row as FormGroup).get('codigo_subnacional') as FormControl;
+  }
+
+  private resolveUnidadDescription(unidadMedidaId: number | null): string {
+    const unidad = this.unidadesMedida().find((u) => u.id === unidadMedidaId);
+    return unidad?.descripcion_corta ?? unidad?.descripcion ?? 'NIU';
+  }
+
+  private initUnidadControl(row: FormGroup): void {
+    const unidadMedidaControl = row.get('unidad_medida_id');
+    const unidadControl = row.get('unidad');
+    if (!unidadMedidaControl || !unidadControl) {
+      return;
+    }
+
+    unidadControl.setValue(this.resolveUnidadDescription(unidadMedidaControl.value), { emitEvent: false });
+
+    const sub = unidadMedidaControl.valueChanges.subscribe((value: number | null) => {
+      unidadControl.setValue(this.resolveUnidadDescription(value), { emitEvent: false });
+    });
+
+    this.subs.add(sub);
+  }
+
+  private updateUnidadValues(): void {
+    this.items.controls.forEach((control) => {
+      const row = control as FormGroup;
+      const unidadControl = row.get('unidad');
+      const unidadMedidaId = row.get('unidad_medida_id')?.value;
+      if (unidadControl) {
+        unidadControl.setValue(this.resolveUnidadDescription(unidadMedidaId), { emitEvent: false });
+      }
+    });
+  }
+
   // functions
   newItem(detalle: GuiaRemisionDetalleDto | null = null): FormGroup {
     return detalle ? this.fb.group({
@@ -257,6 +294,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     details.forEach((element) => {
       const row = this.newItem(element);
       this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
+      this.initUnidadControl(row);
       array.push(row);
     });
 
@@ -302,6 +340,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     this.submitted = submitted;
     if (this.items.valid) {
       const row = this.newItem();
+      this.initUnidadControl(row);
       this.items.push(row);
       this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
 
@@ -318,9 +357,10 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
 
   evtOnSubmit(): boolean {
     this.submitted = true;
-    this.removeEmptyRows();
+    //this.removeEmptyRows();
 
     if (this.form.invalid) {
+      console.log('errors', this.form.errors);
       this.alertService.showToast({
         position: 'top-end',
         icon: 'warning',
@@ -330,6 +370,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
         timer: 4000
       });
       console.log(this.form);
+      console.log(this.form.invalid);
       return false;
     }
 
@@ -386,6 +427,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     while(count < num_items){
 
       const row = this.newItem();
+      this.initUnidadControl(row);
       this.items.push(row);
       this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
 
@@ -414,6 +456,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (value: UnidadMedidaDTO[]) =>  {
           this.unidadesMedida.set(value);
+          this.updateUnidadValues();
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.showToast({
