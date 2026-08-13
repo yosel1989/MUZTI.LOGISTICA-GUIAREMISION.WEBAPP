@@ -8,9 +8,14 @@
     </div>
 
     <form [formGroup]="form" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
-        <div formArrayName="items" class="overflow-auto">
-            <table class="p-datatable-table w-full border-collapse text-left text-xs">
-                <thead class="p-datatable-thead">
+        <div formArrayName="items">
+            <p-table 
+                [value]="items.controls" 
+                [scrollable]="true" 
+                scrollHeight="400px" 
+                
+            >
+                <ng-template #header>
                     <tr>
                         <th class="text-xs text-gray-500! font-semibold px-1!">#</th>
                         <th class="text-xs text-gray-500! font-semibold w-25 px-1!">Cant. *</th>
@@ -19,29 +24,33 @@
                         </th>
                         <th class="text-xs text-gray-500! font-semibold px-1!">Código</th>
                         <th class="text-xs text-gray-500! font-semibold min-w-70 px-1!">Descripción *</th>
-                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-27.5">
                             <span class="inline-flex items-center gap-2">Cod. SUNAT <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Si conoces el código de producto SUNAT puedes ingresarlo en este campo, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
-                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-27.5">
                             <span class="inline-flex items-center gap-2">GTIN <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Este campo puede ser usado para ingresar el código de barras de tu producto, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
-                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-27.5">
                             <span class="flex items-center gap-2">
                                 <span>Cod. Subnacional </span>
                                 <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí podrás ingresar el código de la clasificación arancelaria de mercancías asignada a tu producto, el dato no es obligatorio." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
                             </span>
                         </th>
-                        <th class="text-xs text-gray-500! font-semibold px-1! w-[110px]">
+                        <th class="text-xs text-gray-500! font-semibold px-1! w-27.5">
                             <span class="inline-flex items-center gap-2 text-center">Bien normalizado <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Se consideran bienes normalizados a los bienes detallados en el catálogo N° 62 del anexo N°8 (Anexo III RS 123-2022-SUNAT), cuando se encuentran sujetos al SPOT o IVAP." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></span>
                         </th>
                         <th class="text-xs text-gray-500! font-semibold px-1!"></th>
                     </tr>
-                </thead>
-                <tbody class="p-datatable-tbody">
-                    @for(row of items.controls; track i; let i = $index){
-                        <tr [formGroupName]="i">
-                            <td class="text-xs! font-semibold text-gray-500!">{{ i + 1 }}</td>
-                            <td class="px-1!">
+                </ng-template>
+                
+                <ng-template pTemplate="body" let-row let-i="rowIndex">
+                    <tr [formGroupName]="i">
+                        <td class="text-xs! font-semibold text-gray-500!">{{ i + 1 }}</td>
+                        <td class="px-1!"
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'cantidad' })"
+                            (mouseleave)="hoveredCell.set(null)"
+                        >
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'cantidad'){
                                 <p-inputnumber
                                     size="small"
                                     [inputStyleClass]="isInvalid(i, 'cantidad') && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
@@ -54,9 +63,18 @@
                                     [min]="1"
                                     [showButtons]="true" 
                                 />
-                            </td>
-                            <td class="px-1! w-30!">
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('cantidad').value }}</span>
+                            }
+                            
+                        </td>
+                        <td 
+                            class="px-1! w-30!" 
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'unidad_medida_id' })"
+                        >
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'unidad_medida_id'){
                                 <p-select
+                                    #selecTd
                                     fluid
                                     size="small"
                                     panelStyleClass="text-[.875rem]!"
@@ -68,10 +86,12 @@
                                     [editable]="true"
                                     optionValue="id"
                                     optionLabel="descripcion_corta"
-                                    appendTo="body"
                                     filterBy="codigo_um,descripcion"
                                     checkmark="true"
                                     filter="true"
+                                    appendTo="body"
+                                    (onHide)="hoveredCell.set(null)"
+                                    (onChange)="hoveredCell.set(null)"
                                 >
                                     <ng-template let-unit #item>
                                         <div class="flex items-center">
@@ -79,16 +99,33 @@
                                         </div>
                                     </ng-template>
                                 </p-select>
-                            </td>
-                            <td class="px-1! w-30!">
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ getUnitMeasurementName(row.get('unidad_medida_id').value) }}</span>
+                            }
+                        </td>
+                        <td 
+                            class="px-1! w-30!"
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'codigo' })"
+                            (mouseleave)="hoveredCell.set(null)"
+                        >
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'codigo'){
                                 <input 
-                                class="min-h-9 shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
-                                pSize="small" 
-                                fluid 
-                                formControlName="codigo" 
-                                pInputText />
-                            </td>
-                            <td class="px-1! align-middle items-center">
+                                    class="min-h-9 shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
+                                    pSize="small" 
+                                    fluid 
+                                    formControlName="codigo" 
+                                    pInputText 
+                                />
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('codigo').value }}</span>
+                            }
+                        </td>
+                        <td 
+                            class="px-1!"
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'descripcion' })"
+                            (mouseleave)="hoveredCell.set(null)"
+                        >
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'descripcion'){
                                 <textarea 
                                     #descripcionInput
                                     onlyUpper
@@ -101,18 +138,34 @@
                                     formControlName="descripcion"
                                     (keydown.enter)="$event.preventDefault(); evtAddItem(true)"
                                 ></textarea>
-                            </td>
-                            <td class="px-1! w-35!">
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('descripcion').value }}</span>
+                            } 
+                        </td>
+                        <td 
+                            class="px-1! w-35!"
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'codigo_sunat' })"
+                            (mouseleave)="hoveredCell.set(null)"
+                        >
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'codigo_sunat'){
                                 <input 
-                                    [ngClass]=" isInvalid(i, 'codigo_sunat') ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                    [ngClass]=" isInvalid(i, 'codigo_sunat') ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
                                     pSize="small" 
                                     fluid 
                                     formControlName="codigo_sunat" 
                                     pInputText 
                                     [readOnly]="isBienNormalizado(i)"
                                 />
-                            </td>
-                            <td class="px-1!">
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('codigo_sunat').value }}</span>
+                            }
+                        </td>
+                        <td 
+                            class="px-1!"
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'gtin' })"
+                            (mouseleave)="hoveredCell.set(null)"
+                        >
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'gtin'){
                                 <input 
                                     class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
                                     pSize="small" 
@@ -120,8 +173,18 @@
                                     formControlName="gtin" 
                                     pInputText 
                                 />
-                            </td>
-                            <td class="px-1! max-w-25">
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('gtin').value }}</span>
+                            }
+                        </td>
+                        <td 
+                            class="px-1! max-w-25"
+                            (mouseenter)="hoveredCell.set({ row: i, col: 'codigo_subnacional' })"
+                            (mouseleave)="hoveredCell.set(null)"
+                        >
+
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'gtin'){
+
                                 @if(!row.get('bien_normalizado')?.value){
                                     <input 
                                         class="min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" 
@@ -137,34 +200,52 @@
                                     >
                                     </app-select-bien-normalizado>
                                 }
+
+                            }@else {
+                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('codigo_subnacional').value }}</span>
+                            }
+                        </td>
+                        <td class="td text-center px-1!">
+                            <div class="text-center flex items-center">
+                                <p-toggleswitch formControlName="bien_normalizado" class="mx-auto"></p-toggleswitch>
+                            </div>
+                        </td>
+                        <td class="td px-1! w-12.5">
+                            <div class="flex flex-row gap-1 justify-end">
+                                @if(items.length > 1){
+                                    <p-button 
+                                        [outlined]="true"
+                                        pTooltip="Quitar producto" 
+                                        tooltipPosition="left" 
+                                        tooltipStyleClass="text-[10px]!" 
+                                        class="text-xs!" 
+                                        size="small" 
+                                        icon="pi pi-trash text-xs! font-semibold!" 
+                                        styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                        (click)="evtRemoveItems(i)"  
+                                        rounded="true" 
+                                    />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="loadingbody" let-columns="columns">
+                    <tr style="height:46px">
+                        @for (col of columns; track $index) {
+                            <td >
+                                <p-skeleton width="100%" />
                             </td>
-                            <td class="text-center px-1!">
-                                <div class="text-center flex items-center">
-                                    <p-toggleswitch formControlName="bien_normalizado" class="mx-auto"></p-toggleswitch>
-                                </div>
-                            </td>
-                            <td class="px-1! w-12.5">
-                                <div class="flex flex-row gap-1 justify-end">
-                                    @if(items.length > 1){
-                                        <p-button 
-                                            [outlined]="true"
-                                            pTooltip="Quitar producto" 
-                                            tooltipPosition="left" 
-                                            tooltipStyleClass="text-[10px]!" 
-                                            class="text-xs!" 
-                                            size="small" 
-                                            icon="pi pi-trash text-xs! font-semibold!" 
-                                            styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                                            (click)="evtRemoveItems(i)"  
-                                            rounded="true" 
-                                        />
-                                    }
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        }
+                    </tr>
+                </ng-template>
+            </p-table>
+            <!--</table>-->
+        </div>
+
+        <div class="text-center text-sm! font-medium text-gray-600!">
+            {{ items.length }} items
         </div>
 
         <div class="flex justify-center text-center gap-2">

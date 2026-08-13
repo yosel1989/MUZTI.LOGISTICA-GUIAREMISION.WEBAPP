@@ -1,4 +1,6 @@
 import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   OnDestroy,
   OnInit,
@@ -25,7 +27,7 @@ import {
 } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RatingModule } from 'primeng/rating';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
@@ -57,11 +59,14 @@ import { SelectBienNormalizadoComponent } from '@features/catalogo/components/se
 import { MdlImportDetails } from '@features/guia-remision-detalle/components/modals/mdl-import-details/mdl-import-details';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-section-producto-listado',
   templateUrl: './section-producto-listado.html',
   styleUrls: ['./section-producto-listado.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ButtonModule,
     RatingModule,
@@ -84,12 +89,14 @@ import { NgClass } from '@angular/common';
     CardModule,
     OnlyUpperDirective,
     SelectBienNormalizadoComponent,
-    NgClass
+    NgClass,
+    ScrollingModule,
+    SkeletonModule 
   ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService],
 })
-export class SectionProductoListadoComponent implements OnInit, OnDestroy {
+export class SectionProductoListadoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroyRef = inject(DestroyRef);
 
@@ -105,11 +112,13 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
           this._detalle.set(value);
       }
   }
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref: any | undefined;
 
   @ViewChild('menuUnidadMedida') menuUnidadMedida!: Menu;
+  @ViewChild('scrollContainer', { static: false }) scrollContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('virtualTbody', { static: false }) virtualTbody?: ElementRef<HTMLTableSectionElement>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products!: any[];
@@ -117,6 +126,19 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
   cols!: any[];
 
   form: FormGroup = new FormGroup({});
+
+  estimatedRowHeight = 56;
+  private visibleBuffer = 6;
+  viewportHeight = 400;
+  renderedStartIndex = 0;
+
+  renderedRows: AbstractControl[] = [];
+  topSpacerHeight = 0;
+  bottomSpacerHeight = 0;
+  private progressiveTimer?: ReturnType<typeof setTimeout>;
+  private onWindowResizeBound?: () => void;
+
+  virtualItems!: FormArray;
 
   itemss = [
     {
@@ -138,12 +160,14 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
   subNationalCodes: SubNationalCode[] = [];
 
   private subs = new Subscription();
-  private itemsValueChangesSub = new Subscription();
 
   submitted = false;
 
   unidadesMedida = signal<UnidadMedidaDTO[]>([]);
   ldUnidadesMedida = signal(false);
+
+
+  hoveredCell = signal<{ row: number, col: string } | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -152,6 +176,8 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       items: this.fb.array([])
     });
+
+    this.virtualItems = this.fb.array([]);
 
     effect(() => {
         const detalle = this._detalle();
@@ -164,6 +190,10 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
   // getters
   get items(): FormArray {
     return this.form.get('items') as FormArray;
+  }
+
+  trackByRendered(index: number): number {
+    return index;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -200,11 +230,20 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     this.loadUnidadesMedida();
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
     this.handlerInit(5);
-    this.watchItemsValueChanges();
+    this.loadCarsLazy({ first: 0, rows: 5 } as TableLazyLoadEvent);
+  }
+
+  ngAfterViewInit(): void {
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+    if (this.onWindowResizeBound) {
+      window.removeEventListener('resize', this.onWindowResizeBound);
+    }
+    if (this.progressiveTimer) {
+      clearTimeout(this.progressiveTimer);
+    }
   }
 
   getCantidadControl(index: number): AbstractControl {
@@ -261,7 +300,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
       bien_normalizado: [detalle.indicador_bien_normalizado],
     }) : this.fb.group({
       cantidad: [1, Validators.required],
-      unidad_medida_id: [24, Validators.required],
+      unidad_medida_id: [10, Validators.required],
       unidad: ['NIU', Validators.required],
       codigo: [null],
       descripcion: [null, Validators.required],
@@ -301,66 +340,34 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     return array;
   }
 
-  private watchItemsValueChanges(): void {
-    this.itemsValueChangesSub.unsubscribe();
-    this.itemsValueChangesSub = this.items.valueChanges
-      .pipe(
-        
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        map((items: any[]) => items.map(item => !!item?.bien_normalizado)),
-        startWith(this.items.controls.map((row) => !!(row as FormGroup).get('bien_normalizado')?.value)),
-        pairwise()
-      )
-      .subscribe(([previous, current]) => {
-        const lastIndex = Math.min(previous.length, current.length);
-        for (let i = 0; i < lastIndex; i++) {
-          if (previous[i] !== current[i]) {
-            const row = this.items.at(i) as FormGroup;
-            this.setBienNormalizadoValidators(row, current[i]);
-          }
-        }
-
-        if (current.length > previous.length) {
-          for (let i = previous.length; i < current.length; i++) {
-            const row = this.items.at(i) as FormGroup;
-            if (row) {
-              this.setBienNormalizadoValidators(row, current[i]);
-            }
-          }
-        }
-      });
-  }
-
   trackByIndex(_index: number): number {
-    return _index;
+    return this.renderedStartIndex + _index;
   }
 
   // events
   evtAddItem(submitted: boolean = false): void {
     this.submitted = submitted;
-    if (this.items.valid) {
-      const row = this.newItem();
-      this.initUnidadControl(row);
-      this.items.push(row);
-      this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
+    
+    console.log('es valido');
+    const row = this.newItem();
+    this.initUnidadControl(row);
+    this.items.push(row);
+    this.cdr.markForCheck();
+    this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
 
-      setTimeout(() => {
-        const lastInput = this.descripcionInputs.last;
-        lastInput?.nativeElement.focus();
-      });
-    }
+    this.loadCarsLazy({ first: 0, rows: 5 } as TableLazyLoadEvent);
+   
   }
 
   evtRemoveItems(index: number): void {
     this.items.removeAt(index);
+    this.renderedStartIndex = Math.max(0, this.renderedStartIndex - 1);
   }
 
   evtOnSubmit(): boolean {
     this.submitted = true;
-    //this.removeEmptyRows();
 
     if (this.form.invalid) {
-      console.log('errors', this.form.errors);
       this.alertService.showToast({
         position: 'top-end',
         icon: 'warning',
@@ -369,8 +376,6 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
         timerProgressBar: true,
         timer: 4000
       });
-      console.log(this.form);
-      console.log(this.form.invalid);
       return false;
     }
 
@@ -384,7 +389,7 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
   }
 
   evtDownloadFormat(): void{
-    
+    // placeholder
   }
 
   evtImportItems(): void{
@@ -420,6 +425,18 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  loadCarsLazy(event: TableLazyLoadEvent) {
+    setTimeout(() => {
+      const loadedGroups = this.items.controls.slice(event.first!, event.first! + event.rows!);
+
+      this.virtualItems?.clear();
+      loadedGroups.forEach(group => this.virtualItems.push(group));
+
+      event.forceUpdate?.();
+    }, Math.random() * 1000 + 250);
+  }
+
+
   // handlers
 
   handlerInit(num_items: number): void{
@@ -429,19 +446,19 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
       const row = this.newItem();
       this.initUnidadControl(row);
       this.items.push(row);
+      this.virtualItems.push(row);
       this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
 
       count++;
     }
   }
 
-
   handlerValueDetalle(s: GuiaRemisionDetalleDto[]): void{
+      console.log('items', s);
       const newItems = this.buildItemsFormArray(s);
       this.form.setControl('items', newItems);
       newItems.controls.forEach((row) => row.updateValueAndValidity({ emitEvent: false }));
       this.form.updateValueAndValidity({ emitEvent: false });
-      this.watchItemsValueChanges();
       this.cdr.markForCheck();
   }
 
@@ -500,4 +517,9 @@ export class SectionProductoListadoComponent implements OnInit, OnDestroy {
   isBienNormalizado(index: number): boolean {
     return !!this.items.at(index).get('bien_normalizado')?.value;
   }
+
+  getUnitMeasurementName(id: number): string{
+    return this.unidadesMedida().find(x => x.id === id)?.descripcion_corta ?? '--';
+  }
+
 }

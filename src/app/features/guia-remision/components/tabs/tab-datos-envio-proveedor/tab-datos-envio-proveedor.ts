@@ -179,7 +179,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           fecha_inicio_traslado: new FormControl(new Date(), Validators.required),
           fecha_entrega_transportista: new FormControl(null),
           descripcion_traslado: new FormControl(null),
-          unidad_medida_id: new FormControl(null, Validators.required),
+          unidad_medida_id: new FormControl(5, Validators.required),
           peso_bruto_total: new FormControl(null, Validators.required),
           pagador_flete: new FormControl(EnumPagadorFlete.remitente),
 

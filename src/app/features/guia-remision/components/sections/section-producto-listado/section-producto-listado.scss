@@ -1,0 +1,29 @@
+.section-producto-listado-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.section-producto-listado-scroll table {
+  min-width: 100%;
+}
+
+/* Fade-in from top for newly rendered rows */
+.fade-in-top {
+  animation-name: fadeInTop;
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(.2,.8,.2,1);
+  animation-fill-mode: both;
+  will-change: transform, opacity;
+}
+
+@keyframes fadeInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
