@@ -4,7 +4,6 @@ import { TableEstablecimientoPrincipalComponent } from '@features/establecimient
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MenuItem } from 'primeng/api';
-import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-page-establecimiento-principal',
@@ -12,7 +11,6 @@ import { CardModule } from 'primeng/card';
   styleUrl: './page-establecimiento-principal.scss',
   imports: [
     CommonModule,
-    CardModule,
     TableEstablecimientoPrincipalComponent
   ],
   viewProviders: [],

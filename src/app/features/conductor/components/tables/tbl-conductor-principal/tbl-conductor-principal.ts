@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
@@ -55,6 +55,8 @@ import { ResponseDTO } from '@features/shared/models/shared';
 
 export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    @ViewChild('cm') cm: ContextMenu | undefined;
+
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
@@ -94,6 +96,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     constructor( private cd: ChangeDetectorRef ){}
 
+    menuOpened = signal(false);
+
     ngOnInit(): void{
       this.cols = [
         { field: 'select', header: '', sort: false, sticky: false  },
@@ -111,6 +115,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
         { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
         { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+        { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
       ];
     }
 
@@ -268,6 +273,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
           id: this.selected()?.id
         }
       });
+
       const sub = this.ref?.onChildComponentLoaded.subscribe((cmp: MdlEditarConductorComponent) => {
 
         const sub2 = cmp?.OnCreated.subscribe(( s: ConductorDto) => {
@@ -458,7 +464,29 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       this.selected.set(event.data);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    evtShowContextMenu(event: MouseEvent, row: ConductorDto) {
+
+      this.selected.set(row);
+
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+
+      this.cm?.hide();
+
+      this.cm?.show({
+        pageX: rect.left + target.offsetWidth,
+        pageY: rect.bottom
+      });
+    }
+
+
     // Functions
+
+    
+    isOpenCm(rowData: ConductorDto): boolean{
+      return this.menuOpened() && rowData === this.selected();
+    }
     
     isLastPage(): boolean {
         return this.data() ? this.first + this.pageSize() >= this.totalRecords : true;

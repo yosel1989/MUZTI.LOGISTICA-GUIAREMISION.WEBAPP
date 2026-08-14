@@ -3,13 +3,12 @@ import { TableConductorPrincipalComponent } from '@features/conductor/components
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MenuItem } from 'primeng/api';
-import { CardModule } from 'primeng/card';
+
 @Component({
   selector: 'app-page-conductor-principal',
   templateUrl: './page-conductor-principal.html',
   styleUrl: './page-conductor-principal.scss',
   imports: [
-    CardModule,
     TableConductorPrincipalComponent
   ],
   viewProviders: [],

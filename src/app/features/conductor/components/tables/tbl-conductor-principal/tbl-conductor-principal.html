@@ -180,9 +180,6 @@
     paginatorDropdownAppendTo="body"
     paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-0! border-t-gray-300! rounded-none!"
 
-    [contextMenu]="cm" 
-    (onContextMenuSelect)="evtOnRowSelect($event)"
-
     [loading]="ldData()"
 >
     <ng-template pTemplate="header" let-columns>
@@ -197,14 +194,16 @@
                     }
                     @default{
                         <th 
-                        pFrozenColumn 
-                        [frozen]="col.sticky ?? false"
-                        pResizableColumn 
-                        [pSortableColumn]="col.sort ? col.field : undefined" 
-                        [class.border-e-0!]="(columns.length - 1) === i"
-                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4! border-t-0!">
-                            <div class="flex items-center gap-2">
-                                {{ col.header }}
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            [alignFrozen]="col.alignFrozen ?? ''"
+                            pResizableColumn 
+                            [pSortableColumn]="col.sort ? col.field : undefined" 
+                            [class.border-e-0!]="(columns.length - 1) === i"
+                            class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4! border-t-0!"
+                        >
+                            <div class="flex items-center gap-2" [innerHTML]="col.header">
+                          
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
                             </div>
                         </th>
@@ -229,7 +228,6 @@
             <tr 
                 [pSelectableRow]="rowData" 
                 class="text-[12px]!" 
-                [pContextMenuRow]="rowData.__empty ? null : rowData" 
                 [class.p-datatable-contextmenu-row-selected]="selected() === rowData"
             >
                 @for (col of columns; let i = $index; track $index) {
@@ -237,6 +235,7 @@
                         <td 
                             pFrozenColumn
                             [frozen]="col.sticky ?? false" 
+                            [alignFrozen]="col.alignFrozen ?? ''"
                             [class.border-e-0!]="(columns.length - 1) === i"
                             [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')">—</td>
                     }@else {
@@ -266,6 +265,7 @@
                                 <td 
                                     pFrozenColumn 
                                     [frozen]="col.sticky ?? false"
+                                    [alignFrozen]="col.alignFrozen ?? ''"
                                     class="cursor-pointer py-2! px-2!" 
                                 >
                                     @if(rowData['ld_update']){
@@ -300,11 +300,11 @@
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
                                         @if(rowData['id_estado']){
-                                            <span class="w-25 text-green-700 uppercase text-center flex items-center justify-center bg-green-100 p-1 px-2">
+                                            <span class="w-25 text-green-700 uppercase text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium!">
                                                 {{rowData[col.field]}}
                                             </span>
                                         }@else{
-                                            <span class="w-25 text-gray-700 uppercase text-center flex items-center justify-center bg-gray-200 p-1 px-2">
+                                            <span class="w-25 text-gray-700 uppercase text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-lg! font-medium!">
                                                 {{rowData[col.field]}}
                                             </span>
                                         }
@@ -315,6 +315,7 @@
                                 <td
                                     pFrozenColumn 
                                     [frozen]="col.sticky ?? false"
+                                    [alignFrozen]="col.alignFrozen ?? ''"
                                     [class.border-e-0!]="(columns.length - 1) === i"
                                     class="uppercase text-nowrap py-1! font-light! truncate!"
                                 >
@@ -325,10 +326,38 @@
                                     }
                                 </td>
                             }
+                            @case('options') {
+                                <td
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    [alignFrozen]="col.alignFrozen ?? ''"
+                                    [class.border-e-0!]="(columns.length - 1) === i"
+                                    class="text-center!"
+                                >
+                                    @if(rowData['ld_update']){
+                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                                    }@else {
+                                        <p-button 
+                                            [type]="isOpenCm(rowData) ? '' : 'text'"
+                                            pTooltip="Acciones"
+                                            tooltipPosition="top"
+                                            tooltipStyleClass="text-xs!"
+                                            size="small" 
+                                            icon="fa-regular fa-ellipsis-vertical" 
+                                            [variant]="isOpenCm(rowData) ? undefined : 'text'" 
+                                            severity="primary" 
+                                            styleClass="hover:bg-primary-500! hover:text-white!"
+                                            [raised]="isOpenCm(rowData)"
+                                            (onClick)="evtShowContextMenu($event, rowData)"
+                                        />
+                                    }
+                                </td>
+                            }
                             @default {
                                 <td
                                     pFrozenColumn 
                                     [frozen]="col.sticky ?? false"
+                                    [alignFrozen]="col.alignFrozen ?? ''"
                                     [class.border-e-0!]="(columns.length - 1) === i"
                                     class="text-nowrap py-1! font-light! truncate!"
                                 >
@@ -355,7 +384,8 @@
     #cm 
     [model]="items()" 
     appendTo="body"
-    (onHide)="false"
+    (onShow)="menuOpened.set(true)" 
+    (onHide)="menuOpened.set(false); false"
 />
 
 <div class="card flex justify-center">

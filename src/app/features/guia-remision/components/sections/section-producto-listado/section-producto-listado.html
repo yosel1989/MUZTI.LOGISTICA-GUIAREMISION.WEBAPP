@@ -177,13 +177,12 @@
                                 <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('gtin').value }}</span>
                             }
                         </td>
-                        <td 
+                        <td
                             class="px-1! max-w-25"
                             (mouseenter)="hoveredCell.set({ row: i, col: 'codigo_subnacional' })"
-                            (mouseleave)="hoveredCell.set(null)"
                         >
 
-                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'gtin'){
+                            @if(hoveredCell()?.row === i && hoveredCell()?.col === 'codigo_subnacional'){
 
                                 @if(!row.get('bien_normalizado')?.value){
                                     <input 
@@ -194,15 +193,50 @@
                                         pInputText 
                                     />
                                 }@else{
-                                    <app-select-bien-normalizado
-                                        [control]="getCodigoSubnacionalControl(row)"
-                                        (selectedChange)="evtSelectSubNationalCode($event, row)"
+
+                                    <p-select
+                                        [pTooltip]="getDescripcionCategoriaBienNormalizado(row.get('categoria_bien_normalizado_id').value)"
+                                        tooltipPosition="top"
+                                        tooltipStyleClass="text-xs!"
+                                        fluid
+                                        size="small"
+                                        panelStyleClass="text-[.875rem]! max-w-[300px]!"
+                                        [inputSize]="2"
+                                        [ngClass]="isInvalid(i, 'categoria_bien_normalizado_id') ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
+                                        [options]="bienesNormalizados()"
+                                        formControlName="categoria_bien_normalizado_id"
+                                        placeholder=""
+                                        [editable]="true"
+                                        optionValue="id"
+                                        optionLabel="descripcion"
+                                        filterBy="descripcion"
+                                        checkmark="true"
+                                        filter="true"
+                                        appendTo="body"
+                                        (onHide)="hoveredCell.set(null)"
+                                        (onChange)="hoveredCell.set(null)"
                                     >
-                                    </app-select-bien-normalizado>
+                                        <ng-template let-item #item>
+                                            <div class="flex items-center text-wrap!">
+                                                {{item.descripcion}}
+                                            </div>
+                                        </ng-template>
+                                    </p-select>
                                 }
 
                             }@else {
-                                <span class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9">{{ row.get('codigo_subnacional').value }}</span>
+                                <span 
+                                    class="px-2 items-center flex text-sm rounded-lg w-full border border-gray-200 min-h-9 truncate text-nowrap overflow-hidden"
+                                >
+                                    <span class="truncate text-nowrap"> 
+                                        @if(!row.get('bien_normalizado')?.value){
+                                            {{ row.get('codigo_subnacional').value }}
+                                        }@else {
+                                            {{ getDescripcionCategoriaBienNormalizado(row.get('categoria_bien_normalizado_id').value) }}
+                                        }
+                                    </span>
+                                    
+                                </span>
                             }
                         </td>
                         <td class="td text-center px-1!">

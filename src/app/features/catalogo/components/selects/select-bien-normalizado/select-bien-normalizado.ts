@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output, output } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@core/services/alert.service';
 import { BienNormalizadoDTO } from '@features/catalogo/models/catalogo.model';
@@ -29,7 +29,9 @@ export class SelectBienNormalizadoComponent implements OnInit, AfterViewInit, On
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
-    @Output() selectedChange = new EventEmitter<BienNormalizadoDTO | undefined | null>;
+    @Output() selectedChange = new EventEmitter<BienNormalizadoDTO | undefined | null>; 
+    onHide = output<void>();
+    onChange = output<void>();
 
     data = signal<BienNormalizadoDTO[]>([]);
     ldData = signal(false);

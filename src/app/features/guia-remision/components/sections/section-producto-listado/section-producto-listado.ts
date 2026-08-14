@@ -42,7 +42,7 @@ import { OverlayModule } from 'primeng/overlay';
 import { DividerModule } from 'primeng/divider';
 import { TextareaModule } from 'primeng/textarea';
 import { DialogService } from 'primeng/dynamicdialog';
-import { finalize, Subscription, map, pairwise, startWith } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
 import { SubNationalCode } from 'app/features/items/models/sub-national-code';
@@ -55,7 +55,6 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { BienNormalizadoDTO, UnidadMedidaDTO } from '@features/catalogo/models/catalogo.model';
-import { SelectBienNormalizadoComponent } from '@features/catalogo/components/selects/select-bien-normalizado/select-bien-normalizado';
 import { MdlImportDetails } from '@features/guia-remision-detalle/components/modals/mdl-import-details/mdl-import-details';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
@@ -88,11 +87,10 @@ import { SkeletonModule } from 'primeng/skeleton';
     SelectModule,
     CardModule,
     OnlyUpperDirective,
-    SelectBienNormalizadoComponent,
     NgClass,
     ScrollingModule,
     SkeletonModule 
-  ],
+  ], 
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid, tablerAlertCircle })],
   providers: [DialogService],
 })
@@ -128,7 +126,6 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   form: FormGroup = new FormGroup({});
 
   estimatedRowHeight = 56;
-  private visibleBuffer = 6;
   viewportHeight = 400;
   renderedStartIndex = 0;
 
@@ -166,6 +163,8 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   unidadesMedida = signal<UnidadMedidaDTO[]>([]);
   ldUnidadesMedida = signal(false);
 
+  bienesNormalizados = signal<BienNormalizadoDTO[]>([]);
+  ldBienesNormalizados = signal(false);
 
   hoveredCell = signal<{ row: number, col: string } | null>(null);
 
@@ -213,6 +212,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
         codigo_sunat: element.get('codigo_sunat')?.value,
         gtin: element.get('gtin')?.value,
         codigo_subnacional: element.get('codigo_subnacional')?.value,
+        categoria_bien_normalizado_id: element.get('categoria_bien_normalizado_id')?.value,
         bien_normalizado: element.get('bien_normalizado')?.value,
       };
     });
@@ -228,6 +228,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   ngOnInit(): void {
     this.loadUnidadesMedida();
+    this.loadBienesNormalizados();
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
     this.handlerInit(5);
     this.loadCarsLazy({ first: 0, rows: 5 } as TableLazyLoadEvent);
@@ -297,6 +298,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       codigo_sunat: [detalle.codigo_sunat],
       gtin: [detalle.gtin],
       codigo_subnacional: [detalle.codigo_subnacional],
+      categoria_bien_normalizado_id: [detalle.categoria_bien_normalizado_id],
       bien_normalizado: [detalle.indicador_bien_normalizado],
     }) : this.fb.group({
       cantidad: [1, Validators.required],
@@ -307,23 +309,28 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       codigo_sunat: [null],
       gtin: [null],
       codigo_subnacional: [null],
+      categoria_bien_normalizado_id: [null],
       bien_normalizado: [false],
     });
   }
 
   private setBienNormalizadoValidators(row: FormGroup, value: boolean): void {
     const codigoSubnacional = row.get('codigo_subnacional');
+    const categoriaBienNormalizadoId = row.get('categoria_bien_normalizado_id');
     const codigoSunat = row.get('codigo_sunat');
 
     if (value) {
       codigoSubnacional?.setValidators([Validators.required]);
+      categoriaBienNormalizadoId?.setValidators([Validators.required]);
       codigoSunat?.setValidators([Validators.required]);
     } else {
       codigoSubnacional?.clearValidators();
+      categoriaBienNormalizadoId?.clearValidators();
       codigoSunat?.clearValidators();
     }
 
     codigoSubnacional?.updateValueAndValidity({ emitEvent: false });
+    categoriaBienNormalizadoId?.updateValueAndValidity({ emitEvent: false });
     codigoSunat?.updateValueAndValidity({ emitEvent: false });
   }
 
@@ -489,6 +496,29 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     this.subs.add(s);
   }
 
+  loadBienesNormalizados(): void{
+    this.ldBienesNormalizados.set(true);
+    const s = this.catalogoApiService.getBienesNormalizados()
+    .pipe(finalize(()=>{
+      this.ldBienesNormalizados.set(false);
+    }))
+    .subscribe({
+      next: (value: BienNormalizadoDTO[]) =>  {
+        this.bienesNormalizados.set(value);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showToast({
+          title: err.error.detalle,
+          icon: 'error',
+          timer: 4000,
+          timerProgressBar: true,
+          showCloseButton: true
+        });
+      },
+    });
+    this.subs.add(s);
+  }
+
   // Functions
 
   isInvalid(index: number, controlName: string): boolean {
@@ -520,6 +550,14 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   getUnitMeasurementName(id: number): string{
     return this.unidadesMedida().find(x => x.id === id)?.descripcion_corta ?? '--';
+  }
+
+  getCodeCategoriaBienNormalizado(id: number): string{
+    return this.bienesNormalizados().find(x => x.id === id)?.codigo_sunat ?? '--';
+  }
+
+  getDescripcionCategoriaBienNormalizado(id: number): string{
+    return this.bienesNormalizados().find(x => x.id === id)?.descripcion ?? '--';
   }
 
 }

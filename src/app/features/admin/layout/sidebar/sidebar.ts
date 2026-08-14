@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { TooltipModule } from 'primeng/tooltip';
 
 
 @Component({
@@ -12,7 +13,8 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
   imports: [
     PanelMenuModule,
     RouterModule,
-    ScrollPanelModule
+    ScrollPanelModule,
+    TooltipModule
  ],
 })
 export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy{

@@ -232,6 +232,7 @@ export interface GuiaRemisionDetalleDto{
   codigo_sunat: string | null;
   gtin: string | null;
   codigo_subnacional: string | null;
+  categoria_bien_normalizado_id: number | null;
   indicador_bien_normalizado: boolean;
 }
 
