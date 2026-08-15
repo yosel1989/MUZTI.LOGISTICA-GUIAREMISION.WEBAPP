@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject, ViewChild } from '@angular/core';
 import { EliminarProveedorResponseDto, ProveedorDto } from '@features/proveedor/models/proveedor';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ButtonModule } from 'primeng/button';
@@ -18,7 +18,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { MdlEditarProveedorComponent } from '../../modals/mdl-editar-proveedor/mdl-editar-proveedor.component';
 import { UtilService } from 'app/core/services/util.service';
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
@@ -55,6 +55,8 @@ import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 
 export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
+    @ViewChild('cm') cm: ContextMenu | undefined;
+
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
@@ -90,6 +92,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
+    menuOpened = signal(false);
+
     constructor(private cd: ChangeDetectorRef){}
 
     ngOnInit(): void{
@@ -112,6 +116,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
         { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
         { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+        { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
       ];
     }
 
@@ -446,10 +451,48 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     evtOnRowSelect(event: TableRowSelectEvent) {
       this.selected.set(event.data);
-      //this.setSelected(event.data);
     }
 
-    //functions
+    evtShowContextMenu(event: MouseEvent, rowData: ProveedorDto) {
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const currentSelected = this.selected();
+
+      this.selected.set(rowData);
+      if(this.menuOpened()){
+        if(currentSelected !== rowData){
+          this.cm?.hide();
+          const customEvent = new MouseEvent('contextmenu', {
+            bubbles: event.bubbles,
+            cancelable: event.cancelable,
+            view: event.view,
+            clientX: rect.left + target.offsetWidth,
+            clientY: rect.bottom
+          });
+          setTimeout(()=>{
+            this.cm?.show(customEvent);
+          },0);
+        }
+      }else{
+        const customEvent = new MouseEvent(event.type, {
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          view: event.view,
+          clientX: rect.left + target.offsetWidth,
+          clientY: rect.bottom
+        });
+
+        this.cm?.show(customEvent);
+      }
+    }
+
+
+    // Functions
+
+    isOpenCm(rowData: ProveedorDto): boolean{
+      return this.menuOpened() && rowData === this.selected();
+    }
+
     isLastPage(): boolean {
         return this.data() ? this.first + this.pageSize() >= this.totalRecords : true;
     }
@@ -464,10 +507,10 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     private buildMenuItems(selected: ProveedorDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
-        { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }},
+        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }},
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
       ];
     }
 

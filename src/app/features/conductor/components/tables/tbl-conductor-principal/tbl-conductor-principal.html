@@ -1,66 +1,62 @@
-<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-[.5px] dark:border-b-gray-700">
+<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-0 py-4! px-4!">
     <ng-template #start>
     <div class="flex items-center gap-1">
         <p-button 
-        size="small"
-        icon="pi pi-angle-left text-[13px]!" 
-        size="small" 
-        [disabled]="isFirstPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Anterior"
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtPrev()"
+            size="small"
+            icon="pi pi-angle-left text-[13px]!" 
+            size="small" 
+            [disabled]="isFirstPage()"
+           
+            severity="secondary"
+            pTooltip="Anterior"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtPrev()"
         />
         <p-button icon="pi pi-refresh text-[13px]!" 
-        size="small"  
-        severity="secondary" 
-        [outlined]="true"
-        pTooltip="Actualizar" 
-        tooltipPosition="top" 
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="reload()"
+            size="small"  
+            severity="secondary" 
+            pTooltip="Actualizar" 
+            tooltipPosition="top" 
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="reload()"
         />
         <p-button 
-        icon="pi pi-angle-right text-[13px]!" 
-        size="small" 
-        [disabled]="isLastPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Siguiente"
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtNext()"
+            icon="pi pi-angle-right text-[13px]!" 
+            size="small" 
+            [disabled]="isLastPage()"
+            severity="secondary"
+            pTooltip="Siguiente"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs!"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtNext()"
         />
         
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
         
         <p-button 
-        icon="pi pi-plus text-[13px]!"  
-        size="small" 
-        severity="info" 
-        [outlined]="true"
-        pTooltip="Nuevo conductor" 
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs! text-center"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtOnCreate()"
+            icon="pi pi-plus text-[13px]!"  
+            size="small" 
+            severity="secondary" 
+            pTooltip="Nuevo conductor" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-center"
+            placeholder="Top"
+            styleClass="w-9! h-9!"
+            (click)="evtOnCreate()"
         />
 
         @if(selected()){
             <p-button 
                 icon="pi pi-pencil text-[13px]!"  
                 size="small" 
-                severity="warn" 
-                [outlined]="true"
+                severity="secondary" 
                 pTooltip="Editar" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs!"
@@ -71,8 +67,7 @@
             <p-button 
                 icon="pi pi-trash text-[13px]!"  
                 size="small" 
-                severity="danger" 
-                [outlined]="true"
+                severity="secondary" 
                 pTooltip="Eliminar" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs!"
@@ -81,32 +76,30 @@
                 (click)="evtOnDelete()"
             />
             @if(selected()?.id_estado === 0){
-            <p-button 
-                icon="pi pi-check-circle text-[13px]!"  
-                size="small" 
-                severity="success" 
-                [outlined]="true"
-                pTooltip="Activar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnUpdateStatus(1)"
-            />
+                <p-button 
+                    icon="pi pi-check-circle text-[13px]!"  
+                    size="small" 
+                    severity="secondary" 
+                    pTooltip="Activar" 
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9!"
+                    (click)="evtOnUpdateStatus(1)"
+                />
             }
             @if(selected()?.id_estado === 1){
-            <p-button 
-                icon="pi pi-ban text-[13px]!" 
-                size="small" 
-                severity="secondary" 
-                [outlined]="true"
-                pTooltip="Desactivar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnUpdateStatus(0)"
-            />
+                <p-button 
+                    icon="pi pi-ban text-[13px]!" 
+                    size="small" 
+                    severity="secondary" 
+                    pTooltip="Desactivar" 
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9!"
+                    (click)="evtOnUpdateStatus(0)"
+                />
             }
         }
 
@@ -176,9 +169,9 @@
     (firstChange)="evtFirstChange($event)"
     (rowsChange)="evtRowsChange($event)"
 
-    class="border-none! text-mono! max-w-full!"
+    class="border-t-0! border-gray-200! text-mono! max-w-full!"
     paginatorDropdownAppendTo="body"
-    paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-0! border-t-gray-300! rounded-none!"
+    paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none! py-3!"
 
     [loading]="ldData()"
 >
@@ -203,7 +196,6 @@
                             class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4! border-t-0!"
                         >
                             <div class="flex items-center gap-2" [innerHTML]="col.header">
-                          
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
                             </div>
                         </th>
@@ -233,11 +225,12 @@
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
-                            pFrozenColumn
-                            [frozen]="col.sticky ?? false" 
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
                             [alignFrozen]="col.alignFrozen ?? ''"
                             [class.border-e-0!]="(columns.length - 1) === i"
-                            [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')">—</td>
+                            [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
+                        >—</td>
                     }@else {
                         @switch(col.field){
                             @case('select'){
@@ -346,7 +339,7 @@
                                             icon="fa-regular fa-ellipsis-vertical" 
                                             [variant]="isOpenCm(rowData) ? undefined : 'text'" 
                                             severity="primary" 
-                                            styleClass="hover:bg-primary-500! hover:text-white!"
+                                            styleClass="hover:bg-primary-500! hover:text-white! w-9! h-9!"
                                             [raised]="isOpenCm(rowData)"
                                             (onClick)="evtShowContextMenu($event, rowData)"
                                         />

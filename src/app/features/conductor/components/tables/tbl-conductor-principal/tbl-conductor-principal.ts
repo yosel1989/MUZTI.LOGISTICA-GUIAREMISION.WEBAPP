@@ -464,20 +464,37 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       this.selected.set(event.data);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    evtShowContextMenu(event: MouseEvent, row: ConductorDto) {
-
-      this.selected.set(row);
-
+    evtShowContextMenu(event: MouseEvent, rowData: ConductorDto) {
       const target = event.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
+      const currentSelected = this.selected();
 
-      this.cm?.hide();
+      this.selected.set(rowData);
+      if(this.menuOpened()){
+        if(currentSelected !== rowData){
+          this.cm?.hide();
+          const customEvent = new MouseEvent('contextmenu', {
+            bubbles: event.bubbles,
+            cancelable: event.cancelable,
+            view: event.view,
+            clientX: rect.left + target.offsetWidth,
+            clientY: rect.bottom
+          });
+          setTimeout(()=>{
+            this.cm?.show(customEvent);
+          },0);
+        }
+      }else{
+        const customEvent = new MouseEvent(event.type, {
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          view: event.view,
+          clientX: rect.left + target.offsetWidth,
+          clientY: rect.bottom
+        });
 
-      this.cm?.show({
-        pageX: rect.left + target.offsetWidth,
-        pageY: rect.bottom
-      });
+        this.cm?.show(customEvent);
+      }
     }
 
 
@@ -502,10 +519,10 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     private buildMenuItems(selected: ConductorDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
-        { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+        { label: 'Editar', icon: 'pi pi-pencil ', command: () => { this.evtOnEdit(); }},
+        { label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }},
+        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
+        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
       ];
     }
 
