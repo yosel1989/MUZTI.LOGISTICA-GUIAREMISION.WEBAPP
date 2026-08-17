@@ -24,7 +24,7 @@ export class PageGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit
     
     @ViewChild('fltGuiaRemision') fltGuiaRemision: FltGuiaRemisionPrincipalComponent | undefined;
 
-    collapseFilter = signal(false);
+    collapseFilter = signal(true);
 
     constructor(
       private ls: LayoutService

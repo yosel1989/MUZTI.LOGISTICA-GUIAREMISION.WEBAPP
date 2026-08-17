@@ -210,8 +210,25 @@
     </div>
     
     <div class="flex justify-end gap-2 pt-4">
-        <p-button type="reset" styleClass="w-[92px]!" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
-        <p-button type="submit" styleClass="w-[92px]!" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" [disabled]="ldData()" />
+        <p-button      
+            type="reset" 
+            styleClass="w-[92px]!" 
+            icon="pi pi-times" 
+            size="small" 
+            label="Cancelar" 
+            severity="secondary" 
+            (click)="evtOnClose()"
+        />
+        <p-button 
+            type="submit" 
+            styleClass="w-[92px]!" 
+            icon="pi pi-save" 
+            size="small" 
+            [label]="ldSubmit() ? '' : 'Guardar'" 
+            [loading]="ldSubmit()" 
+            severity="primary" 
+            [disabled]="ldData()" 
+        />
     </div>
 
 </form>

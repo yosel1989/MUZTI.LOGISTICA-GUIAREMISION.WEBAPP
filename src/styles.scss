@@ -126,3 +126,10 @@ p-select{
     //@apply bg-gray-100!;
   }
 }
+
+.pButtonSmText{
+  font-size: var(--p-button-sm-font-size) !important;
+}
+.pButtonSmFw{
+  font-weight: var(--p-button-label-font-weight) !important;
+}

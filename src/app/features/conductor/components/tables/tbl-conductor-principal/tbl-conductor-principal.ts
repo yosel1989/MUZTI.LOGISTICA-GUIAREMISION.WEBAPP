@@ -28,6 +28,7 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 import { ResponseDTO } from '@features/shared/models/shared';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 @Component({
   selector: 'app-tbl-conductor-principal',
@@ -93,10 +94,9 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
+    
 
     constructor( private cd: ChangeDetectorRef ){}
-
-    menuOpened = signal(false);
 
     ngOnInit(): void{
       this.cols = [
@@ -230,14 +230,17 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarConductorComponent,  {
         width: '600px',
-        closable: true,
+        closable: false,
         modal: true,
         draggable: false,
         position: 'top',
         header: 'Registrar Conductor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body'
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader,
+        }
       });
 
       const sub = this.ref?.onChildComponentLoaded.subscribe((cmp: MdlRegistrarConductorComponent) => {
@@ -261,7 +264,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
       this.ref = this.dialogService.open(MdlEditarConductorComponent,  {
         width: '600px',
-        closable: true,
+        closable: false,
         modal: true,
         draggable: false,
         position: 'top',
@@ -271,6 +274,9 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         appendTo: 'body',
         inputValues:{
           id: this.selected()?.id
+        },
+        templates: {
+          header: MdlHeader,
         }
       });
 
@@ -320,6 +326,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     }
 
     evtOnDelete(): void{
+      if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
           header: '¿Eliminar conductor?',
           message: 'Confirmar la operación.',
@@ -470,7 +477,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       const currentSelected = this.selected();
 
       this.selected.set(rowData);
-      if(this.menuOpened()){
+      if(this.cm?.visible()){
         if(currentSelected !== rowData){
           this.cm?.hide();
           const customEvent = new MouseEvent('contextmenu', {
@@ -502,7 +509,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     
     isOpenCm(rowData: ConductorDto): boolean{
-      return this.menuOpened() && rowData === this.selected();
+      return (this.cm?.visible() && rowData === this.selected()) ?? false;
     }
     
     isLastPage(): boolean {
@@ -519,10 +526,10 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
     private buildMenuItems(selected: ConductorDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil ', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
-        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
       ];
     }
 

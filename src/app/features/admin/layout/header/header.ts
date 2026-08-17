@@ -47,7 +47,8 @@ import { Router } from '@angular/router';
   providers: [ConfirmationService]
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
-    private ls = inject(StorageService);
+    private ss = inject(StorageService);
+    private ls = inject(LayoutService);
 
     @ViewChild('breadcrumbContainer') breadcrumbContainer: ElementRef | undefined;
     @ViewChild('menuUser') menuUser!: Menu;  
@@ -58,7 +59,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
 
     public user: User | null = null;
 
-    collapsed = signal(false);
+    collapsed = signal(true);
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -68,7 +69,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
         private router: Router
     ) {
         this.breadCrumbItems = this.layoutService.breadCrumbItems;
-        this.user = this.ls.getUser();
+        this.user = this.ss.getUser();
+        this.ls.sidebarCollapsed.subscribe((res: boolean) => {
+            this.collapsed.set(res);
+            this.handlerSidebarCollapsed();
+        });
     }
 
     ngOnInit(): void {
@@ -133,8 +138,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     evtToggleSidebar(): void{
-        document.querySelector("body")?.classList.toggle("collapsed");
         this.collapsed.set(!this.collapsed());
+        this.handlerSidebarCollapsed();
     }
 
     // handlers
@@ -166,4 +171,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
         this.player.play();
     }
 
+    handlerSidebarCollapsed(){
+        if(this.collapsed()){
+            document.querySelector("body")?.classList.add("collapsed");
+        }else{
+            document.querySelector("body")?.classList.remove("collapsed");
+        }
+    }
 }

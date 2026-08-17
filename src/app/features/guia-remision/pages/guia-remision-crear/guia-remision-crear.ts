@@ -45,6 +45,7 @@ import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/sel
 import { TextareaModule } from 'primeng/textarea';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 import { TypingComponent } from '@features/shared/components/typing/typing';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 export interface Puerto{
     value: string;
@@ -426,7 +427,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.modalRef = this.dialogService.open(MdlComprobanteReferenciaComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -440,6 +441,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             inputValues: {
                 tipo: tipoGuia,
                 motivoTraslado: this.selectMotivoTraslado?.selected()?.codigo_sunat
+            },
+            templates: {
+                header: MdlHeader
             }
         });
 
@@ -471,7 +475,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.modalRef = this.dialogService.open(MdlEditarComprobanteReferenciaComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -484,6 +488,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             appendTo: 'body',
             data: {
                 row: body
+            },
+            templates: {
+                header: MdlHeader
             }
         });
 
@@ -540,13 +547,13 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
             header: `Lista de establecimientos registrados`,
-            styleClass: 'max-h-none!',
-            maskStyleClass: 'py-4',
+            styleClass: 'max-h-none! slide-down-dialog',
+            maskStyleClass: 'overflow-y-auto py-4',
             contentStyle: {
                 'padding': "0 !important"
             },
@@ -556,6 +563,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 tipo: to,
                 motivoTraslado: this.selectMotivoTraslado?.selected(),
                 remitente: this.remitente()
+            },
+            templates: {
+                header: MdlHeader
             }
         });
 
@@ -616,7 +626,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.modalRef = this.dialogService.open(MdlPrevisualizarPdfComponent,  {
             width: '1200px',
             height: '90vh',
-            closable: true,
+            closable: false,
             maximizable: true,
             modal: true,
             draggable: false,
@@ -631,6 +641,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             appendTo: 'body',
             inputValues:{
                 data: this.request
+            },
+            templates: {
+                header: MdlHeader
             }
         });
     }

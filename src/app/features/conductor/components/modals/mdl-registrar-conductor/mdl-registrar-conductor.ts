@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,20 +26,20 @@ import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
 @Component({
   selector: 'app-mdl-registrar-conductor',
   imports: [
-    FormsModule, 
+    FormsModule,
     InputNumberModule,
-    InputTextModule, 
-    TextareaModule, 
-    ButtonModule, 
-    EditorModule, 
-    ReactiveFormsModule, 
-    MessageModule, 
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    EditorModule,
+    ReactiveFormsModule,
+    MessageModule,
     ConfirmDialog,
     SelectModule,
     OnlyNumberDirective,
     OnlyUpperDirective,
     SelectTipoDocumentoComponent
-  ],
+],
   templateUrl: './mdl-registrar-conductor.html',
   styleUrl: './mdl-registrar-conductor.scss',
   providers: [ConfirmationService]

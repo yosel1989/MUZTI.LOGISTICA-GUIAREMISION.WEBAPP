@@ -28,6 +28,7 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 @Component({
   selector: 'app-tbl-proveedor-principal',
@@ -230,13 +231,17 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarProveedorComponent,  {
         width: '700px',
-        closable: true,
+        closable: false,
+        draggable: false,
         modal: true,
         position: 'top',
         header: 'Registrar Proveedor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body'
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        }
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarProveedorComponent) => {
@@ -260,7 +265,8 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
       this.ref = this.dialogService.open(MdlEditarProveedorComponent,  {
         width: '700px',
-        closable: true,
+        closable: false,
+        draggable: false,
         modal: true,
         position: 'top',
         header: 'Editar Proveedor',
@@ -269,6 +275,9 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
         appendTo: 'body',
         inputValues:{
           id: this.selected()!.id
+        },
+        templates: {
+          header: MdlHeader
         }
       });
 
@@ -490,7 +499,7 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
     // Functions
 
     isOpenCm(rowData: ProveedorDto): boolean{
-      return this.menuOpened() && rowData === this.selected();
+      return (this.cm?.visible() && rowData === this.selected()) ?? false;
     }
 
     isLastPage(): boolean {
@@ -507,10 +516,10 @@ export class TableProveedorPrincipalComponent implements OnInit, AfterViewInit, 
 
     private buildMenuItems(selected: ProveedorDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
       ];
     }
 

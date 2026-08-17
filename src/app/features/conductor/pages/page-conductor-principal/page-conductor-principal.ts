@@ -20,7 +20,7 @@ export class PageConductorPrincipalComponent implements OnInit, AfterViewInit, O
 
     private ls = inject(LayoutService);
 
-    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Conductor', labelClass : 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-sm! font-semibold text-primary!' }, { label: 'Conductor', labelClass : 'text-sm! text-slate-600! font-regular!' }];
 
     ngOnInit(): void{
       this.ls.breadCrumbItems = this.breadCrumbItems;

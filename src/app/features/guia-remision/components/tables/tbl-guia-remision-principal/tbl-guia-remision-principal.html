@@ -1,5 +1,5 @@
 
-<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-[.5px] dark:border-b-gray-700">
+<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-0 py-4! px-4!">
     <ng-template #start>
     <div class="flex items-center gap-1">
         <p-button 
@@ -7,11 +7,10 @@
             icon="pi pi-angle-left text-[13px]!" 
             size="small" 
             [disabled]="isFirstPage()"
-            [outlined]="true"
             severity="secondary"
             pTooltip="Anterior"
             tooltipPosition="top"
-            tooltipStyleClass="text-xs!"
+            tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
             styleClass="w-9! h-9!"
             (click)="evtPrev()"
@@ -20,10 +19,9 @@
             icon="pi pi-refresh text-[13px]!" 
             size="small"  
             severity="secondary" 
-            [outlined]="true"
             pTooltip="Actualizar" 
             tooltipPosition="top" 
-            tooltipStyleClass="text-xs!"
+            tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
             styleClass="w-9! h-9!"
             (click)="reload()"
@@ -32,11 +30,10 @@
             icon="pi pi-angle-right text-[13px]!" 
             size="small" 
             [disabled]="isLastPage()"
-            [outlined]="true"
             severity="secondary"
             pTooltip="Siguiente"
             tooltipPosition="top"
-            tooltipStyleClass="text-xs!"
+            tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
             styleClass="w-9! h-9!"
             (click)="evtNext()"
@@ -47,8 +44,7 @@
         <p-button 
             icon="pi pi-plus text-[13px]!"  
             size="small" 
-            severity="info" 
-            [outlined]="true"
+            severity="secondary" 
             pTooltip="Emitir Nueva Guía" 
             tooltipPosition="top"
             tooltipStyleClass="text-xs! text-center"
@@ -57,12 +53,11 @@
             routerLink="nuevo"
         />
 
-        @if(selected){
+        @if(selected()){
             <p-button 
                 icon="pi pi-chevron-down text-[13px]!"  
                 size="small" 
-                severity="primary" 
-                [outlined]="true"
+                severity="secondary" 
                 pTooltip="Acciones" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs! text-center"
@@ -72,94 +67,6 @@
                 iconPos="right"
                 (click)="evtShowMenuActions($event, menuActions)"
             />
-
-            <!--
-            <p-button 
-                icon="pi pi-send text-green-500! text-[13px]!"
-                size="small"
-                severity="secondary"
-                [outlined]="true"
-                pTooltip="Aprobar y Emitir"
-                tooltipPosition="bottom"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9! border-green-200!"
-                (onClick)="evtOnAprobarGuia()"
-            />
-            <p-button 
-                icon="pi pi-check-circle text-green-500! text-[13px]!"
-                size="small"
-                severity="secondary"
-                [outlined]="true"
-                pTooltip="Confirmar"
-                tooltipPosition="bottom"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9! border-green-200!"
-                (click)="evtOnConfirmarGuia()"
-            />
-            <p-button 
-                icon="pi pi-times-circle text-red-500! text-[13px]!"
-                size="small"
-                severity="secondary"
-                [outlined]="true"
-                pTooltip="Rechazar"
-                tooltipPosition="bottom"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9! border-red-200!"
-                (click)="evtOnRechazarGuia()"
-            />
-            <p-button 
-                icon="pi pi-pencil text-yellow-500! text-[13px]!"
-                size="small"
-                severity="warn"
-                [outlined]="true"
-                pTooltip="Editar"
-                tooltipPosition="bottom"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnEditarGuia()"
-            />
-            <p-button 
-                icon="pi pi-ban text-red-500! text-[13px]!"
-                size="small"
-                severity="secondary"
-                [outlined]="true"
-                pTooltip="Anular"
-                tooltipPosition="bottom"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9! border-red-200!"
-                (click)="evtOnAnularGuia()"
-            />
-            <p-button 
-                icon="pi pi-history text-[13px]!"  
-                size="small" 
-                severity="secondary" 
-                [outlined]="true"
-                pTooltip="Historial" 
-                tooltipPosition="bottom"
-                tooltipStyleClass="text-xs!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtShowHistory()"
-            />
-            @if(selected.estado_sunat === 'ENVIADO'){
-                <p-button 
-                    icon="pi pi-file-pdf text-[13px]!"  
-                    size="small" 
-                    severity="secondary" 
-                    [outlined]="true"
-                    pTooltip="Ver PDF" 
-                    tooltipPosition="bottom"
-                    tooltipStyleClass="text-xs!"
-                    placeholder="Top"
-                    styleClass="w-9! h-9!"
-                    (click)="evtOnShowPdf()"
-                />
-            }-->
         }
            
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
@@ -167,11 +74,10 @@
         <p-button 
             icon="pi pi-cloud-download text-[13px]!" 
             size="small"
-            [outlined]="true"
             severity="secondary"
             pTooltip="Descargar"
             tooltipPosition="top"
-            tooltipStyleClass="text-xs!"
+            tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
             styleClass="w-9! h-9!"
             placeholder="Top"
@@ -182,11 +88,10 @@
         <p-button 
             [icon]="(hands() ? 'fa-solid ' : 'fa-light ') + 'fa-hand text-[13px]! '" 
             size="small"
-            [outlined]="true"
             severity="secondary"
             pTooltip="Arrastrar"
             tooltipPosition="top"
-            tooltipStyleClass="text-xs!"
+            tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
             styleClass="w-9! h-9!"
             placeholder="Top"
@@ -200,11 +105,10 @@
             <p-button 
                 icon="pi pi-filter text-[13px]!" 
                 size="small"
-                [outlined]="true"
                 severity="secondary"
                 pTooltip="Filtros"
                 tooltipPosition="top"
-                tooltipStyleClass="text-xs!"
+                tooltipStyleClass="text-xs! text-slate-300!"
                 placeholder="Top"
                 styleClass="min-w-9! h-9!"
                 placeholder="Top"
@@ -216,22 +120,22 @@
             <p-iconfield iconPosition="left" class="w-47.5!">
                 <p-inputicon class="pi pi-search" />
                 <input 
-                #inputFilter 
-                fluid
-                type="text" 
-                pInputText 
-                pSize="small" 
-                placeholder="Buscar ..." 
-                class="text-[12px]! h-9!"
-                [formControl]="ctrlSearch"
+                    #inputFilter 
+                    fluid
+                    type="text" 
+                    pInputText 
+                    pSize="small" 
+                    placeholder="Buscar ..." 
+                    class="text-[12px]! h-9!"
+                    [formControl]="ctrlSearch"
                 />
                 @if(inputFilter.value){
                     <p-inputicon 
-                    pTooltip="Limpiar"
-                    tooltipPosition="bottom"
-                    tooltipStyleClass="text-xs! text-center"
-                    class="pi pi-times text-xs! cursor-pointer" 
-                    (click)="ctrlSearch.setValue(null)" 
+                        pTooltip="Limpiar"
+                        tooltipPosition="bottom"
+                        tooltipStyleClass="text-xs! text-center"
+                        class="pi pi-times text-xs! cursor-pointer" 
+                        (click)="ctrlSearch.setValue(null)" 
                     />
                 }
             </p-iconfield>
@@ -242,7 +146,7 @@
 
 
 <div class="relative h-full w-full">
-    @if($ldData | async){
+    @if(ldData()){
         <app-loader class="z-40"></app-loader>
     }
 
@@ -254,7 +158,7 @@
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
         [showCurrentPageReport]="true"
 
-        [(selection)]="selected"
+        [selection]="selected()"
         [tableStyle]="{ 'min-width': '100px' }"
         [showLoader]="false"
         [resizableColumns]="true"
@@ -276,43 +180,41 @@
         (firstChange)="evtFirstChange($event)"
         (rowsChange)="evtRowsChange($event)"
 
-        class="border-none! text-mono! max-w-full!"
-        paginatorDropdownAppendTo="body"
-        paginatorStyleClass="justify-end! text-xs! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none!"
-
-        [contextMenu]="cm" 
-        (onContextMenuSelect)="evtOnRowSelect($event, menuActions)"
-
         metaKeySelection="true" 
         dataKey="id"
 
-        [loading]="$ldData | async"
+        class="border-t-0! border-gray-200! text-mono! max-w-full!"
+        paginatorDropdownAppendTo="body"
+        paginatorStyleClass="justify-end! text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none! py-3!"
+
+        [loading]="ldData()"
         [scrollable]="true"
         scrollDirection="horizontal" 
         [appDragScroll]=" (hands() ? '.p-datatable-table-container' : null)"
     >
         <ng-template pTemplate="header" let-columns>
             <tr class="text-nowrap">
-                @for (col of columns; track col) {
+                @for (col of columns;  let i = $index; track $index) {
                     @switch (col.field) {
                         @case('select'){
-                            <th class="px-2 border-s-0!"></th>
+                            <th class="px-2 border-s-0! border-t-0!"></th>
                         }
                         @case('cod'){
-                            <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
+                            <th class="px-4! text-[12px]! text-primary! font-semibold border-t-0!">{{ col.header }}</th>
                         }
                         @default{
                             <th 
-                            pFrozenColumn 
-                            [frozen]="col.sticky ?? false"
-                            pResizableColumn 
-                            [pSortableColumn]="col.sort ? col.field : undefined" 
-                            class="text-nowrap py-2! text-[12px]! text-primary! font-semibold! px-4!"
-                            [ngClass]="col.className">
-                                
-                                    {{ col.header }}
+                                pFrozenColumn 
+                                [frozen]="col.sticky ?? false"
+                                [alignFrozen]="col.alignFrozen ?? ''"
+                                pResizableColumn 
+                                [pSortableColumn]="col.sort ? col.field : undefined" 
+                                [class.border-e-0!]="(columns.length - 1) === i"
+                                class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4! border-t-0!"
+                            >
+                                <div class="flex items-center gap-2" [innerHTML]="col.header">
                                     @if(col.sort){<p-sortIcon [field]="col.field" />}
-                                
+                                </div>
                             </th>
                         }
                     }
@@ -322,12 +224,14 @@
 
         <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
 
-            @if($ldData | async) {
+            @if(ldData()) {
                 <tr>
                     @for (col of columns; let i = $index; track $index) {
                         <td 
-                            [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')"
-                            [ngClass]="col.tdClassName"
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            [alignFrozen]="col.alignFrozen ?? ''"
+                            [class.border-e-0!]="(columns.length - 1) === i"
                         >
                             <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                         </td>
@@ -337,17 +241,18 @@
             @else{
                 <tr 
                     [pSelectableRow]="rowData" 
-                    class="text-[12px]!" 
                     [class.cursor-grab!]="hands()" 
                     [class.hands]="hands()" 
-                    [pContextMenuRow]="rowData.__empty ? null : rowData" 
-                    [class.p-datatable-contextmenu-row-selected]="selected === rowData"
+                    class="text-[12px]!" 
+                    [class.p-datatable-contextmenu-row-selected]="selected() === rowData"
                 >
                     @for (col of columns; let i = $index; track $index) {
                         @if(rowData.__empty) {
                             <td 
-                                pFrozenColumn
-                                [frozen]="col.sticky ?? false" 
+                                pFrozenColumn 
+                                [frozen]="col.sticky ?? false"
+                                [alignFrozen]="col.alignFrozen ?? ''"
+                                [class.border-e-0!]="(columns.length - 1) === i"
                                 [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
                                 [ngClass]="col.tdClassName"
                             >—</td>
@@ -515,15 +420,43 @@
                                         }
                                     </td>
                                 }
+                                @case('options') {
+                                    <td
+                                        pFrozenColumn 
+                                        [frozen]="col.sticky ?? false"
+                                        [alignFrozen]="col.alignFrozen ?? ''"
+                                        [class.border-e-0!]="(columns.length - 1) === i"
+                                        class="text-center!"
+                                    >
+                                        @if(rowData['ld_update']){
+                                            <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                                        }@else {
+                                            <p-button 
+                                                [type]="isOpenCm(rowData) ? '' : 'text'"
+                                                pTooltip="Acciones"
+                                                tooltipPosition="top"
+                                                tooltipStyleClass="text-xs! text-slate-300!"
+                                                size="small" 
+                                                icon="fa-regular fa-ellipsis-vertical" 
+                                                [severity]="isOpenCm(rowData) ? 'primary' : 'secondary'"
+                                                styleClass="hover:bg-primary-500! hover:text-white! w-9! h-9!"
+                                                [raised]="isOpenCm(rowData)"
+                                                (onClick)="evtShowContextMenu($event, rowData)"
+                                            />
+                                        }
+                                    </td>
+                                }
                                 @default {
                                     <td
-                                    pFrozenColumn 
-                                    [frozen]="col.sticky ?? false"
-                                    class="text-nowrap py-1! font-light! truncate"
-                                    [ngClass]="col.tdClassName"
+                                        pFrozenColumn 
+                                        [frozen]="col.sticky ?? false"
+                                        [alignFrozen]="col.alignFrozen ?? ''"
+                                        [class.border-e-0!]="(columns.length - 1) === i"
+                                        class="text-nowrap py-1! font-light! truncate!"
+                                        [ngClass]="col.tdClassName"
                                     >
-                                        @if(rowData['loading_update']){
-                                            <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
+                                        @if(rowData['ld_update']){
+                                            <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                         }@else {
                                             {{rowData[col.field]}}
                                         }
@@ -540,9 +473,9 @@
 
 </div>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body" (onHide)="false"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="items()" appendTo="body" (onHide)="false"/>
 
-<p-menu #menuActions [model]="(items$ | async) ?? []" [popup]="true" target="body" appendTo="body" styleClass="text-[12px]!"></p-menu>
+<p-menu #menuActions [model]="items()" [popup]="true" target="body" appendTo="body" styleClass="text-[12px]!"></p-menu>
 
 <div class="card flex justify-center">
     <p-confirmdialog appendTo="body" [closable]="false">
@@ -584,7 +517,7 @@
             <p-avatar icon="pi pi-file" class="bg-primary-100! text-primary!" size="large"></p-avatar>
             <span class="font-semibold text-primary! flex flex-col">
                 <span>Guía de Remisión</span>
-                <span>{{ selected?.numero_guia }}</span>
+                <span>{{ selected()?.numero_guia }}</span>
             </span>
         </div>
     </ng-template>

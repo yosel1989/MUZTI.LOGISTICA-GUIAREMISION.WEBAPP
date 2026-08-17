@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -14,7 +14,7 @@ import { finalize, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
@@ -29,6 +29,7 @@ import { ActualizarEstadoResponseDto, EliminarResponseDto, ResponseDTO } from '@
 import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-transportista/mdl-registrar-transportista.component';
 import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transportista/mdl-editar-transportista.component';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 @Component({
   selector: 'app-tbl-transportista-principal',
@@ -56,6 +57,8 @@ import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 })
 
 export class TableTransportistaPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+
+    @ViewChild('cm') cm: ContextMenu | undefined;
 
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
@@ -93,6 +96,8 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
+    menuOpened = signal(false);
+
     constructor( private cd: ChangeDetectorRef ){ }
 
     ngOnInit(): void{
@@ -115,6 +120,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
           { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
           { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
         ];
     }
 
@@ -225,13 +231,17 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarTransportistaComponent,  {
         width: '700px',
-        closable: true,
+        closable: false,
+        draggable: false,
         modal: true,
         position: 'top',
         header: 'Registrar Transportista',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body'
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        }
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarTransportistaComponent) => {
@@ -250,9 +260,13 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     }
 
     evtOnEdit(): void{
+
+      if(!this.handlerValidateSelected()) return;
+
       this.ref = this.dialogService.open(MdlEditarTransportistaComponent,  {
         width: '700px',
-        closable: true,
+        closable: false,
+        draggable: false,
         modal: true,
         position: 'top',
         header: 'Editar Transportista',
@@ -261,6 +275,9 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
         appendTo: 'body',
         inputValues:{
           id: this.selected()!.id
+        },
+        templates: {
+          header: MdlHeader
         }
       });
 
@@ -302,6 +319,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     }
 
     evtOnDelete(): void{
+      if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
           header: '¿Eliminar Empresa Transportista?',
           message: 'Confirmar la operación.',
@@ -344,6 +362,8 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     }
 
     evtOnUpdateStatus(status: number): void{
+      if(!this.handlerValidateSelected()) return;
+
       this.confirmationService.confirm({
           header: !status ? '¿Desactivar al transportista?' : '¿Activar al transportista?',
           message: 'Confirmar la operación.',
@@ -443,7 +463,46 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
       this.selected.set(event.data);
     }
 
-    //functions
+    evtShowContextMenu(event: MouseEvent, rowData: TransportistaDto) {
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const currentSelected = this.selected();
+
+      this.selected.set(rowData);
+
+      if(this.cm?.visible()){
+        if(currentSelected !== rowData){
+          this.cm?.hide();
+          const customEvent = new MouseEvent('contextmenu', {
+            bubbles: event.bubbles,
+            cancelable: event.cancelable,
+            view: event.view,
+            clientX: rect.left + target.offsetWidth,
+            clientY: rect.bottom
+          });
+          setTimeout(()=>{
+            this.cm?.show(customEvent);
+          },0);
+        }
+      }else{
+        const customEvent = new MouseEvent(event.type, {
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          view: event.view,
+          clientX: rect.left + target.offsetWidth,
+          clientY: rect.bottom
+        });
+
+        this.cm?.show(customEvent);
+      }
+    }
+
+    // Functions
+
+    isOpenCm(rowData: TransportistaDto): boolean{
+      return (this.cm?.visible() && rowData === this.selected()) ?? false;
+    }
+
     isLastPage(): boolean {
       return this.data() ? this.first >= this.recordsTotalTable : true;
     }
@@ -458,11 +517,30 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
     private buildMenuItems(selected: TransportistaDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
-        { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
       ];
+    }
+
+
+    // Handlers
+
+    handlerValidateSelected(): boolean{
+      if(!this.selected()){
+        this.alertService.showToast({
+          title: "Debe seleccionar un transportista",
+          icon: "error",
+          timer: 4000,
+          timerProgressBar: true,
+          showCloseButton: true
+        });
+
+        return false;
+      }
+
+      return true;
     }
 
 }

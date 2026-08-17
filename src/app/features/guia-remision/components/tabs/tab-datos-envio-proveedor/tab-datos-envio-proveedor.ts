@@ -48,6 +48,7 @@ import { TypingComponent } from '@features/shared/components/typing/typing';
 import { MdlListaTransportistaComponent } from '@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista';
 import { TransportistaDto } from '@features/transportista/models/transportista';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -598,7 +599,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.modalRef = this.dialogService.open(MdlListaUnidadTransporteComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -608,7 +609,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             contentStyle: {
               'padding': "0 !important"
             },
-            appendTo: 'body'
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
+            }
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaUnidadTransporteComponent) => {
@@ -641,7 +645,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.modalRef = this.dialogService.open(MdlListaConductorComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -651,7 +655,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             contentStyle: {
               'padding': "0 !important"
             },
-            appendTo: 'body'
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
+            }
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaConductorComponent) => {
@@ -685,7 +692,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.modalRef = this.dialogService.open(MdlListaProveedorComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -695,7 +702,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             contentStyle: {
               'padding': "0 !important"
             },
-            appendTo: 'body'
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
+            }
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaProveedorComponent) => {
@@ -722,7 +732,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         this.modalRef = this.dialogService.open(MdlListaProveedorComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -732,7 +742,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             contentStyle: {
               'padding': "0 !important"
             },
-            appendTo: 'body'
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
+            }
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaProveedorComponent) => {
@@ -757,7 +770,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       this.modalRef = this.dialogService.open(MdlListaTransportistaComponent, {
             width: '1000px',
             keepInViewport: false,
-            closable: true,
+            closable: false,
             modal: true,
             draggable: false,
             position: 'top',
@@ -767,7 +780,10 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             contentStyle: {
               'padding': "0 !important"
             },
-            appendTo: 'body'
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
+            }
         });
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaTransportistaComponent) => {

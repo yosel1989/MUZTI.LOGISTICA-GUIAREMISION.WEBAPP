@@ -58,7 +58,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
     private sunatCatalogoApiService = inject(SunatCatalogoApiService);
     private guiaRemisionEstadoApiService = inject(GuiaRemisionEstadoApiService);
 
-    @Input() collapsed: boolean = false;
+    @Input() collapsed: boolean = true;
     @ViewChild('fechaRegistro') ctrlFechaRegistro: FltDateComponent | undefined;
     @ViewChild('fechaEmision') ctrlFechaEmision: FltDateComponent | undefined;
 

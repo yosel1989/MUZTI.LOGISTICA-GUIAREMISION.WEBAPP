@@ -1,16 +1,18 @@
 <p-toolbar class="rounded-none! toolbarsticky sticky top-0 z-10 w-full border-none! shadow-md">
     <ng-template #start>
         <div class="flex items-center gap-2">
-            <p-avatar 
+            <p-button 
+                size="small"
                 (click)="evtToggleSidebar()" 
                 [icon]="'fa-light ' + (collapsed() ? 'fa-chevron-right' : 'fa-chevron-left')" 
-                class="cursor-pointer bg-primary-500! text-white!"
+                severity="secondary"
+                styleClass="h-[28px]! w-[28px]!"
             />
         </div>
     </ng-template>
     <ng-template #end>
         <div class="flex items-center gap-1 topbar">
-            <p-avatar pRipple icon="pi pi-bell" size="normal" class="cursor-pointer"/>
+            <p-avatar icon="pi pi-bell" size="normal" class="cursor-pointer"/>
             <span class="text-xs">Hola, {{user!.firstName}}</span>
             <p-avatar [label]="user!.firstName[0]" size="normal" class="cursor-pointer bg-primary-500! text-white!" (click)="evtShowMenu($event)" />
 
@@ -62,7 +64,7 @@
     </ng-template>
 
     <ng-template #item let-item>
-        <a (click)="item.command"  pRipple class="text-sm flex items-center p-menu-item-link cursor-pointer!">
+        <a (click)="item.command" class="text-sm flex items-center p-menu-item-link cursor-pointer!">
             <i [class]="item.icon"></i>
             <span class="ml-1">{{ item.label }}</span>
             <span>{{ item.shortcut }}</span>

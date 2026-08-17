@@ -83,7 +83,8 @@ export const appConfig: ApplicationConfig = {
                 darkModeSelector: '.dark',
                 lightModeSelector: '.light'
             }
-        }
+        },
+        ripple: true
     }),
 
     provideToastr(),

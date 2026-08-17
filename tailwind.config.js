@@ -9,7 +9,11 @@ module.exports = {
     "./src/**/*.{html,ts,scss}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontSize: {
+        pbutton: 'var(--p-button-sm-font-size)',
+      },
+    },
   },
   plugins: [PrimeUI],
 }

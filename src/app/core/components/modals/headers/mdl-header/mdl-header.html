@@ -1,0 +1,18 @@
+<div class="flex flex-row justify-between align-items-center px-3 w-full! pt-3">
+    <h5 class="inline-flex items-center mb-4 md:text-md! lg:text-lg! font-semibold! text-slate-600!">
+        {{ config.header }}
+    </h5>
+
+    <div class="flex gap-2">
+        <button 
+            pSize="small"
+            pButton 
+            pTooltip="Cerrar modal"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-slate-300!"
+            icon="pi pi-times text-sm!"
+            (click)="dialogRef.close()"
+            class="w-[30px]! h-[30px]! p-button-rounded p-button-text bg-primary-100! hover:bg-primary-200! "
+        ></button>
+    </div>
+</div>

@@ -1,3 +1,5 @@
+@reference "tailwindcss";
+
 .slide-down-dialog {
   animation: slideDown 300ms ease-out;
 }
@@ -11,4 +13,9 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+
+.p-dialog-close-button{
+  @apply bg-gray-800!
 }

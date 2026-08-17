@@ -9,6 +9,7 @@ export class LayoutService {
 
 
   private breadCrumb = new BehaviorSubject<MenuItem[]>([]);
+  private $sidebarCollapsed = new BehaviorSubject<boolean>(true);
 
   constructor(
   ) { }
@@ -19,6 +20,14 @@ export class LayoutService {
 
   get breadCrumbItems(): Observable<MenuItem[]>{
     return this.breadCrumb.asObservable();
+  }
+
+  set sidebarCollapsed(collapsed: boolean){
+    this.$sidebarCollapsed.next(collapsed);
+  }
+
+  get sidebarCollapsed(): Observable<boolean>{
+    return this.$sidebarCollapsed.asObservable();
   }
 
 }

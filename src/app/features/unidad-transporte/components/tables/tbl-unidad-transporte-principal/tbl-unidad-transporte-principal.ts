@@ -28,6 +28,7 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 @Component({
   selector: 'app-tbl-unidad-transporte-principal',
@@ -222,14 +223,17 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlRegistrarUnidadTransporteComponent,  {
         width: '600px',
-        closable: true,
+        closable: false,
         modal: true,
         draggable: false,
         position: 'top',
         header: 'Registrar Unidad de Transporte',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body'
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        }
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarUnidadTransporteComponent) => {
@@ -250,7 +254,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
     evtOnEdit(): void{
       this.ref = this.dialogService.open(MdlEditarUnidadTransporteComponent,  {
         width: '600px',
-        closable: true,
+        closable: false,
         modal: true,
         draggable: false,
         position: 'top',
@@ -260,6 +264,9 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         appendTo: 'body',
         inputValues:{
           id: this.selected()!.id
+        },
+        templates: {
+          header: MdlHeader
         }
       });
 
@@ -498,10 +505,10 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
     private buildMenuItems(selected: UnidadTransporteDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0 },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1 },
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'},
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!' },
       ];
     }
 }

@@ -12,7 +12,7 @@ import {
   ElementRef,
   signal,
   inject,
-  TemplateRef
+  computed
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -24,11 +24,11 @@ import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, finalize, map, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import {
@@ -73,7 +73,6 @@ import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/header
     InputIconModule,
     TooltipModule,
     InputTextModule,
-    AsyncPipe,
     DatePipe,
     ContextMenuModule,
     ConfirmDialogModule,
@@ -91,6 +90,8 @@ import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/header
 })
 export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild('cm') cm: ContextMenu | undefined;
+
   private guiaRemisionHistorialApiService = inject(GuiaRemisionHistorialApiService);
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
@@ -102,11 +103,12 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   cols: Column[] = [];
 
   data: GuiaRemisionDto[] = [];
-  ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-  $ldData = this.ldData.asObservable();
-  selected: GuiaRemisionDto | undefined;
-  private selectedSubject = new BehaviorSubject<GuiaRemisionDto | undefined>(undefined);
-  items$ = this.selectedSubject.pipe(map((selected) => this.buildMenuItems(selected)));
+  ldData = signal<boolean>(true);
+  selected = signal<GuiaRemisionDto | undefined>(undefined);
+  items = computed(() => {
+    const current = this.selected();
+    return this.buildMenuItems(current);
+  });
   loading: boolean = false;
 
   recordsTotalTable: number = 0;
@@ -123,7 +125,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   private pageSize$ = new BehaviorSubject<number>(10);
   totalRecords: number = 0;
 
-  items: MenuItem[] | undefined;
   firstChange: boolean = false;
 
   visibleFilters: boolean = false;
@@ -158,7 +159,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'cod', header: '#', sort: false, sticky: false  },
         { field: 'id', header: 'Código', sort: false, sticky: false },
         { field: 'tipo_guia', header: 'Tipo Guia', sort: false, sticky: false },
-        { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false },
+        { field: 'numero_guia', header: 'N° Guia', sort: false, sticky: false, tdClassName: 'font-medium' },
         { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: "text-center" },
         { field: 'numero', header: 'Número', sort: false, sticky: false },
         { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
@@ -176,6 +177,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
         { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
         { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+        { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
       ];
   }
 
@@ -208,17 +210,17 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   // setters
   setSelected(data: GuiaRemisionDto | undefined) {
-    this.selectedSubject.next(data);
+    this.selected.set(data);
   }
 
-  // data
+  // Data
   
   loadData(reload: boolean = false): void {
     this.subData?.unsubscribe();
-    this.selected = undefined;
+    this.selected.set(undefined);
     this.firstChange = false;
     this.loading = true;
-    this.ldData.next(true);
+    this.ldData.set(true);
 
     if (reload) {
       this.pageNumber = 1;
@@ -246,13 +248,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.pageSize = res.page_size;
           this.first = (this.pageNumber - 1) * this.pageSize;
           this.totalRecords = res.total_records;
-          this.ldData.next(false);
+          this.ldData.set(false);
           this.cd.detectChanges();
           this.loading = false;
         },
         error: (e: HttpErrorResponse) => {
           console.log(e);
-          this.ldData.next(false);
+          this.ldData.set(false);
           this.loading = false;
           this.data = [];
 
@@ -274,7 +276,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   loadHistory(drawer: Drawer): void{
     this.ldHistory.set(true);
-    const s = this.guiaRemisionHistorialApiService.obtenerTodoPorGuia(this.selected!.id)
+    const s = this.guiaRemisionHistorialApiService.obtenerTodoPorGuia(this.selected()!.id)
     .pipe(finalize(() => {this.ldHistory.set(false)}))
     .subscribe({
       next : (value: GuiaRemisionHistorialListDTO[]) => {
@@ -298,12 +300,12 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   //events
 
   evtToggleSelection(row: GuiaRemisionDto): void {
-    if (this.selected === row) {
+    if (this.selected() === row) {
       this.setSelected(undefined);
-      this.selected = undefined;
+      this.selected.set(undefined);
     } else {
       this.setSelected(row);
-      this.selected = row;
+      this.selected.set(row);
     }
   }
 
@@ -320,7 +322,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   private evtOnReload(reload: boolean = false): void {
-    this.selected = undefined;
+    this.selected.set(undefined);
     this.loadData(reload);
   }
 
@@ -334,7 +336,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       maximizable: true,
       modal: true,
       draggable: false,
-      header: this.selected?.numero_guia,
+      header: this.selected()?.numero_guia,
       styleClass: 'max-h-none! slide-down-dialog overflow-hidden',
       maskStyleClass: 'overflow-y-auto',
       contentStyle: {
@@ -344,13 +346,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       appendTo: 'body',
       inputValues: {
-        ticket: this.selected!.respuesta_ticket,
+        ticket: this.selected()!.respuesta_ticket,
         data: this.selected!,
       },
     });
   }
 
   evtOnShowInfo(): void {
+    console.log('selected', this.selected());
+
     this.ref = this.dialogService.open(MdlPrevisualizarGuiaRemisionComponent, {
       width: '90%',
       height: '90%',
@@ -358,7 +362,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       maximizable: true,
       modal: true,
       draggable: false,
-      header: this.selected?.numero_guia,
+      header: this.selected()?.numero_guia,
       styleClass: 'max-h-none! slide-down-dialog overflow-hidden',
       maskStyleClass: 'overflow-y-auto',
       contentStyle: {
@@ -367,7 +371,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       appendTo: 'body',
       inputValues: {
-        data: this.selected!,
+        guiaRemision: this.selected!,
       },
       data: {
         guia: this.selected
@@ -439,7 +443,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showInputAlert.set(false);
     this.confirmAction.set('aprobarGuia');
     this.confirmationService.confirm({
-        header: `Desea aprobar la guía de Remisión N° ${this.selected!.numero_guia}`,
+        header: `Desea aprobar la guía de Remisión N° ${this.selected()!.numero_guia}`,
         message: 'Confirmar la operación.'
     });
   }
@@ -449,7 +453,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showInputAlert.set(false);
     this.confirmAction.set('confirmarGuia');
     this.confirmationService.confirm({
-        header: `Desea confirmar la guía de Remisión N° ${this.selected!.numero_guia}`,
+        header: `Desea confirmar la guía de Remisión N° ${this.selected()!.numero_guia}`,
         message: 'Confirmar la operación.'
     });
   }
@@ -459,7 +463,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showInputAlert.set(true);
     this.confirmAction.set('rechazarGuia');
     this.confirmationService.confirm({
-        header: `Desea rechazar la guía de Remisión N° ${this.selected!.numero_guia}`,
+        header: `Desea rechazar la guía de Remisión N° ${this.selected()!.numero_guia}`,
         message: '¿Confirmar la operación?',
     });
   }
@@ -469,13 +473,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showInputAlert.set(true);
     this.confirmAction.set('anularGuia');
     this.confirmationService.confirm({
-        header: `Desea anular la guía de Remisión N° ${this.selected!.numero_guia}`,
+        header: `Desea anular la guía de Remisión N° ${this.selected()!.numero_guia}`,
         message: '¿Confirmar la operación?'
     });
   }
 
   evtOnEditarGuia(): void{
-    this.router.navigateByUrl(`/administracion/guia-remision/editar/${this.selected?.uuid}`);
+    this.router.navigateByUrl(`/administracion/guia-remision/editar/${this.selected()?.uuid}`);
 
   }
 
@@ -489,7 +493,44 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showHistory.set(false);
   }
 
-  //functions
+  evtShowContextMenu(event: MouseEvent, rowData: GuiaRemisionDto) {
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const currentSelected = this.selected();
+    
+    this.selected.set(rowData);
+    if(this.cm?.visible()){
+      if(currentSelected !== rowData){
+        this.cm?.hide();
+        const customEvent = new MouseEvent('contextmenu', {
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          view: event.view,
+          clientX: rect.left + target.offsetWidth,
+          clientY: rect.bottom
+        });
+        setTimeout(()=>{
+          this.cm?.show(customEvent);
+        },0);
+      }
+    }else{
+      const customEvent = new MouseEvent(event.type, {
+        bubbles: event.bubbles,
+        cancelable: event.cancelable,
+        view: event.view,
+        clientX: rect.left + target.offsetWidth,
+        clientY: rect.bottom
+      });
+
+      this.cm?.show(customEvent);
+    }
+  }
+
+  // Functions
+
+  isOpenCm(rowData: GuiaRemisionDto): boolean{
+    return (this.cm?.visible() && rowData === this.selected()) ?? false;
+  }
 
   isLastPage(): boolean {
     return this.data ? this.first + this.pageSize >= this.totalRecords : true;
@@ -511,7 +552,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     return [
       {
         label: 'Ver PDF',
-        icon: 'pi pi-file-pdf text-gray-500!',
+        icon: 'pi pi-file-pdf',
         command: () => {
           this.evtOnShowPdf();
         },
@@ -519,14 +560,14 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       {
         label: 'Ver Detalle',
-        icon: 'pi pi-eye text-gray-500!',
+        icon: 'pi pi-eye',
         command: () => {
           this.evtOnShowInfo();
         }
       },
       {
         label: 'Aprobar y Emitir',
-        icon: 'pi pi-send text-green-500!',
+        icon: 'pi pi-send',
         command: () => {
           this.evtOnAprobarGuia();
         },
@@ -534,7 +575,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       {
         label: 'Confirmar',
-        icon: 'pi pi-check-circle text-green-500!',
+        icon: 'pi pi-check-circle',
         command: () => {
           this.evtOnConfirmarGuia();
         },
@@ -542,7 +583,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       {
         label: 'Rechazar',
-        icon: 'pi pi-times-circle text-red-500!',
+        icon: 'pi pi-times-circle',
         command: () => {
           this.evtOnRechazarGuia();
         },
@@ -550,7 +591,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       {
         label: 'Editar',
-        icon: 'pi pi-pencil text-yellow-500!',
+        icon: 'pi pi-pencil',
         command: () => {
           this.evtOnEditarGuia();
         },
@@ -558,7 +599,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       {
         label: 'Anular',
-        icon: 'pi pi-ban text-red-500!',
+        icon: 'pi pi-ban',
         command: () => {
           this.evtOnAnularGuia();
         },
@@ -595,7 +636,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       return;
     }
 
-    this.selected!.loading_update = true;
+    this.selected()!.loading_update = true;
     this.cd.detectChanges();
 
     switch(this.confirmAction()){
@@ -617,7 +658,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   handleAcceptAnularGuia(): void{
-    const sub = this.api.anular(this.selected!.id, this.ctrlDescripcion.value)
+    const sub = this.api.anular(this.selected()!.id, this.ctrlDescripcion.value)
     .pipe(finalize(() => {
       this.showInputAlert.set(false);
     }))
@@ -633,10 +674,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           timer: 4000
         });
         
-        const idx = this.data.findIndex(x => x.id === this.selected!.id);
+        const idx = this.data.findIndex(x => x.id === this.selected()!.id);
         if (idx > -1) {
           this.data[idx] = res;
-          this.selected = res;
+          this.selected.set(res);
         }
 
         this.ctrlDescripcion.setValue(null);
@@ -656,7 +697,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
             popup: 'z-[9999]!'
           }
         });
-        this.selected!.loading_update = false;
+        this.selected()!.loading_update = false;
         this.cd.detectChanges();
       }
     });
@@ -664,7 +705,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   handleAcceptRechazarGuia(): void{
-    const sub = this.api.rechazar(this.selected!.id, this.ctrlDescripcion.value)
+    const sub = this.api.rechazar(this.selected()!.id, this.ctrlDescripcion.value)
     .pipe(finalize(() => { 
       this.showInputAlert.set(false);
     }))
@@ -680,10 +721,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           timer: 4000
         });
         
-        const idx = this.data.findIndex(x => x.id === this.selected!.id);
+        const idx = this.data.findIndex(x => x.id === this.selected()!.id);
         if (idx > -1) {
           this.data[idx] = res;
-          this.selected = res;
+          this.selected.set(res);
         }
 
         this.ctrlDescripcion.setValue(null);
@@ -703,7 +744,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
             popup: 'z-[9999]!'
           }
         });
-        this.selected!.loading_update = false;
+        this.selected()!.loading_update = false;
         this.cd.detectChanges();
       }
     });
@@ -711,15 +752,15 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   handleAcceptAprobarGuia(): void{
-    this.apiGuiaRemitente.aprobarGuiaRemision(this.selected!.id).subscribe({
+    this.apiGuiaRemitente.aprobarGuiaRemision(this.selected()!.id).subscribe({
       next: (val: GR_EmitirGuiaRemisionResponseDto) => {
         if(val.success){
           this.alertService.showSwalAlert({
             icon: "success",
             title: "¡Guía de Remisión Emitida!",
-            text: `Se emitió la GUÍA DE REMISIÓN ${this.selected?.tipo_guia} ELECTRÓNICA\n N° ${this.selected?.numero_guia}`
+            text: `Se emitió la GUÍA DE REMISIÓN ${this.selected()?.tipo_guia} ELECTRÓNICA\n N° ${this.selected()?.numero_guia}`
           });
-          this.selected!.loading_update = false;
+          this.selected()!.loading_update = false;
           this.reload();
         }else{
           this.alertService.showToast({
@@ -737,14 +778,14 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
             timer: 4000,
             showCloseButton: true
           });
-          this.selected!.loading_update = false;
+          this.selected()!.loading_update = false;
           this.cd.detectChanges();
       }
     });
   }
 
   handleAcceptConfirmarGuia(): void{
-    const sub = this.api.confirmar(this.selected!.id)
+    const sub = this.api.confirmar(this.selected()!.id)
     .pipe(finalize(() => { 
       this.showInputAlert.set(false);
     }))
@@ -760,10 +801,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           timer: 4000
         });
         
-        const idx = this.data.findIndex(x => x.id === this.selected!.id);
+        const idx = this.data.findIndex(x => x.id === this.selected()!.id);
         if (idx > -1) {
           this.data[idx] = res;
-          this.selected = res;
+          this.selected.set(res);
         }
         this.ctrlDescripcion.setValue(null);
         this.cd.detectChanges();
@@ -782,7 +823,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
             popup: 'z-[9999]!'
           }
         });
-        this.selected!.loading_update = false;
+        this.selected()!.loading_update = false;
         this.cd.detectChanges();
       }
     });
