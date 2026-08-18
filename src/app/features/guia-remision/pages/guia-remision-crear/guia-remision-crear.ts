@@ -11,7 +11,6 @@ import { TabsModule } from 'primeng/tabs';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
 import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { DatePickerModule } from 'primeng/datepicker';
-import { TabOrigenDestinoComponent } from 'app/features/guia-remision/components/tabs/tab-origen-destino/tab-origen-destino';
 import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
 import { TabDatosEnvioProveedorComponent } from 'app/features/guia-remision/components/tabs/tab-datos-envio-proveedor/tab-datos-envio-proveedor';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -46,6 +45,11 @@ import { TextareaModule } from 'primeng/textarea';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 import { TypingComponent } from '@features/shared/components/typing/typing';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { AccordionModule } from 'primeng/accordion';
+import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
+import { SectionGuiaRemisionDestino } from '@features/guia-remision/components/sections/section-guia-remision-destino/section-guia-remision-destino';
+import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
+import { ConductorDto } from '@features/conductor/models/conductor.model';
 
 export interface Puerto{
     value: string;
@@ -67,7 +71,6 @@ export interface Puerto{
     ReactiveFormsModule,
     SelectTipoGuiaComponent,
     DatePickerModule,
-    TabOrigenDestinoComponent,
     SectionProductoListadoComponent,
     TabDatosEnvioProveedorComponent,
     NgIcon,
@@ -85,7 +88,11 @@ export interface Puerto{
     SelectMotivoTrasladoComponent,
     TextareaModule,
     SectionResponsableListadoComponent,
-    TypingComponent
+    TypingComponent,
+    AccordionModule,
+    SectionGuiaRemisionConductor,
+    SectionGuiaRemisionOrigen,
+    SectionGuiaRemisionDestino,
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -98,7 +105,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
-    @ViewChild('tabOrigenDestino') tabOrigenDestino: TabOrigenDestinoComponent | undefined;
+    @ViewChild('sectionConductor') sectionConductor: SectionGuiaRemisionConductor | undefined;
+    @ViewChild('sectionOrigen') sectionOrigen: SectionGuiaRemisionOrigen | undefined;
+    @ViewChild('sectionDestino') sectionDestino: SectionGuiaRemisionDestino | undefined;
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
     @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
     @ViewChild('guiaCabecera') guiaCabecera: GuiaSectionCabeceraComponent | undefined;
@@ -308,8 +317,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 indicador_transbordo_programado: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_transbordo_programado_adicional,
                 indicador_retorno_vehiculo_vacio: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_vacio_adicional,
                 indicador_retorno_vehiculo_envases_vacios: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_envase_vacio_adicional,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.conductores.map((d: any) => {
+
+                conductor: this.sectionConductor?.getFormData.length ? this.sectionConductor?.getFormData.map((d: ConductorDto) => {
                     return d.id
                 }) : null,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -320,14 +329,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             },
 
             origen: {
-                ubigeo_id: this.tabOrigenDestino!.getFormData.origen.ubigeo_id!,
-                direccion: this.tabOrigenDestino!.getFormData.origen.direccion!,
+                ubigeo_id: this.sectionOrigen!.getFormData.ubigeo_id!,
+                direccion: this.sectionOrigen!.getFormData.direccion!,
                 pais: 'PE'
             },
 
             destino: [{
-                ubigeo_id: this.tabOrigenDestino!.getFormData.destino.ubigeo_id!,
-                direccion: this.tabOrigenDestino!.getFormData.destino.direccion!,
+                ubigeo_id: this.sectionDestino!.getFormData.ubigeo_id!,
+                direccion: this.sectionDestino!.getFormData.direccion!,
                 pais: 'PE'
             }],
 
@@ -697,7 +706,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         }
 
         if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return false;
-        if(!this.tabOrigenDestino?.evtOnSubmit()) return false;
+        if(!this.sectionOrigen?.evtOnSubmit()) return false;
+        if(!this.sectionDestino?.evtOnSubmit()) return false;
         if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return false;
 
         return true;

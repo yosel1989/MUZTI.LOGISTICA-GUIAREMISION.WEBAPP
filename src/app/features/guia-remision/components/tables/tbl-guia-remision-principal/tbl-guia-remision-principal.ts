@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import {
   Component,
   OnDestroy,
@@ -556,14 +556,16 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowPdf();
         },
-        visible: this.tieneAccion(selected?.acciones, 'PDF')
+        visible: this.tieneAccion(selected?.acciones, 'PDF'),
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       },
       {
         label: 'Ver Detalle',
         icon: 'pi pi-eye',
         command: () => {
           this.evtOnShowInfo();
-        }
+        },
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       },
       {
         label: 'Aprobar y Emitir',
@@ -571,6 +573,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAprobarGuia();
         },
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
         //visible: this.tieneAccion(selected?.acciones, 'APE')
       },
       {
@@ -579,7 +582,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnConfirmarGuia();
         },
-        visible: this.tieneAccion(selected?.acciones, 'CON')
+        visible: this.tieneAccion(selected?.acciones, 'CON'),
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       },
       {
         label: 'Rechazar',
@@ -587,7 +591,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnRechazarGuia();
         },
-        visible: this.tieneAccion(selected?.acciones, 'REC')
+        visible: this.tieneAccion(selected?.acciones, 'REC'),
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       },
       {
         label: 'Editar',
@@ -595,7 +600,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnEditarGuia();
         },
-        visible: this.tieneAccion(selected?.acciones, 'EDI')
+        visible: this.tieneAccion(selected?.acciones, 'EDI'),
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       },
       {
         label: 'Anular',
@@ -603,7 +609,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAnularGuia();
         },
-        visible: this.tieneAccion(selected?.acciones, 'ANU')
+        visible: this.tieneAccion(selected?.acciones, 'ANU'),
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       },
       {
         label: 'Historial',
@@ -611,7 +618,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtShowHistory();
         },
-        visible: this.tieneAccion(selected?.acciones, 'HIS')
+        visible: this.tieneAccion(selected?.acciones, 'HIS'),
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
       }
     ];
   }

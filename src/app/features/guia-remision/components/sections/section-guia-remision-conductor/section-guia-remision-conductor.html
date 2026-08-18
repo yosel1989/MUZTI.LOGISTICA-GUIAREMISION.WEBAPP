@@ -1,0 +1,103 @@
+<div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
+    @if(conductores.length > 0){
+        <div class="flex flex-col gap-0">
+            @for (conductor of conductores; track conductor; let i = $index) {
+                <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" [legend]=" $index ? ('Datos del Conductor Secundario #' + ($index+1)) : 'Datos del Conductor Principal'">
+                    <div  class="flex flex-row items-center px-4!" >
+                        <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Tipo de documento *</label>
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="conductor.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° Doc. de identidad *</label>
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="conductor.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div> 
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Nombre del conductor *</label>
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="conductor.nombres" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Apellido del conductor *</label>
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="conductor.apellidos" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de licencia o brevete *</label>
+                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                        <app-typing [text]="conductor.licencia" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                        </div>
+                        
+                        <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
+                            <p-button 
+                                [outlined]="true"
+                                pTooltip="Quitar conductor" 
+                                tooltipPosition="left" 
+                                tooltipStyleClass="text-[10px]!" 
+                                class="text-xs! ml-auto" 
+                                size="small" 
+                                icon="pi pi-times text-xs! font-semibold!" 
+                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                (click)="evtRemoveCoductor($index)"  
+                                rounded="true" 
+                            />
+                        </div>
+                        
+                    </div>
+                </p-fieldset>
+            }
+        </div>
+    }
+
+    @if(invalid && submitted()) {
+        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un conductor</span></p-message>
+    }
+
+    @if(conductores.length < 3){
+        <div class="flex flex-wrap gap-x-2">
+
+            <p-button 
+                [outlined]="true"
+                (onClick)="evtOnShowListaConductor()" 
+                size="small" 
+                styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
+                icon="pi pi-search" 
+                severity="primary" 
+                label="Seleccionar conductor"
+            ></p-button>
+
+            <a href="/administracion/conductor" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium text-xs!">Administrar</a>
+
+        </div>
+    }
+</div>
+
+
+
+
+
+<p-confirmdialog styleClass="max-w-[400px]" #cd>
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-8  rounded-xl">
+            <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"
+            >
+                <i class="font-bold pi pi-question text-5xl!"></i>
+            </div>
+            <span class="font-semibold text-xl block mb-2 mt-6 text-center">{{ message.header }}</span>
+            <p class="mb-0 text-xs">{{ message.message }}</p>
+            <div class="flex items-center gap-2 mt-6">
+                <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                <p-button label="Cancelar" severity="secondary" (onClick)="onReject()" styleClass="w-32"></p-button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>

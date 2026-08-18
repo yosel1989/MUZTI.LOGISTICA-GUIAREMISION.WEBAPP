@@ -16,6 +16,7 @@ import { TypingComponent } from "@features/shared/components/typing/typing";
 //import { SelectDepartamentoComponent } from "@features/ubigeo/components/selects/select-departamento/select-departamento";
 //import { SelectProvinciaComponent } from "@features/ubigeo/components/selects/select-provincia/select-provincia";
 //import { SelectDistritoComponent } from "@features/ubigeo/components/selects/select-distrito/select-distrito";
+import { AccordionModule } from 'primeng/accordion';
 
 @Component({
   selector: 'app-tab-origen-destino',
@@ -29,7 +30,8 @@ import { TypingComponent } from "@features/shared/components/typing/typing";
     CardModule,
     NgIcon,
     MessageModule,
-    TypingComponent
+    TypingComponent,
+    AccordionModule
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
   providers: [MessageService]
