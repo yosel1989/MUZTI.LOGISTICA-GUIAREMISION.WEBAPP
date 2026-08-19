@@ -50,6 +50,8 @@ import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/se
 import { SectionGuiaRemisionDestino } from '@features/guia-remision/components/sections/section-guia-remision-destino/section-guia-remision-destino';
 import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
 import { ConductorDto } from '@features/conductor/models/conductor.model';
+import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
+import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 
 export interface Puerto{
     value: string;
@@ -90,6 +92,7 @@ export interface Puerto{
     SectionResponsableListadoComponent,
     TypingComponent,
     AccordionModule,
+    SectionGuiaRemisionTransportista,
     SectionGuiaRemisionConductor,
     SectionGuiaRemisionOrigen,
     SectionGuiaRemisionDestino,
@@ -105,6 +108,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
+
+    @ViewChild('sectionTransportista') sectionTransportista: SectionGuiaRemisionTransportista | undefined;
     @ViewChild('sectionConductor') sectionConductor: SectionGuiaRemisionConductor | undefined;
     @ViewChild('sectionOrigen') sectionOrigen: SectionGuiaRemisionOrigen | undefined;
     @ViewChild('sectionDestino') sectionDestino: SectionGuiaRemisionDestino | undefined;
@@ -310,21 +315,21 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
 
-                transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.transportista,
-                transportista_id: this.tabDatosEnvioProveedor?.transportista?.id,
+                transportista: this.sectionTransportista?.getFormData.transportista,
+                transportista_id: this.sectionTransportista?.getFormData.transportista?.id,
 
                 indicador_registro_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_registrar_vehiculos_conductores,
                 indicador_transbordo_programado: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_transbordo_programado_adicional,
                 indicador_retorno_vehiculo_vacio: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_vacio_adicional,
                 indicador_retorno_vehiculo_envases_vacios: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_envase_vacio_adicional,
 
-                conductor: this.sectionConductor?.getFormData.length ? this.sectionConductor?.getFormData.map((d: ConductorDto) => {
+                conductor: this.sectionConductor?.getFormData?.map((d: ConductorDto) => {
                     return d.id
-                }) : null,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.length ? this.tabDatosEnvioProveedor?.data.datosEnvio.vehiculos.map((d: any) => {
+                }) ?? null,
+
+                transporte: this.sectionTransportista?.getFormData.vehiculos?.map((d: UnidadTransporteDto) => {
                     return d.id;
-                }) : null
+                }) ?? null
 
             },
 
@@ -706,6 +711,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         }
 
         if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return false;
+        if(!this.sectionTransportista?.evtOnSubmit()) return false;
+        if(!this.sectionConductor?.evtOnSubmit()) return false;
         if(!this.sectionOrigen?.evtOnSubmit()) return false;
         if(!this.sectionDestino?.evtOnSubmit()) return false;
         if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return false;

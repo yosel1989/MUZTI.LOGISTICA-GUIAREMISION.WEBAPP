@@ -2,8 +2,8 @@
     <div class="flex flex-col">
         <div class="grid grid-cols-3 gap-x-5"> 
             <div class="col-span-3">
-                <label class="text-[11px]! text-slate-500 font-medium">Dirección *</label>
-                <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                <label class="text-[11px]! text-slate-500 font-medium">Dirección</label>
+                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                     <app-typing [text]="remitente?.direccion ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
                 </div>
             </div>
@@ -12,24 +12,25 @@
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5">
 
         <div>
-            <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Departamento *</label>
-            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+            <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Departamento</label>
+            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                 <app-typing [text]="remitente?.departamento ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
             </div>
         </div>
 
         <div>
-            <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Provincia *</label>
-            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+            <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Provincia</label>
+            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                 <app-typing [text]="remitente?.provincia ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
             </div>
         </div>
         <div>
-            <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Distrito *</label>
-            <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+            <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Distrito</label>
+            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                 <app-typing [text]="remitente?.distrito ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
             </div>
         </div>
     </div>
-    <div class="text-xs! text-slate-500 font-medium mt-2"><i class="fa-regular fa-circle-exclamation"></i> Los datos son obtenidos previamente del remitente seleccionado</div>
+
+    <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500! mt-3"><i class="fa-solid fa-circle-exclamation text-lg! me-3"></i> Los datos son obtenidos previamente del remitente seleccionado.</p>
 </div>

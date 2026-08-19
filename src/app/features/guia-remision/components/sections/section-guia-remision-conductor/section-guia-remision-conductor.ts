@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Input, signal} from "@angular/core";
+import { Component, computed, DestroyRef, inject, Input, signal} from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
@@ -20,6 +20,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { MdlListaConductorComponent } from "@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { TooltipModule } from "primeng/tooltip";
 
 @Component({
   selector: 'app-section-guia-remision-conductor',
@@ -36,10 +37,11 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     TypingComponent,
     FieldsetModule,
     ButtonModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    TooltipModule
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
-  providers: [MessageService]
+  providers: [ConfirmationService, MessageService]
 })
 
 export class SectionGuiaRemisionConductor {
@@ -49,7 +51,7 @@ export class SectionGuiaRemisionConductor {
     confirmationService = inject(ConfirmationService);
     dialogService = inject(DialogService);
 
-    private _conductores = signal<ConductorDto[]>([]);
+    private _conductores = signal<ConductorDto[] | undefined>(undefined);
     @Input() set conductores(value: ConductorDto[] | undefined) {
         if (value !== undefined && this._conductores() !== value) {
             this._conductores.set(value);
@@ -64,20 +66,30 @@ export class SectionGuiaRemisionConductor {
     modalRef: any | undefined;
 
     get invalid(): boolean{
-        return this._conductores().length === 0;
+        return (this._conductores() ?? []).length === 0;
     }
 
     get valid(): boolean {
-        return this._conductores().length > 0;
+        return (this._conductores() ?? []).length > 0;
     }
 
-    get getFormData(): ConductorDto[] {
+    get getFormData(): ConductorDto[] | undefined {
         return this.conductores;
     }
 
-    get conductores(): ConductorDto[] {
+    get conductores(): ConductorDto[] | undefined {
         return this._conductores();
     }
+
+    conductorPrincipal = computed(() => {
+        const conductores = this._conductores();
+        return conductores?.find(x => x.job_title === 'Principal');
+    });
+
+    conductorSecundario = computed(() => {
+        const conductores = this._conductores();
+        return conductores?.filter(x => x.job_title === 'Secundario');
+    });
 
     // Events
 
@@ -101,19 +113,19 @@ export class SectionGuiaRemisionConductor {
 
     evtAddConductor(item: ConductorDto): void{
       this._conductores.update(c => {
-        return [...c, item];
+        return [...c ?? [], item];
       });
     }
 
-    evtRemoveCoductor(index: number): void{
+    evtRemoveCoductor(id: number): void{
       this.handlerConfirmDialog(() => {
         this._conductores.update(c => {
-          return c.filter((_, i) => i !== index);
+          return c?.filter((_) => _.id !== id);
         });
       }, '¿Desea remover el conductor seleccionado?', 'Confirmar la operación.');
     }
 
-    evtOnShowListaConductor(): void{
+    evtOnShowListaConductor(jobTitle: 'Principal' | 'Secundario'): void{
         this.modalRef = this.dialogService.open(MdlListaConductorComponent, {
             width: '1000px',
             keepInViewport: false,
@@ -139,17 +151,22 @@ export class SectionGuiaRemisionConductor {
             cmp?.OnSelect
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(( c: ConductorDto) => {
-                const existe = this._conductores().some(conduc => conduc.id === c.id);
-                if(existe){
+                const conductores = this._conductores();
+                const existe = conductores?.some(conduc => conduc.id === c.id);
+                const principal = jobTitle === 'Principal' ? conductores?.some(conduc => conduc.job_title === 'Principal' ) : false;
+                const secundarios = jobTitle === 'Secundario' ? conductores?.filter(conduc => conduc.job_title === 'Secundario').length : 0;
+
+                if(existe || principal || secundarios === 2){
                     this.alertService.showToast({
-                    text: "El conductor ya se encuentra seleccionado",
-                    icon: "error",
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
+                        text: existe ? "El conductor ya se encuentra seleccionado" : principal ? "El conductor principal ya se encuentra seleccionado" : "Máximo se pueden seleccionar 2 conductores",
+                        icon: "error",
+                        timer: 4000,
+                        timerProgressBar: true,
+                        showCloseButton: true
                     });
                 }else{
-                    this.evtAddConductor(c);
+                    
+                    this.evtAddConductor({...c, job_title: jobTitle});
                 }
                 this.modalRef?.close();
             });

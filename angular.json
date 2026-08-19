@@ -38,7 +38,8 @@
               "src/tailwind.css",
               "src/styles.scss",
               "node_modules/ngx-toastr/toastr.css",
-              "src/assets/plugins/fontawesome/v7.2.0/css/all.css"
+              "src/assets/plugins/fontawesome/v7.2.0/css/all.css",
+              "src/assets/plugins/icomoon/style.css"
             ]
           },
           "configurations": {

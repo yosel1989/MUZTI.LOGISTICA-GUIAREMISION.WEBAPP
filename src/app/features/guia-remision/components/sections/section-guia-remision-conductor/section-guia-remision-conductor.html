@@ -1,42 +1,123 @@
 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
-    @if(conductores.length > 0){
-        <div class="flex flex-col gap-0">
-            @for (conductor of conductores; track conductor; let i = $index) {
-                <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" [legend]=" $index ? ('Datos del Conductor Secundario #' + ($index+1)) : 'Datos del Conductor Principal'">
-                    <div  class="flex flex-row items-center px-4!" >
+
+    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend=" Datos del Conductor Principal">
+
+        <div class="flex flex-col gap-y-3">
+
+            @if(conductorPrincipal()){
+                <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-50" >
+
+                    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
+                            <div>
+                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Tipo de documento</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="conductorPrincipal()?.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° Doc. de identidad</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="conductorPrincipal()?.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div> 
+                            <div>
+                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Nombre del conductor</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="conductorPrincipal()?.nombres" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Apellido del conductor</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="conductorPrincipal()?.apellidos" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de licencia o brevete</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="conductorPrincipal()?.licencia" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
+                        <p-button 
+                            [outlined]="true"
+                            pTooltip="Quitar conductor" 
+                            tooltipPosition="left" 
+                            tooltipStyleClass="text-[10px]!" 
+                            class="text-xs! ml-auto" 
+                            size="small" 
+                            icon="pi pi-times text-xs! font-semibold!" 
+                            styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                            (click)="evtRemoveCoductor(conductorPrincipal()?.id!)"  
+                            rounded="true" 
+                        />
+                    </div>
+
+                </div> 
+            }@else {
+                <div class="flex flex-row items-center px-4!">
+                    <p-button 
+                        pTooltip="Seleccionar conductor principal" 
+                        tooltipPosition="top" 
+                        tooltipStyleClass="text-xs! text-center" 
+                        [outlined]="true" 
+                        (onClick)="evtOnShowListaConductor('Principal')" 
+                        size="small" 
+                        styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
+                        icon="icon-driver-2 text-xl!" 
+                        severity="primary" 
+                        label="Seleccionar conductor" 
+                    ></p-button>
+                </div>
+            }
+
+        </div>
+
+    </p-fieldset>
+
+    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend="Datos del Conductor Secundario (Máximo 2 Conductores)">
+
+        <div class="flex flex-col gap-y-3">
+            @if( conductorSecundario() && conductorSecundario()!.length > 0 ){
+
+                @for(conductor of conductorSecundario(); track $index){
+                    <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-50" >
+
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Tipo de documento *</label>
-                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Tipo de documento</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° Doc. de identidad *</label>
-                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° Doc. de identidad</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div> 
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Nombre del conductor *</label>
-                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Nombre del conductor</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.nombres" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Apellido del conductor *</label>
-                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Apellido del conductor</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.apellidos" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de licencia o brevete *</label>
-                                    <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
+                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de licencia o brevete</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.licencia" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                         </div>
-                        
+
                         <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                             <p-button 
                                 [outlined]="true"
@@ -47,38 +128,44 @@
                                 size="small" 
                                 icon="pi pi-times text-xs! font-semibold!" 
                                 styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                                (click)="evtRemoveCoductor($index)"  
+                                (click)="evtRemoveCoductor(conductor.id!)"  
                                 rounded="true" 
                             />
                         </div>
-                        
-                    </div>
-                </p-fieldset>
+
+                    </div> 
+                }
+
             }
+            
+            @if( !conductorSecundario() || conductorSecundario()!.length < 2 ){
+                <div class="flex flex-row items-center px-4!">
+                    <p-button 
+                        pTooltip="Seleccionar conductor secundario"
+                        tooltipPosition="top"
+                        tooltipStyleClass="text-xs! text-center"
+                        [outlined]="true"
+                        (onClick)="evtOnShowListaConductor('Secundario')" 
+                        size="small" 
+                        styleClass="text-sm! bg-gray-100! hover:border-gray-100! hover:bg-gray-500! hover:text-gray-100! h-9!" 
+                        icon="icon-driver-2 text-xl!" 
+                        severity="secondary" 
+                        label="Seleccionar conductor"
+                    ></p-button>
+                </div>
+                
+            }
+
         </div>
-    }
+
+    </p-fieldset>
+
+    <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500!"><i class="fa-solid fa-circle-exclamation text-lg! me-3"></i> Seleccione únicamente conductores secundarios cuando aún no esté confirmado quién realizará el traslado de los productos.  </p>
 
     @if(invalid && submitted()) {
         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un conductor</span></p-message>
     }
 
-    @if(conductores.length < 3){
-        <div class="flex flex-wrap gap-x-2">
-
-            <p-button 
-                [outlined]="true"
-                (onClick)="evtOnShowListaConductor()" 
-                size="small" 
-                styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
-                icon="pi pi-search" 
-                severity="primary" 
-                label="Seleccionar conductor"
-            ></p-button>
-
-            <a href="/administracion/conductor" target="_blank" class="p-ripple p-button p-button-link p-button-sm p-component underline! font-medium text-xs!">Administrar</a>
-
-        </div>
-    }
 </div>
 
 

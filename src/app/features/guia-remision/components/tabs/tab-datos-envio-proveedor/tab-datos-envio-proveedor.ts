@@ -29,11 +29,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { AlertService } from 'app/core/services/alert.service';
 import { DialogService } from 'primeng/dynamicdialog';
-import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
-import { MdlListaUnidadTransporteComponent } from '@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte';
+
 import { Subscription } from 'rxjs';
-import { MdlListaConductorComponent } from '@features/conductor/components/modals/mdl-lista-conductor/mdl-lista-conductor';
-import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { MdlListaProveedorComponent } from '@features/proveedor/components/modals/mdl-lista-proveedor/mdl-lista-proveedor';
 import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -45,8 +42,6 @@ import { EstablecimientoDTO } from '@features/establecimiento/models/establecimi
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida';
 import { TypingComponent } from '@features/shared/components/typing/typing';
-import { MdlListaTransportistaComponent } from '@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista';
-import { TransportistaDto } from '@features/transportista/models/transportista';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
@@ -94,10 +89,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     private _remitente = signal<EstablecimientoDTO | null>(null);
     private _destinatario = signal<EstablecimientoDTO | null>(null);
     private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
-    private _conductores = signal<ConductorDto[]>([]);
-    private _vehiculos = signal<UnidadTransporteDto[]>([]);
+
     private _tipoTransporte = signal<string | 'PRIVADO' | 'PUBLICO'>('PRIVADO');
-    private _transportista = signal<TransportistaDto | null>(null);
     private _proveedor = signal<ProveedorDto | null>(null);
     tabIndex = signal<string | '0' | '1'>('0');
 
@@ -120,12 +113,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() set proveedor(value: ProveedorDto | null) {
         if (this._proveedor() !== value) {
             this._proveedor.set(value);
-        }
-    }
-
-    @Input() set transportista(value: TransportistaDto | null) {
-        if (this._transportista() !== value) {
-            this._transportista.set(value);
         }
     }
 
@@ -324,18 +311,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this.formDatosEnvio.controls;
     }
 
-    get conductores(): ConductorDto[] { 
-      return this._conductores(); 
-    }
-
-    get vehiculos(): UnidadTransporteDto[] { 
-      return this._vehiculos(); 
-    }
-
-    get transportista(): TransportistaDto | null { 
-      return this._transportista(); 
-    }
-
     get tipoTransporte(): string | 'PRIVATE' | 'PUBLICO' | undefined { 
       return this._tipoTransporte(); 
     }
@@ -370,12 +345,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           numero_documento_tercero: this.f_datosEnvio.numero_documento_tercero.value,
           nombre_rsocial_tercero: this.f_datosEnvio.nombre_rsocial_tercero.value,
 
-          /*ruc_transportista: this.f_datosEnvio.ruc_transportista.value,
-          rsocial_transportista: this.f_datosEnvio.rsocial_transportista.value,
-          num_mtc_transportista: this.f_datosEnvio.num_mtc_transportista.value,
-          email_transportista: this.f_datosEnvio.email_transportista.value,*/
-
-          transportista_id: this._transportista()?.id,
 
           traslado_vehiculo_categoria: this.f_datosEnvio.traslado_vehiculo_categoria.value,
           traslado_vehiculo_categoria_placa_vehiculo: this.f_datosEnvio.traslado_vehiculo_categoria_placa_vehiculo.value,
@@ -386,23 +355,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           ruc_establecimiento_origen: this.f_datosEnvio.ruc_establecimiento_origen.value,
           cod_establecimiento_destino: this.f_datosEnvio.cod_establecimiento_destino.value,
           ruc_establecimiento_destino: this.f_datosEnvio.ruc_establecimiento_destino.value,
-
-          vehiculos: this.vehiculos.map(v => ({ 
-            id: v.id, 
-            placa_vehiculo: v.placa, 
-            cert_habilitacion_vehiculo: v.tarjeta, 
-            entidad_reguladora_vehicular_id: v.entidad_reguladora_vehicular_id, 
-            numero_autoriza_vehicular_vehiculo: v.nro_autorizacion
-          })),
-
-          conductores: this._conductores().map( (c: ConductorDto) => ({ 
-            id : c.id, 
-            tipo_documento_id : c.tipo_documento_id, 
-            numero_documento_conductor: c.numero_documento, 
-            numero_licencia_brevete_conductor: c.licencia, 
-            nombre_conductor: c.nombres, 
-            apellido_conductor: c.apellidos, 
-          })),
 
           num_autoriza_especial_adicional: this.f_datosEnvio.num_autoriza_especial_adicional.value,
           ent_emisora_especial_adicional: this.f_datosEnvio.ent_emisora_especial_adicional.value,
@@ -464,7 +416,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     ngOnInit(): void {
-      this.formDatosEnvio.get('indic_registrar_vehiculos_conductores')?.valueChanges.subscribe(this.evtChaneValueRegistrarVehiculosConductores);
+     
     }
 
     ngAfterViewInit(): void {
@@ -495,39 +447,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     }
 
     // events
-    evtAddConductor(item: ConductorDto): void{
-      this._conductores.update(c => {
-        return [...c, item];
-      });
-    }
-
-    evtRemoveCoductor(index: number): void{
-      this.handlerConfirmDialog(() => {
-        this._conductores.update(c => {
-          return c.filter((_, i) => i !== index);
-        });
-      }, '¿Desea remover el conductor seleccionado?', 'Confirmar la operación.');
-    }
-
-    // events
-    evtAddVehiculo(item: UnidadTransporteDto): void {
-      this._vehiculos.update(v => {
-        return [...v, item];
-      });
-    }
-
-    evtRemoveVehiculo(index: number): void{
-      this.handlerConfirmDialog(() => {
-        this._vehiculos.update(c => {
-          return c.filter((_, i) => i !== index);
-        });
-      }, '¿Desea remover el vehículo seleccionado?', 'Confirmar la operación.');
-    }
-
-    evtChaneValueRegistrarVehiculosConductores = (): void => {
-      this._vehiculos.set([]);
-      this._conductores.set([]);
-    }
 
     evtOnChangeTipoTransporte(tipoTransporte: 'PRIVADO' | 'PUBLICO'): void{
       this.f_datosEnvio.tipo_transporte.setValue(tipoTransporte);
@@ -562,24 +481,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         }
 
         // Validar transportista
-        if(this.tipoGuia === TipoGuiaRemisionEnum.remitente){
-          if(this.tipoTransporte === 'PUBLICO'){
-
-            if(!this._transportista() && !this.f_datosEnvio.traslado_vehiculo_categoria.value){
-              this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "warning",
-                  title: "Tiene que seleccionar el transportista en (Datos de envío)",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-              });
-              return false;
-            }
-
-          }
-        }
-
+ 
         return true;
     }
 
@@ -593,98 +495,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
           indic_registrar_vehiculos_conductores: false
         });
         this._proveedor.set(null);
-    }
-
-    evtOnShowListaUnidadTransporte(): void{
-        this.modalRef = this.dialogService.open(MdlListaUnidadTransporteComponent, {
-            width: '1000px',
-            keepInViewport: false,
-            closable: false,
-            modal: true,
-            draggable: false,
-            position: 'top',
-            header: `Lista de vehiculos registrados`,
-            styleClass: 'max-h-none!',
-            maskStyleClass: 'py-4',
-            contentStyle: {
-              'padding': "0 !important"
-            },
-            appendTo: 'body',
-            templates: {
-                header: MdlHeader
-            }
-        });
-
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaUnidadTransporteComponent) => {
-            const sub2 = cmp?.OnSelect.subscribe(( s: UnidadTransporteDto) => {
-                const existe = this.vehiculos.some(v => v.id === s.id);
-                if(existe){
-                  this.alertService.showToast({
-                    title: "El vehiculo ya se encuentra seleccionado",
-                    icon: "warning",
-                    timer: 4000,
-                    showCloseButton: true
-                  });
-                }else{
-                  this.evtAddVehiculo(s);
-                }
-                this.modalRef?.close();
-            });
-            const sub3 = cmp?.OnClose.subscribe(() => {
-                this.modalRef?.close();
-            });
-            this.subs.add(sub2);
-            this.subs.add(sub3);
-        });
-
-
-        this.subs.add(sub);
-    }
-
-    evtOnShowListaConductor(): void{
-        this.modalRef = this.dialogService.open(MdlListaConductorComponent, {
-            width: '1000px',
-            keepInViewport: false,
-            closable: false,
-            modal: true,
-            draggable: false,
-            position: 'top',
-            header: `Lista de conductores registrados`,
-            styleClass: 'max-h-none!',
-            maskStyleClass: 'py-4',
-            contentStyle: {
-              'padding': "0 !important"
-            },
-            appendTo: 'body',
-            templates: {
-                header: MdlHeader
-            }
-        });
-
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaConductorComponent) => {
-            const sub2 = cmp?.OnSelect.subscribe(( c: ConductorDto) => {
-                const existe = this._conductores().some(conduc => conduc.id === c.id);
-                if(existe){
-                  this.alertService.showToast({
-                    text: "El conductor ya se encuentra seleccionado",
-                    icon: "error",
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                  });
-                }else{
-                  this.evtAddConductor(c);
-                }
-                this.modalRef?.close();
-            });
-            const sub3 = cmp?.OnClose.subscribe(() => {
-                this.modalRef?.close();
-            });
-            this.subs.add(sub2);
-            this.subs.add(sub3);
-        });
-
-        this.subs.add(sub);
     }
 
     evtOnShowListaProveedor(): void{
@@ -758,43 +568,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             const sub3 = cmp?.OnClose.subscribe(() => {
                 this.modalRef?.close();
             });
-            
-            this.subs.add(sub2);
-            this.subs.add(sub3);
-        });
-
-        this.subs.add(sub);
-    }
-
-    evtOnShowListaTransportista(): void{
-      this.modalRef = this.dialogService.open(MdlListaTransportistaComponent, {
-            width: '1000px',
-            keepInViewport: false,
-            closable: false,
-            modal: true,
-            draggable: false,
-            position: 'top',
-            header: `Lista de transportistas registrados`,
-            styleClass: 'max-h-none!',
-            maskStyleClass: 'py-4',
-            contentStyle: {
-              'padding': "0 !important"
-            },
-            appendTo: 'body',
-            templates: {
-                header: MdlHeader
-            }
-        });
-
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListaTransportistaComponent) => {
-            const sub2 = cmp?.OnSelect.subscribe(( t: TransportistaDto) => {
-                this._transportista.set(t);
-                this.modalRef?.close();
-            });
-
-            const sub3 = cmp?.OnClose.subscribe(() => {
-            this.modalRef?.close();
-        });
             
             this.subs.add(sub2);
             this.subs.add(sub3);
@@ -892,10 +665,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
       this.formDatosEnvio.updateValueAndValidity();
 
-      this._conductores.set([]);
-      this._vehiculos.set([]);
       this._proveedor.set(null);
-      this._transportista.set(null);
+
     }
 
 

@@ -397,15 +397,21 @@
 
             <div class="rounded-2xl! overflow-hidden! border border-gray-200!">
                 <p-accordion value="0">
-
+                        <p-accordion-panel value="transfer_details"> 
+                            <p-accordion-header>Datos del Traslado</p-accordion-header>
+                            <p-accordion-content>
+                                
+                            </p-accordion-content>
+                        </p-accordion-panel>
                     
                         <p-accordion-panel value="vehicles"> 
                             <p-accordion-header>Datos del Transportista</p-accordion-header>
                             <p-accordion-content>
-                                <app-section-guia-remision-origen
-                                    #sectionOrigen
-                                    [remitente]="remitente()"
-                                ></app-section-guia-remision-origen>
+                                <app-section-guia-remision-transportista
+                                    #sectionTransportista
+                                    [tipoTransporte]="tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte"
+                                >
+                                </app-section-guia-remision-transportista>
                             </p-accordion-content>
                         </p-accordion-panel>
 
@@ -422,7 +428,7 @@
                     }
                         
                         <p-accordion-panel value="0"> 
-                            <p-accordion-header>Punto de partida</p-accordion-header>
+                            <p-accordion-header>Punto de origen</p-accordion-header>
                             <p-accordion-content>
                                 <app-section-guia-remision-origen
                                     #sectionOrigen
