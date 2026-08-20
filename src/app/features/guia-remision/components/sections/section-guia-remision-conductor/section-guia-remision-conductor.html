@@ -1,6 +1,16 @@
 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
 
-    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend=" Datos del Conductor Principal">
+    @if(submitted() && invalid()){
+        <p class="inline-flex items-center text-sm! font-medium! text-amber-600! py-1 px-3 rounded-lg! bg-amber-100! border-s-3! border-amber-500!"><i class="fa-regular fa-triangle-exclamation text-lg! me-3"></i> {{ invalid() }} </p>
+    }
+
+    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+
+        <ng-template #header>
+            <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                Datos del Conductor Principal
+            </div>
+        </ng-template>
 
         <div class="flex flex-col gap-y-3">
 
@@ -9,31 +19,31 @@
 
                     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                             <div>
-                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Tipo de documento</label>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo de documento</label>
                                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                     <app-typing [text]="conductorPrincipal()?.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
                                 </div>
                             </div>
                             <div>
-                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° Doc. de identidad</label>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° Doc. de identidad</label>
                                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                     <app-typing [text]="conductorPrincipal()?.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
                                 </div>
                             </div> 
                             <div>
-                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Nombre del conductor</label>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre del conductor</label>
                                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                     <app-typing [text]="conductorPrincipal()?.nombres" class="font-semibold! text-slate-600!"></app-typing>
                                 </div>
                             </div>
                             <div>
-                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Apellido del conductor</label>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Apellido del conductor</label>
                                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                     <app-typing [text]="conductorPrincipal()?.apellidos" class="font-semibold! text-slate-600!"></app-typing>
                                 </div>
                             </div>
                             <div>
-                                <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de licencia o brevete</label>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° de licencia o brevete</label>
                                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                     <app-typing [text]="conductorPrincipal()?.licencia" class="font-semibold! text-slate-600!"></app-typing>
                                 </div>
@@ -55,13 +65,10 @@
                         />
                     </div>
 
-                </div> 
+                </div>
             }@else {
                 <div class="flex flex-row items-center px-4!">
                     <p-button 
-                        pTooltip="Seleccionar conductor principal" 
-                        tooltipPosition="top" 
-                        tooltipStyleClass="text-xs! text-center" 
                         [outlined]="true" 
                         (onClick)="evtOnShowListaConductor('Principal')" 
                         size="small" 
@@ -77,7 +84,13 @@
 
     </p-fieldset>
 
-    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend="Datos del Conductor Secundario (Máximo 2 Conductores)">
+    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+
+        <ng-template #header>
+            <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                Datos del Conductor Secundario (Máximo 2 Conductores)
+            </div>
+        </ng-template>
 
         <div class="flex flex-col gap-y-3">
             @if( conductorSecundario() && conductorSecundario()!.length > 0 ){
@@ -87,31 +100,31 @@
 
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Tipo de documento</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo de documento</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° Doc. de identidad</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° Doc. de identidad</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div> 
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Nombre del conductor</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre del conductor</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.nombres" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Apellido del conductor</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Apellido del conductor</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.apellidos" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de licencia o brevete</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° de licencia o brevete</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="conductor.licencia" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
@@ -141,9 +154,6 @@
             @if( !conductorSecundario() || conductorSecundario()!.length < 2 ){
                 <div class="flex flex-row items-center px-4!">
                     <p-button 
-                        pTooltip="Seleccionar conductor secundario"
-                        tooltipPosition="top"
-                        tooltipStyleClass="text-xs! text-center"
                         [outlined]="true"
                         (onClick)="evtOnShowListaConductor('Secundario')" 
                         size="small" 
@@ -153,18 +163,12 @@
                         label="Seleccionar conductor"
                     ></p-button>
                 </div>
-                
             }
-
         </div>
 
     </p-fieldset>
 
-    <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500!"><i class="fa-solid fa-circle-exclamation text-lg! me-3"></i> Seleccione únicamente conductores secundarios cuando aún no esté confirmado quién realizará el traslado de los productos.  </p>
-
-    @if(invalid && submitted()) {
-        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Debe seleccionar minimo un conductor</span></p-message>
-    }
+    <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500!"><i class="fa-solid fa-circle-info text-lg! me-3"></i> Seleccione únicamente conductores secundarios cuando aún no esté confirmado quién realizará el traslado de los productos.  </p>
 
 </div>
 

@@ -1,7 +1,17 @@
 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
 
+    @if(submitted() && invalid()){
+        <p class="inline-flex items-center text-sm! font-medium! text-amber-600! py-1 px-3 rounded-lg! bg-amber-100! border-s-3! border-amber-500!"><i class="fa-regular fa-triangle-exclamation text-lg! me-3"></i> {{ invalid() }} </p>
+    }
+
     @if(tipoTransporte === 'PUBLICO'){
-        <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend=" Datos del Transportista">
+        <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+
+            <ng-template #header>
+                <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                    Datos del Transportista
+                </div>
+            </ng-template>
 
             <div class="flex flex-col gap-y-3">
 
@@ -10,19 +20,19 @@
 
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">R.U.C.</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">R.U.C.</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="transportista.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div class="xl:col-span-2">
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Razón social o denominación </label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Razón social o denominación </label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="transportista.razon_social" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div> 
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de registro MTC <i pTooltip="Aquí deberás ingresar el código de registro del Ministerio de Transportes y Comunicaciones que tenga actualmente el vehículo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top" class="fa-solid fa-circle-question"></i></label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° de registro MTC <i pTooltip="Aquí deberás ingresar el código de registro del Ministerio de Transportes y Comunicaciones que tenga actualmente el vehículo." tooltipStyleClass="text-xs! text-center" tooltipPosition="top" class="fa-solid fa-circle-question"></i></label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="transportista.registro_mtc" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
@@ -32,14 +42,14 @@
                         <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                             <p-button 
                                 [outlined]="true"
-                                pTooltip="Quitar vehículo" 
+                                pTooltip="Quitar transportista" 
                                 tooltipPosition="left" 
                                 tooltipStyleClass="text-[10px]!" 
                                 class="text-xs! ml-auto" 
                                 size="small" 
                                 icon="pi pi-times text-xs! font-semibold!" 
                                 styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                                (click)="evtRemoveVehiculo(vehiculoPrincipal()?.id!)"  
+                                (click)="evtRemoveTransportista()"  
                                 rounded="true" 
                             />
                         </div>
@@ -48,7 +58,6 @@
                 }@else {
                     <div class="flex flex-row items-center px-4!">
                         <p-button 
-                            pTooltip="Seleccionar empresa transportista" 
                             tooltipPosition="top" 
                             tooltipStyleClass="text-xs! text-center" 
                             [outlined]="true" 
@@ -69,7 +78,13 @@
 
     @else{
 
-        <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend=" Datos del Vehiculo Principal">
+        <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+
+            <ng-template #header>
+                <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                    Datos del Vehiculo Principal
+                </div>
+            </ng-template>
 
             <div class="flex flex-col gap-y-3">
 
@@ -77,18 +92,18 @@
                     <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-100/60" >
 
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
-                                <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Placa</label>
-                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                        <app-typing [text]="vehiculoPrincipal()?.placa" class="font-semibold! text-slate-600!"></app-typing>
-                                    </div>
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Placa</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="vehiculoPrincipal()?.placa" class="font-semibold! text-slate-600!"></app-typing>
                                 </div>
-                                <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de autorización vehícular (condicional)</label>
-                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                        <app-typing [text]="vehiculoPrincipal()?.nro_autorizacion" class="font-semibold! text-slate-600!"></app-typing>
-                                    </div>
-                                </div> 
+                            </div>
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° de autorización vehícular (condicional)</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="vehiculoPrincipal()?.nro_autorizacion" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
@@ -110,14 +125,11 @@
                 }@else {
                     <div class="flex flex-row items-center px-4!">
                         <p-button 
-                            pTooltip="Seleccionar vehículo principal" 
-                            tooltipPosition="top" 
-                            tooltipStyleClass="text-xs! text-center" 
                             [outlined]="true" 
                             (onClick)="evtOnShowListaVehiculo('Principal')" 
                             size="small" 
                             styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
-                            icon="fa-regular fa-car text-xl!" 
+                            icon="fa-regular fa-car text-lg!" 
                             severity="primary" 
                             label="Seleccionar vehículo" 
                         ></p-button>
@@ -128,7 +140,13 @@
 
         </p-fieldset>
 
-        <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" legend="Datos del Vehículo Secundario (Máximo 2 Vehículos)">
+        <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false" >
+
+            <ng-template #header>
+                <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                    Datos del Vehículo Secundario (Máximo 2 Vehículos)
+                </div>
+            </ng-template>
 
             <div class="flex flex-col gap-y-3">
 
@@ -139,13 +157,13 @@
 
                             <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">Placa</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Placa</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="vehiculo.placa" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[11px]! h-4.5! text-slate-500 font-medium">N° de autorización vehícular (condicional)</label>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° de autorización vehícular (condicional)</label>
                                     <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                                         <app-typing [text]="vehiculo.nro_autorizacion" class="font-semibold! text-slate-600!"></app-typing>
                                     </div>
@@ -176,14 +194,11 @@
 
                     <div class="flex flex-row items-center px-4!">
                         <p-button 
-                            pTooltip="Seleccionar vehículo secundario"
-                            tooltipPosition="top"
-                            tooltipStyleClass="text-xs! text-center"
                             [outlined]="true"
                             (onClick)="evtOnShowListaVehiculo('Secundario')" 
                             size="small" 
                             styleClass="text-sm! bg-gray-100! hover:border-gray-100! hover:bg-gray-500! hover:text-gray-100! h-9!" 
-                            icon="fa-regular fa-car text-xl!" 
+                            icon="fa-regular fa-car text-lg!" 
                             severity="secondary" 
                             label="Seleccionar vehículo"
                         ></p-button>
@@ -195,12 +210,7 @@
 
         </p-fieldset>
 
-        <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500!"><i class="fa-solid fa-circle-exclamation text-lg! me-3"></i> Seleccione únicamente vehículos secundarios cuando aún no esté confirmado quién realizará el traslado de los productos.  </p>
-
-        @if(invalid() && submitted()) {
-            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">{{ this.messageError() }}</span></p-message>
-        }
-
+        <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500!"><i class="fa-solid fa-circle-info text-lg! me-3"></i> Seleccione únicamente vehículos secundarios cuando aún no esté confirmado quién realizará el traslado de los productos.  </p>
     }
 
 </div>

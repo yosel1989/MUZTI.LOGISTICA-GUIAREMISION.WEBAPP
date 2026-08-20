@@ -557,7 +557,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.evtOnShowPdf();
         },
         visible: this.tieneAccion(selected?.acciones, 'PDF'),
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       },
       {
         label: 'Ver Detalle',
@@ -565,7 +565,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnShowInfo();
         },
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       },
       {
         label: 'Aprobar y Emitir',
@@ -573,7 +573,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         command: () => {
           this.evtOnAprobarGuia();
         },
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
         //visible: this.tieneAccion(selected?.acciones, 'APE')
       },
       {
@@ -583,7 +583,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.evtOnConfirmarGuia();
         },
         visible: this.tieneAccion(selected?.acciones, 'CON'),
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       },
       {
         label: 'Rechazar',
@@ -592,7 +592,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.evtOnRechazarGuia();
         },
         visible: this.tieneAccion(selected?.acciones, 'REC'),
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       },
       {
         label: 'Editar',
@@ -601,7 +601,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.evtOnEditarGuia();
         },
         visible: this.tieneAccion(selected?.acciones, 'EDI'),
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       },
       {
         label: 'Anular',
@@ -610,7 +610,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.evtOnAnularGuia();
         },
         visible: this.tieneAccion(selected?.acciones, 'ANU'),
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       },
       {
         label: 'Historial',
@@ -619,7 +619,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.evtShowHistory();
         },
         visible: this.tieneAccion(selected?.acciones, 'HIS'),
-        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium!'
+        linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'
       }
     ];
   }

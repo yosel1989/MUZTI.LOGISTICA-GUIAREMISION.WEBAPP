@@ -1,3 +1,6 @@
+@reference "tailwindcss";
+@reference "tailwindcss-primeui";
+
 .wrap-content{
     padding-left: 270px;
     min-height: 100vh;
@@ -12,7 +15,7 @@ body.collapsed :host{
 }
 
 :host{
-    background: #EEEEEE;
+    @apply bg-slate-200;
 }
 
 @media (max-width: 991px) {

@@ -32,7 +32,7 @@ import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
-import { NgIcon, provideIcons } from '@ng-icons/core';
+import { provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Menu, MenuModule } from 'primeng/menu';
@@ -76,7 +76,6 @@ import { SkeletonModule } from 'primeng/skeleton';
     ToggleSwitchModule,
     ReactiveFormsModule,
     TooltipModule,
-    NgIcon,
     InputNumberModule,
     MenuModule,
     BadgeModule,
@@ -167,6 +166,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   ldBienesNormalizados = signal(false);
 
   hoveredCell = signal<{ row: number, col: string } | null>(null);
+  focusedCell = signal<{ row: number, col: string } | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -218,12 +218,8 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     });
   }
 
-  get valid(): boolean {
-    return this.form.valid;
-  }
-
   get invalid(): boolean {
-    return this.form.invalid;
+    return this.form.invalid || (this.items.length === 0);
   }
 
   ngOnInit(): void {

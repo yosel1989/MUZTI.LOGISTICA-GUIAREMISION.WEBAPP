@@ -2,11 +2,11 @@
 <p-select 
     panelStyleClass="text-[.875rem]!"
     size="small" 
-    fluid 
+    fluid  
     [options]="data()"
     [loading]="ldData()" 
     [formControl]="control"  
-    optionLabel="descripcion_corta" 
+    [optionLabel]="optionLabel" 
     optionValue="id"  
     class="p-inputwrapper-filled min-h-9!" 
     placeholder="--SELECCIONAR--"

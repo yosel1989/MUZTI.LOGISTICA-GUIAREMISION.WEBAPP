@@ -65,13 +65,16 @@ export class SectionGuiaRemisionConductor {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modalRef: any | undefined;
 
-    get invalid(): boolean{
-        return (this._conductores() ?? []).length === 0;
-    }
-
-    get valid(): boolean {
-        return (this._conductores() ?? []).length > 0;
-    }
+    invalid = computed(() => {
+        const conductores = this._conductores();
+        if (!conductores || conductores.length === 0) {
+            return 'Debe seleccionar al menos un conductor.';
+        }
+        if (!conductores.find(x => x.job_title === 'Principal')) {
+            return 'Debe seleccionar un conductor principal.';
+        }
+        return null;
+    });
 
     get getFormData(): ConductorDto[] | undefined {
         return this.conductores;
@@ -96,11 +99,11 @@ export class SectionGuiaRemisionConductor {
     evtOnSubmit(): boolean {
         this.submitted.set(true);
 
-        if(this.invalid){
+        if(this.invalid()){
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
-                title: "Se tiene que seleccionar minimo un conductor.",
+                title: this.invalid() ?? '',
                 showCloseButton: true,
                 timerProgressBar: true,
                 timer: 4000,

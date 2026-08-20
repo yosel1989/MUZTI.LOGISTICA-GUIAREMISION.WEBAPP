@@ -97,13 +97,13 @@ export class SectionGuiaRemisionTransportista {
                 if (!vehiculos || vehiculos.length === 0) {
                     return 'Debe seleccionar al menos un vehículo.';
                 }
-                if (vehiculos.some(x => x.job_title === 'Principal')) {
-                    return 'El vehículo principal no debe registrarse aquí.';
+                if ( !vehiculos.find(x => x.job_title === 'Principal') ) {
+                    return 'Debe seleccionar un vehículo principal.';
                 }
                 return null;
             }
             case 'PUBLICO':
-                return this._transportista() === null
+                return this._transportista() === undefined
                     ? 'Debe seleccionar un transportista.'
                     : null;
                 default:
@@ -165,6 +165,7 @@ export class SectionGuiaRemisionTransportista {
       this._vehiculos.update(v => {
         return [...v ?? [], item];
       });
+      console.log('vehiculos', this._vehiculos());
     }
 
     evtRemoveVehiculo(id: number): void{
@@ -267,6 +268,12 @@ export class SectionGuiaRemisionTransportista {
 
         });
 
+    }
+
+    evtRemoveTransportista(): void{
+      this.handlerConfirmDialog(() => {
+        this._vehiculos.set(undefined)
+      }, '¿Desea remover el transportista seleccionado?', 'Confirmar la operación.');
     }
 
     // Handlers

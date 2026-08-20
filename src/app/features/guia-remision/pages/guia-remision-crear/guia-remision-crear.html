@@ -398,14 +398,76 @@
             <div class="rounded-2xl! overflow-hidden! border border-gray-200!">
                 <p-accordion value="0">
                         <p-accordion-panel value="transfer_details"> 
-                            <p-accordion-header>Datos del Traslado</p-accordion-header>
+                            <p-accordion-header #headerDatosTraslado class="group"> 
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Datos del Traslado</span>
+                                    @if(submitted() && sectionDatosTraslado?.invalid){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerDatosTraslado.active()"
+                                        ></i>
+                                    } 
+                                    @if(!sectionDatosTraslado?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerDatosTraslado.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
                             <p-accordion-content>
-                                
+                                <app-section-guia-remision-datos-traslado
+                                    #sectionDatosTraslado
+                                    [tipoTransporte]="tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte"
+                                >
+                                </app-section-guia-remision-datos-traslado>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+
+                        <p-accordion-panel value="provider"> 
+                            <p-accordion-header #headerProveedor class="group">
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Datos del Proveedor</span>
+                                    @if(submitted() && sectionProveedor?.invalid){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerProveedor.active()"
+                                        ></i>
+                                    } 
+                                    @if(!sectionProveedor?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerProveedor.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
+                            <p-accordion-content>
+                                <app-section-guia-remision-proveedor
+                                    #sectionProveedor
+                                >
+                                </app-section-guia-remision-proveedor>
                             </p-accordion-content>
                         </p-accordion-panel>
                     
                         <p-accordion-panel value="vehicles"> 
-                            <p-accordion-header>Datos del Transportista</p-accordion-header>
+                            <p-accordion-header #headerTransportista class="group">
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Datos del Transportista</span>
+                                    @if(submitted() && sectionTransportista?.invalid()){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerTransportista.active()"
+                                        ></i>
+                                    }
+                                    @if(!sectionTransportista?.invalid()){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerTransportista.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
                             <p-accordion-content>
                                 <app-section-guia-remision-transportista
                                     #sectionTransportista
@@ -417,7 +479,23 @@
 
                     @if(tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte === 'PRIVADO'){
                         <p-accordion-panel value="drivers"> 
-                            <p-accordion-header>Datos del Conductor</p-accordion-header>
+                            <p-accordion-header #headerConductor class="group">
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Datos del Conductor</span>
+                                    @if(submitted() && sectionConductor?.invalid()){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerConductor.active()"
+                                        ></i>
+                                    }
+                                    @if(!sectionConductor?.invalid()){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerConductor.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
                             <p-accordion-content>
                                 <app-section-guia-remision-conductor
                                     #sectionConductor
@@ -428,7 +506,23 @@
                     }
                         
                         <p-accordion-panel value="0"> 
-                            <p-accordion-header>Punto de origen</p-accordion-header>
+                            <p-accordion-header #headerOrigen class="group">
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Punto de Origen</span>
+                                    @if(submitted() && sectionOrigen?.invalid){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerOrigen.active()"
+                                        ></i>
+                                    }
+                                    @if(!sectionOrigen?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerOrigen.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
                             <p-accordion-content>
                                 <app-section-guia-remision-origen
                                     #sectionOrigen
@@ -438,7 +532,23 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="1">
-                            <p-accordion-header>Punto de llegada</p-accordion-header>
+                            <p-accordion-header #headerDestino class="group">
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Punto de Destino</span>
+                                    @if(submitted() && sectionDestino?.invalid){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerDestino.active()"
+                                        ></i>
+                                    }
+                                    @if(!sectionDestino?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerDestino.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
                             <p-accordion-content>
                                 <app-section-guia-remision-destino
                                     #sectionDestino
@@ -448,7 +558,23 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="2">
-                            <p-accordion-header>Bienes o productos</p-accordion-header>
+                            <p-accordion-header #headerProductos class="group">
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Bienes o Productos </span>
+                                    @if(submitted() && sectionProductoListado?.invalid){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerProductos.active()"
+                                        ></i>
+                                    }
+                                    @if(!sectionProductoListado?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerProductos.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
                             <p-accordion-content>
                                 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
                                     <app-section-producto-listado 
@@ -463,7 +589,7 @@
                             <p-accordion-content>
                                 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
                                     <div class="flex flex-col">
-                                        <label class="text-xs text-gray-500 font-semibold">Observaciones</label>
+                                        <label class="text-[13px]! font-medium text-slate-500 roboto-condensed truncate">Observaciones (opcional)</label>
                                         <textarea 
                                             #ta 
                                             formControlName="observacion" 

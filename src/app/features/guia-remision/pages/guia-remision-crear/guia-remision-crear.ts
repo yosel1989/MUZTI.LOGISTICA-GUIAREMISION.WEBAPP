@@ -52,6 +52,8 @@ import { SectionGuiaRemisionConductor } from '@features/guia-remision/components
 import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
+import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/components/sections/section-guia-remision-datos-traslado/section-guia-remision-datos-traslado';
 
 export interface Puerto{
     value: string;
@@ -92,6 +94,9 @@ export interface Puerto{
     SectionResponsableListadoComponent,
     TypingComponent,
     AccordionModule,
+
+    SectionGuiaRemisionDatosTraslado,
+    SectionGuiaRemisionProveedor,
     SectionGuiaRemisionTransportista,
     SectionGuiaRemisionConductor,
     SectionGuiaRemisionOrigen,
@@ -109,6 +114,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
 
+    @ViewChild('sectionDatosTraslado') sectionDatosTraslado: SectionGuiaRemisionDatosTraslado | undefined;
+    @ViewChild('sectionProveedor') sectionProveedor: SectionGuiaRemisionProveedor | undefined;
     @ViewChild('sectionTransportista') sectionTransportista: SectionGuiaRemisionTransportista | undefined;
     @ViewChild('sectionConductor') sectionConductor: SectionGuiaRemisionConductor | undefined;
     @ViewChild('sectionOrigen') sectionOrigen: SectionGuiaRemisionOrigen | undefined;
@@ -677,7 +684,19 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     handlerValidation(): boolean{
-        if(!this.f.motivo_traslado_id.value){
+
+        const submitMotivoTraslado = !this.f.motivo_traslado_id.value;
+        const submitRemitente = !this.remitente();
+        const submitDestinatario = !this.destinatario();
+        const submitDatosEnvioProveedor = this.tabDatosEnvioProveedor?.evtOnSubmit();
+        const submitsectionProveedor = this.sectionProveedor?.evtOnSubmit();
+        const submitsectionTransportista = this.sectionTransportista?.evtOnSubmit();
+        const submitsectionConductor = this.sectionConductor?.evtOnSubmit();
+        const submitsectionOrigen = this.sectionOrigen?.evtOnSubmit();
+        const submitsectionDestino = this.sectionDestino?.evtOnSubmit();
+        const submitsectionProductoListadoComponent = this.sectionProductoListadoComponent?.evtOnSubmit();
+
+        if(submitMotivoTraslado){
             this.alertService.showToast({
                 title: "Debe seleccionar el motivo de traslado",
                 icon: 'error',
@@ -687,8 +706,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-
-        if(!this.remitente()){
+        if(submitRemitente){
             this.alertService.showToast({
                 title: "Debe seleccionar el remitente",
                 icon: 'error',
@@ -698,8 +716,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-
-        if(!this.destinatario()){
+        if(submitDestinatario){
             this.alertService.showToast({
                 title: "Debe seleccionar el destinatario",
                 icon: 'error',
@@ -709,13 +726,13 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-
-        if(!this.tabDatosEnvioProveedor?.evtOnSubmit()) return false;
-        if(!this.sectionTransportista?.evtOnSubmit()) return false;
-        if(!this.sectionConductor?.evtOnSubmit()) return false;
-        if(!this.sectionOrigen?.evtOnSubmit()) return false;
-        if(!this.sectionDestino?.evtOnSubmit()) return false;
-        if(!this.sectionProductoListadoComponent?.evtOnSubmit()) return false;
+        if(!submitDatosEnvioProveedor) return false;
+        if(!submitsectionProveedor) return false;
+        if(!submitsectionTransportista) return false;
+        if(!submitsectionConductor) return false;
+        if(!submitsectionOrigen) return false;
+        if(!submitsectionDestino) return false;
+        if(!submitsectionProductoListadoComponent) return false;
 
         return true;
     }

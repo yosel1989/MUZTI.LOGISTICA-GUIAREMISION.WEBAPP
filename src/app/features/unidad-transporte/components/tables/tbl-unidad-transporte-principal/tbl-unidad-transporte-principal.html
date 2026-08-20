@@ -180,7 +180,7 @@
                         <th class="px-2 border-s-0! border-t-0!"></th>
                     }
                     @case('cod'){
-                        <th class="px-4! text-[12px]! text-primary! font-semibold truncate border-t-0!">{{ col.header }}</th>
+                        <th class="px-4! text-[14px]! text-primary! font-semibold truncate border-t-0! roboto-condensed">{{ col.header }}</th>
                     }
                     @default{
                         <th 
@@ -190,9 +190,9 @@
                             pResizableColumn 
                             [pSortableColumn]="col.sort ? col.field : undefined" 
                             [class.border-e-0!]="(columns.length - 1) === i"
-                            class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4! border-t-0!"
+                            class="text-nowrap py-2! text-[14px]! text-primary! font-semibold px-4! border-t-0!"
                         >
-                            <div class="flex items-center gap-2" [innerHTML]="col.header">
+                            <div class="flex items-center gap-2 roboto-condensed" [innerHTML]="col.header">
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
                             </div>
                         </th>

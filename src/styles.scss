@@ -121,15 +121,16 @@ p-select{
 	background-color: #909090;
 }
 
-.cursor-not-allowed{
-  p-select{
-    //@apply bg-gray-100!;
-  }
-}
 
 .pButtonSmText{
   font-size: var(--p-button-sm-font-size) !important;
 }
 .pButtonSmFw{
   font-weight: var(--p-button-label-font-weight) !important;
+}
+
+.roboto-condensed{
+  font-family: "Roboto Condensed", sans-serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
