@@ -5,7 +5,7 @@
            
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Empresa *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Empresa *</label>
                     @if(!ldEmpresa()){
                     <p-select 
                         fluid
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="col-span-2">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Descripción</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Descripción</label>
                     <input 
                     fluid 
                     onlyUpper 
@@ -52,10 +52,32 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Area</label>
+                    <input 
+                    fluid 
+                    onlyUpper 
+                    pInputText 
+                    type="text" 
+                    pSize="small" 
+                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                    formControlName="area" 
+                    [invalid]="frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())"/>
+                    @if (frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                        @if (f.area.hasError('required')) {
+                            Este campo es requerido.
+                        }
+                        @if (f.area.hasError('maxlength')) {
+                            La descripción no debe exceder los 200 caracteres.
+                        }</span>
+                        </p-message>
+                    }
+                </div>
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Departamento *</label>
                     <app-select-departamento 
                         [control]="f.departamento" 
-                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                        classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
                         label="Departamento *"
                     ></app-select-departamento>
                     @if (frm.get('departamento')?.invalid && (frm.get('departamento')?.touched || isSubmitted())) {
@@ -65,11 +87,11 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Provincia *</label>
                     <app-select-provincia 
                         [control]="f.provincia" 
                         [idUbigeoDepartamento]="f.departamento.value" 
-                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                        classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed"
                         label="Provincia *"
                     ></app-select-provincia>
                     @if (frm.get('provincia')?.invalid && (frm.get('provincia')?.touched || isSubmitted())) {
@@ -79,12 +101,12 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Distrito *</label>
                     <app-select-distrito 
                         label="Distrito *"
                         [control]="f.distrito" 
                         [idUbigeoProvincia]="f.provincia.value" 
-                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                        classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
                     ></app-select-distrito>
                     @if (frm.get('distrito')?.invalid && (frm.get('distrito')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" >
@@ -94,7 +116,7 @@
                 </div>
                 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Dirección *</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -118,7 +140,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Email</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Email</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -142,7 +164,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Serie *</label>
                     <input 
                     fluid 
                     onlyNumber
@@ -161,7 +183,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Cod. Sunat *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Cod. Sunat *</label>
                     <input 
                     fluid 
                     onlyNumber
@@ -185,7 +207,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo Establecimiento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo Establecimiento *</label>
                     @if(!ldTipoEstablecimiento()){
                         <p-select 
                             fluid

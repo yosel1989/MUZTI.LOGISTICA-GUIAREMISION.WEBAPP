@@ -5,7 +5,7 @@
             
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Código</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Código</label>
                     @if(!ldData()){
                         <input 
                             pSize="small" 
@@ -20,7 +20,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo de documento *</label>
                     @if(!ldData()){
                         <app-select-tipo-documento
                             #tipoDocumento
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="flex flex-col">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">N° Documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">N° Documento *</label>
                     @if(!ldData()){
                     <input 
                         pSize="small" 
@@ -64,7 +64,7 @@
                     }
                 </div>
                 <div class="col-span-2">
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Nombre / Razón Social *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Nombre / Razón Social *</label>
                     @if(!ldData()){
                         <input 
                         fluid 
@@ -91,11 +91,11 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Departamento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Departamento *</label>
                     @if(!ldData()){
                         <app-select-departamento 
                         [control]="f.departamento" 
-                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                        classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
                         label="Departamento *"
                         ></app-select-departamento>
                     }@else{
@@ -109,13 +109,13 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Provincia *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Provincia *</label>
                     @if(!ldData()){
                         <app-select-provincia 
                         #provincia
                         [control]="f.provincia" 
                         [idUbigeoDepartamento]="f.departamento.value" 
-                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                        classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed"
                         label="Provincia *"
                         ></app-select-provincia>
                     }@else{
@@ -129,14 +129,14 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Distrito *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Distrito *</label>
                     @if(!ldData()){
                         <app-select-distrito 
                         #distrito
                         label="Distrito *"
                         [control]="f.distrito" 
                         [idUbigeoProvincia]="f.provincia.value" 
-                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                        classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
                         ></app-select-distrito>
                     }@else{
                         <p-skeleton width="100%" height="32px"></p-skeleton>
@@ -150,7 +150,7 @@
                 </div>
                 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Dirección *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Dirección *</label>
                     @if(!ldData()){
                         <input 
                         fluid 
@@ -177,7 +177,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Email Contacto</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Email Contacto</label>
                     @if(!ldData()){
                         <input 
                         fluid 
@@ -207,7 +207,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Cod. Sunat</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Cod. Sunat</label>
                     @if(!ldData()){
                         <input 
                         fluid 
@@ -231,7 +231,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px]! h-4.5! text-gray-500">Registro MTC</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Registro MTC</label>
                     @if(!ldData()){
                         <input 
                         fluid 

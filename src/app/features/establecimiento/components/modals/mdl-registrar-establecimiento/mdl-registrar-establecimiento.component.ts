@@ -92,6 +92,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     this.frm = new FormGroup({
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       descripcion: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
+      area: new FormControl(null, [Validators.maxLength(45)]),
       departamento: new FormControl(null, Validators.required),
       provincia: new FormControl(null, Validators.required),
       distrito: new FormControl(null, Validators.required),
@@ -129,6 +130,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     return {
       ruc: form.ruc,
       descripcion: form.descripcion,
+      area: form.area,
       ubigeo_id: form.distrito,
       direccion: form.direccion,
       email: form.email,

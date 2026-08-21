@@ -20,6 +20,7 @@ import { DatePickerModule } from "primeng/datepicker";
 import { SelectUnidadMedidaComponent } from "@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida";
 import { InputNumberModule } from "primeng/inputnumber";
 import { TooltipModule } from "primeng/tooltip";
+import { SelectGuiaRemisionIndicadorTraslado } from "@features/guia-remision-indicador-traslado/components/selects/select-guia-remision-indicador-traslado/select-guia-remision-indicador-traslado";
 
 @Component({
   selector: 'app-section-guia-remision-datos-traslado',
@@ -39,7 +40,8 @@ import { TooltipModule } from "primeng/tooltip";
     DatePickerModule,
     SelectUnidadMedidaComponent,
     InputNumberModule,
-    TooltipModule
+    TooltipModule,
+    SelectGuiaRemisionIndicadorTraslado 
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
   providers: [ConfirmationService, MessageService]
@@ -113,6 +115,9 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
           indic_retorno_vehiculo_envase_vacio_adicional: new FormControl(false),
           indic_transbordo_programado_adicional: new FormControl(false),
           indic_retorno_vehiculo_vacio_adicional: new FormControl(false),
+
+          indic_envio_sunat: new FormControl(null)
+
         });
     }
 

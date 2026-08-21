@@ -424,31 +424,38 @@
                             </p-accordion-content>
                         </p-accordion-panel>
 
-                        <p-accordion-panel value="provider"> 
-                            <p-accordion-header #headerProveedor class="group">
-                                <span class="inline-flex items-center">
-                                    <span class="roboto-condensed">Datos del Proveedor</span>
-                                    @if(submitted() && sectionProveedor?.invalid){
-                                        <i 
-                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
-                                            [class.text-primary-200!]="headerProveedor.active()"
-                                        ></i>
-                                    } 
-                                    @if(!sectionProveedor?.invalid){
-                                        <i 
-                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
-                                            [class.text-primary-200!]="headerProveedor.active()"
-                                        ></i>
-                                    }
-                                </span>
-                            </p-accordion-header>
-                            <p-accordion-content>
-                                <app-section-guia-remision-proveedor
-                                    #sectionProveedor
-                                >
-                                </app-section-guia-remision-proveedor>
-                            </p-accordion-content>
-                        </p-accordion-panel>
+                        @if(
+                            selectMotivoTraslado?.selected()?.codigo_sunat === sunatMotivoTrasladoEnum.compra ||
+                            selectMotivoTraslado?.selected()?.codigo_sunat === sunatMotivoTrasladoEnum.otros
+                        ){
+                            <p-accordion-panel value="provider"> 
+                                <p-accordion-header #headerProveedor class="group">
+                                    <span class="inline-flex items-center">
+                                        <span class="roboto-condensed">Datos del Proveedor</span>
+                                        @if(submitted() && sectionProveedor?.invalid){
+                                            <i 
+                                                class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                                [class.text-primary-200!]="headerProveedor.active()"
+                                            ></i>
+                                        } 
+                                        @if(!sectionProveedor?.invalid){
+                                            <i 
+                                                class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                                [class.text-primary-200!]="headerProveedor.active()"
+                                            ></i>
+                                        }
+                                    </span>
+                                </p-accordion-header>
+                                <p-accordion-content>
+                                    <app-section-guia-remision-proveedor
+                                        #sectionProveedor
+                                    >
+                                    </app-section-guia-remision-proveedor>
+                                </p-accordion-content>
+                            </p-accordion-panel>
+                        }
+
+                        
                     
                         <p-accordion-panel value="vehicles"> 
                             <p-accordion-header #headerTransportista class="group">

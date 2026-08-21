@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3 p-2">
 
             <div>
-                <label class="font-normal text-[11px]!">Fecha Registro</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Fecha Registro</label>
                 <app-flt-date 
                     #fechaRegistro
                     [today]="true"
@@ -19,7 +19,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Fecha Emisión</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Fecha Emisión</label>
                 <app-flt-date 
                     #fechaEmision
                     [today]="false" 
@@ -30,7 +30,7 @@
 
             <!--Remitente-->
             <div>
-                <label class="font-normal text-[11px]!">Remitente</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Remitente</label>
                 <p-select 
                     #remitenteId
                     formControlName="remitenteId"
@@ -70,7 +70,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Origen</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Origen</label>
                 <p-multiselect
                     #establecimientoRemitenteId 
                     formControlName="establecimientoRemitenteId"
@@ -131,7 +131,7 @@
             <!--Destinatario-->
 
             <div>
-                <label class="font-normal text-[11px]!">Destinatario</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Destinatario</label>
                 <p-select 
                     #destinatarioId
                     formControlName="destinatarioId"
@@ -171,7 +171,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Destino</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Destino</label>
                 <p-multiselect
                     #establecimientoDestinatarioId 
                     formControlName="establecimientoDestinatarioId"
@@ -258,7 +258,7 @@
             </div>-->
 
             <div>
-                <label class="font-normal text-[11px]!">Serie Guía</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Serie Guía</label>
                 <p-iconfield>
                     <input 
                     #serieGuia
@@ -283,7 +283,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">N° Guía</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">N° Guía</label>
                 <p-iconfield>
                     <input 
                     #numeroGuia
@@ -309,7 +309,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Motivo Traslado</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Motivo Traslado</label>
                 <p-multiselect
                 #motivoTrasladoId 
                 formControlName="motivoTrasladoId"
@@ -374,7 +374,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Tipo Transporte</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo Transporte</label>
                 <p-select 
                 formControlName="idTipoTransporte"
                 fluid
@@ -402,7 +402,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Estado</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Estado</label>
                 <p-multiselect
                     #estadoGuia 
                     formControlName="estadoGuia" 
@@ -458,7 +458,7 @@
             </div>
 
             <div>
-                <label class="font-normal text-[11px]!">Estado Sunat</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Estado Sunat</label>
                 <p-multiselect
                     #estadoGuiaSunat 
                     formControlName="estadoGuiaSunat" 

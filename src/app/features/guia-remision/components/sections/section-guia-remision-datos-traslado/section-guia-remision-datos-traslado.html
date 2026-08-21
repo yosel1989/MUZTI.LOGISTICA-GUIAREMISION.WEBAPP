@@ -104,6 +104,15 @@
                         [invalid]="f.numero_bultos.invalid && submitted()" 
                     />
                 </div>
+
+                <div class="flex flex-col ">
+                    <label class="text-[13px]! font-medium text-gray-500 roboto-condensed truncate">Indicador de envío SUNAT</label>
+                    <app-select-guia-remision-indicador-traslado
+                        #selectUnidadesMedida
+                        [control]="f.indic_envio_sunat"
+                        [invalid]="f.indic_envio_sunat.invalid && ( f.indic_envio_sunat.touched || submitted())"
+                    ></app-select-guia-remision-indicador-traslado>
+                </div>
                 
             </div>
             

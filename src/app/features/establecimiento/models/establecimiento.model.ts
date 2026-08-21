@@ -1,6 +1,7 @@
 export interface EstablecimientoListToModalDTO{
     id: number;
     descripcion: string;
+    area: string | null;
     codigo_sunat: string;
     entidad: string;
 }
@@ -9,6 +10,7 @@ export interface EstablecimientoDTO{
     id: number;
     ruc: string;
     descripcion: string;
+    area: string | null;
     ubigeo_id: string;
     departamento: string;
     provincia: string;
@@ -44,6 +46,7 @@ export interface ActualizarEstadoEstablecimientoRequestDTO{
 export interface RegistrarEstablecimientoRequestDTO{
     ruc: string;
     descripcion: string;
+    area: string | null;
     ubigeo_id: string;
     direccion: string;
     email: string | null;
@@ -57,6 +60,7 @@ export interface EditarEstablecimientoRequestDTO{
     establecimiento_id: number;
     ruc: string;
     descripcion: string;
+    area: string | null;
     ubigeo_id: string;
     direccion: string;
     email: string | null;
@@ -71,6 +75,7 @@ export interface EstablecimientoRemitenteGuiaDTO{
   razon_social: string;            
   ruc: string;                       
   descripcion: string;               
+  area: string | null;               
   ubigeo_id: string;                 
   departamento: string;              
   provincia: string;                 
@@ -88,4 +93,5 @@ export interface EstablecimientoRemitenteGuiaDTO{
 export interface EstablecimientoListToSelectDTO{
     id: number;
     descripcion: string;
+    area: string | null;
 }

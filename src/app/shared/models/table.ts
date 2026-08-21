@@ -6,4 +6,5 @@ interface Column {
     alignFrozen?: string;
     className?: string;
     tdClassName?: string;
+    thClassName?: string;
 }

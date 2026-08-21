@@ -156,6 +156,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     puertos = signal<Puerto[]>([]);
     aereopuertos = signal<{value: string, label: string}[]>([]);
 
+    sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
+
     constructor(
         private formBuilder: FormBuilder,
         public dialogService: DialogService,
@@ -566,7 +568,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         }
 
         this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
-            width: '1000px',
+            width: '700px',
             keepInViewport: false,
             closable: false,
             modal: true,

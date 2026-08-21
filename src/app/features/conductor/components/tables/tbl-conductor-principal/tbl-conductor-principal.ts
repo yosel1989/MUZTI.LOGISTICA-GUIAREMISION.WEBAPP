@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -49,7 +49,8 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
       ContextMenuModule,
       ConfirmDialogModule,
       LoaderComponent,
-      ReactiveFormsModule
+      ReactiveFormsModule,
+      NgClass
   ],
   providers: [DialogService, ConfirmationService]
 })
@@ -115,7 +116,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
         { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
         { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
-        { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
+        { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!' },
       ];
     }
 

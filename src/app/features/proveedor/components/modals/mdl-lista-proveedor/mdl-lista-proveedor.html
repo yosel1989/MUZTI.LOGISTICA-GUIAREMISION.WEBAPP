@@ -87,10 +87,13 @@
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){
-                                    <td class="text-nowrap font-light! truncate" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
+                                    <td class="text-nowrap font-light! truncate border-s-0!" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
                                 }
                                 @default {
-                                    <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
+                                    <td 
+                                        class="text-nowrap font-light! truncate" 
+                                        [class.border-e-0!]="($index === columns.lenght - 1)"
+                                    >{{ rowData[col.field] }}</td>
                                 }
                             }
                         }

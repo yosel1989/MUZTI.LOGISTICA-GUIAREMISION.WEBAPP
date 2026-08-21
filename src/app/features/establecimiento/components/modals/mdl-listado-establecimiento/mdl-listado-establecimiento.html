@@ -1,8 +1,8 @@
 <div class="p-4">
-    <div class="grid grid-cols-3 gap-4">
+    <div class="flex flex-col gap-4">
         <div class="">
             @if(ldEmpresas()){
-                <p-skeleton class="h-[30px]!"></p-skeleton>
+                <p-skeleton class="h-[69px]!"></p-skeleton>
             }@else {
                 <p-select 
                     panelStyleClass="text-[.875rem]!"
@@ -17,10 +17,32 @@
                     placeholder="--SELECCIONAR--"
                     (onChange)="evtChangeEmpresa()"
                     appendTo="body"
-                ></p-select>
+                >
+                    <ng-template #selectedItem let-selectedOption>
+                            <div class="p-4 py-2! text-left">
+                                <div class="flex flex-row gap-x-4">
+                                    <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+                                    <div>
+                                        <p class="font-semibold">{{ selectedOption.empresa }}</p>
+                                        <p class="uppercase">{{ selectedOption.ruc }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                    </ng-template>
+
+                    <ng-template let-item #item>
+                        <div class="flex flex-row gap-x-4">
+                            <p-avatar icon="fa-light fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+                            <div>
+                                <p class="font-semibold">{{ item.empresa }}</p>
+                                <p class="uppercase">{{ item.ruc }}</p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-select>
             }
         </div>
-        <div class="">
+        <div class="lg:col-span-2">
             <p-iconfield>
                 <p-inputicon class="pi pi-search" />
                 <input 
@@ -30,12 +52,13 @@
                     type="text" 
                     pInputText 
                     placeholder="Filtrar"
+                    class="min-h-9!"
                 />
             </p-iconfield>
         </div>
     </div>
 
-    <div class="pt-5">
+    <div class="mt-5 border rounded-xl border-slate-200 overflow-hidden">
         <p-table
             size="small"
             [columns]="cols"
@@ -55,14 +78,18 @@
             [rowHover]="true"
             scrollHeight="400px"
             class="border-0! text-[12px]!"
+
+            [loading]="ldData()"
         >
             
                 <ng-template pTemplate="header" let-columns>
                         <tr>
                             @for (col of columns; track $index) {
                                 <th 
-                                    class="text-nowrap text-[12px]! text-gray-500! font-semibold py-4!"
+                                    class="text-nowrap text-[14px]! text-primary-500! font-semibold py-4! px-4! roboto-condensed border-t-0!"
                                     [ngClass]="col.className"
+                                    [class.border-e-0!]="($index === columns.length - 1)"
+                                    [class.border-s-0!]="$index === 0"
                                 >
                                     {{ col.header }}
                                 </th>
@@ -70,11 +97,15 @@
                         </tr>
                 </ng-template>
 
-                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                     @if(ldData()){
                         <tr>
                             @for (col of columns; track $index) {
-                                <td>
+                                <td
+                                    [class.border-e-0!]="($index === columns.length - 1)"
+                                    [class.border-s-0!]="$index === 0"
+                                    [class.border-b-0!]="(rowIndex === data().length - 1)"
+                                >
                                     <p-skeleton [width]="$index == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                 </td>
                             }
@@ -86,15 +117,21 @@
                             [class.p-datatable-contextmenu-row-selected]="selected === rowData"
                         >
                             @for (col of columns; track $index) {
-                                <td class="text-nowrap font-light! truncate">{{ rowData[col.field] }}</td>
+                                <td 
+                                    class="text-nowrap font-light! truncate"
+                                    [class.border-e-0!]="($index === columns.length - 1)"
+                                    [class.border-s-0!]="$index === 0"
+                                    [class.border-b-0!]="(rowIndex === data().length - 1)"
+                                    [ngClass]="col.tdClassName"
+                                >{{ rowData[col.field] }} </td>
                             }
                         </tr>
                     }
                 </ng-template>
 
-                <ng-template pTemplate="empty" let-columns="columns">
+                <ng-template #emptymessage >
                     <tr>
-                        <td [colSpan]="columns.length">
+                        <td [colSpan]="cols.length" class="border-x-0! border-y-0!">
                             No se encontraron registros.
                         </td>
                     </tr>

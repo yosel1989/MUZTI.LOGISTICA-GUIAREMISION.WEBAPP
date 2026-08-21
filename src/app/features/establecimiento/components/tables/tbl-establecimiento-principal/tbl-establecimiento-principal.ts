@@ -105,6 +105,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           { field: 'razon_social', header: 'Empresa', sort: false, sticky: false },
           { field: 'ruc', header: 'RUC', sort: false, sticky: false },
           { field: 'descripcion', header: 'Descripción', sort: false, sticky: false },
+          { field: 'area', header: 'Area', sort: false, sticky: false },
           { field: 'departamento', header: 'Departamento', sort: false, sticky: false },
           { field: 'provincia', header: 'Provincia', sort: false, sticky: false },
           { field: 'distrito', header: 'Distrito', sort: false, sticky: false },

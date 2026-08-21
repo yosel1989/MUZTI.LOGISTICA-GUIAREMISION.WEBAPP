@@ -8,7 +8,6 @@ import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { IconFieldModule } from "primeng/iconfield";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { TableColumn } from "@core/models/table";
 import { EstablecimientoDTO, EstablecimientoListToModalDTO } from "@features/establecimiento/models/establecimiento.model";
 import { SkeletonModule } from "primeng/skeleton";
 import { EstablecimientoApiService } from "@features/establecimiento/services/establecimiento.service";
@@ -18,6 +17,7 @@ import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
+import { AvatarModule } from "primeng/avatar";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',
@@ -32,7 +32,8 @@ import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo
         ReactiveFormsModule,
         SkeletonModule,
         SelectModule,
-        NgClass
+        NgClass,
+        AvatarModule
     ]
 })
 
@@ -54,7 +55,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     ctrlRuc = new FormControl<string | null>({value: null, disabled: true});
     ctrlSearch = new FormControl<string | null>(null);
-    cols: TableColumn[] = [];
+    cols: Column[] = [];
 
     data = signal<EstablecimientoListToModalDTO[]>([]);
     ldData = signal(false);
@@ -117,16 +118,21 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.cols = [
             {
                 field: 'id',
-                header: 'COD',
-                className: 'w-[50px]'
+                header: '#',
+                className: 'w-[50px]',
+                tdClassName: 'font-semibold! ps-4!'
             },
-            {
+            /*{
                 field: 'entidad',
                 header: 'Entidad'
-            },
+            },*/
             {
                 field: 'descripcion',
                 header: 'Local'
+            },
+            {
+                field: 'area',
+                header: 'Area'
             },
             {
                 field: 'codigo_sunat',
