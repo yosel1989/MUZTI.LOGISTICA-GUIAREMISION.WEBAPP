@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal } from "@angular/core";
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal } from "@angular/core";
 import { EmpresaApiService } from "@features/empresa/services/empresa-api.service";
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { AlertService } from "@core/services/alert.service";
@@ -18,6 +18,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { AvatarModule } from "primeng/avatar";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',
@@ -42,6 +43,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     empresaApiService = inject(EmpresaApiService);
     api = inject(EstablecimientoApiService);
     alertService = inject(AlertService);
+    destroyRef = inject(DestroyRef);
 
     @Input() ruc: string | null = null;
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -156,13 +158,17 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     loadEmpresas(): void{
         this.ldEmpresas.set(true);
-        const s = this.empresaApiService.loadAllToSelect().subscribe({
+        this.empresaApiService.loadAllToSelect()
+        .pipe(
+            takeUntilDestroyed(this.destroyRef),
+            finalize(()=>{this.ldEmpresas.set(false);})
+        )
+        .subscribe({
             next: (value: EmpresaToSelectDto[]) => {
                 this.empresas.set(value.map(x => ({
                     ...x,
                     disabled: this.disabledOptions(x)
                 })));
-                this.ldEmpresas.set(false);
             },
             error: (e: HttpErrorResponse) => {
                 this.alertService.showToast({
@@ -171,10 +177,8 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                     timer: 4000,
                     showCloseButton: true
                 });
-                this.ldEmpresas.set(false);
             },
         });
-        this.sb.add(s);
     }
 
     loadData(): void{
@@ -182,6 +186,8 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
         this.ldData.set(true);
         const ruc = this.ctrlRuc.value!;
         const search = this.ctrlSearch.value;
+
+        console.log(ruc, search);
 
         this.sbData = this.api.getAllToModalByRuc(ruc, search)
         .pipe(finalize(() => this.ldData.set(false)))
@@ -202,7 +208,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     }
 
     loadDataById(): void{
-        //console.log('cargando establecimiento por id', this.selected!.id);
+        console.log('cargando establecimiento por id', this.selected!.id);
         this.ldDataById.set(true);
         const s = this.api.getById(this.selected!.id!)
         .pipe(finalize(() => {

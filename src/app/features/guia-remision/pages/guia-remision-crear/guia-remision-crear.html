@@ -397,6 +397,64 @@
 
             <div class="rounded-2xl! overflow-hidden! border border-gray-200!">
                 <p-accordion value="0">
+
+                        <p-accordion-panel value="remitente"> 
+                            <p-accordion-header #headerRemitente class="group"> 
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Datos del Remitente</span>
+                                    @if(submitted() && sectionRemitente?.invalid){
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerRemitente.active()"
+                                        ></i>
+                                    } 
+                                    @if(!sectionRemitente?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerRemitente.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
+                            <p-accordion-content>
+                                <app-section-guia-remision-remitente
+                                    #sectionRemitente
+                                    [motivoTraslado]="selectMotivoTraslado?.selected()"
+                                    [empresa]="empresa() ?? undefined"
+                                ></app-section-guia-remision-remitente>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+
+
+                        <p-accordion-panel value="destinatario"> 
+                            <p-accordion-header #headerDestinatario class="group"> 
+                                <span class="inline-flex items-center">
+                                    <span class="roboto-condensed">Datos del Destinatario</span>
+                                    @if(submitted() && sectionDestinatario?.invalid){ 
+                                        <i 
+                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                            [class.text-primary-200!]="headerDestinatario.active()"
+                                        ></i>
+                                    } 
+                                    @if(!sectionDestinatario?.invalid){
+                                        <i 
+                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                            [class.text-primary-200!]="headerDestinatario.active()"
+                                        ></i>
+                                    }
+                                </span>
+                            </p-accordion-header>
+                            <p-accordion-content>
+                                <app-section-guia-remision-destinatario 
+                                    #sectionDestinatario
+                                    [remitente]="sectionRemitente?.selected()"
+                                    [motivoTraslado]="selectMotivoTraslado?.selected()"
+                                    [empresa]="empresa() ?? undefined"
+                                ></app-section-guia-remision-destinatario>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+
+
                         <p-accordion-panel value="transfer_details"> 
                             <p-accordion-header #headerDatosTraslado class="group"> 
                                 <span class="inline-flex items-center">
@@ -460,7 +518,7 @@
                         <p-accordion-panel value="vehicles"> 
                             <p-accordion-header #headerTransportista class="group">
                                 <span class="inline-flex items-center">
-                                    <span class="roboto-condensed">Datos del Transportista</span>
+                                    <span class="roboto-condensed">Datos del Vehículo | Transportista</span>
                                     @if(submitted() && sectionTransportista?.invalid()){
                                         <i 
                                             class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
@@ -592,7 +650,7 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="3">
-                            <p-accordion-header>Observaciones</p-accordion-header>
+                            <p-accordion-header><span class="roboto-condensed">Observaciones </span></p-accordion-header>
                             <p-accordion-content>
                                 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
                                     <div class="flex flex-col">

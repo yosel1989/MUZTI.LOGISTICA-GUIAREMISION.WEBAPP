@@ -1,0 +1,116 @@
+<div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
+
+    @if(submitted() && invalid){
+        <p class="inline-flex items-center text-sm! font-medium! text-amber-600! py-1 px-3 rounded-lg! bg-amber-100! border-s-3! border-amber-500!"><i class="fa-regular fa-triangle-exclamation text-lg! me-3"></i> Debe seleccionar un remitente </p>
+    }
+
+    <div class="flex flex-col gap-y-3 relative">
+
+        @if(remitente){
+
+            <div class="absolute top-[-10px] left-0 right-0 text-center">
+                <p-button 
+                    [outlined]="true"
+                    pTooltip="Quitar conductor" 
+                    tooltipPosition="top" 
+                    tooltipStyleClass="text-[10px]!" 
+                    class="text-xs! ml-auto" 
+                    size="small" 
+                    icon="pi pi-times text-xs! font-semibold!" 
+                    styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!"  
+                    rounded="true" 
+                    (onClick)="evtRemove()"
+                />
+            </div>
+
+            <div class="flex flex-row items-center px-4! py-4! pt-8! rounded-xl! bg-slate-50" >
+
+                <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo de documento</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="'RUC'" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nro. de  Documento</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="remitente.ruc" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div> 
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre o Razón Social</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="remitente.razon_social" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="remitente.direccion" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="remitente.departamento" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="remitente.provincia" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="remitente.distrito" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                </div>
+
+            </div>
+        }
+        @else {
+            <div class="flex flex-col items-center">
+                <p-button 
+                    class="w-full max-w-[500px]! rounded-3xl!" 
+                    styleClass="rounded-3xl!"
+                    fluid 
+                    severity="secondary"
+                    (onClick)="evtOnShowEstablecimiento('remitente')"
+                >
+                    <div class="flex flex-col text-center py-4">
+                        <img src="assets/media/brand/distribucion.png" alt="" class="h-[70px] w-auto block mx-auto">
+                        <p class="font-semibold text-slate-500 text-sm">Seleccionar remitente</p>
+                    </div>
+                </p-button>
+            </div>
+        }
+        
+    </div>
+
+
+</div>
+
+
+
+
+
+<p-confirmdialog styleClass="max-w-[400px]" #cd>
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-8  rounded-xl">
+            <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"
+            >
+                <i class="font-bold pi pi-question text-5xl!"></i>
+            </div>
+            <span class="font-semibold text-xl block mb-2 mt-6 text-center">{{ message.header }}</span>
+            <p class="mb-0 text-xs">{{ message.message }}</p>
+            <div class="flex items-center gap-2 mt-6">
+                <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                <p-button label="Cancelar" severity="secondary" (onClick)="onReject()" styleClass="w-32"></p-button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>

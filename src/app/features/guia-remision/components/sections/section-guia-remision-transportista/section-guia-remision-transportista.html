@@ -56,7 +56,23 @@
 
                     </div> 
                 }@else {
-                    <div class="flex flex-row items-center px-4!">
+
+                    <div class="flex flex-col items-center">
+                        <p-button 
+                            class="w-full" 
+                            styleClass="rounded-xl!"
+                            fluid 
+                            severity="secondary"
+                            (onClick)="evtRemoveTransportista()"
+                        >
+                            <div class="flex flex-col text-center py-4">
+                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[70px] w-auto block mx-auto">
+                                <p class="font-semibold text-slate-500 text-sm">Seleccionar Transportista</p>
+                            </div>
+                        </p-button>
+                    </div>
+
+                    <!--<div class="flex flex-row items-center px-4!">
                         <p-button 
                             tooltipPosition="top" 
                             tooltipStyleClass="text-xs! text-center" 
@@ -68,7 +84,7 @@
                             severity="primary" 
                             label="Seleccionar transportista" 
                         ></p-button>
-                    </div>
+                    </div>-->
                 }
 
             </div>
@@ -123,7 +139,22 @@
 
                     </div> 
                 }@else {
-                    <div class="flex flex-row items-center px-4!">
+                    <div class="flex flex-col items-center">
+                        <p-button 
+                            class="w-full" 
+                            styleClass="rounded-xl!"
+                            fluid 
+                            severity="secondary"
+                            (onClick)="evtOnShowListaVehiculo('Principal')"
+                        >
+                            <div class="flex flex-col text-center py-4">
+                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[70px] w-auto block mx-auto">
+                                <p class="font-semibold text-slate-500 text-sm">Seleccionar Vehículo Principal</p>
+                            </div>
+                        </p-button>
+                    </div>
+
+                    <!--<div class="flex flex-row items-center px-4!">
                         <p-button 
                             [outlined]="true" 
                             (onClick)="evtOnShowListaVehiculo('Principal')" 
@@ -133,7 +164,7 @@
                             severity="primary" 
                             label="Seleccionar vehículo" 
                         ></p-button>
-                    </div>
+                    </div>-->
                 }
 
             </div>
@@ -192,7 +223,20 @@
                 
                 @if( vehiculoSecundario().length < 2 ){
 
-                    <div class="flex flex-row items-center px-4!">
+                    <p-button 
+                        class="w-full" 
+                        styleClass="rounded-xl!"
+                        fluid 
+                        severity="secondary"
+                        (onClick)="evtOnShowListaVehiculo('Secundario')"
+                    >
+                        <div class="flex flex-col text-center py-4">
+                            <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[70px] w-auto block mx-auto">
+                            <p class="font-semibold text-slate-500 text-sm">Seleccionar Vehículo Secundario</p>
+                        </div>
+                    </p-button>
+
+                    <!--<div class="flex flex-row items-center px-4!">
                         <p-button 
                             [outlined]="true"
                             (onClick)="evtOnShowListaVehiculo('Secundario')" 
@@ -202,7 +246,7 @@
                             severity="secondary" 
                             label="Seleccionar vehículo"
                         ></p-button>
-                    </div>
+                    </div>-->
                     
                 }
 

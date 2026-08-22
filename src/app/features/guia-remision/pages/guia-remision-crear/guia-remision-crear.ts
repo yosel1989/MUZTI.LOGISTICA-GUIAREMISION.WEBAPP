@@ -54,6 +54,8 @@ import { SectionGuiaRemisionTransportista } from '@features/guia-remision/compon
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
 import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/components/sections/section-guia-remision-datos-traslado/section-guia-remision-datos-traslado';
+import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
+import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
 
 export interface Puerto{
     value: string;
@@ -95,6 +97,8 @@ export interface Puerto{
     TypingComponent,
     AccordionModule,
 
+    SectionGuiaRemisionRemitente,
+    SectionGuiaRemisionDestinatario,
     SectionGuiaRemisionDatosTraslado,
     SectionGuiaRemisionProveedor,
     SectionGuiaRemisionTransportista,
@@ -114,6 +118,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
 
+    @ViewChild('sectionRemitente') sectionRemitente: SectionGuiaRemisionRemitente | undefined;
+    @ViewChild('sectionDestinatario') sectionDestinatario: SectionGuiaRemisionDestinatario | undefined;
     @ViewChild('sectionDatosTraslado') sectionDatosTraslado: SectionGuiaRemisionDatosTraslado | undefined;
     @ViewChild('sectionProveedor') sectionProveedor: SectionGuiaRemisionProveedor | undefined;
     @ViewChild('sectionTransportista') sectionTransportista: SectionGuiaRemisionTransportista | undefined;
