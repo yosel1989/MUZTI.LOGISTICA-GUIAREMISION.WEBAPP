@@ -43,7 +43,6 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { TextareaModule } from 'primeng/textarea';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
-import { TypingComponent } from '@features/shared/components/typing/typing';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { AccordionModule } from 'primeng/accordion';
 import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
@@ -56,6 +55,7 @@ import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components
 import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/components/sections/section-guia-remision-datos-traslado/section-guia-remision-datos-traslado';
 import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
 import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
+import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
 
 export interface Puerto{
     value: string;
@@ -94,9 +94,9 @@ export interface Puerto{
     SelectMotivoTrasladoComponent,
     TextareaModule,
     SectionResponsableListadoComponent,
-    TypingComponent,
     AccordionModule,
 
+    SectionGuiaRemisionDocumentoRelacionado,
     SectionGuiaRemisionRemitente,
     SectionGuiaRemisionDestinatario,
     SectionGuiaRemisionDatosTraslado,
@@ -184,12 +184,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             motivo_traslado_id: new FormControl(null, Validators.required),
 
-            remitente_id: new FormControl(null, Validators.required),
-            contactos_remitente: new FormControl([], [this.maxEmailsValidator(1)]),
-
-            destinatario_id: new FormControl(null, Validators.required),
-            contactos_destinatario: new FormControl([], [this.maxEmailsValidator(3)]),
-
             fecha_emision: new FormControl(new Date(), Validators.required),
             docs_ref: new FormArray([]),
             observacion: new FormControl(null)
@@ -204,42 +198,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             this.remitente.set(null);
             this.destinatario.set(null);
         });
-
-        /*this.formGroup.get('tipo_documento_remitente')?.valueChanges.subscribe((value: string) => { 
-            this.formGroup.get('numero_documento_remitente')?.clearValidators();
-            this.formGroup.get('razon_social_remitente')?.clearValidators();
-            this.formGroup.get('nombres_apellidos_remitente')?.clearValidators();
-
-            if(value === 'RUC'){
-                this.formGroup.get('razon_social_remitente')?.setValidators(Validators.required);
-            }else{
-                this.formGroup.get('nombres_apellidos_remitente')?.setValidators(Validators.required);
-            }
-
-            switch(value){
-                case 'RUC':
-                    this.formGroup.get('numero_documento_remitente')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
-                break;
-                case 'DNI':
-                    this.formGroup.get('numero_documento_remitente')?.setValidators([Validators.required, Validators.minLength(8), Validators.maxLength(8)]);
-                break;
-                case 'PASAPORTE':
-                    this.formGroup.get('numero_documento_remitente')?.setValidators([Validators.required, Validators.maxLength(12)]);
-                break;
-                case 'CARNET DE EXTRANJERIA':
-                    this.formGroup.get('numero_documento_remitente')?.setValidators([Validators.required, Validators.maxLength(12)]);
-                break;
-                default: 
-                break;
-            }
-
-            this.cdr.markForCheck();
-        });*/
-
-        /*effect(() => {
-            const remitente = this.remitente();
-            //this.handlerValueRemitente(remitente);
-        });*/
 
         effect(() => {
             this.empresa();
@@ -304,11 +262,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 };
             }) : null,
 
-            remitente: this.remitente()!,
-            remitente_id: this.remitente()!.id,
+            remitente: this.sectionRemitente!.selected()!,
+            remitente_id: this.sectionRemitente!.selected()!.id,
 
-            destinatario: this.destinatario()!,
-            destinatario_id: this.destinatario()!.id,
+            destinatario: this.sectionDestinatario!.selected()!,
+            destinatario_id: this.sectionDestinatario!.selected()!.id,
 
             proveedor: null,
             proveedor_id: !this.tabDatosEnvioProveedor?.mostrarProveedor() ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,

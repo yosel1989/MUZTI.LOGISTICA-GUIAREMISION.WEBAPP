@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div class="pt-5">
+<div class="mt-5 border rounded-xl border-slate-300 overflow-hidden">
     <p-table
         size="small"
         [columns]="cols"
@@ -35,18 +35,25 @@
                     <tr>
                         @for (col of columns; track $index) {
                             <th 
-                            class="text-nowrap text-[12px]! text-gray-500! font-semibold py-4!">
+                                class="text-nowrap text-[14px]! text-primary-500! font-semibold py-4! roboto-condensed border-t-0!"
+                                [class.border-s-0!]="$index === 0"
+                                [class.border-e-0!]="( $index === columns.length -1 )"
+                            >
                                 {{ col.header }}
                             </th>
                         }
                     </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
                 @if(ldData()){
                     <tr>
                         @for (col of columns; track $index) {
-                            <td>
+                            <td
+                                [class.border-s-0!]="$index === 0"
+                                [class.border-e-0!]="( $index === columns.length -1 )"
+                                [class.border-b-0!]="( rowIndex === data().length - 1 )"
+                            >
                                 <p-skeleton [width]="$index == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                             </td>
                         }
@@ -60,13 +67,22 @@
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){
-                                    <td class="text-nowrap font-light! truncate" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
+                                    <td 
+                                        class="text-nowrap font-light! truncate border-s-0!" 
+                                        [class.border-b-0!]="( rowIndex === data().length - 1 )"
+                                    >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
                                 }
                                 @case('tipo'){
-                                    <td class="uppercase text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
+                                    <td 
+                                        class="uppercase text-nowrap font-light! truncate border-e-0!" 
+                                        [class.border-b-0!]="( rowIndex === data().length - 1 )"
+                                    >{{ rowData[col.field] }}</td>
                                 }
                                 @default {
-                                    <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
+                                    <td 
+                                        class="text-nowrap font-light! truncate" 
+                                        [class.border-b-0!]="( rowIndex === data().length - 1 )"
+                                    >{{ rowData[col.field] }}</td>
                                 }
                             }
                         }
@@ -74,13 +90,14 @@
                 }
             </ng-template>
 
-            <ng-template pTemplate="empty" let-columns="columns">
+            <ng-template #emptymessage >
                 <tr>
-                    <td [colSpan]="columns.length">
+                    <td [colSpan]="cols.length" class="border-x-0! border-y-0!">
                         No se encontraron registros.
                     </td>
                 </tr>
             </ng-template>
+            
     </p-table>
 </div>
 

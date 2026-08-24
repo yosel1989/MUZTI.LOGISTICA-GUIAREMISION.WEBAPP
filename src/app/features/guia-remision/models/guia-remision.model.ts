@@ -271,3 +271,4 @@ export interface GuiaRemisionDocumentoRelacionadoDto{
   numero_doc_ref: string;
   ruc_doc_ref: string;
 }
+

@@ -1,0 +1,124 @@
+<div [formGroup]="frm" class="flex flex-col gap-x-4 gap-y-2 p-4">
+
+    @if(documentos.length){
+
+        <div formArrayName="documentos" class="flex flex-col gap-4">
+            @for(doc of documentos.controls; track $index){
+                <div class="flex flex-row items-center px-4! py-4! pt-8! gap-x-4 rounded-xl! bg-slate-50" >
+                    <div class="grid gird-cols-1  md:grid-cols-3 gap-4" [formGroupName]="$index">
+                        
+                        <div class="flex flex-col">
+                            <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">Tipo de comprobante</label>
+                            <app-select-documento-relacionado
+                                [tipo]="tipo() ?? null"
+                                
+                                #selectDocumentoRelacionado
+                            ></app-select-documento-relacionado>
+                            @if (doc.get('tipo_doc_ref_id')?.invalid && (doc.get('tipo_doc_ref_id')?.touched || submitted())) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                            }
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">RUC del emisor del documento relacionado</label>
+                            <input 
+                                pSize="small" 
+                                fluid 
+                                pInputText 
+                                onlyNumber
+                                formControlName="ruc_doc_ref" 
+                                [class]="doc.get('ruc_doc_ref')?.invalid && (doc.get('ruc_doc_ref')?.touched || submitted()) ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="doc.get('ruc_doc_ref')?.invalid && (doc.get('ruc_doc_ref')?.touched || submitted)" 
+                            />
+                            @if (doc.get('ruc_doc_ref')?.invalid && (doc.get('ruc_doc_ref')?.touched || submitted())) {
+                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                    @if(doc.get('ruc_doc_ref')?.errors?.['required']){
+                                        Este campo es requerido.
+                                    }@else if(doc.get('ruc_documento')?.errors?.['minlength']){
+                                        El RUC debe tener al menos 11 caracteres.
+                                    }@else{
+                                        El RUC debe tener máximo 11 caracteres.
+                                    }
+                                </span></p-message>
+                            }
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">Serie y correlativo</label>
+                            <input 
+                                pSize="small" 
+                                fluid 
+                                pInputText
+                                minlength="13"
+                                maxlength="13"
+                                formControlName="numero_doc_ref" 
+                                [class]="doc.get('numero_doc_ref')?.invalid && (doc.get('numero_doc_ref')?.touched || submitted()) 
+                                ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' 
+                                : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                                [invalid]="doc.get('numero_doc_ref')?.invalid && (doc.get('numero_doc_ref')?.touched || submitted())" 
+                            />
+
+                            @if (doc.get('numero_doc_ref')?.invalid && (doc.get('numero_doc_ref')?.touched || submitted())) {
+                                <p-message severity="error" size="small" variant="simple">
+                                <span class="text-[10px]! ">
+                                    @if(doc.get('numero_doc_ref')?.errors?.['required']){
+                                        Este campo es requerido.
+                                    } @else if(doc.get('numero_doc_ref')?.errors?.['serieInvalida']){
+                                        {{ doc.get('numero_doc_ref')?.errors?.['serieInvalida'] }}
+                                    } @else {
+                                        Ingrese un documento válido.
+                                    }
+                                </span>
+                                </p-message>
+                            }
+                        </div>
+
+                        @if([1,2,4,6].includes(doc.get('tipo_doc_ref_id')?.value)){
+                            <div class="md:col-span-3">
+                                <div class="flex flex-row gap-3 items-center">
+                                    <p-toggleswitch formControlName="checked" />
+                                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Agregar 
+                                        @switch(doc.get('tipo_doc_ref_id')?.value){
+                                            @case(1){ 'Factura' }
+                                            @case(2){ 'Boleta de Venta' }
+                                            @case(4){ 'Guía de Remisión Remitente' }
+                                            @case(6){ 'Guía de Remisión Transportista' }
+                                        }
+                                    manualmente</label>
+                                </div>
+                            </div>
+                        }
+                        
+                    </div>
+
+                     <div class="text-center">
+                        <p-button 
+                            [outlined]="true"
+                            pTooltip="Quitar documento" 
+                            tooltipPosition="top" 
+                            tooltipStyleClass="text-[10px]!" 
+                            class="text-xs! ml-auto" 
+                            size="small" 
+                            icon="pi pi-times text-xs! font-semibold!" 
+                            styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!"  
+                            rounded="true" 
+                        />
+                    </div>
+                </div>
+            }
+
+        </div>
+
+    }
+
+    <p-button 
+        [outlined]="true" 
+        severity="primary" 
+        class="group" 
+        styleClass="bg-primary-50! group-hover:bg-primary-100!"
+        (onClick)="evtAddDocRef()"
+    >
+        <p class="font-semibold text-primary-500 text-[14px]!">Agregar Documento Relacionado</p>
+    </p-button> 
+</div>
+

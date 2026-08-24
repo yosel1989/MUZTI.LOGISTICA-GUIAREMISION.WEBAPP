@@ -1,108 +1,99 @@
-<form [formGroup]="formGroup" (ngSubmit)="evtOnSubmit()">
-    <div class="grid gird-cols-1  md:grid-cols-3 gap-4">
-    
-        <div class="flex flex-col">
-            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Tipo de comprobante *</label>
-            <app-select-documento-relacionado
-                [tipo]="tipo"
-                [control]="f.tipo_comprobante_id"
-                (selectedChange)="evtSelectTipoDocumentoRelacionado($event)"
-                #selectDocumentoRelacionado
-            ></app-select-documento-relacionado>
-            <!--<p-select 
-            fluid
-            size="small" 
-            [inputSize]="2" 
-            panelStyleClass="text-[.875rem]!"
-            [class]=" f.tipo_comprobante.invalid && submitted ? 'shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : ' shadow-none! min-h-9!  focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' "
-            [options]="documentTypes" 
-            formControlName="tipo_comprobante" 
-            placeholder="" 
-            optionValue="value" 
-            optionLabel="description" 
-            appendTo="body"
-            />-->
-            @if (f.tipo_comprobante_id.invalid && (f.tipo_comprobante_id.touched || submitted)) {
-                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-            }
-        </div>
+<div class="p-4">
 
-        <div class="flex flex-col">
-            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">RUC del emisor del documento relacionado *</label>
-            <input 
-            placeholder="RUC del emisor del documento relacionado *" 
-            pSize="small" 
-            fluid 
-            pInputText 
-            onlyNumber
-            formControlName="ruc_documento" 
-            [class]="f.ruc_documento.invalid && (f.ruc_documento.touched || submitted) ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-            [invalid]="f.ruc_documento.invalid && (f.ruc_documento.touched || submitted)" />
-            @if (f.ruc_documento.invalid && (f.ruc_documento.touched || submitted)) {
-                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                    @if(f.ruc_documento.errors?.['required']){
-                        Este campo es requerido.
-                    }@else if(f.ruc_documento.errors?.['minlength']){
-                        El RUC debe tener al menos 11 caracteres.
-                    }@else{
-                        El RUC debe tener máximo 11 caracteres.
-                    }
-                </span></p-message>
-            }
-        </div>
+    <form [formGroup]="formGroup" (ngSubmit)="evtOnSubmit()">
+        <div class="grid gird-cols-1  md:grid-cols-3 gap-4">
+        
+            <div class="flex flex-col">
+                <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">Tipo de comprobante</label>
+                <app-select-documento-relacionado
+                    [tipo]="tipo"
+                    [control]="f.tipo_comprobante_id"
+                    (selectedChange)="evtSelectTipoDocumentoRelacionado($event)"
+                    #selectDocumentoRelacionado
+                ></app-select-documento-relacionado>
+                @if (f.tipo_comprobante_id.invalid && (f.tipo_comprobante_id.touched || submitted)) {
+                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                }
+            </div>
 
-        <div class="flex flex-col">
-            <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Serie y correlativo *</label>
-            <input 
-                placeholder="Serie y correlativo *" 
+            <div class="flex flex-col">
+                <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">RUC del emisor del documento relacionado</label>
+                <input 
+                placeholder="RUC del emisor del documento relacionado *" 
                 pSize="small" 
                 fluid 
-                pInputText
-                minlength="13"
-                maxlength="13"
-                formControlName="serie_correlativo" 
-                [class]="f.serie_correlativo.invalid && (f.serie_correlativo.touched || submitted) 
-                ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' 
-                : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
-                [invalid]="f.serie_correlativo.invalid && (f.serie_correlativo.touched || submitted)" 
-            />
+                pInputText 
+                onlyNumber
+                formControlName="ruc_documento" 
+                [class]="f.ruc_documento.invalid && (f.ruc_documento.touched || submitted) ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                [invalid]="f.ruc_documento.invalid && (f.ruc_documento.touched || submitted)" />
+                @if (f.ruc_documento.invalid && (f.ruc_documento.touched || submitted)) {
+                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                        @if(f.ruc_documento.errors?.['required']){
+                            Este campo es requerido.
+                        }@else if(f.ruc_documento.errors?.['minlength']){
+                            El RUC debe tener al menos 11 caracteres.
+                        }@else{
+                            El RUC debe tener máximo 11 caracteres.
+                        }
+                    </span></p-message>
+                }
+            </div>
 
-            @if (f.serie_correlativo.invalid && (f.serie_correlativo.touched || submitted)) {
-                <p-message severity="error" size="small" variant="simple">
-                <span class="text-[10px]! ">
-                    @if(f.serie_correlativo.errors?.['required']){
-                        Este campo es requerido.
-                    } @else if(f.serie_correlativo.errors?.['serieInvalida']){
-                        {{ f.serie_correlativo.errors['serieInvalida'] }}
-                    } @else {
-                        Ingrese un documento válido.
-                    }
-                </span>
-                </p-message>
+            <div class="flex flex-col">
+                <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">Serie y correlativo *</label>
+                <input 
+                    placeholder="Serie y correlativo *" 
+                    pSize="small" 
+                    fluid 
+                    pInputText
+                    minlength="13"
+                    maxlength="13"
+                    formControlName="serie_correlativo" 
+                    [class]="f.serie_correlativo.invalid && (f.serie_correlativo.touched || submitted) 
+                    ? ' shadow-none! min-h-9! border-primary-400! focus:border-primary-400!' 
+                    : 'shadow-none!  min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!' " 
+                    [invalid]="f.serie_correlativo.invalid && (f.serie_correlativo.touched || submitted)" 
+                />
+
+                @if (f.serie_correlativo.invalid && (f.serie_correlativo.touched || submitted)) {
+                    <p-message severity="error" size="small" variant="simple">
+                    <span class="text-[10px]! ">
+                        @if(f.serie_correlativo.errors?.['required']){
+                            Este campo es requerido.
+                        } @else if(f.serie_correlativo.errors?.['serieInvalida']){
+                            {{ f.serie_correlativo.errors['serieInvalida'] }}
+                        } @else {
+                            Ingrese un documento válido.
+                        }
+                    </span>
+                    </p-message>
+                }
+            </div>
+
+            @if([1,2,4,6].includes(f.tipo_comprobante_id.value)){
+                <div class="md:col-span-3">
+                    <div class="flex flex-row gap-3 items-center">
+                        <p-toggleswitch formControlName="checked" />
+                        <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Agregar 
+                            @switch(f.tipo_comprobante_id.value){
+                                @case(1){ 'Factura' }
+                                @case(2){ 'Boleta de Venta' }
+                                @case(4){ 'Guía de Remisión Remitente' }
+                                @case(6){ 'Guía de Remisión Transportista' }
+                            }
+                        manualmente</label>
+                    </div>
+                </div>
             }
+            
+
         </div>
 
-        @if([1,2,4,6].includes(f.tipo_comprobante_id.value)){
-            <div class="md:col-span-3">
-                <div class="flex flex-row gap-3 items-center">
-                    <p-toggleswitch formControlName="checked" />
-                    <label class="text-[11px]! h-4.5! text-gray-500 font-semibold">Agregar 
-                        @switch(f.tipo_comprobante_id.value){
-                            @case(1){ 'Factura' }
-                            @case(2){ 'Boleta de Venta' }
-                            @case(4){ 'Guía de Remisión Remitente' }
-                            @case(6){ 'Guía de Remisión Transportista' }
-                        }
-                    manualmente</label>
-                </div>
-            </div>
-        }
-        
+        <div class="flex gap-2 justify-end pt-6">
+            <p-button type="button" (onClick)="evtOnCancel()" size="small" label="Cancelar" severity="secondary"></p-button>
+            <p-button type="submit" size="small"  label="Agregar" severity="primary"></p-button>
+        </div>
+    </form>
 
-    </div>
-
-    <div class="flex gap-2 justify-end pt-6">
-        <p-button type="button" (onClick)="evtOnCancel()" size="small" label="Cancelar" severity="secondary"></p-button>
-        <p-button type="submit" size="small"  label="Agregar" severity="primary"></p-button>
-    </div>
-</form>
+</div>

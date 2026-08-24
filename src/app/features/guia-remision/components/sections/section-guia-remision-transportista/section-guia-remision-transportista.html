@@ -56,35 +56,21 @@
 
                     </div> 
                 }@else {
-
                     <div class="flex flex-col items-center">
                         <p-button 
-                            class="w-full" 
-                            styleClass="rounded-xl!"
+                            class="w-full max-w-[400px]! rounded-3xl!" 
+                            styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
                             fluid 
-                            severity="secondary"
-                            (onClick)="evtRemoveTransportista()"
+                            [outlined]="true"
+                            severity="primary"
+                            (onClick)="evtOnShowListaTransportista()" 
                         >
-                            <div class="flex flex-col text-center py-4">
-                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[70px] w-auto block mx-auto">
-                                <p class="font-semibold text-slate-500 text-sm">Seleccionar Transportista</p>
+                            <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
+                                <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Transportista</p>
                             </div>
                         </p-button>
                     </div>
-
-                    <!--<div class="flex flex-row items-center px-4!">
-                        <p-button 
-                            tooltipPosition="top" 
-                            tooltipStyleClass="text-xs! text-center" 
-                            [outlined]="true" 
-                            (onClick)="evtOnShowListaTransportista()" 
-                            size="small" 
-                            styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
-                            icon="fa-regular fa-truck-fast text-xl!" 
-                            severity="primary" 
-                            label="Seleccionar transportista" 
-                        ></p-button>
-                    </div>-->
                 }
 
             </div>
@@ -141,30 +127,19 @@
                 }@else {
                     <div class="flex flex-col items-center">
                         <p-button 
-                            class="w-full" 
-                            styleClass="rounded-xl!"
+                            class="w-full max-w-[400px]! rounded-3xl!" 
+                            styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
                             fluid 
-                            severity="secondary"
-                            (onClick)="evtOnShowListaVehiculo('Principal')"
+                            [outlined]="true"
+                            severity="primary"
+                            (onClick)="evtOnShowListaVehiculo('Principal')" 
                         >
-                            <div class="flex flex-col text-center py-4">
-                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[70px] w-auto block mx-auto">
-                                <p class="font-semibold text-slate-500 text-sm">Seleccionar Vehículo Principal</p>
+                            <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
+                                <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Vehículo Principal</p>
                             </div>
                         </p-button>
                     </div>
-
-                    <!--<div class="flex flex-row items-center px-4!">
-                        <p-button 
-                            [outlined]="true" 
-                            (onClick)="evtOnShowListaVehiculo('Principal')" 
-                            size="small" 
-                            styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
-                            icon="fa-regular fa-car text-lg!" 
-                            severity="primary" 
-                            label="Seleccionar vehículo" 
-                        ></p-button>
-                    </div>-->
                 }
 
             </div>
@@ -223,31 +198,22 @@
                 
                 @if( vehiculoSecundario().length < 2 ){
 
-                    <p-button 
-                        class="w-full" 
-                        styleClass="rounded-xl!"
-                        fluid 
-                        severity="secondary"
-                        (onClick)="evtOnShowListaVehiculo('Secundario')"
-                    >
-                        <div class="flex flex-col text-center py-4">
-                            <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[70px] w-auto block mx-auto">
-                            <p class="font-semibold text-slate-500 text-sm">Seleccionar Vehículo Secundario</p>
-                        </div>
-                    </p-button>
-
-                    <!--<div class="flex flex-row items-center px-4!">
+                    <div class="flex flex-col items-center">
                         <p-button 
+                            class="w-full max-w-[400px]! rounded-3xl!" 
+                            styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
+                            fluid 
                             [outlined]="true"
-                            (onClick)="evtOnShowListaVehiculo('Secundario')" 
-                            size="small" 
-                            styleClass="text-sm! bg-gray-100! hover:border-gray-100! hover:bg-gray-500! hover:text-gray-100! h-9!" 
-                            icon="fa-regular fa-car text-lg!" 
-                            severity="secondary" 
-                            label="Seleccionar vehículo"
-                        ></p-button>
-                    </div>-->
-                    
+                            severity="primary"
+                            (onClick)="evtOnShowListaVehiculo('Secundario')"
+                        >
+                            <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                                <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
+                                <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Vehículo Secundario</p>
+                            </div>
+                        </p-button>
+                    </div>
+
                 }
 
             </div>

@@ -67,6 +67,7 @@ export class SectionGuiaRemisionDestinatario {
         }
     }
     
+    selected = signal<EstablecimientoDTO | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>();
     empresa = input.required<EmpresaToSelectDto | undefined>(); 
 
@@ -182,6 +183,7 @@ export class SectionGuiaRemisionDestinatario {
             cmp?.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(( s: EstablecimientoDTO) => {
+                this.selected.set(s);
                 this._destinatario.set(s);
                 this.modalRef?.close();
                 this.alertService.showToast({

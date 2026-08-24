@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+@reference "tailwindcss-primeui";
+
+:host ::ng-deep{
+    .p-accordioncontent-content{
+        @apply border-t border-gray-200!;
+    }
+
+    .p-accordionpanel > .p-accordionheader{
+        @apply text-primary-500! uppercase font-medium! text-lg!;
+        &:hover{
+            @apply bg-primary-500! text-primary-200!;
+            .p-accordionheader-toggle-icon{
+                @apply text-slate-200!;
+            }
+        }
+    }
+
+    .p-accordionpanel-active > .p-accordionheader{
+        @apply bg-primary-500! text-primary-200!;
+        .p-accordionheader-toggle-icon{
+            @apply text-primary-200!;
+        }
+    }
+}

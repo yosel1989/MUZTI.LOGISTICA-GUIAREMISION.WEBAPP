@@ -3,7 +3,7 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, FormControl, 
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule } from '@angular/common';
-import { Select, SelectModule } from 'primeng/select';
+import { SelectModule } from 'primeng/select';
 import { DocumentInvoiceType } from 'app/shared/models/document-invoice-type';
 import { FAKE_DOCUMENT_INVOICE_TYPE_TO_DOCREF } from 'app/fake/items/data/fakeDocumenType';
 import { MessageModule } from 'primeng/message';

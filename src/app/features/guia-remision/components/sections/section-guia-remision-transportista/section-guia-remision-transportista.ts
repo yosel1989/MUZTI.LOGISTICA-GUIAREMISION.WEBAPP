@@ -187,9 +187,6 @@ export class SectionGuiaRemisionTransportista {
             header: `Lista de vehículos registrados`,
             styleClass: 'max-h-none!',
             maskStyleClass: 'py-4',
-            contentStyle: {
-                'padding': "0 !important"
-            },
             appendTo: 'body',
             templates: {
                 header: MdlHeader

@@ -27,6 +27,7 @@ export class SelectEmpresaRemitenteComponent implements OnInit, AfterViewInit, O
     @Input() inputId: string = '';
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
+    @Input() minHeight: number = 105;
 
     @Output() onChange = new EventEmitter<EmpresaToSelectDto | null>();
 

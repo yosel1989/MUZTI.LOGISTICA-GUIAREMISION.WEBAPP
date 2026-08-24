@@ -67,16 +67,20 @@
 
                 </div>
             }@else {
-                <div class="flex flex-row items-center px-4!">
+                <div class="flex flex-col items-center">
                     <p-button 
-                        [outlined]="true" 
+                        class="w-full max-w-[400px]! rounded-3xl!" 
+                        styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
+                        fluid 
+                        [outlined]="true"
+                        severity="primary"
                         (onClick)="evtOnShowListaConductor('Principal')" 
-                        size="small" 
-                        styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
-                        icon="icon-driver-2 text-xl!" 
-                        severity="primary" 
-                        label="Seleccionar conductor" 
-                    ></p-button>
+                    >
+                        <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                            <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
+                            <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Conductor Principal</p>
+                        </div>
+                    </p-button>
                 </div>
             }
 
@@ -152,16 +156,21 @@
             }
             
             @if( !conductorSecundario() || conductorSecundario()!.length < 2 ){
-                <div class="flex flex-row items-center px-4!">
+
+                <div class="flex flex-col items-center">
                     <p-button 
+                        class="w-full max-w-[400px]! rounded-3xl!" 
+                        styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
+                        fluid 
                         [outlined]="true"
+                        severity="primary"
                         (onClick)="evtOnShowListaConductor('Secundario')" 
-                        size="small" 
-                        styleClass="text-sm! bg-gray-100! hover:border-gray-100! hover:bg-gray-500! hover:text-gray-100! h-9!" 
-                        icon="icon-driver-2 text-xl!" 
-                        severity="secondary" 
-                        label="Seleccionar conductor"
-                    ></p-button>
+                    >
+                        <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                            <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
+                            <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Conductor Secundario</p>
+                        </div>
+                    </p-button>
                 </div>
             }
         </div>
