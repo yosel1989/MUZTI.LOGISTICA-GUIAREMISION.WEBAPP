@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@core/services/alert.service';
 import { DocumentoRelacionadoDTO } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
@@ -25,7 +25,8 @@ export class SelectDocumentoRelacionadoComponent implements OnInit, AfterViewIni
 
     @Input() classLabel: string = 'text-xs';
     @Input() label: string | null = null;
-    @Input() control!: FormControl;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    @Input() control!: FormControl<any> | AbstractControl<any, any, any>;
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
@@ -46,7 +47,7 @@ export class SelectDocumentoRelacionadoComponent implements OnInit, AfterViewIni
     }
 
     ngAfterViewInit(): void {
-        this.control.valueChanges.subscribe((val: number | null)=>{
+        this.control?.valueChanges.subscribe((val: number | null)=>{
           if(val) {
             this.selectedChange.emit(this.data().find(x => x.id === val));
             this.selected.set(this.data().find(x => x.id === val));
@@ -61,6 +62,12 @@ export class SelectDocumentoRelacionadoComponent implements OnInit, AfterViewIni
       this.subs.unsubscribe();
     }
 
+    // Getters
+
+    get _control(): FormControl{
+      return this.control as FormControl;
+    }
+
     // Data
 
     loadData(): void{
@@ -72,7 +79,7 @@ export class SelectDocumentoRelacionadoComponent implements OnInit, AfterViewIni
       .subscribe({
         next: (value: DocumentoRelacionadoDTO[]) =>  {
           this.data.set(value);
-          if(this.default) this.control.setValue(this.default);
+          if(this.default) this.control?.setValue(this.default);
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.showToast({

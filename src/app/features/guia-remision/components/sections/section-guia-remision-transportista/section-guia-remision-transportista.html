@@ -65,9 +65,9 @@
                             severity="primary"
                             (onClick)="evtOnShowListaTransportista()" 
                         >
-                            <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                            <div class="flex flex-col items-center gap-x-4 text-center py-2">
                                 <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
-                                <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Transportista</p>
+                                <p class="font-semibold text-primary-500 text-sm!">Seleccionar Transportista</p>
                             </div>
                         </p-button>
                     </div>
@@ -134,9 +134,9 @@
                             severity="primary"
                             (onClick)="evtOnShowListaVehiculo('Principal')" 
                         >
-                            <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                            <div class="flex flex-col items-center gap-x-4 text-center py-2">
                                 <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
-                                <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Vehículo Principal</p>
+                                <p class="font-semibold text-primary-500 text-sm!">Seleccionar Vehículo Principal</p>
                             </div>
                         </p-button>
                     </div>
@@ -207,9 +207,9 @@
                             severity="primary"
                             (onClick)="evtOnShowListaVehiculo('Secundario')"
                         >
-                            <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                            <div class="flex flex-col items-center gap-x-4 text-center py-2">
                                 <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
-                                <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Vehículo Secundario</p>
+                                <p class="font-semibold text-primary-500 text-sm!">Seleccionar Vehículo Secundario</p>
                             </div>
                         </p-button>
                     </div>
@@ -229,15 +229,15 @@
 
 
 
-<p-confirmdialog styleClass="max-w-[400px]" #cd>
+<p-confirmdialog styleClass="max-w-[400px] rounded-3xl!" #cd appendTo="body">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-        <div class="flex flex-col items-center p-8  rounded-xl">
+        <div class="flex flex-col items-center p-8">
             <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"
             >
                 <i class="font-bold pi pi-question text-5xl!"></i>
             </div>
-            <span class="font-semibold text-xl block mb-2 mt-6 text-center">{{ message.header }}</span>
-            <p class="mb-0 text-xs">{{ message.message }}</p>
+            <span class="font-semibold text-xl! block mb-2 mt-6 text-center">{{ message.header }}</span>
+            <p class="mb-0 text-sm">{{ message.message }}</p>
             <div class="flex items-center gap-2 mt-6">
                 <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
                 <p-button label="Cancelar" severity="secondary" (onClick)="onReject()" styleClass="w-32"></p-button>

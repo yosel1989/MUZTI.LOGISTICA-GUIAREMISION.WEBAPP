@@ -76,9 +76,9 @@
                         severity="primary"
                         (onClick)="evtOnShowListaConductor('Principal')" 
                     >
-                        <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                        <div class="flex flex-col items-center gap-x-4 text-center py-2">
                             <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
-                            <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Conductor Principal</p>
+                            <p class="font-semibold text-primary-500 text-sm!">Seleccionar Conductor Principal</p>
                         </div>
                     </p-button>
                 </div>
@@ -166,9 +166,9 @@
                         severity="primary"
                         (onClick)="evtOnShowListaConductor('Secundario')" 
                     >
-                        <div class="flex flex-row items-center gap-x-4 text-center py-2">
+                        <div class="flex flex-col items-center gap-x-4 text-center py-2">
                             <img src="assets/media/brand/camion-de-reparto.png" alt="" class="h-[50px] w-auto block mx-auto">
-                            <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar Conductor Secundario</p>
+                            <p class="font-semibold text-primary-500 text-sm!">Seleccionar Conductor Secundario</p>
                         </div>
                     </p-button>
                 </div>
@@ -185,7 +185,7 @@
 
 
 
-<p-confirmdialog styleClass="max-w-[400px]" #cd>
+<p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         <div class="flex flex-col items-center p-8  rounded-xl">
             <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"

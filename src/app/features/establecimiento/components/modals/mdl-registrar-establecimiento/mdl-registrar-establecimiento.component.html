@@ -5,7 +5,7 @@
            
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Empresa *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Empresa</label>
                     @if(!ldEmpresa()){
                     <p-select 
                         fluid
@@ -74,7 +74,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Departamento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
                     <app-select-departamento 
                         [control]="f.departamento" 
                         classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
@@ -87,7 +87,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Provincia *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
                     <app-select-provincia 
                         [control]="f.provincia" 
                         [idUbigeoDepartamento]="f.departamento.value" 
@@ -101,7 +101,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Distrito *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
                     <app-select-distrito 
                         label="Distrito *"
                         [control]="f.distrito" 
@@ -116,7 +116,7 @@
                 </div>
                 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Dirección *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -164,7 +164,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Serie *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Serie</label>
                     <input 
                     fluid 
                     onlyNumber
@@ -183,7 +183,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Cod. Sunat *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Cod. Sunat</label>
                     <input 
                     fluid 
                     onlyNumber
@@ -207,7 +207,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo Establecimiento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo Establecimiento</label>
                     @if(!ldTipoEstablecimiento()){
                         <p-select 
                             fluid
@@ -264,7 +264,7 @@
 
 <div class="card flex justify-center">
 
-    <p-confirmdialog #cd>
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
             <div class="flex flex-col items-center p-8 rounded-xl">
                 <div

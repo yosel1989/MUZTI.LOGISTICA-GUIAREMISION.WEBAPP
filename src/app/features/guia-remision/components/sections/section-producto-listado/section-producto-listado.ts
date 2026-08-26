@@ -60,6 +60,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SkeletonModule } from 'primeng/skeleton';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 @Component({
   selector: 'app-section-producto-listado',
@@ -157,7 +158,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   private subs = new Subscription();
 
-  submitted = false;
+  submitted = signal<boolean>(false);
 
   unidadesMedida = signal<UnidadMedidaDTO[]>([]);
   ldUnidadesMedida = signal(false);
@@ -349,7 +350,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   // events
   evtAddItem(submitted: boolean = false): void {
-    this.submitted = submitted;
+    this.submitted.set(submitted);
     
     console.log('es valido');
     const row = this.newItem();
@@ -368,7 +369,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   }
 
   evtOnSubmit(): boolean {
-    this.submitted = true;
+    this.submitted.set(true);
 
     if (this.form.invalid) {
       this.alertService.showToast({
@@ -398,13 +399,22 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   evtImportItems(): void{
     this.ref = this.dialogService.open(MdlImportDetails, {
       width: '600px',
-      header: 'Importar items',
+      keepInViewport: false,
+      closable: false,
       modal: true,
-      closable: true,
       draggable: false,
-      styleClass: 'max-h-none! slide-down-dialog',
-      maskStyleClass: 'overflow-y-auto py-4',
-      appendTo: 'body'
+      position: 'top',
+      header: `Importar Items`,
+      styleClass: 'max-h-none!',
+      maskStyleClass: 'py-4',
+      contentStyle: {
+          'padding': "0 !important"
+      },
+      appendTo: 'body',
+      templates: {
+          header: MdlHeader
+      }
+      
     });
 
     this.ref?.onChildComponentLoaded
@@ -519,7 +529,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   isInvalid(index: number, controlName: string): boolean {
     const row = this.items.at(index) as FormGroup;
-    return (row.get(controlName)?.invalid ?? false) && this.submitted;
+    return (row.get(controlName)?.invalid ?? false) && this.submitted();
   }
 
   private isEmptyRow(row: FormGroup): boolean {

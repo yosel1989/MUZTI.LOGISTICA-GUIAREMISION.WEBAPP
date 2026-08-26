@@ -7,9 +7,9 @@
             <div class="flex flex-col gap-3">
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">
-                        Placa *
-                        <i class="fa-solid fa-circle-question" pTooltip="Aquí deberás ingresar la placa del vehículo sin guión" tooltipStyleClass="text-xs! text-center" tooltipPosition="top"></i>
+                    <label class="text-[13px]! text-slate-500 font-semibold">
+                        <span class="required roboto-condensed">Placa</span>
+                        <i class="fa-solid fa-circle-question ms-2" pTooltip="Aquí deberás ingresar la placa del vehículo sin guión" tooltipStyleClass="text-xs! text-center" tooltipPosition="top"></i>
                     </label>
                     <input 
                         pSize="small" 
@@ -172,7 +172,7 @@
 
 <div class="card flex justify-center">
 
-    <p-confirmdialog #cd>
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
             <div class="flex flex-col items-center p-8 rounded-xl">
                 <div

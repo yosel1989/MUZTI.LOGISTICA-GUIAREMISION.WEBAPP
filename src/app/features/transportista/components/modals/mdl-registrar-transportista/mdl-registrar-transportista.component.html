@@ -4,7 +4,7 @@
         <div> 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo de documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de documento</label>
                     <app-select-tipo-documento
                         #tipoDocumento
                         [control]="f.tipo_documento_id"
@@ -19,7 +19,7 @@
 
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">N° Documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° Documento</label>
                     <input 
                         pSize="small" 
                         onlyNumber
@@ -41,7 +41,7 @@
                     }
                 </div>
                 <div class="col-span-2">
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Razón Social *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Razón Social</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -63,7 +63,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Departamento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
                     <app-select-departamento 
                     [control]="f.departamento" 
                     classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
@@ -76,7 +76,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Provincia *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
                     <app-select-provincia 
                     [control]="f.provincia" 
                     [idUbigeoDepartamento]="f.departamento.value" 
@@ -90,7 +90,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Distrito *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
                     <app-select-distrito 
                     label="Distrito *"
                     [control]="f.distrito" 
@@ -105,7 +105,7 @@
                 </div>
                 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Dirección *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -208,7 +208,7 @@
 
 <div class="card flex justify-center">
 
-    <p-confirmdialog #cd>
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
             <div class="flex flex-col items-center p-8 rounded-xl">
                 <div

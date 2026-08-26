@@ -7,7 +7,7 @@
 
             <div class="grid gap-3">
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo de documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de documento</label>
 
                     <app-select-tipo-documento
                         #tipoDocumento
@@ -22,7 +22,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">N° documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° documento</label>
                     <input 
                         placeholder="" 
                         pSize="small" 
@@ -50,7 +50,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Nombres *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Nombres</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -73,7 +73,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Apellidos *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Apellidos</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -117,7 +117,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Licencia / Brevete *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Licencia / Brevete</label>
                     <input 
                     fluid 
                     onlyUpper
@@ -201,7 +201,7 @@
 
 <div class="card flex justify-center">
 
-    <p-confirmdialog #cd>
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
             <div class="flex flex-col items-center p-8 rounded-xl">
                 <div

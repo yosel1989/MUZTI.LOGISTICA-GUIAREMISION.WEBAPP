@@ -7,82 +7,96 @@
             }
 
             @if(proveedor){
-                <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-100/60" >
 
-                       
+                <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
 
-                    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
-                            <div>
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo Documento</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° Documento</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div> 
-                            <div class="lg:col-span-2">
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre o Razón Social</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.razon_social" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div> 
-                            <div>
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.direccion" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div> 
-                            <div>
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.departamento" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.provincia" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
-                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                    <app-typing [text]="proveedor.distrito" class="font-semibold! text-slate-600!"></app-typing>
-                                </div>
-                            </div>
-                    </div>
+                    <ng-template #header>
+                        <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                            Datos del Proveedor
+                        </div>
+                    </ng-template>
 
-                    <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
-                        <p-button 
-                            [outlined]="true"
-                            pTooltip="Quitar proveedor" 
-                            tooltipPosition="left" 
-                            tooltipStyleClass="text-[10px]!" 
-                            class="text-xs! ml-auto" 
-                            size="small" 
-                            icon="pi pi-times text-xs! font-semibold!" 
-                            styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                            (click)="evtRemoveProveedor()"  
-                            rounded="true" 
-                        />
-                    </div>
+                    <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-100/60" >
 
-                </div> 
+                        <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-2 gap-x-3">
+                                <div>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo Documento</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3">
+                                        <app-typing [text]="proveedor.tipo_documento" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">N° Documento</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3">
+                                        <app-typing [text]="proveedor.numero_documento" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div> 
+                                <div class="lg:col-span-3">
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre o Razón Social</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3">
+                                        <app-typing [text]="proveedor.razon_social" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div> 
+                                <div class="lg:col-span-2">
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3 overflow-hidden truncate">
+                                        <app-typing [text]="proveedor.direccion" class="font-semibold! text-slate-600! truncate text-ellipsis overflow-hidden"></app-typing>
+                                    </div>
+                                </div> 
+                                <div>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3">
+                                        <app-typing [text]="proveedor.departamento" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3">
+                                        <app-typing [text]="proveedor.provincia" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
+                                    <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 px-3">
+                                        <app-typing [text]="proveedor.distrito" class="font-semibold! text-slate-600!"></app-typing>
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
+                            <p-button 
+                                [outlined]="true"
+                                pTooltip="Quitar proveedor" 
+                                tooltipPosition="left" 
+                                tooltipStyleClass="text-[10px]!" 
+                                class="text-xs! ml-auto" 
+                                size="small" 
+                                icon="pi pi-times text-xs! font-semibold!" 
+                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                (click)="evtRemoveProveedor()"  
+                                rounded="true" 
+                            />
+                        </div>
+
+                    </div> 
+
+                </p-fieldset>
+ 
             }@else {
-                <div class="flex flex-row items-center">
+                <div class="flex flex-col items-center">
                     <p-button 
-                        [outlined]="true" 
-                        (onClick)="evtOnShowListaProveedor()" 
-                        size="small" 
-                        styleClass="text-sm! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100! h-9!" 
-                        icon="fa-regular fa-user-tag text-lg!" 
-                        severity="primary" 
-                        label="Seleccionar proveedor" 
-                    ></p-button>
+                        class="w-full max-w-[400px]! rounded-3xl!" 
+                        styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
+                        fluid 
+                        [outlined]="true"
+                        severity="primary"
+                        (onClick)="evtOnShowListaProveedor()"
+                    >
+                        <div class="flex flex-col items-center gap-x-4 text-center py-2">
+                            <img src="assets/media/brand/proveedor.png" alt="" class="h-[50px] w-auto block mx-auto">
+                            <p class="font-semibold text-primary-500 text-sm!">Seleccionar proveedor</p>
+                        </div>
+                    </p-button>
                 </div>
             }
 
@@ -95,7 +109,7 @@
 
 
 
-<p-confirmdialog styleClass="max-w-[400px]" #cd>
+<p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         <div class="flex flex-col items-center p-8  rounded-xl">
             <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"

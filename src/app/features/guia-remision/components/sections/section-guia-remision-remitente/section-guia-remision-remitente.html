@@ -7,69 +7,81 @@
     <div class="flex flex-col gap-y-3 relative">
 
         @if(remitente){
-            <div class="flex flex-row items-center px-4! py-4! pt-8! gap-x-4 rounded-xl! bg-slate-50" >
 
-                <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-2 gap-x-3">
-                        <div>
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo de documento</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="'RUC'" class="font-semibold! text-slate-600!"></app-typing>
+            <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+
+                <ng-template #header>
+                    <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                        Datos del Remitente
+                    </div>
+                </ng-template>
+
+                <div class="flex flex-row items-center gap-x-4" >
+
+                    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-2 gap-x-3">
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Tipo de documento</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="'RUC'" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nro. de  Documento</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="remitente.ruc" class="font-semibold! text-slate-600!"></app-typing>
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nro. de  Documento</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="remitente.ruc" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
+                            </div> 
+                            <div class="lg:col-span-3">
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre o Razón Social</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="remitente.razon_social" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
                             </div>
-                        </div> 
-                        <div class="lg:col-span-2">
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Nombre o Razón Social</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="remitente.razon_social" class="font-semibold! text-slate-600!"></app-typing>
+                            <div class="lg:col-span-2">
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="remitente.direccion" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
                             </div>
-                        </div>
-                        <div class="lg:col-span-2">
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="remitente.direccion" class="font-semibold! text-slate-600!"></app-typing>
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="remitente.departamento" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="remitente.departamento" class="font-semibold! text-slate-600!"></app-typing>
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="remitente.provincia" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="remitente.provincia" class="font-semibold! text-slate-600!"></app-typing>
+                            <div>
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
+                                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                    <app-typing [text]="remitente.distrito" class="font-semibold! text-slate-600!"></app-typing>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
-                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                                <app-typing [text]="remitente.distrito" class="font-semibold! text-slate-600!"></app-typing>
-                            </div>
-                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <p-button 
+                            [outlined]="true"
+                            pTooltip="Quitar remitente" 
+                            tooltipPosition="top" 
+                            tooltipStyleClass="text-[10px]!" 
+                            class="text-xs! ml-auto" 
+                            size="small" 
+                            icon="pi pi-times text-xs! font-semibold!" 
+                            styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!"  
+                            rounded="true" 
+                            (onClick)="evtRemove()"
+                        />
+                    </div>
+
                 </div>
 
-                <div class="text-center">
-                    <p-button 
-                        [outlined]="true"
-                        pTooltip="Quitar conductor" 
-                        tooltipPosition="top" 
-                        tooltipStyleClass="text-[10px]!" 
-                        class="text-xs! ml-auto" 
-                        size="small" 
-                        icon="pi pi-times text-xs! font-semibold!" 
-                        styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!"  
-                        rounded="true" 
-                        (onClick)="evtRemove()"
-                    />
-                </div>
+            </p-fieldset>
 
-            </div>
         }
         @else {
             <div class="flex flex-col items-center">
@@ -81,9 +93,9 @@
                     severity="primary"
                     (onClick)="evtOnShowEstablecimiento('remitente')"
                 >
-                    <div class="flex flex-row items-center gap-x-4 text-center py-2">
-                        <img src="assets/media/brand/distribucion.png" alt="" class="h-[50px] w-auto block mx-auto">
-                        <p class="font-semibold text-primary-500 text-[14px]!">Seleccionar remitente</p>
+                    <div class="flex flex-col items-center gap-x-4 text-center py-2">
+                        <img src="assets/media/brand/remitente-2.png" alt="" class="h-[50px] w-auto block mx-auto">
+                        <p class="font-semibold text-primary-500 text-sm!">Seleccionar remitente</p>
                     </div>
                 </p-button>
             </div>
@@ -91,14 +103,9 @@
         
     </div>
 
-
 </div>
 
-
-
-
-
-<p-confirmdialog styleClass="max-w-[400px]" #cd>
+<p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         <div class="flex flex-col items-center p-8  rounded-xl">
             <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"

@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-y-3">
-    @if(submitted && invalid){
+    @if(submitted() && invalid){
         <p class="w-full inline-flex items-center text-sm! font-medium! text-amber-600! py-1 px-3 rounded-lg! bg-amber-100! border-s-3! border-amber-500!"><i class="fa-regular fa-triangle-exclamation text-lg! me-3"></i> Debe registrar correctamente los productos. </p>
     }
 
@@ -63,7 +63,7 @@
                             ){
                                 <p-inputnumber
                                     size="small"
-                                    [inputStyleClass]="isInvalid(i, 'cantidad') && submitted ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-slate-300! hover:shadow-xs!' "
+                                    [inputStyleClass]="isInvalid(i, 'cantidad') && submitted() ? 'min-h-9 shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9 shadow-none!  focus:border-gray-500! hover:border-slate-300! hover:shadow-xs!' "
                                     class="text-xs!"
                                     fluid
                                     formControlName="cantidad"
@@ -310,7 +310,7 @@
                     </tr>
                 </ng-template>
             </p-table>
-            <!--</table>-->
+
         </div>
 
         <div class="text-center text-sm! font-medium text-slate-600!">
@@ -319,32 +319,35 @@
 
         <div class="flex justify-center text-center gap-2">
             <p-button 
+                type="button"
                 [outlined]="true" 
                 (onClick)="evtClear()" 
                 size="small" 
-                styleClass="text-xs!" 
-                class="text-xs!" 
-                icon="fa-regular fa-trash text-[14px]!" 
+                styleClass="text-sm! h-9!" 
+                class="text-sm!" 
+                icon="fa-regular fa-trash text-lg!" 
                 severity="secondary" 
                 label="Limpiar listado" 
             ></p-button>
             <p-button 
+                type="button"
                 [outlined]="true" 
-                (onClick)="evtAddItem(true)" 
+                (onClick)="evtAddItem(false)" 
                 size="small" 
-                styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                class="text-xs!" 
-                icon="fa-regular fa-plus text-[14px]!" 
+                styleClass="text-sm! h-9!" 
+                class="text-sm!" 
+                icon="fa-regular fa-plus text-lg!" 
                 severity="primary" 
                 label="Agregar item" 
             ></p-button>
             <p-button 
+                type="button"
                 [outlined]="true"
                 (onClick)="evtImportItems()" 
                 size="small" 
-                styleClass="text-xs!" 
+                styleClass="text-sm! h-9!" 
                 class="text-xs!" 
-                icon="fa-light fa-file-arrow-up text-[14px]!"  
+                icon="fa-light fa-file-arrow-up text-lg!"  
                 severity="warn" 
                 label="Importar items" 
             ></p-button>

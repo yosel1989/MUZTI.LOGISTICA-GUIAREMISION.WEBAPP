@@ -1,42 +1,50 @@
-<div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
-    <div class="flex flex-col">
-        <div class="grid grid-cols-3 gap-x-5"> 
+<div class="flex flex-col gap-x-4 gap-y-2 p-4">
+
+    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+
+        <ng-template #header>
+            <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                Datos del Punto de Destino
+            </div>
+        </ng-template>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5">
+
             <div class="lg:col-span-2">
-                <label class="text-[13px]! font-medium text-gray-500 roboto-condensed">Dirección</label>
+                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                     <app-typing [text]="destinatario?.direccion ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
                 </div>
             </div>
             <div>
-                <label class="text-[13px]! font-medium text-gray-500 roboto-condensed">Código establecimiento SUNAT</label>
+                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Código establecimiento SUNAT</label>
                 <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
                     <app-typing [text]="destinatario?.codigo_sunat" class="font-semibold! text-slate-600!"></app-typing>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5">
 
-        <div>
-            <label class="text-[13px]! font-medium text-gray-500 roboto-condensed">Departamento</label>
-            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                <app-typing [text]="destinatario?.departamento ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+            <div>
+                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
+                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                    <app-typing [text]="destinatario?.departamento ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
+                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                    <app-typing [text]="destinatario?.provincia ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                </div>
+            </div>
+            <div>
+                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
+                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                    <app-typing [text]="destinatario?.distrito ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                </div>
             </div>
         </div>
 
-        <div>
-            <label class="text-[13px]! font-medium text-gray-500 roboto-condensed">Provincia</label>
-            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                <app-typing [text]="destinatario?.provincia ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
-            </div>
-        </div>
-        <div>
-            <label class="text-[13px]! font-medium text-gray-500 roboto-condensed">Distrito</label>
-            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                <app-typing [text]="destinatario?.distrito ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
-            </div>
-        </div>
-    </div>
+    </p-fieldset>
 
     <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500! mt-3"><i class="fa-solid fa-circle-info text-lg! me-3"></i> Los datos son obtenidos previamente del destinatario seleccionado.</p>
 </div>

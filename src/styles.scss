@@ -141,3 +141,13 @@ p-select{
     @apply text-primary!
   }
 }
+
+.overlay-mobil{
+  @apply p-4!;
+  .p-select-list-container{
+    @apply max-h-full!;
+  }
+  .p-motion{
+    @apply w-full! max-h-full!;
+  }
+}

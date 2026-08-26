@@ -118,6 +118,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
     @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
 
+
+    @ViewChild('sectionDocumentoRelacionado') sectionDocumentoRelacionado: SectionGuiaRemisionDocumentoRelacionado | undefined;
     @ViewChild('sectionRemitente') sectionRemitente: SectionGuiaRemisionRemitente | undefined;
     @ViewChild('sectionDestinatario') sectionDestinatario: SectionGuiaRemisionDestinatario | undefined;
     @ViewChild('sectionDatosTraslado') sectionDatosTraslado: SectionGuiaRemisionDatosTraslado | undefined;
@@ -652,6 +654,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     handlerValidation(): boolean{
 
         const submitMotivoTraslado = !this.f.motivo_traslado_id.value;
+        const submitSectionDocumentoRelacionado = this.sectionDocumentoRelacionado?.evtOnSubmit();
         const submitRemitente = !this.remitente();
         const submitDestinatario = !this.destinatario();
         const submitDatosEnvioProveedor = this.tabDatosEnvioProveedor?.evtOnSubmit();

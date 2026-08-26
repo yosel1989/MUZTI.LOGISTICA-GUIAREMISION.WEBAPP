@@ -20,7 +20,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Tipo de documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de documento</label>
                     @if(!ldData()){
                         <app-select-tipo-documento
                             #tipoDocumento
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="flex flex-col">
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">N° Documento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° Documento</label>
                     @if(!ldData()){
                     <input 
                         pSize="small" 
@@ -64,7 +64,7 @@
                     }
                 </div>
                 <div class="col-span-2">
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Nombre / Razón Social *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Nombre / Razón Social</label>
                     @if(!ldData()){
                         <input 
                         fluid 
@@ -91,7 +91,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Departamento *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
                     @if(!ldData()){
                         <app-select-departamento 
                         [control]="f.departamento" 
@@ -109,7 +109,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Provincia *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
                     @if(!ldData()){
                         <app-select-provincia 
                         #provincia
@@ -129,7 +129,7 @@
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Distrito *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
                     @if(!ldData()){
                         <app-select-distrito 
                         #distrito
@@ -150,7 +150,7 @@
                 </div>
                 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Dirección *</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
                     @if(!ldData()){
                         <input 
                         fluid 
@@ -276,7 +276,7 @@
 
 <div class="card flex justify-center">
 
-    <p-confirmdialog #cd>
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
         <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
             <div class="flex flex-col items-center p-8 rounded-xl">
                 <div

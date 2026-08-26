@@ -1,33 +1,32 @@
 <div class="p-4 text-center">
   @if( !file() ){
-    <p-message fluid severity="success" class="w-full! mb-3">
-        <ng-template #icon>
-            <i class="fa-duotone fa-solid fa-circle-info text-[30px]!"></i>
-        </ng-template>
-        <div class="text-start">
-          <span class="ml-2 text-sm! font-normal! block mb-2">Debe importar los datos con un formato correcto.</span>
 
-          <p-button 
-            (onClick)="evtDownloadFormat()"
-            size="small" 
-            severity="success" 
-            icon="fa-duotone fa-light fa-arrow-down-to-line" 
-            label="Descargar formato"
-            styleClass="ml-2"
-            [loading]="loadingDownload()"
-          ></p-button>
-        </div>
-        
-    </p-message>
+    <div 
+      class="inline-flex items-center text-sm! font-medium! text-blue-600! py-2 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500! w-full mb-4"
+    >
+      <i class="fa-solid fa-circle-info text-lg! me-3"></i> 
+      Debe importar los datos con un formato correcto.
+
+      <p-button 
+          (onClick)="evtDownloadFormat()"
+          size="small" 
+          severity="info" 
+          icon="fa-duotone fa-light fa-arrow-down-to-line" 
+          label="Descargar formato"
+          styleClass="ml-2 nowrap!"
+          [loading]="loadingDownload()"
+        ></p-button>
+    </div>
+
   }
   
   <div 
-      class="drop-zone bg-gray-100 rounded-2xl "
+      class="drop-zone bg-slate-200 rounded-2xl "
       [class.drop-zone-active]="isDragOver"
       (dragover)="onDragOver($event)"
       (dragleave)="onDragLeave($event)"
       (drop)="onDrop($event)"
-      [class.border-red-300!]="ctrlFile.errors"
+      [class.border-red-400!]="ctrlFile.errors"
       [class.bg-red-50!]="ctrlFile.errors"
   >
     <label class="group w-full flex flex-col justify-center items-center border-0 p-0 text-4xl cursor-pointer text-center">
@@ -53,7 +52,7 @@
           </div>
         }@else {
           <img src="/guia-remision/assets/media/svg/excel-upload-animation.svg" width="150px" height="auto">
-          <p class="text-sm text-gray-500">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
+          <p class="text-sm text-slate-500 font-semibold ">Seleccione o arrastre el archivo *.xls, *.xlsx aquí.</p>
         }
       }
       <input [multiple]="false" type="file" accept=".xls,.xlsx" hidden (change)="onFileSelected($event)">
@@ -61,8 +60,8 @@
   </div>
 
   @if(ctrlFile.errors){
-    <p-message severity="error" size="small" variant="simple" fluid class="justify-center items-center">
-      <span class="text-[10px]!">
+    <p-message severity="error" size="small" variant="simple" fluid class="justify-center items-center mt-2">
+      <span class="text-sm!">
         @if(ctrlFile.hasError('invalidExtension')){
           El tipo de archivo no esta permitido.
         }

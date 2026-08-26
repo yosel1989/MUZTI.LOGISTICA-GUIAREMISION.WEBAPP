@@ -14,6 +14,7 @@ import { AlertService } from "app/core/services/alert.service";
 import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
 import { TypingComponent } from "@features/shared/components/typing/typing";
 import { AccordionModule } from 'primeng/accordion';
+import { FieldsetModule } from "primeng/fieldset";
 
 @Component({
   selector: 'app-section-guia-remision-destino',
@@ -27,7 +28,8 @@ import { AccordionModule } from 'primeng/accordion';
     CardModule,
     MessageModule,
     TypingComponent,
-    AccordionModule
+    AccordionModule,
+    FieldsetModule
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
   providers: [MessageService]

@@ -21,6 +21,9 @@ import { SelectUnidadMedidaComponent } from "@features/catalogo/components/selec
 import { InputNumberModule } from "primeng/inputnumber";
 import { TooltipModule } from "primeng/tooltip";
 import { SelectGuiaRemisionIndicadorTraslado } from "@features/guia-remision-indicador-traslado/components/selects/select-guia-remision-indicador-traslado/select-guia-remision-indicador-traslado";
+import { OnlyUpperDirective } from "@core/directives/only-uppers.directive";
+import { TextareaModule } from "primeng/textarea";
+import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 
 @Component({
   selector: 'app-section-guia-remision-datos-traslado',
@@ -41,7 +44,9 @@ import { SelectGuiaRemisionIndicadorTraslado } from "@features/guia-remision-ind
     SelectUnidadMedidaComponent,
     InputNumberModule,
     TooltipModule,
-    SelectGuiaRemisionIndicadorTraslado 
+    SelectGuiaRemisionIndicadorTraslado,
+    OnlyUpperDirective,
+    TextareaModule
   ],
   viewProviders: [provideIcons({ tablerAlertCircle })],
   providers: [ConfirmationService, MessageService]
@@ -68,6 +73,13 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
         }
     }
 
+    private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
+    @Input() set motivoTraslado(value: SunatMotivoTrasladoDto | undefined) {
+        if (this._motivoTraslado() !== value) {
+            this._motivoTraslado.set(value);
+        }
+    }
+
     messageError = signal<string | undefined>(undefined);
 
     submitted = signal(false);
@@ -81,7 +93,7 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
         this.frm = new FormGroup({
           fecha_inicio_traslado: new FormControl(new Date(), Validators.required),
           fecha_entrega_transportista: new FormControl(null),
-          descripcion_traslado: new FormControl(null),
+          descripcion_traslado: new FormControl(null, [Validators.minLength(3), Validators.maxLength(100)]),
           unidad_medida_id: new FormControl(5, Validators.required),
           peso_bruto_total: new FormControl(null, Validators.required),
           pagador_flete: new FormControl(EnumPagadorFlete.remitente),
@@ -137,6 +149,10 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
 
     get tipoTransporte(): 'PRIVADO' | 'PUBLICO' {
         return this._tipoTransporte();
+    }
+
+    get motivoTraslado(): SunatMotivoTrasladoDto | null {
+        return this._motivoTraslado() ?? null;
     }
 
     // Events
