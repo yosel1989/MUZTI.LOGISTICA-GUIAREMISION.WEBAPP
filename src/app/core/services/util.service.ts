@@ -8,7 +8,8 @@ import { AlertService } from './alert.service';
 export class UtilService {
 
   constructor(
-    private alertService: AlertService
+    private alertService: AlertService,
+    private breakpointObserver: BreakpointObserver
   ) { }
 
   private datePipe = new DatePipe('en-US')
@@ -27,4 +28,10 @@ export class UtilService {
     return Array.from({ length: numItems });
   }
 
+  isMobile(): boolean {
+    return this.breakpointObserver.isMatched([
+      Breakpoints.Handset,
+      Breakpoints.Small
+    ]);
+  }
 }
