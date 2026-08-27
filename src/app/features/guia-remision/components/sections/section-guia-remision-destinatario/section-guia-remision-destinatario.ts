@@ -136,6 +136,7 @@ export class SectionGuiaRemisionDestinatario {
     evtOnShowEstablecimiento( to: string ): void{
         
         if(!this.motivoTraslado()){
+            console.log(this.motivoTraslado());
             this.alertService.showToast({
                 icon: 'warning',
                 title: `Debe seleccionar el motivo de traslado`

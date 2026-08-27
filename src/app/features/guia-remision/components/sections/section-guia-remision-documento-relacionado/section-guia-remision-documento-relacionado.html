@@ -1,4 +1,4 @@
-<div [formGroup]="frm" class="flex flex-col gap-x-4 gap-y-2 p-4">
+<form [formGroup]="frm" class="flex flex-col gap-x-4 gap-y-2 p-4">
 
     @if(documentos.length > 0){
 
@@ -11,9 +11,9 @@
             </ng-template>
 
             <div formArrayName="documentos" class="flex flex-col gap-4">
-                @for(doc of documentos.controls; track $index){
-                    <div class="flex flex-row items-center px-4! py-4! gap-x-4 rounded-xl! bg-slate-50 w-full" >
-                        <div class="grid grid-cols-1  md:grid-cols-3 gap-4 w-full" [formGroupName]="$index">
+                @for (doc of documentos.controls; let i = $index; track doc){
+                    <div [formGroupName]="i" class="flex flex-row items-center px-4! py-4! gap-x-4 rounded-xl! bg-slate-50 w-full" >
+                        <div class="grid grid-cols-1  md:grid-cols-3 gap-4 w-full">
 
                             <div class="flex flex-col">
                                 <label class="text-[13px]! text-gray-500 font-semibold required roboto-condensed">Tipo de comprobante</label>
@@ -126,7 +126,7 @@
                                 icon="pi pi-times text-xs! font-semibold!" 
                                 styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!"  
                                 rounded="true"
-                                (onClick)="evtRemoveDocRef($index)" 
+                                (onClick)="evtRemoveDocRef(i)" 
                             />
                         </div>
                     </div>
@@ -149,7 +149,7 @@
     > 
         <p class="font-medium text-primary-500 text-sm!">Agregar Documento Relacionado</p>
     </p-button> 
-</div>
+</form>
 
 <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">

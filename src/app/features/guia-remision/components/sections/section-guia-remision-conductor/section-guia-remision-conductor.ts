@@ -100,6 +100,7 @@ export class SectionGuiaRemisionConductor {
         this.submitted.set(true);
 
         if(this.invalid()){
+            console.log('Invalido: Datos de Conductor');
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",

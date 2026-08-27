@@ -174,7 +174,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
-      items: this.fb.array([])
+      items: this.fb.array([], Validators.required)
     });
 
     this.virtualItems = this.fb.array([]);
@@ -228,7 +228,6 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     this.loadBienesNormalizados();
     this.subNationalCodes = CODIGO_SUBNACIONAL_FAKE;
     this.handlerInit(5);
-    this.loadCarsLazy({ first: 0, rows: 5 } as TableLazyLoadEvent);
   }
 
   ngAfterViewInit(): void {
@@ -352,14 +351,11 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   evtAddItem(submitted: boolean = false): void {
     this.submitted.set(submitted);
     
-    console.log('es valido');
     const row = this.newItem();
     this.initUnidadControl(row);
     this.items.push(row);
     this.cdr.markForCheck();
     this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
-
-    this.loadCarsLazy({ first: 0, rows: 5 } as TableLazyLoadEvent);
    
   }
 
@@ -370,15 +366,16 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   evtOnSubmit(): boolean {
     this.submitted.set(true);
-
-    if (this.form.invalid) {
+    if (this.invalid) {
+      console.log('Invalido: Datos de Productos');
       this.alertService.showToast({
         position: 'top-end',
         icon: 'warning',
         title: 'Se tiene que completar los datos obligatorios en la Sección de Productos.',
         showCloseButton: true,
         timerProgressBar: true,
-        timer: 4000
+        timer: 4000,
+        target: 'body'
       });
       return false;
     }
@@ -438,29 +435,13 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     this.cdr.markForCheck();
   }
 
-  loadCarsLazy(event: TableLazyLoadEvent) {
-    setTimeout(() => {
-      const loadedGroups = this.items.controls.slice(event.first!, event.first! + event.rows!);
-
-      this.virtualItems?.clear();
-      loadedGroups.forEach(group => this.virtualItems.push(group));
-
-      event.forceUpdate?.();
-    }, Math.random() * 1000 + 250);
-  }
-
-
   // handlers
 
   handlerInit(num_items: number): void{
     let count = 0;
     while(count < num_items){
 
-      const row = this.newItem();
-      this.initUnidadControl(row);
-      this.items.push(row);
-      this.virtualItems.push(row);
-      this.setBienNormalizadoValidators(row, !!row.get('bien_normalizado')?.value);
+      this.evtAddItem();
 
       count++;
     }

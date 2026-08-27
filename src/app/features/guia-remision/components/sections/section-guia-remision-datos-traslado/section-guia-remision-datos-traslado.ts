@@ -138,10 +138,53 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
         return this.frm?.controls;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get formData(): any {
 
-    get getFormData(): [] | null {
-        return [];
-    }
+        const formData = this.frm.value;
+        return {
+            fecha_inicio_traslado: formData.fecha_inicio_traslado,
+            fecha_entrega_transportista: formData.fecha_entrega_transportista,
+            descripcion_traslado: formData.descripcion_traslado,
+            unidad_medida_id: formData.unidad_medida_id,
+            peso_bruto_total: formData.peso_bruto_total,
+            pagador_flete: formData.pagador_flete,
+
+            numero_bultos: formData.numero_bultos,
+            numero_contenedor: formData.numero_contenedor,
+            numero_precinto: formData.numero_precinto,
+
+            ruc_subcontratador: formData.ruc_subcontratador,
+            nombre_rsocial_subcontratador: formData.nombre_rsocial_subcontratador,
+            tipo_documento_tercero: formData.tipo_documento_tercero,
+            numero_documento_tercero: formData.numero_documento_tercero,
+            nombre_rsocial_tercero: formData.nombre_rsocial_tercero,
+
+            traslado_vehiculo_categoria: formData.traslado_vehiculo_categoria,
+            traslado_vehiculo_categoria_placa_vehiculo: formData.traslado_vehiculo_categoria_placa_vehiculo,
+
+            cod_puerto: formData.cod_puerto,
+            cod_aeropuerto: formData.cod_aeropuerto,
+
+            indic_registrar_vehiculos_conductores: formData.indic_registrar_vehiculos_conductores,
+
+            cod_establecimiento_origen: formData.cod_establecimiento_origen,
+            ruc_establecimiento_origen: formData.ruc_establecimiento_origen,
+            cod_establecimiento_destino: formData.cod_establecimiento_destino,
+            ruc_establecimiento_destino: formData.ruc_establecimiento_destino,
+
+            num_autoriza_especial_adicional: formData.num_autoriza_especial_adicional,
+            ent_emisora_especial_adicional: formData.ent_emisora_especial_adicional,
+
+            indic_retorno_vehiculo_envase_vacio_adicional: formData.indic_retorno_vehiculo_envase_vacio_adicional,
+            indic_transbordo_programado_adicional: formData.indic_transbordo_programado_adicional,
+            indic_retorno_vehiculo_vacio_adicional: formData.indic_retorno_vehiculo_vacio_adicional,
+
+            indic_envio_sunat: formData.indic_envio_sunat,
+            
+        };
+        }
+
 
     get invalid(): boolean {
         return this.frm?.invalid ?? false;
@@ -161,10 +204,11 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
         this.submitted.set(true);
 
         if(this.invalid){
+            console.log('Invalido: Datos de Traslado');
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",
-                title: 'Debe seleccionar el proveedor',
+                title: 'Debe ingresar los datos requeridos en Datos de Traslado',
                 showCloseButton: true,
                 timerProgressBar: true,
                 timer: 4000,

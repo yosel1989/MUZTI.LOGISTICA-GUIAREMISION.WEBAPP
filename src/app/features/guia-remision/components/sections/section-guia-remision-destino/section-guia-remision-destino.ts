@@ -73,6 +73,7 @@ export class SectionGuiaRemisionDestino {
         this.submitted.set(true);
 
         if(!this.destinatario){
+            console.log('Invalido: Datos de Destino');
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",

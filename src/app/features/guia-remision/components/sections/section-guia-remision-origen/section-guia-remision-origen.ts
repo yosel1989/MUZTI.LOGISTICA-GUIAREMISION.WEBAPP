@@ -74,6 +74,7 @@ export class SectionGuiaRemisionOrigen {
         this.submitted.set(true);
 
         if(!this.remitente){
+            console.log('Invalido: Datos de Origen');
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",

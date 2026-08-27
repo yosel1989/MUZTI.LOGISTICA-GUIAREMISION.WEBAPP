@@ -74,11 +74,23 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
     }
 
     get invalid(): boolean{
-        return this.frm.invalid;
+        if(this.documentos.length){
+          return this.frm.invalid;
+        }
+        return false;
     }
 
-    get getFormData(): [] {
-        return []
+    get getFormData(): GuiaRemisionDocumentoRelacionadoDto[] {
+        return this.documentos.controls.map(x => ({
+          
+            doc_relacionado_id: x.get('doc_relacionado_id')?.value,
+            tipo_doc_ref_id: x.get('tipo_doc_ref_id')?.value,
+            tipo_doc_ref_codigo: x.get('tipo_doc_ref_codigo')?.value,
+            tipo_doc_ref: x.get('tipo_doc_ref')?.value,
+            numero_doc_ref: x.get('numero_doc_ref')?.value,
+            ruc_doc_ref: x.get('ruc_doc_ref')?.value
+          
+        }));
     }
 
     get documentos(): FormArray { 
@@ -94,14 +106,15 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
     evtOnSubmit(): boolean {
         this.submitted.set(true);
 
-        if(this.frm.invalid){
+        if(this.invalid){
+          console.log('Invalido: Documentos Relacionados');
             this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene",
-                showCloseButton: true,
+                title: "Debe ingresar correctamente los documentos relacionados.",
+                icon: 'error',
+                timer: 4000,
                 timerProgressBar: true,
-                timer: 4000
+                showCloseButton: true,
+                target: 'body'
             });
             return false;
         }
@@ -109,7 +122,6 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
         return true;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newDocRef(data: GuiaRemisionDocumentoRelacionadoDto | null): FormGroup { 
       return new FormGroup({ 
         doc_relacionado_id: new FormControl(data?.doc_relacionado_id ?? null),
@@ -121,14 +133,12 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     evtAddDocRef(): void{
       const row = this.newDocRef(null);
       this.documentos.push(row);
     }
 
     evtRemoveDocRef(index: number): void{
-      console.log(index);
       this.handlerConfirmDialog(() => {
         this.documentos.removeAt(index);
       }, '¿Desea remover el comprobante de referencia seleccionado?', 'Confirmar la operación.');

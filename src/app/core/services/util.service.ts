@@ -1,16 +1,15 @@
 import { DatePipe } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AlertService } from './alert.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilService {
 
-  constructor(
-    private alertService: AlertService,
-    private breakpointObserver: BreakpointObserver
-  ) { }
+  private alertService = inject(AlertService);
+  private breakpointObserver = inject(BreakpointObserver);
 
   private datePipe = new DatePipe('en-US')
 
@@ -24,6 +23,7 @@ export class UtilService {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fromArray(numItems: number): Array<any>{
     return Array.from({ length: numItems });
   }

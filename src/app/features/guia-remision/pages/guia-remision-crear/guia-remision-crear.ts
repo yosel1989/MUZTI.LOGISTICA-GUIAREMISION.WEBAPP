@@ -12,7 +12,6 @@ import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/s
 import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
-import { TabDatosEnvioProveedorComponent } from 'app/features/guia-remision/components/tabs/tab-datos-envio-proveedor/tab-datos-envio-proveedor';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { TooltipModule } from 'primeng/tooltip';
@@ -56,6 +55,7 @@ import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/compon
 import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
 import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
 import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
+import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
 
 export interface Puerto{
     value: string;
@@ -78,7 +78,6 @@ export interface Puerto{
     SelectTipoGuiaComponent,
     DatePickerModule,
     SectionProductoListadoComponent,
-    TabDatosEnvioProveedorComponent,
     NgIcon,
     TooltipModule,
     MessageModule,
@@ -95,6 +94,7 @@ export interface Puerto{
     TextareaModule,
     SectionResponsableListadoComponent,
     AccordionModule,
+    SelectTipoTransporte,
 
     SectionGuiaRemisionDocumentoRelacionado,
     SectionGuiaRemisionRemitente,
@@ -116,9 +116,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
 
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
-    @ViewChild('tabDatosEnvioProveedor') tabDatosEnvioProveedor: TabDatosEnvioProveedorComponent | undefined;
 
-
+    @ViewChild('selectTipoTransporte') selectTipoTransporte: SelectTipoTransporte | undefined;
     @ViewChild('sectionDocumentoRelacionado') sectionDocumentoRelacionado: SectionGuiaRemisionDocumentoRelacionado | undefined;
     @ViewChild('sectionRemitente') sectionRemitente: SectionGuiaRemisionRemitente | undefined;
     @ViewChild('sectionDestinatario') sectionDestinatario: SectionGuiaRemisionDestinatario | undefined;
@@ -176,7 +175,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         private alertService: AlertService,
         private router: Router
     ){
-        this.maxFechaEmision.setDate(this.maxFechaEmision.getDate() + 1);
+        this.minFechaEmision.setDate(this.maxFechaEmision.getDate() - 1);
 
         this.ls.breadCrumbItems = this.breadCrumbItems;
 
@@ -185,6 +184,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             empresa_id: new FormControl(null, Validators.required),
 
             motivo_traslado_id: new FormControl(null, Validators.required),
+            tipo_transporte: new FormControl('PRIVADO', Validators.required),
 
             fecha_emision: new FormControl(new Date(), Validators.required),
             docs_ref: new FormArray([]),
@@ -243,9 +243,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     get request(): GuiaRemisionRemitenteRequestDto{
-        console.log('datos envio', this.tabDatosEnvioProveedor?.data.datosEnvio);
+
         return {
-            tipo_transporte: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte ?? 'PRIVADO',
+            tipo_transporte: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
             motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
             motivo_traslado: this.selectMotivoTraslado!.selected(),
             fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
@@ -253,16 +253,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             observacion: this.f.observacion.value ?? '',
             registro_mtc: null,
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            doc_relacionado: this.docs_ref.length ? (this.docs_ref as FormArray).controls.map((element: any) => {
-                return {
-                    tipo_doc_ref_id: element.get('tipo_comprobante_id')?.value,
-                    tipo_doc_ref_codigo: element.get('tipo_comprobante_codigo')?.value,
-                    tipo_doc_ref: element.get('tipo_comprobante')?.value,
-                    numero_doc_ref: element.get('serie_correlativo')?.value,
-                    ruc_doc_ref: element.get('ruc_documento')?.value
-                };
-            }) : null,
+            doc_relacionado: this.sectionDocumentoRelacionado?.getFormData.length ? this.sectionDocumentoRelacionado?.getFormData : null,
 
             remitente: this.sectionRemitente!.selected()!,
             remitente_id: this.sectionRemitente!.selected()!.id,
@@ -271,32 +262,32 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             destinatario_id: this.sectionDestinatario!.selected()!.id,
 
             proveedor: null,
-            proveedor_id: !this.tabDatosEnvioProveedor?.mostrarProveedor() ? null : this.tabDatosEnvioProveedor?.data.proveedor.proveedor_id,
+            proveedor_id: this.sectionProveedor === undefined ? null : this.sectionProveedor.getFormData!.id,
 
             datos_envio: {
 
-                motivo_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.tipo_transporte,
-                fecha_envio: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
-                fecha_entrega_transportista: this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_entrega_transportista ? formatDate(this.tabDatosEnvioProveedor?.data.datosEnvio.fecha_entrega_transportista, 'yyyy-MM-dd', 'en-US') : null,
-                peso_bruto: this.tabDatosEnvioProveedor?.data.datosEnvio.peso_bruto_total,
-                unidad_medida_id: this.tabDatosEnvioProveedor?.data.datosEnvio.unidad_medida_id,
-                codigo_um: this.tabDatosEnvioProveedor?.data.datosEnvio.codigo_um,
+                motivo_envio: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
+                fecha_envio: this.sectionDatosTraslado?.formData?.fecha_inicio_traslado ? formatDate(this.sectionDatosTraslado?.formData?.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
+                fecha_entrega_transportista: this.sectionDatosTraslado?.formData?.fecha_entrega_transportista ? formatDate(this.sectionDatosTraslado?.formData?.fecha_entrega_transportista, 'yyyy-MM-dd', 'en-US') : null,
+                peso_bruto: this.sectionDatosTraslado?.formData?.peso_bruto_total,
+                unidad_medida_id: this.sectionDatosTraslado?.formData?.unidad_medida_id,
+                codigo_um: this.sectionDatosTraslado?.formData?.codigo_um,
                 
-                indicador_traslado_vehiculo_categoria: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria,
-                traslado_vehiculo_categoria_placa_vehiculo: this.tabDatosEnvioProveedor?.data.datosEnvio.traslado_vehiculo_categoria_placa_vehiculo,
+                indicador_traslado_vehiculo_categoria: this.sectionDatosTraslado?.formData?.traslado_vehiculo_categoria,
+                traslado_vehiculo_categoria_placa_vehiculo: this.sectionDatosTraslado?.formData?.traslado_vehiculo_categoria_placa_vehiculo,
                 
                 
-                ruc_empresa_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.ruc_subcontratador,
-                razon_social_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.nombre_rsocial_subcontratador,
-                registro_mtc_currier: this.tabDatosEnvioProveedor?.data.datosEnvio.num_mtc_transportista,
+                ruc_empresa_currier: this.sectionDatosTraslado?.formData?.ruc_subcontratador,
+                razon_social_currier: this.sectionDatosTraslado?.formData?.nombre_rsocial_subcontratador,
+                registro_mtc_currier: this.sectionDatosTraslado?.formData?.num_mtc_transportista,
 
                 transportista: this.sectionTransportista?.getFormData.transportista,
                 transportista_id: this.sectionTransportista?.getFormData.transportista?.id,
 
-                indicador_registro_vehiculo_conductor: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_registrar_vehiculos_conductores,
-                indicador_transbordo_programado: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_transbordo_programado_adicional,
-                indicador_retorno_vehiculo_vacio: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_vacio_adicional,
-                indicador_retorno_vehiculo_envases_vacios: this.tabDatosEnvioProveedor?.data.datosEnvio.indic_retorno_vehiculo_envase_vacio_adicional,
+                indicador_registro_vehiculo_conductor: this.sectionDatosTraslado?.formData?.indic_registrar_vehiculos_conductores,
+                indicador_transbordo_programado: this.sectionDatosTraslado?.formData?.indic_transbordo_programado_adicional,
+                indicador_retorno_vehiculo_vacio: this.sectionDatosTraslado?.formData?.indic_retorno_vehiculo_vacio_adicional,
+                indicador_retorno_vehiculo_envases_vacios: this.sectionDatosTraslado?.formData?.indic_retorno_vehiculo_envase_vacio_adicional,
 
                 conductor: this.sectionConductor?.getFormData?.map((d: ConductorDto) => {
                     return d.id
@@ -546,6 +537,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             contentStyle: {
                 'padding': "0 !important"
             },
+
             appendTo: 'body',
             inputValues: {
                 ruc: this.empresa()?.ruc,
@@ -657,7 +649,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         const submitSectionDocumentoRelacionado = this.sectionDocumentoRelacionado?.evtOnSubmit();
         const submitRemitente = !this.remitente();
         const submitDestinatario = !this.destinatario();
-        const submitDatosEnvioProveedor = this.tabDatosEnvioProveedor?.evtOnSubmit();
+        const submitDatosEnvioProveedor = this.sectionDatosTraslado?.evtOnSubmit();
         const submitsectionProveedor = this.sectionProveedor?.evtOnSubmit();
         const submitsectionTransportista = this.sectionTransportista?.evtOnSubmit();
         const submitsectionConductor = this.sectionConductor?.evtOnSubmit();
@@ -665,13 +657,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         const submitsectionDestino = this.sectionDestino?.evtOnSubmit();
         const submitsectionProductoListadoComponent = this.sectionProductoListadoComponent?.evtOnSubmit();
 
+        if(submitSectionDocumentoRelacionado){
+            return false;
+        }
+
         if(submitMotivoTraslado){
             this.alertService.showToast({
                 title: "Debe seleccionar el motivo de traslado",
                 icon: 'error',
                 timer: 4000,
                 timerProgressBar: true,
-                showCloseButton: true
+                showCloseButton: true,
+                target: 'body'
             });
             return false;
         }
@@ -681,7 +678,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 icon: 'error',
                 timer: 4000,
                 timerProgressBar: true,
-                showCloseButton: true
+                showCloseButton: true,
+                target: 'body'
             });
             return false;
         }
@@ -691,7 +689,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 icon: 'error',
                 timer: 4000,
                 timerProgressBar: true,
-                showCloseButton: true
+                showCloseButton: true,
+                target: 'body'
             });
             return false;
         }

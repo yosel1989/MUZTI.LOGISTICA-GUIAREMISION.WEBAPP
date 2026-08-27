@@ -147,6 +147,7 @@ export class SectionGuiaRemisionTransportista {
         this.submitted.set(true);
 
         if(this.invalid()){
+            console.log('Invalido: Datos de Transportista');
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",

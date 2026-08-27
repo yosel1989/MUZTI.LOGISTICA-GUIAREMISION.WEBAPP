@@ -323,7 +323,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       return this._emisora();
     }
 
-    setTipoTransporte( value:  string | 'PRIVATE' | 'PUBLICO'): void{ 
+    setTipoTransporte( value:  string | 'PRIVADO' | 'PUBLICO'): void{ 
       this._tipoTransporte.set(value);
     }
 

@@ -85,6 +85,7 @@ export class SectionGuiaRemisionProveedor {
         this.submitted.set(true);
 
         if(this.invalid){
+            console.log('Invalido: Datos de Proveedor');
             this.alertService.showToast({
                 position: 'top-end',
                 icon: "warning",

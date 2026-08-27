@@ -22,7 +22,7 @@ export interface SelectTipoGuia{
 export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy{
 
     @Input() classLabel: string = 'text-xs';
-    @Input() label: string = 'Tipo de Guía de Remisión';
+    @Input() label: string | undefined = undefined;
     @Input() inputId: string = '';
 
     tipoGuiaSelected: 'REMITENTE' | 'TRANSPORTISTA' = TipoGuiaRemisionEnum.remitente;
@@ -30,8 +30,8 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
     frmCtrlTipoGuia = new FormControl(this.tipoGuiaSelected, Validators.required);
 
     data: SelectTipoGuia[] = [ 
-        { label: 'Guía Remitente', value: TipoGuiaRemisionEnum.remitente, disabled: false }, 
-        { label: 'Guía Transportista', value: TipoGuiaRemisionEnum.transportista, disabled: true }
+        { label: 'Guía de Remisión Remitente Electrónica', value: TipoGuiaRemisionEnum.remitente, disabled: false }, 
+        { label: 'Guía de Remisión Transportista Electrónica', value: TipoGuiaRemisionEnum.transportista, disabled: true }
     ];
 
     constructor() {

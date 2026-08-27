@@ -1,18 +1,14 @@
-
-<div class="container-fluid p-4 relative mx-auto" @fadeDown>
-
-    <h1 class="inline-flex items-center md:text-md! lg:text-xl! font-semibold! text-slate-500 roboto-condensed">
-        <span class="block w-[3px]! h-[30px]! rounded-xl! bg-slate-500 me-3 "></span>
-        Administración de conductores
-    </h1>
-</div>
-
 <div class="container-fluid xl:container p-4 relative mx-auto" @fadeDown>
+
+    <h1 class="inline-flex items-center md:text-md! lg:text-xl! font-semibold! text-slate-500 roboto-condensed mb-4">
+        <span class="block w-[3px]! h-[30px]! rounded-xl! bg-slate-500 me-3 "></span>
+        Emitir Guía de Remisión
+    </h1>
 
     <form [formGroup]="formGroup" (ngSubmit)="evtOnSubmit()" class="flex flex-col gap-4">
 
-        <p-card>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-y-4 lg:gap-4">
+        <div class="rounded-2xl! overflow-hidden! border border-gray-200! p-4 bg-white">
+            <div class="p-4! grid grid-cols-1 lg:grid-cols-3 gap-y-4 lg:gap-4">
                 <div class="col-span-2">
                     <app-select-empresa-remitente 
                         #selectEmpresaRemitente 
@@ -27,148 +23,95 @@
                     ></app-guia-section-cabecera>
                 </div>
             </div>
-        </p-card>
+        </div>
 
-        <p-card>
-            <div class="p-3! grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="col-span-2 flex flex-col gap-3">
+        <div class="rounded-2xl! overflow-hidden! border border-gray-200! p-4 bg-white">
+            <div class="p-3! grid grid-cols-1 lg:grid-cols-4 gap-x-4 gap-y-2 p-4">
 
-                    <div class="grid grid-cols-2 gap-x-3">
-                        <div>
-                            <app-select-tipo-guia 
-                                #selectTipoGuia 
-                                classLabel="text-[11px]! text-gray-500 font-semibold"
-                            ></app-select-tipo-guia>
-                        </div>
+                <div>
+                    <div>
+                        <label  class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de Guía de Remisión</label>
+                        <app-select-tipo-guia 
+                            #selectTipoGuia 
+                            class="uppercase! font-medium!"
+                        ></app-select-tipo-guia>
                     </div>
-
-                    @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
-                        <div>
-                            <label  class="text-[11px]! h-4.5! text-gray-500 font-semibold">Motivo de traslado *</label>
-                            <app-select-motivo-traslado
-                                #selectMotivoTraslado
-                                [control]="f.motivo_traslado_id" 
-                                classLabel="text-[11px]! text-gray-500 font-semibold"
-                                [invalid]="f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())"
-                            ></app-select-motivo-traslado>
-                            @if (f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())) {
-                                <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                    @if(f.motivo_traslado_id.errors?.['required']){
-                                        Este campo es requerido.
-                                    }
-                                </span></p-message>
-                            }
-                        </div>
-                    }
-
                 </div>
 
-                <div class="flex flex-col gap-4 gap-x-3">
-                    <div class="">
-                        <label class="text-[11px]! text-gray-500 font-semibold">Fecha de emisión</label>
-                        <div class="w-full">
-                            <p-datepicker 
-                                readonlyInput="true" 
-                                formControlName="fecha_emision" 
-                                size="small"
-                                [iconDisplay]="'input'" 
-                                [showIcon]="true" 
-                                showButtonBar="true"
-                                inputId="icondisplay" 
-                                [minDate]="minFechaEmision"
-                                [maxDate]="maxFechaEmision"
-                            />
-                        </div>
-
-                    </div>
-
-                    @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.transportista){
-                        <div>
-                            <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">N° de registro MTC <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
-                            <input 
-                            pSize="small" 
-                            fluid 
-                            pInputText />
-                        </div>
-                    }
-
-                    <div class="border border-gray-300 rounded-lg p-4">
-                        <div class="flex items-center gap-1">
-                            <label for="" class="text-[14px] font-semibold text-primary">Documentos Relacionados:</label>
-                            <ng-icon name="heroQuestionMarkCircleSolid" class="min-w-4.25! text-md!" pTooltip="Si quieres agregar algún documento asociado a tu guía de remisión, puedes añadirlo desde aquí y la información se mostrará en el PDF final." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/>
-                        </div>
-
-                        @if(docs_ref.length === 0){
-                            <p class="text-xs text-gray-500 my-2">No hay documentos relacionados agregados.</p>
-                        }@else {
-                            <div class="flex flex-col gap-y-2 my-3">
-                                @for(doc of docs_ref.controls; track doc){
-                                    <div class="flex items-center justify-between gap-2">
-                                        <div class="flex justify-between w-full text-[.875rem]">
-                                            <span>{{doc.value.serie_correlativo}}</span>
-                                            <span>{{doc.value.tipo_comprobante}}</span>
-                                        </div>
-                                        <div class="flex gap-x-1">
-                                            <p-button
-                                            raised=""
-                                            pTooltip="Eliminar" 
-                                            tooltipPosition="left" 
-                                            tooltipStyleClass="text-[10px]!"
-                                            class="text-xs! w-6! h-6!"
-                                            size="small" 
-                                            rounded 
-                                            icon="pi pi-trash text-xs! font-semibold!" 
-                                            severity="danger" 
-                                            styleClass="w-6! h-6!"
-                                            (onClick)="evtRemoveDocRef(doc.value)"></p-button>
-                                            <p-button 
-                                            raised
-                                            pTooltip="Editar" 
-                                            tooltipPosition="left" 
-                                            tooltipStyleClass="text-[10px]!"
-                                            class="text-xs! w-6! h-6!" 
-                                            size="small" 
-                                            rounded 
-                                            styleClass="w-6! h-6!"
-                                            icon="pi pi-pencil text-xs! font-semibold!" 
-                                            severity="warn" 
-                                            (onClick)="evtShowEditDocRef(doc.value)"></p-button>
-                                        </div>
-                                        
-                                    </div>
+                @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
+                    <div>
+                        <label  class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Motivo de traslado</label>
+                        <app-select-motivo-traslado
+                            #selectMotivoTraslado
+                            [control]="f.motivo_traslado_id" 
+                            [invalid]="f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())"
+                            class="uppercase!"
+                        ></app-select-motivo-traslado>
+                        @if (f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                                @if(f.motivo_traslado_id.errors?.['required']){
+                                    Este campo es requerido.
                                 }
-                            </div>
+                            </span></p-message>
                         }
+                    </div>
+                }
 
-                        <p-button 
-                            [outlined]="true"
-                            (onClick)="evtShowAddDocRef()" 
-                            size="small" 
-                            styleClass="text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                            class="text-xs!" 
-                            icon="pi pi-plus text-xs!" 
-                            severity="primary" 
-                            label="Agregar"
-                        ></p-button>
+                <div>
+                    <label  class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de Transporte</label>
+                    <app-select-tipo-transporte
+                        #selectTipoTransporte
+                        [control]="f.tipo_transporte" 
+                        classLabel="text-[11px]! text-gray-500 font-semibold"
+                        [invalid]="f.tipo_transporte.invalid && (f.tipo_transporte.touched || submitted())"
+                    ></app-select-tipo-transporte>
+                    @if (f.tipo_transporte.invalid && (f.tipo_transporte.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            @if(f.tipo_transporte.errors?.['required']){
+                                Este campo es requerido.
+                            }
+                        </span></p-message>
+                    }
+                </div>
+
+                <div >
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Fecha de emisión</label>
+                    <div class="w-full">
+                        <p-datepicker 
+                            fluid
+                            readonlyInput="true" 
+                            formControlName="fecha_emision" 
+                            size="small"
+                            [iconDisplay]="'input'" 
+                            [showIcon]="true" 
+                            showButtonBar="true"
+                            inputId="icondisplay" 
+                            [minDate]="minFechaEmision"
+                            [maxDate]="maxFechaEmision"
+                            appendTo="body"
+                        />
                     </div>
                 </div>
+
+                @if(selectTipoGuiaComponent?.tipoGuiaSelected === tipoGuia.transportista){
+                    <div>
+                        <label class="text-[11px]! h-4.5! flex gap-x-2 items-center text-gray-500 font-semibold">N° de registro MTC <ng-icon name="heroQuestionMarkCircleSolid" class="text-[14px]! min-w-3.25!" pTooltip="Aquí deberás ingresar el peso bruto de la carga a transportar, por ahora, el peso solo puede ser representado en kilogramos o toneladas." tooltipStyleClass="text-xs! text-center" tooltipPosition="top"/></label>
+                        <input 
+                        pSize="small" 
+                        fluid 
+                        pInputText />
+                    </div>
+                }
+
             </div>
-        </p-card>
+        </div>
 
         <div class="flex flex-col gap-4">
-            <app-tab-datos-envio-proveedor 
-                #tabDatosEnvioProveedor
-                [tipoGuia]="selectTipoGuiaComponent?.tipoGuiaSelected!" 
-                [motivoTraslado]="selectMotivoTraslado?.selected()"
-                [emisora]="empresa()"
-                [remitente]="remitente()"
-                [destinatario]="destinatario()"
-            ></app-tab-datos-envio-proveedor>
 
             <div class="rounded-2xl! overflow-hidden! border border-gray-200! p-4 bg-white">
                 <app-section-guia-remision-documento-relacionado
                     #sectionDocumentoRelacionado
-                    [_tipo]="tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte"
+                    [_tipo]="selectTipoTransporte?.selected()"
                 >
                 </app-section-guia-remision-documento-relacionado>
             </div>
@@ -178,7 +121,7 @@
 
                         <p-accordion-panel value="remitente"> 
                             <p-accordion-header #headerRemitente class="group"> 
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Remitente</span>
                                     @if(submitted() && sectionRemitente?.invalid){
                                         <i 
@@ -205,7 +148,7 @@
 
                         <p-accordion-panel value="destinatario"> 
                             <p-accordion-header #headerDestinatario class="group"> 
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Destinatario</span>
                                     @if(submitted() && sectionDestinatario?.invalid){ 
                                         <i 
@@ -233,7 +176,7 @@
 
                         <p-accordion-panel value="transfer_details"> 
                             <p-accordion-header #headerDatosTraslado class="group"> 
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Datos del Traslado</span>
                                     @if(submitted() && sectionDatosTraslado?.invalid){
                                         <i 
@@ -252,7 +195,7 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-datos-traslado
                                     #sectionDatosTraslado
-                                    [tipoTransporte]="tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte"
+                                    [tipoTransporte]="selectTipoTransporte?.selected()"
                                     [motivoTraslado]="selectMotivoTraslado?.selected()"
                                 >
                                 </app-section-guia-remision-datos-traslado>
@@ -265,7 +208,7 @@
                         ){
                             <p-accordion-panel value="provider"> 
                                 <p-accordion-header #headerProveedor class="group">
-                                    <span class="inline-flex items-center">
+                                    <span class="inline-flex items-center ps-4 py-2">
                                         <span class="roboto-condensed">Proveedor</span>
                                         @if(submitted() && sectionProveedor?.invalid){
                                             <i 
@@ -292,7 +235,7 @@
 
                         <p-accordion-panel value="vehicles"> 
                             <p-accordion-header #headerTransportista class="group">
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Vehículo | Transportista</span>
                                     @if(submitted() && sectionTransportista?.invalid()){
                                         <i 
@@ -311,16 +254,16 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-transportista
                                     #sectionTransportista
-                                    [tipoTransporte]="tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte"
+                                    [tipoTransporte]="selectTipoTransporte?.selected()"
                                 >
                                 </app-section-guia-remision-transportista>
                             </p-accordion-content>
                         </p-accordion-panel>
 
-                    @if(tabDatosEnvioProveedor.data.datosEnvio.tipo_transporte === 'PRIVADO'){
+                    @if(selectTipoTransporte?.selected() === 'PRIVADO'){
                         <p-accordion-panel value="drivers"> 
                             <p-accordion-header #headerConductor class="group">
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Conductor</span>
                                     @if(submitted() && sectionConductor?.invalid()){
                                         <i 
@@ -347,7 +290,7 @@
                         
                         <p-accordion-panel value="origen"> 
                             <p-accordion-header #headerOrigen class="group">
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Origen</span>
                                     @if(submitted() && sectionOrigen?.invalid){
                                         <i 
@@ -373,7 +316,7 @@
 
                         <p-accordion-panel value="destino">
                             <p-accordion-header #headerDestino class="group">
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Destino</span>
                                     @if(submitted() && sectionDestino?.invalid){
                                         <i 
@@ -399,7 +342,7 @@
 
                         <p-accordion-panel value="productos">
                             <p-accordion-header #headerProductos class="group">
-                                <span class="inline-flex items-center">
+                                <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Bienes o Productos </span>
                                     @if(submitted() && sectionProductoListado?.invalid){
                                         <i 
@@ -425,7 +368,9 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="observacion">
-                            <p-accordion-header><span class="roboto-condensed">Observaciones </span></p-accordion-header>
+                            <p-accordion-header>
+                                <span class="roboto-condensed ps-4 py-2">Observaciones </span>
+                            </p-accordion-header>
                             <p-accordion-content>
                                 <div class="flex flex-col gap-x-4 gap-y-2 p-4 pt-8!">
                                     <div class="flex flex-col">

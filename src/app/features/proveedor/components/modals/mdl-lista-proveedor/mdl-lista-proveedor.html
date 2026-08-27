@@ -66,13 +66,14 @@
                     </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
                 @if(ldData()){
                     <tr>
                         @for (col of columns; track $index; let i = $index) {
                             <td
                                 [class.border-s-0!]="i === 0"
                                 [class.border-e-0!]="i === columns.length - 1"
+                                [class.border-b-0!]="rowIndex === data().length - 1"
                             >
                                 <p-skeleton [width]="$index == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                             </td>
@@ -87,12 +88,16 @@
                         @for (col of columns; track $index) {
                             @switch (col.field) {
                                 @case('id'){
-                                    <td class="text-nowrap font-light! truncate border-s-0!" >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
+                                    <td 
+                                        class="text-nowrap font-light! truncate border-s-0!" 
+                                        [class.border-b-0!]="rowIndex === data().length - 1"
+                                    >COD-{{ rowData[col.field].toString().padStart(4,'0') }}</td>
                                 }
                                 @default {
                                     <td 
                                         class="text-nowrap font-light! truncate" 
-                                        [class.border-e-0!]="($index === columns.lenght - 1)"
+                                        [class.border-e-0!]="($index === columns.length - 1)"
+                                        [class.border-b-0!]="rowIndex === data().length - 1"
                                     >{{ rowData[col.field] }}</td>
                                 }
                             }
@@ -105,7 +110,7 @@
                 <tr>
                     <td [colSpan]="cols.length" class="text-center! border-e-0! border-s-0! border-b-0!">
                         <div class="py-6">
-                            <img src="/guia-remision/assets/media/bg/buscar-proveedor.png" alt="No hay datos" class="opacity-50 mx-auto w-[100px]! h-auto!">
+                            <img src="assets/media/brand/proveedor.png" alt="No hay datos" class="mx-auto w-[100px]! h-auto!">
                             @if(ldData()){
                                 <p-progressbar mode="indeterminate" class="mx-auto! mt-3" [style]="{ height: '6px', width: '150px' }" />
                                 <span>Buscando...</span>
