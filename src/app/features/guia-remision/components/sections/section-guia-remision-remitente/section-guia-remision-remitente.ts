@@ -69,14 +69,9 @@ export class SectionGuiaRemisionRemitente {
     modalRef: any | undefined;
   
     get invalid(): boolean{
-        return !this.remitente;
+        return this.selected() === undefined;
     }
 
-    get valid(): boolean {
-        return !!this.remitente;
-    }
-    
-    
     get getFormData(): GR_OrigenRequestDto {
         return {
             ubigeo_id: this.remitente!.ubigeo_id,
@@ -119,7 +114,7 @@ export class SectionGuiaRemisionRemitente {
             return;
         }
 
-        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
+        this.modalRef = this.dialogService.open( MdlListadoEstablecimientoComponent, {
             width: '700px',
             keepInViewport: false,
             closable: false,

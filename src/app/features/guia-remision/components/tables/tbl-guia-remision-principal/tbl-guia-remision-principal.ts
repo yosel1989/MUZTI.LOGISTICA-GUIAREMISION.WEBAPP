@@ -371,10 +371,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       appendTo: 'body',
       inputValues: {
-        guiaRemision: this.selected!,
+        guiaRemision: this.selected()!,
       },
       data: {
-        guia: this.selected
+        guia: this.selected()
       },
       templates: {
         header: MdlHeaderPrevisualizarGuiaRemisionComponent,

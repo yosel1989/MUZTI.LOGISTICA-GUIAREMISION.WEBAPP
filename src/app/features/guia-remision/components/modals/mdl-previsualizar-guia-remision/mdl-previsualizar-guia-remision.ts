@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, signal, inject, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, signal, inject, Input, input } from '@angular/core';
 import { GuiaRemisionDto, } from '@features/guia-remision/models/guia-remision.model';
 import "pdfmake/build/vfs_fonts";
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
@@ -28,7 +28,7 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
 
   private api = inject(GuiaRemisionApiService);
   private alertService = inject(AlertService);
-  @Input() guiaRemision! : GuiaRemisionDto;
+  guiaRemision = input.required<GuiaRemisionDto>();
 
   loading = signal(false);
   subs = new Subscription();
@@ -36,6 +36,7 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
   localData = signal<GuiaRemisionDto | undefined | null>(undefined);
 
   ngOnInit(): void {
+    console.log('guia seleccionada', this.guiaRemision());
     this.loadData();
   }
 
@@ -49,7 +50,7 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
 
   loadData(): void{
     this.loading.set(true);
-    const s = this.api.buscarPorUuid(this.guiaRemision?.uuid)
+    const s = this.api.buscarPorUuid(this.guiaRemision()?.uuid)
     .pipe(finalize(()=>{
       this.loading.set(false);
     }))

@@ -12,7 +12,7 @@
             tooltipPosition="top"
             tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
-            styleClass="w-9! h-9! text-slate-600!"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
             (click)="evtPrev()"
         />
         <p-button 
@@ -23,7 +23,7 @@
             tooltipPosition="top" 
             tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
-            styleClass="w-9! h-9! text-slate-600!"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
             (click)="reload()"
         />
         <p-button 
@@ -35,7 +35,7 @@
             tooltipPosition="top"
             tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
-            styleClass="w-9! h-9! text-slate-600!"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
             (click)="evtNext()"
         />
         
@@ -49,7 +49,7 @@
             tooltipPosition="top"
             tooltipStyleClass="text-xs! text-center"
             placeholder="Top"
-            styleClass="w-9! h-9! text-slate-600!"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
             routerLink="nuevo"
         />
 
@@ -62,7 +62,7 @@
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs! text-center"
                 placeholder="Top"
-                styleClass="h-9! text-slate-600!"
+                styleClass="h-9! text-slate-600! hover:bg-slate-300!"
                 label="Acciones"
                 iconPos="right"
                 (click)="evtShowMenuActions($event, menuActions)"
@@ -79,7 +79,7 @@
             tooltipPosition="top"
             tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
-            styleClass="w-9! h-9! text-slate-600!"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
             placeholder="Top"
             [loading]="loadingDownload()"
             (click)="evtExport()"
@@ -93,7 +93,7 @@
             tooltipPosition="top"
             tooltipStyleClass="text-xs! text-slate-300!"
             placeholder="Top"
-            styleClass="w-9! h-9! text-slate-600!"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
             placeholder="Top"
             (click)="evtToggleHand()"
         />
@@ -110,7 +110,7 @@
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs! text-slate-300!"
                 placeholder="Top"
-                styleClass="min-w-9! h-9! text-slate-600!"
+                styleClass="min-w-9! h-9! text-slate-600! hover:bg-slate-300!"
                 placeholder="Top"
                 [badge]="filters.length.toString()"
                 badgeSeverity="primary"
@@ -513,11 +513,11 @@
     styleClass="!w-full md:!w-80 lg:!w-[30rem]"
 >
     <ng-template #header>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 p-4 py-2">
             <p-avatar icon="pi pi-file" class="bg-primary-100! text-primary!" size="large"></p-avatar>
-            <span class="font-semibold text-primary! flex flex-col">
-                <span>Guía de Remisión</span>
-                <span>{{ selected()?.numero_guia }}</span>
+            <span class="flex flex-col md:text-md! lg:text-lg! font-semibold!">
+                <span class="roboto-condensed text-primary">Guía de Remisión</span>
+                <span class="roboto-condensed text-slate-600!">{{ selected()?.numero_guia }}</span>
             </span>
         </div>
     </ng-template>
@@ -537,7 +537,7 @@
                 }
             </div>
         }@else{
-            <div class="history flex flex-col gap-y-10 border rounded-[15px] border-gray-100 p-4 mt-6">
+            <div class="history flex flex-col gap-y-10 border rounded-[15px] border-slate-200 p-4 m-4">
                 @for (h of history(); track $index) {
                     <div class="group flex flex-row gap-x-4">
                         <div>

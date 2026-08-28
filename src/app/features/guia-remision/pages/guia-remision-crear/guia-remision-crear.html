@@ -117,10 +117,12 @@
             </div>
 
             <div class="rounded-2xl! overflow-hidden! border border-gray-200!">
-                <p-accordion >
+                <p-accordion 
+                    (onOpen)="onAccordionChange($event)"
+                >
 
                         <p-accordion-panel value="remitente"> 
-                            <p-accordion-header #headerRemitente class="group"> 
+                            <p-accordion-header data-value="remitente" #headerRemitente class="group"> 
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Remitente</span>
                                     @if(submitted() && sectionRemitente?.invalid){
@@ -147,7 +149,7 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="destinatario"> 
-                            <p-accordion-header #headerDestinatario class="group"> 
+                            <p-accordion-header data-value="destinatario" #headerDestinatario class="group"> 
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Destinatario</span>
                                     @if(submitted() && sectionDestinatario?.invalid){ 
@@ -175,7 +177,7 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="transfer_details"> 
-                            <p-accordion-header #headerDatosTraslado class="group"> 
+                            <p-accordion-header data-value="transfer_details" #headerDatosTraslado class="group"> 
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Datos del Traslado</span>
                                     @if(submitted() && sectionDatosTraslado?.invalid){
@@ -207,7 +209,7 @@
                             selectMotivoTraslado?.selected()?.codigo_sunat === sunatMotivoTrasladoEnum.otros
                         ){
                             <p-accordion-panel value="provider"> 
-                                <p-accordion-header #headerProveedor class="group">
+                                <p-accordion-header data-value="provider" #headerProveedor class="group">
                                     <span class="inline-flex items-center ps-4 py-2">
                                         <span class="roboto-condensed">Proveedor</span>
                                         @if(submitted() && sectionProveedor?.invalid){
@@ -234,7 +236,7 @@
                         }
 
                         <p-accordion-panel value="vehicles"> 
-                            <p-accordion-header #headerTransportista class="group">
+                            <p-accordion-header data-value="vehicles" #headerTransportista class="group">
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Vehículo | Transportista</span>
                                     @if(submitted() && sectionTransportista?.invalid()){
@@ -262,7 +264,7 @@
 
                     @if(selectTipoTransporte?.selected() === 'PRIVADO'){
                         <p-accordion-panel value="drivers"> 
-                            <p-accordion-header #headerConductor class="group">
+                            <p-accordion-header data-value="drivers" #headerConductor class="group">
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Conductor</span>
                                     @if(submitted() && sectionConductor?.invalid()){
@@ -289,7 +291,7 @@
                     }
                         
                         <p-accordion-panel value="origen"> 
-                            <p-accordion-header #headerOrigen class="group">
+                            <p-accordion-header data-value="origen" #headerOrigen class="group">
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Origen</span>
                                     @if(submitted() && sectionOrigen?.invalid){
@@ -315,7 +317,7 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="destino">
-                            <p-accordion-header #headerDestino class="group">
+                            <p-accordion-header data-value="destino" #headerDestino class="group">
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Destino</span>
                                     @if(submitted() && sectionDestino?.invalid){
@@ -341,7 +343,7 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="productos">
-                            <p-accordion-header #headerProductos class="group">
+                            <p-accordion-header data-value="productos" #headerProductos class="group">
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Bienes o Productos </span>
                                     @if(submitted() && sectionProductoListado?.invalid){
@@ -368,7 +370,7 @@
                         </p-accordion-panel>
 
                         <p-accordion-panel value="observacion">
-                            <p-accordion-header>
+                            <p-accordion-header data-value="observacion">
                                 <span class="roboto-condensed ps-4 py-2">Observaciones </span>
                             </p-accordion-header>
                             <p-accordion-content>

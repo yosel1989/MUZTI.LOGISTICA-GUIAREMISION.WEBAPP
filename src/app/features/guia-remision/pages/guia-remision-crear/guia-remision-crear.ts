@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect, ViewChildren, QueryList } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
@@ -43,7 +43,7 @@ import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/sel
 import { TextareaModule } from 'primeng/textarea';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { AccordionModule } from 'primeng/accordion';
+import { AccordionHeader, AccordionModule } from 'primeng/accordion';
 import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
 import { SectionGuiaRemisionDestino } from '@features/guia-remision/components/sections/section-guia-remision-destino/section-guia-remision-destino';
 import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
@@ -131,6 +131,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
     @ViewChild('guiaCabecera') guiaCabecera: GuiaSectionCabeceraComponent | undefined;
 
+    @ViewChildren(AccordionHeader) headers!: QueryList<AccordionHeader>;
+
     tipoGuia = TipoGuiaRemisionEnum;
 
     // Datos formulario
@@ -164,6 +166,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     aereopuertos = signal<{value: string, label: string}[]>([]);
 
     sunatMotivoTrasladoEnum = SunatMotivoTrasladoEnum;
+
+    activePanel: string | null = null;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -629,6 +633,27 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onAccordionChange(value: any) {
+
+        this.activePanel = value.index;
+
+        setTimeout(()=> {
+            const header = this.headers.find(h =>
+                h.el.nativeElement.getAttribute('data-value') === this.activePanel
+            );
+
+            if (header) {
+                const rect = header.el.nativeElement.getBoundingClientRect();
+                const absoluteY = rect.top + window.scrollY;
+                const targetY = absoluteY - 90;
+                
+                window.scrollTo({ top: targetY, behavior: 'smooth' });
+            }
+        }, 300);
+
+    }
+
     // handlers
     handlerConfirmDialog(callback: () => void, header: string, message: string): void{
       this.confirmationService.confirm({
@@ -647,17 +672,17 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         const submitMotivoTraslado = !this.f.motivo_traslado_id.value;
         const submitSectionDocumentoRelacionado = this.sectionDocumentoRelacionado?.evtOnSubmit();
-        const submitRemitente = !this.remitente();
-        const submitDestinatario = !this.destinatario();
-        const submitDatosEnvioProveedor = this.sectionDatosTraslado?.evtOnSubmit();
+        const submitRemitente = this.sectionRemitente?.selected();
+        const submitDestinatario = this.sectionDestinatario?.selected();
+        const submitDatosTraslado = this.sectionDatosTraslado?.evtOnSubmit();
         const submitsectionProveedor = this.sectionProveedor?.evtOnSubmit();
         const submitsectionTransportista = this.sectionTransportista?.evtOnSubmit();
-        const submitsectionConductor = this.sectionConductor?.evtOnSubmit();
+        const submitsectionConductor = this.sectionConductor && this.sectionConductor.evtOnSubmit();
         const submitsectionOrigen = this.sectionOrigen?.evtOnSubmit();
         const submitsectionDestino = this.sectionDestino?.evtOnSubmit();
         const submitsectionProductoListadoComponent = this.sectionProductoListadoComponent?.evtOnSubmit();
 
-        if(submitSectionDocumentoRelacionado){
+        if(!submitSectionDocumentoRelacionado){
             return false;
         }
 
@@ -672,7 +697,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-        if(submitRemitente){
+
+        if(!submitRemitente){
             this.alertService.showToast({
                 title: "Debe seleccionar el remitente",
                 icon: 'error',
@@ -683,7 +709,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-        if(submitDestinatario){
+
+        if(!submitDestinatario){
             this.alertService.showToast({
                 title: "Debe seleccionar el destinatario",
                 icon: 'error',
@@ -694,13 +721,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-        if(!submitDatosEnvioProveedor) return false;
-        if(!submitsectionProveedor) return false;
+
+
+        if(!submitDatosTraslado) return false;
+        if(!!this.sectionProveedor && !submitsectionProveedor) return false;
         if(!submitsectionTransportista) return false;
-        if(!submitsectionConductor) return false;
+        if(!!this.sectionConductor && !submitsectionConductor) return false;
         if(!submitsectionOrigen) return false;
         if(!submitsectionDestino) return false;
         if(!submitsectionProductoListadoComponent) return false;
+
+
+
 
         return true;
     }
