@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output, input, effect } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@core/services/alert.service';
 import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
@@ -34,7 +34,7 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
-    @Input() tipoRegimen: string | null | 'natural' | 'juridico' = null;
+    tipoRegimen = input<string | null | 'natural' | 'juridico'>(null);
 
     @Input() optionLabel: string = 'descripcion';
     @Input() optionValue: string = 'id';
@@ -48,7 +48,12 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
 
     subs = new Subscription();
 
-    constructor() {}
+    constructor() {
+      effect(() => {
+        this.tipoRegimen();
+        this.loadData();
+      });
+    }
 
     ngOnInit(): void {
       this.loadData();
@@ -71,7 +76,7 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
 
     loadData(): void{
       this.ldData.set(true);
-      const s = this.catalogoApiService.getTiposDocumento(this.tipoRegimen)
+      const s = this.catalogoApiService.getTiposDocumento(this.tipoRegimen())
       .pipe(finalize(()=>{
         this.ldData.set(false);
       }))

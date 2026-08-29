@@ -33,6 +33,7 @@ export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
     @Input() skeleton: boolean = false;
+    @Input() optionValue: string = 'codigo';
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 

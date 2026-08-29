@@ -21,7 +21,6 @@ export class ConductorApiService {
       ? httpParams.set('search', search) 
       : httpParams;
 
-
     return this.http.get<TableData<ConductorDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
       map(response =>{ return response as TableData<ConductorDto[]> }),
       catchError((error: HttpErrorResponse) => {

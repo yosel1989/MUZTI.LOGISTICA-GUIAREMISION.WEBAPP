@@ -1,0 +1,311 @@
+<form [formGroup]="frm" (ngSubmit)="evtOnSubmit()">
+
+    <div class="grid grid-cols-1 gap-3 p-4">
+
+        <div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo</label>
+                    <p-select 
+                        panelStyleClass="text-[.875rem]!"
+                        size="small" 
+                        fluid 
+                        [options]="types" 
+                        formControlName="type"
+                        [invalid]="f.type.invalid && ( f.type.touched || submitted())" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        [class]="f.type.invalid && ( f.type.touched || submitted()) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : ' min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                        placeholder="Seleccionar..." 
+                        appendTo="body"
+                    ></p-select>
+                    @if (frm.get('type')?.invalid && (frm.get('type')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">País</label>
+                    <app-select-pais
+                        [control]="f.country_id"
+                        [optionValue]="'id'"
+                        class="uppercase"
+                    ></app-select-pais>
+                    @if (frm.get('country_id')?.invalid && (frm.get('country_id')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de documento</label>
+                    <app-select-tipo-documento
+                        #tipoDocumento
+                        [control]="f.document_type_id"
+                        [tipoRegimen]="f.type.value === 'empresa' ? 'juridica' : 'natural'"
+                        [invalid]="f.document_type_id.invalid && ( f.document_type_id.touched || submitted())"
+                        (selectedChange)="evtSelectedChangeTipoDocumento($event)"
+                    ></app-select-tipo-documento>
+                    @if (frm.get('document_type_id')?.invalid && (frm.get('document_type_id')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° documento</label>
+                    <input 
+                        onlyNumber
+                        placeholder="N° Doc. de identidad *" 
+                        pSize="small" 
+                        fluid 
+                        pInputText 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="document_number"
+                        [invalid]="frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())"
+                    />
+                    
+                    @if (frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            @if(f.document_number.errors?.['required']){
+                                Este campo es requerido.
+                            }@else if(f.document_number.errors?.['minlength']){
+                                El documento debe tener mínimo 
+                                {{ tipoDocumento?.selected()?.min }}
+                                caracteres.
+                            }@else{
+                                El documento debe tener máximo
+                                {{ tipoDocumento?.selected()?.max }}
+                                caracteres.
+                            }
+                        </span></p-message>
+                    }
+                </div>
+
+                @if(f.type.value === 'empresa'){
+                    <div class="col-span-2">
+                        <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Razón Social</label>
+                        <input 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            type="text" 
+                            pSize="small" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            formControlName="name" 
+                            autofocus="true"
+                            [invalid]="frm.get('name')?.invalid && (frm.get('name')?.touched || submitted())"
+                        />
+                        @if (frm.get('name')?.invalid && (frm.get('name')?.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            @if (f.name.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @if (f.name.hasError('maxLength')) {
+                                El nombre no debe exceder los 150 caracteres.
+                            }</span>
+                            </p-message>
+                        }
+                    </div>
+                }@else {
+
+                    <div>
+                        <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Nombres</label>
+                        <input 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            type="text" 
+                            pSize="small" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            formControlName="first_name" 
+                            autofocus="true"
+                            [invalid]="frm.get('first_name')?.invalid && (frm.get('first_name')?.touched || submitted())"
+                        />
+                        @if (frm.get('first_name')?.invalid && (frm.get('first_name')?.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            @if (f.first_name.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @if (f.first_name.hasError('maxLength')) {
+                                El nombre no debe exceder los 75 caracteres.
+                            }</span>
+                            </p-message>
+                        }
+                    </div>
+                    <div>
+                        <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Apellidos</label>
+                        <input 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            type="text" 
+                            pSize="small" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            formControlName="last_name" 
+                            autofocus="true"
+                            [invalid]="frm.get('last_name')?.invalid && (frm.get('last_name')?.touched || submitted())"
+                        />
+                        @if (frm.get('last_name')?.invalid && (frm.get('last_name')?.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            @if (f.last_name.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @if (f.last_name.hasError('maxLength')) {
+                                El nombre no debe exceder los 75 caracteres.
+                            }</span>
+                            </p-message>
+                        }
+                    </div>
+
+                }
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
+                    <app-select-departamento 
+                        [control]="f.department" 
+                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                    ></app-select-departamento>
+                    @if (frm.get('department')?.invalid && (frm.get('department')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">Este campo es requerido.</span>
+                        </p-message>
+                    }
+                </div>
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
+                    <app-select-provincia 
+                        [control]="f.province" 
+                        [idUbigeoDepartamento]="f.department.value" 
+                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                    ></app-select-provincia>
+                    @if (frm.get('province')?.invalid && (frm.get('province')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">Este campo es requerido.</span>
+                        </p-message>
+                    }
+                </div>
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
+                    <app-select-distrito 
+                        [control]="f.district" 
+                        [idUbigeoProvincia]="f.province.value" 
+                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                    ></app-select-distrito>
+                    @if (frm.get('district')?.invalid && (frm.get('district')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">Este campo es requerido.</span>
+                        </p-message>
+                    }
+                </div>
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Código Sunat</label>
+                    <input 
+                        fluid 
+                        onlyNumber
+                        pInputText 
+                        type="text" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="code_sunat" 
+                        maxlength="4" 
+                        minlength="4" 
+                        autofocus="true"
+                        [invalid]="frm.get('code_sunat')?.invalid && (frm.get('code_sunat')?.touched || submitted())"
+                    />
+                    @if (frm.get('code_sunat')?.invalid && (frm.get('code_sunat')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.code_sunat.hasError('maxLength')) {
+                                    El código de sunat debe tener 4 caracteres.
+                                }
+                            </span>
+                        </p-message>
+                    }
+                </div>
+                <div class="col-span-2">
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
+                    <input 
+                        fluid 
+                        onlyUpper
+                        pInputText 
+                        type="text" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="address" 
+                        autofocus="true"
+                        [invalid]="frm.get('address')?.invalid && (frm.get('address')?.touched || submitted())"
+                    />
+                    @if (frm.get('address')?.invalid && (frm.get('address')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.address.hasError('required')) {
+                                    Este campo es requerido.
+                                }
+                                @if (f.address.hasError('maxLength')) {
+                                    La dirección no debe exceder los 150 caracteres.
+                                }
+                            </span>
+                        </p-message>
+                    }
+                </div>
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Correo</label>
+                    <input 
+                        fluid 
+                        onlyUpper
+                        pInputText 
+                        type="email" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="email" 
+                        maxlength="250" 
+                        autofocus="true"
+                        [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || submitted())"
+                    />
+                    @if (frm.get('email')?.invalid && (frm.get('email')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.email.hasError('required')) {
+                                    Este campo es requerido.
+                                }
+                                @if (f.email.hasError('email')) {
+                                    Por favor, ingrese un correo electrónico válido.
+                                }
+                                @if (f.email.hasError('maxLength')) {
+                                    El correo no debe exceder los 50 caracteres.
+                                }
+                            </span>
+                        </p-message>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="flex justify-end gap-2">
+        <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" />
+    </div>
+
+</form>
+
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>

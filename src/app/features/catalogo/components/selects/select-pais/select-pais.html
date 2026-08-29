@@ -1,5 +1,5 @@
 <p-select 
-panelStyleClass="text-[.875rem]!"
+panelStyleClass="text-[.875rem]! uppercase!"
 size="small" 
 [loading]="loading()" 
 fluid 
@@ -7,7 +7,7 @@ fluid
 [formControl]="control" 
 [invalid]="invalid" 
 optionLabel="pais" 
-optionValue="codigo" 
+[optionValue]="optionValue" 
 [class]="invalid ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : 'min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
 [placeholder]="loading() ? placeholderLoading : placeholder" 
 [filter]="true" 
