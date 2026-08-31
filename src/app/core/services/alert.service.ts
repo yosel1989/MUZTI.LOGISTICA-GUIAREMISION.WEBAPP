@@ -36,17 +36,19 @@ export class AlertService {
       didOpen: (toast) => {
         toast.onmouseenter = Swal.stopTimer;
         toast.onmouseleave = Swal.resumeTimer;
-      }
+      },
+      target: 'body'
     });
 
     return Toast.fire({
       ...options,
-      background: 'var(--card)',
+      background: '',
       customClass: {
         ...(options.customClass || {}),
         container: ['z-[9999]!', 'swal-container', 'w-auto!', 'max-w-[400px]!'],
-        popup: ['bg-white!', 'text-gray-900', 'dark:text-white', 'rounded-xl!', 'px-6', 'py-3!', 'border-2!', 'border-gray-300!'],
+        popup: ['bg-white!', 'text-gray-900', 'dark:text-white', 'rounded-xl!', 'px-6', 'py-3!', 'border-2!', 'border-gray-300!', 'shadow-sm!'],
         title: ['text-gray-900', 'dark:text-white', 'text-[14px]!', 'font-semibold!'],
+        htmlContainer: ['font-semibold!'],
         confirmButton: ['bg-blue-600', 'text-gray-900', 'dark:text-white', 'px-4', 'py-2', 'rounded'],
         timerProgressBar: ['bg-blue-400']
       },

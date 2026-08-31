@@ -104,17 +104,17 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
       this.cols = [
         { field: 'select', header: '', sort: false, sticky: false  },
         { field: 'cod', header: '#', sort: false, sticky: false  },
-        { field: 'type', header: 'Tipo', sort: false, sticky: false },
+        { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
+        { field: 'type', header: 'Tipo', sort: false, sticky: false, tdClassName: 'text-center!'},
         { field: 'name', header: 'Razón Social', sort: false, sticky: false },
         { field: 'first_name', header: 'Nombre', sort: false, sticky: false },
         { field: 'last_name', header: 'Apellido', sort: false, sticky: false },
-        { field: 'document_type_id', header: 'Tipo Documento', sort: false, sticky: false },
-        { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
+        { field: 'document_type', header: 'Tipo Documento', sort: false, sticky: false, tdClassName: 'text-center!' },
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
         { field: 'address', header: 'Dirección', sort: false, sticky: false },
         { field: 'country_id', header: 'País', sort: false, sticky: false },
         { field: 'is_internal', header: 'Interno', sort: false, sticky: false },
-        { field: 'estado', header: 'Estado', sort: false, sticky: false },
+        { field: 'active', header: 'Activo', sort: false, sticky: false, render: (rowData) => { return rowData['active'] ? `<span class="w-25 text-green-700 uppercase text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium!">SI</span>` : `<span class="w-25 text-gray-700 uppercase text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-lg! font-medium!">NO</span>` }},
         { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
         { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
         { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
@@ -164,7 +164,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         this.first = 0;
       }
     
-      this.subData = this.api.getCollection('provider', this.pageNumber, this.pageSize(), this.search).subscribe({
+      this.subData = this.api.getCollection('proveedor', this.pageNumber, this.pageSize(), this.search).subscribe({
         next: (res: TableData<ProviderDto[]>) => {
           this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);

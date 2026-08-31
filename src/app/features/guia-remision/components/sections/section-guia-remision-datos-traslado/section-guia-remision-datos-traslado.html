@@ -14,7 +14,7 @@
                     </div>
                 </ng-template>
 
-                <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-4">
+                <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-4 p-4!">
                     <div class="flex flex-col">
                         <label class="text-[13px]! font-medium text-slate-500 roboto-condensed truncate required">Fecha de inicio de traslado</label>
                         <p-datepicker 
@@ -24,8 +24,8 @@
                             class="text-xs! min-h-9!"
                             formControlName="fecha_inicio_traslado"
                             [iconDisplay]="'input'" 
+                            panelStyleClass="text-sm! m-auto!"
                             appendTo="body"
-                            panelStyleClass="text-xs-panel"
                             [showButtonBar]="true"
                             [invalid]="f.fecha_inicio_traslado?.invalid && (f.fecha_inicio_traslado?.touched || submitted())" 
                             [showIcon]="true" 
@@ -50,7 +50,7 @@
                                 class="min-h-9!" 
                                 formControlName="fecha_entrega_transportista"
                                 [iconDisplay]="'input'" 
-                                panelStyleClass="text-xs! m-auto!"
+                                panelStyleClass="text-sm! m-auto!"
                                 readonlyInput="true"
                                 [invalid]="f.fecha_entrega_transportista?.invalid && (f.fecha_entrega_transportista?.touched || submitted())"
                                 appendTo="body" 
@@ -95,8 +95,8 @@
                             [control]="f.unidad_medida_id"
                             [optionLabel]="'descripcion'"
                             [invalid]="f.unidad_medida_id.invalid && ( f.unidad_medida_id.touched || submitted())"
-                            [tipo]="'peso'"
-                            [default]="2"
+                            [tipo]="'guia-remision'"
+                            [default]="5"
                         ></app-select-unidad-medida>
                     </div>
 

@@ -31,6 +31,7 @@ export const MyPreset = definePreset(Aura, {
       900: '#4a1818',
       950: '#2e0f0f'
     },
+
     colorScheme: {
       light: {
         primary: {
@@ -41,7 +42,15 @@ export const MyPreset = definePreset(Aura, {
         highlight: {
           background: '{primary.100}',
           focusBackground: '{primary.300}',
-   
+        },
+        list: {
+          option: {
+            selectedBackground: '{primary.500}',
+            selectedFocusBackground: '{primary.500}',
+            selectedColor: '{primary.200}',
+            selectedFocusColor: '{primary.200}',
+            focusBackground: '{slate.200}'
+          }
         }
       },
       dark: {

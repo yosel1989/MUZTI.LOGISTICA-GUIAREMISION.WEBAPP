@@ -29,8 +29,9 @@ export class SelectUnidadMedidaComponent implements OnInit, AfterViewInit, OnDes
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
+    @Input() checkmark: boolean = false;
     @Input() optionLabel = 'descripcion_corta';
-    @Input() tipo: string | null | 'peso' | 'volumen' | 'longitud' | 'conteo' = null;
+    @Input() tipo: string | null | 'peso' | 'volumen' | 'longitud' | 'conteo' | 'guia-remision' = null;
     @Output() selectedChange = new EventEmitter<UnidadMedidaDTO | undefined>;
 
     data = signal<UnidadMedidaDTO[]>([]);

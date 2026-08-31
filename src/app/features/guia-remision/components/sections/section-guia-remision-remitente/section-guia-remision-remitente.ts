@@ -152,7 +152,7 @@ export class SectionGuiaRemisionRemitente {
                 this.alertService.showToast({
                     icon: 'success',
                     title: 'Remitente seleccionado con éxito.',
-                    timer: 4000,
+                    timer: 999999999,
                     showCloseButton: true
                 });
             });

@@ -27,11 +27,12 @@
 
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">País</label>
-                    <app-select-pais
+                    <app-select-country
                         [control]="f.country_id"
                         [optionValue]="'id'"
                         class="uppercase"
-                    ></app-select-pais>
+                        [default]="135"
+                    ></app-select-country>
                     @if (frm.get('country_id')?.invalid && (frm.get('country_id')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
@@ -40,12 +41,15 @@
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de documento</label>
                     <app-select-tipo-documento
+                        class="w-full!"
                         #tipoDocumento
                         [control]="f.document_type_id"
                         [tipoRegimen]="f.type.value === 'empresa' ? 'juridica' : 'natural'"
                         [invalid]="f.document_type_id.invalid && ( f.document_type_id.touched || submitted())"
                         (selectedChange)="evtSelectedChangeTipoDocumento($event)"
+                        type="large"
                     ></app-select-tipo-documento>
+                    
                     @if (frm.get('document_type_id')?.invalid && (frm.get('document_type_id')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                     }
@@ -53,16 +57,30 @@
 
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° documento</label>
-                    <input 
-                        onlyNumber
-                        placeholder="N° Doc. de identidad *" 
-                        pSize="small" 
-                        fluid 
-                        pInputText 
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="document_number"
-                        [invalid]="frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())"
-                    />
-                    
+                    <div class="flex flex-row gap-x-1 items-center">
+                        <input 
+                            onlyNumber
+                            placeholder="N° Doc. de identidad *" 
+                            pSize="small" 
+                            fluid 
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="document_number"
+                            [invalid]="frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())"
+                        />
+                        <p-button
+                            pTooltip="Buscar info"
+                            tooltipPosition="top"
+                            tooltipStyleClass="text-xs!"
+                            type="button"
+                            severity="primary"
+                            variant="text"
+                            icon="pi pi-search"
+                            styleClass="w-9! h-9! bg-primary-100! hover:bg-primary-200!"
+                            (onClick)="evtSearchEntityInfo()"
+                            [loading]="ldInfo()"
+                        ></p-button>
+                    </div>
+
                     @if (frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                             @if(f.document_number.errors?.['required']){
@@ -131,6 +149,7 @@
                             </p-message>
                         }
                     </div>
+
                     <div>
                         <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Apellidos</label>
                         <input 
@@ -157,6 +176,7 @@
                     </div>
 
                 }
+
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
                     <app-select-departamento 
@@ -169,6 +189,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
                     <app-select-provincia 
@@ -182,6 +203,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
                     <app-select-distrito 
@@ -195,6 +217,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Código Sunat</label>
                     <input 
@@ -220,6 +243,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div class="col-span-2">
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
                     <input 
@@ -246,6 +270,7 @@
                         </p-message>
                     }
                 </div>
+
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Correo</label>
                     <input 
@@ -276,6 +301,29 @@
                         </p-message>
                     }
                 </div>
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Pertenece al consorcio?</label>
+
+                    <label for="isInternal" class="flex items-center w-full! h-9! px-4 border border-slate-300 rounded-lg hover:border-slate-400 cursor-pointer">
+                        <div class="flex flex-row gap-3 items-center">
+                            <p-checkbox inputId="isInternal" formControlName="is_internal" [binary]="true" class="pointer-none!"/>
+                            <span class="text-sm no-underline">{{ f.is_internal.value ? 'SI' : 'NO' }}</span>
+                        </div>
+                        
+                    </label>
+
+                    @if (frm.get('is_internal')?.invalid && (frm.get('is_internal')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.is_internal.hasError('required')) {
+                                    Este campo es requerido.
+                                }
+                            </span>
+                        </p-message>
+                    }
+                </div>
+
             </div>
         </div>
     </div>

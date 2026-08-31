@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -23,7 +23,13 @@ import { SelectTipoDocumentoComponent } from '@features/catalogo/components/sele
 import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
 import { EntityCreateDto } from '@features/entity/models/entity';
 import { EntityApiService } from '@features/entity/services/entity-service';
-import { SelectPaisComponent } from '@features/catalogo/components/selects/select-pais/select-pais';
+import { SelectCountry } from '@features/catalogo/components/selects/select-country/select-country';
+import { EntityInfoApiService } from '@features/entity-info/services/entity-info-api-service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CompanyInfoDto, PersonInfoDto } from '@features/entity-info/models/entity-info';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 @Component({
@@ -45,7 +51,10 @@ import { SelectPaisComponent } from '@features/catalogo/components/selects/selec
     OnlyNumberDirective,
     OnlyUpperDirective,
     SelectTipoDocumentoComponent,
-    SelectPaisComponent
+    SelectCountry,
+    TooltipModule,
+    ToggleSwitchModule,
+    CheckboxModule
   ],
   templateUrl: './mdl-entity-create.html',
   styleUrl: './mdl-entity-create.scss',
@@ -53,9 +62,11 @@ import { SelectPaisComponent } from '@features/catalogo/components/selects/selec
 })
 export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
 
+  private destroyRef = inject(DestroyRef);
   private api = inject(EntityApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private entityInfoApiService = inject(EntityInfoApiService);
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -68,6 +79,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
   private subs = new Subscription();
   
   submitted = signal(false);
+  ldInfo = signal(false);
 
   headerValue: string = '';
   estados: {id: number, label: string}[] = [
@@ -96,7 +108,8 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       address: new FormControl(null, [Validators.required, Validators.maxLength(150)]),
       email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       country_id: new FormControl(null, Validators.required),
-      code_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)])
+      code_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)]),
+      is_internal:  new FormControl(true, Validators.required),
     });
 
     this.headerValue = this.config.header ?? '';
@@ -160,7 +173,6 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -169,12 +181,10 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
         message: 'Confirmar la operación.',
         accept: () => {
             const requestData = this.request;
-            this.frm.disable();
             this.ldSubmit.set(true);
             
             const subs = this.api.postCreate(requestData)
             .pipe(finalize(() => {
-              this.frm.enable();
               this.ldSubmit.set(false);
             }))
             .subscribe({
@@ -223,6 +233,98 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
     if(evt?.min) this.frm.get('document_number')?.addValidators(Validators.minLength(evt.min));
     if(evt?.max) this.frm.get('document_number')?.addValidators(Validators.maxLength(evt.max));
     this.frm.get('document_number')?.updateValueAndValidity();
+  }
+
+  evtSearchEntityInfo(): void{
+    if(this.f.country_id.value !== 135){
+      this.alertService.showToast({
+        position: 'top-end',
+        icon: "warning",
+        title: "Solo se pueden consultar datos de Perú",
+      });
+
+      return;
+    }
+
+    if(!(this.f.document_type_id.value === 1 || this.f.document_type_id.value === 4)){
+      this.alertService.showToast({
+        position: 'top-end',
+        icon: "warning",
+        title: "Solo se pueden consultar datos con DNI o RUC",
+      });
+
+      return;
+    }
+
+    if( this.f.document_number.invalid ){
+      this.alertService.showToast({
+        position: 'top-end',
+        icon: "warning",
+        title: "El número de documento debe ser válido",
+      });
+
+      return;
+    }
+
+    if(this.f.document_type_id.value === 1){
+      this.handlerFindPersonInfo(this.f.document_number.value);
+    }else{
+      this.handlerFindCompanyInfo(this.f.document_number.value);
+    }
+
+  }
+
+  // Handlers
+
+
+  handlerFindPersonInfo(documentNumber: string): void{
+    this.ldInfo.set(true);
+    this.entityInfoApiService.getPersonInfo(documentNumber)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.ldInfo.set(false))
+      )
+      .subscribe({
+        next : (value: PersonInfoDto) => {
+           this.frm.patchValue({
+              document_number: value.document_number,
+              first_name: value.first_name,
+              last_name: value.last_name
+           })
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alertService.showToast({
+            position: 'top-end',
+            title: err.error.detalle,
+            icon: 'error'
+          })
+        },
+      })
+  }
+
+  handlerFindCompanyInfo(documentNumber: string): void{
+    this.ldInfo.set(true);
+    this.entityInfoApiService.getCompanyInfo(documentNumber)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.ldInfo.set(false))
+      )
+      .subscribe({
+        next : (value: CompanyInfoDto) => {
+           this.frm.patchValue({
+              document_number: value.document_number,
+              name: value.name,
+              address: value.address
+           })
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alertService.showToast({
+            position: 'top-end',
+            title: err.error.detalle,
+            icon: 'error'
+          })
+        },
+      })
   }
 
 }

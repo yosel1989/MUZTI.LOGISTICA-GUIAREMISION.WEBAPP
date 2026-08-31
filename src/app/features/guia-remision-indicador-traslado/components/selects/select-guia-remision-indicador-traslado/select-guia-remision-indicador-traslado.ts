@@ -29,6 +29,7 @@ export class SelectGuiaRemisionIndicadorTraslado implements OnInit, AfterViewIni
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
+    @Input() checkmark: boolean = false;
     @Output() selectedChange = new EventEmitter<GuiaRemisionIndicadorTrasladoToSelectDto | undefined | null>; 
     onHide = output<void>();
     onChange = output<void>();

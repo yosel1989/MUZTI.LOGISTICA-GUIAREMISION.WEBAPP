@@ -16,7 +16,7 @@
             <div class="flex flex-col gap-y-3">
 
                 @if(transportista){
-                    <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-100/60" >
+                    <div class="flex flex-row items-center p-4! rounded-xl! " >
 
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                                 <div>
@@ -41,16 +41,16 @@
 
                         <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                             <p-button 
-                                [outlined]="true"
+                                severity="danger"
+                                variant="text"
                                 pTooltip="Quitar transportista" 
                                 tooltipPosition="left" 
                                 tooltipStyleClass="text-[10px]!" 
                                 class="text-xs! ml-auto" 
                                 size="small" 
-                                icon="pi pi-times text-xs! font-semibold!" 
-                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                icon="pi pi-times text-xs!" 
+                                styleClass="w-9! h-9! text-xs! bg-red-100! hover:bg-red-200!" 
                                 (click)="evtRemoveTransportista()"  
-                                rounded="true" 
                             />
                         </div>
 
@@ -91,7 +91,7 @@
             <div class="flex flex-col gap-y-3">
 
                 @if(vehiculoPrincipal()){
-                    <div class="flex flex-row items-center px-4! py-4! rounded-xl! bg-slate-100/60" >
+                    <div class="flex flex-row items-center p-4! rounded-xl! " >
 
                         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-2 gap-x-3">
                             <div>
@@ -110,16 +110,16 @@
 
                         <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                             <p-button 
-                                [outlined]="true"
+                                severity="danger"
+                                variant="text"
                                 pTooltip="Quitar vehículo" 
                                 tooltipPosition="left" 
                                 tooltipStyleClass="text-[10px]!" 
                                 class="text-xs! ml-auto" 
                                 size="small" 
                                 icon="pi pi-times text-xs! font-semibold!" 
-                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
-                                (click)="evtRemoveVehiculo(vehiculoPrincipal()?.id!)"  
-                                rounded="true" 
+                                styleClass="w-9! h-9! text-xs! bg-red-100! hover:bg-red-200!" 
+                                (click)="evtRemoveVehiculo(vehiculoPrincipal()?.id!)"   
                             />
                         </div>
 
@@ -178,16 +178,16 @@
 
                             <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                                 <p-button 
-                                    [outlined]="true"
+                                    severity="danger"
+                                    variant="text"
                                     pTooltip="Quitar vehículo" 
                                     tooltipPosition="left" 
                                     tooltipStyleClass="text-[10px]!" 
                                     class="text-xs! ml-auto" 
                                     size="small" 
                                     icon="pi pi-times text-xs! font-semibold!" 
-                                    styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                    styleClass="w-9! h-9! text-xs! bg-red-100! hover:bg-red-200!" 
                                     (click)="evtRemoveVehiculo(vehiculo.id!)"  
-                                    rounded="true" 
                                 />
                             </div>
 

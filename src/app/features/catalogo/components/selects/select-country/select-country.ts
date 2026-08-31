@@ -9,9 +9,9 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { finalize, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-select-pais',
-  templateUrl: './select-pais.html',
-  styleUrl: './select-pais.scss',
+  selector: 'app-select-country',
+  templateUrl: './select-country.html',
+  styleUrl: './select-country.scss',
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
@@ -20,7 +20,7 @@ import { finalize, Subscription } from 'rxjs';
   ]
 })
 
-export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
+export class SelectCountry implements OnInit, AfterViewInit, OnDestroy{
 
     private alertService = inject(AlertService);
     private api = inject(CatalogoApiService);
@@ -33,7 +33,8 @@ export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
     @Input() invalid: boolean = false;
     @Input() control!: FormControl;
     @Input() skeleton: boolean = false;
-    @Input() optionValue: string = 'codigo';
+    @Input() optionValue: string = 'code';
+    @Input() default: number | null = null;
 
     @Output() isLoaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -63,6 +64,9 @@ export class SelectPaisComponent implements OnInit, AfterViewInit, OnDestroy{
             next: (response: PaisDto[]) => {
                 this.data = response;
                 this.isLoaded.emit(true);
+                if(!this.control.value){
+                    this.control.setValue(this.default);
+                }
             },
             error: (error: HttpErrorResponse) => {
                 this.alertService.showToast({

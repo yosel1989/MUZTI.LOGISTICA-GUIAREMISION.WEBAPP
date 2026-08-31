@@ -5,6 +5,7 @@ export interface EntityDto{
     first_name: string | null;
     last_name: string | null;
     document_type_id: number;
+    document_type: string;
     document_number: string;
     ubigeo_id: string | null;
     address: string | null;
@@ -22,7 +23,7 @@ export interface EntityDto{
     loading_update: boolean;
 }
 
-export interface EntityCreateDto extends Omit<EntityDto, 'id' | 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update'>{
+export interface EntityCreateDto extends Omit<EntityDto, 'id' | 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type'>{
     role: string
 }
 

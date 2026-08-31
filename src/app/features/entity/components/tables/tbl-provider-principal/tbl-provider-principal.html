@@ -277,7 +277,31 @@
                                     }
                                 </td>
                             }
-                            @case('fecha_registro'){
+                            @case('type'){
+                                <td 
+                                    class="text-nowrap py-1! font-light! truncate!"
+                                    [ngClass]="col.tdClassName"
+                                >
+                                    @if(rowData['type'] === 'empresa'){
+                                        <i class="fa-light fa-building"></i>
+                                    }@else {
+                                        <i class="fa-light fa-user"></i>
+                                    }
+                                </td>
+                            }
+                            @case('is_internal'){
+                                <td 
+                                    class="text-nowrap py-1! font-light! truncate!"
+                                    [ngClass]="col.tdClassName"
+                                >
+                                    @if(rowData['type'] === 'empresa'){
+                                        <i class="fa-light fa-building"></i>
+                                    }@else {
+                                        <i class="fa-light fa-user"></i>
+                                    }
+                                </td>
+                            }
+                            @case('created_at'){
                                 <td class="text-nowrap py-1! font-light! truncate!">
                                     @if(rowData['ld_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
@@ -286,7 +310,7 @@
                                     }
                                 </td>
                             }
-                            @case('fecha_modifico'){
+                            @case('updated_at'){
                                 <td class="text-nowrap py-1! font-light! truncate!">
                                     @if(rowData['ld_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
@@ -295,21 +319,16 @@
                                     }
                                 </td>
                             }
-                            @case('estado'){
-                                <td class="text-nowrap py-1! font-light! truncate! w-[100px]"> 
+                            @case('active'){
+                                <td 
+                                    class="text-nowrap py-1! font-light! truncate! w-[100px]"
+                                    
+                                > 
 
                                     @if(rowData['ld_estado'] || rowData['ld_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
-                                        @if(rowData['id_estado']){
-                                            <span class="w-25 text-green-700 uppercase text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium!">
-                                                {{rowData[col.field]}}
-                                            </span>
-                                        }@else{
-                                            <span class="w-25 text-gray-700 uppercase text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-lg! font-medium!">
-                                                {{rowData[col.field]}}
-                                            </span>
-                                        }
+                                        {{ col.render ? col.render(rowData, col) : rowData[col.field] }}
                                     }
                                 </td>
                             }

@@ -7,4 +7,7 @@ interface Column {
     className?: string;
     tdClassName?: string;
     thClassName?: string;
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render?: (rowData: any, col: Column) => string | null;
 }
