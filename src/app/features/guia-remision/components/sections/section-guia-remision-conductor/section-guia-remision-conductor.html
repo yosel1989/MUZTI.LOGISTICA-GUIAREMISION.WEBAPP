@@ -52,16 +52,16 @@
 
                     <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                         <p-button 
-                            [outlined]="true"
+                            severity="danger"
+                            variant="text"
                             pTooltip="Quitar conductor" 
                             tooltipPosition="left" 
                             tooltipStyleClass="text-[10px]!" 
                             class="text-xs! ml-auto" 
                             size="small" 
                             icon="pi pi-times text-xs! font-semibold!" 
-                            styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                            styleClass="w-9! h-9! text-xs! bg-red-100! hover:bg-red-200!" 
                             (click)="evtRemoveCoductor(conductorPrincipal()?.id!)"  
-                            rounded="true" 
                         />
                     </div>
 
@@ -137,16 +137,16 @@
 
                         <div class="w-12.5 text-end flex flex-col items-center gap-y-2">
                             <p-button 
-                                [outlined]="true"
+                                severity="danger"
+                                variant="text"
                                 pTooltip="Quitar conductor" 
                                 tooltipPosition="left" 
                                 tooltipStyleClass="text-[10px]!" 
                                 class="text-xs! ml-auto" 
                                 size="small" 
                                 icon="pi pi-times text-xs! font-semibold!" 
-                                styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                styleClass="w-9! h-9! text-xs! bg-red-100! hover:bg-red-200!" 
                                 (click)="evtRemoveCoductor(conductor.id!)"  
-                                rounded="true" 
                             />
                         </div>
 

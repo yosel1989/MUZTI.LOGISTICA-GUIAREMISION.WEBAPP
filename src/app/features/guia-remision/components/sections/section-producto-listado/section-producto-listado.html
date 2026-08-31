@@ -283,16 +283,16 @@
                             <div class="flex flex-row gap-1 justify-end">
                                 @if(items.length > 1){
                                     <p-button 
-                                        [outlined]="true"
                                         pTooltip="Quitar producto" 
                                         tooltipPosition="left" 
                                         tooltipStyleClass="text-[10px]!" 
                                         class="text-xs!" 
                                         size="small" 
-                                        icon="pi pi-trash text-xs! font-semibold!" 
-                                        styleClass=" text-xs! bg-primary-100! hover:border-primary-100! hover:bg-primary-500! hover:text-primary-100!" 
+                                        severity="danger"
+                                        variant="text"
+                                        icon="fa-light fa-trash text-[14px]!" 
+                                        styleClass="text-xs! h-9! w-9! bg-red-100! hover:bg-red-200!" 
                                         (click)="evtRemoveItems(i)"  
-                                        rounded="true" 
                                     />
                                 }
                             </div>
