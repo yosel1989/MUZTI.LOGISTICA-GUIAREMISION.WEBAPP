@@ -1,4 +1,4 @@
-interface Column {
+export interface Column {
     field: string;
     header: string;
 	sort?: boolean;
@@ -9,5 +9,5 @@ interface Column {
     thClassName?: string;
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render?: (rowData: any, col: Column) => string | null;
+    render?: (rowData: any, rowIndex?: number) => string | null;
 }

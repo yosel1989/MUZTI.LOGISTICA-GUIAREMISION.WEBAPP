@@ -46,10 +46,10 @@ export class AlertService {
       customClass: {
         ...(options.customClass || {}),
         container: ['z-[9999]!', 'swal-container', 'w-auto!', 'max-w-[400px]!'],
-        popup: ['bg-white!', 'text-gray-900', 'dark:text-white', 'rounded-xl!', 'px-6', 'py-3!', 'border-2!', 'border-gray-300!', 'shadow-sm!'],
-        title: ['text-gray-900', 'dark:text-white', 'text-[14px]!', 'font-semibold!'],
+        popup: ['bg-gray-50!', 'text-slate-600!', 'rounded-xl!', 'px-6', 'py-3!', 'border-gray-300!', 'shadow-sm!'],
+        title: ['text-slate-900', 'text-[14px]!', 'font-semibold!'],
         htmlContainer: ['font-semibold!'],
-        confirmButton: ['bg-blue-600', 'text-gray-900', 'dark:text-white', 'px-4', 'py-2', 'rounded'],
+        confirmButton: ['bg-blue-600', 'text-gray-900', 'px-4', 'py-2', 'rounded'],
         timerProgressBar: ['bg-blue-400']
       },
     });

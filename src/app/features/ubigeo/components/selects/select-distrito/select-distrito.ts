@@ -63,7 +63,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['idUbigeoProvincia']) {
+        if (changes['idUbigeoProvincia'] || changes['valueEdit']) {
             this.getData();
         }
     }

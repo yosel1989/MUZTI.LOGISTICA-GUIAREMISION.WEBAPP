@@ -42,6 +42,8 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
     isLoading = signal(false);
     labelSelected: string | null = null;
 
+    selected = signal<UbigeoDepartamentoDto | null>(null);
+
     private subs = new Subscription();
 
     ngOnInit(): void {
@@ -50,8 +52,10 @@ export class SelectDepartamentoComponent implements OnInit, AfterViewInit, OnDes
             if(value){
                 const departamento = this.ubigeoDepartamentos.find(dep => dep.id === value);
                 this.labelSelected = departamento ? departamento.departamento : null;
+                this.selected.set(departamento || null);
             }else{
                 this.labelSelected = null;
+                this.selected.set(null);
             }
         });
     }

@@ -25,10 +25,13 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EntityApiService } from '@features/entity/services/entity-service';
-import { ProviderDto } from '@features/entity/models/entity';
+import { EntityDto, ProviderDto } from '@features/entity/models/entity';
 import { MdlEntityCreate } from '../../modals/mdl-entity-create/mdl-entity-create';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Column } from 'app/shared/models/table';
+import { MdlEntityEdit } from '../../modals/mdl-entity-edit/mdl-entity-edit';
 
 @Component({
   selector: 'app-tbl-provider-principal',
@@ -45,18 +48,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
       InputIconModule,
       TooltipModule,
       InputTextModule,
-      DatePipe,
       ContextMenuModule,
       ConfirmDialogModule,
       LoaderComponent,
       ReactiveFormsModule,
       NgClass
   ],
-  providers: [DialogService, ConfirmationService]
+  providers: [DialogService, ConfirmationService, DatePipe]
 })
 
 export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
+    datePipe = inject(DatePipe);
+    sanitizer = inject(DomSanitizer);
     destroyRef = inject(DestroyRef);
     @ViewChild('cm') cm: ContextMenu | undefined;
 
@@ -105,19 +109,38 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         { field: 'select', header: '', sort: false, sticky: false  },
         { field: 'cod', header: '#', sort: false, sticky: false  },
         { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
-        { field: 'type', header: 'Tipo', sort: false, sticky: false, tdClassName: 'text-center!'},
+        { field: 'type', header: 'Tipo', sort: false, sticky: false, tdClassName: 'text-center!', render: (rowData: ProviderDto)  => { 
+          if (rowData.type === 'empresa') {
+            return `<span class="uppercase px-3 text-slate-700 text-center flex items-center justify-center bg-slate-200 p-1  rounded-lg! font-medium"><i class="fa-light fa-building me-1"></i> ${rowData.type.toLocaleUpperCase()}</span>`;
+          }
+          return `<span class="uppercase px-3 text-slate-700 text-center flex items-center justify-center bg-slate-200 p-1 rounded-lg! font-medium"><i class="fa-light fa-user me-1"></i> ${rowData.type.toLocaleUpperCase()}</span>`;
+        }},
         { field: 'name', header: 'Razón Social', sort: false, sticky: false },
         { field: 'first_name', header: 'Nombre', sort: false, sticky: false },
         { field: 'last_name', header: 'Apellido', sort: false, sticky: false },
         { field: 'document_type', header: 'Tipo Documento', sort: false, sticky: false, tdClassName: 'text-center!' },
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
         { field: 'address', header: 'Dirección', sort: false, sticky: false },
-        { field: 'country_id', header: 'País', sort: false, sticky: false },
-        { field: 'is_internal', header: 'Interno', sort: false, sticky: false },
-        { field: 'active', header: 'Activo', sort: false, sticky: false, render: (rowData) => { return rowData['active'] ? `<span class="w-25 text-green-700 uppercase text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium!">SI</span>` : `<span class="w-25 text-gray-700 uppercase text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-lg! font-medium!">NO</span>` }},
-        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
+        { field: 'country', header: 'País', sort: false, sticky: false, tdClassName: 'uppercase' },
+        { field: 'is_internal', header: 'Interno', sort: false, sticky: false, thClassName: 'text-center!', render: (rowData: ProviderDto)  => { 
+          if (rowData.is_internal) {
+            return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center  p-1 px-2 rounded-lg! font-medium"><span class="pi pi-check-circle"></span></span>';
+          }
+          return '<span class="uppercase w-25 text-red-700 text-center flex items-center justify-center p-1 px-2 rounded-lg! font-medium"><span class="pi pi-times-circle"></span></span>';
+        } },
+        { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: ProviderDto)  => { 
+          if (rowData.active) {
+            return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
+          }
+          return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
+        }},
+        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: ProviderDto) => {
+          return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
+        }},
         { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
+        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: ProviderDto) => {
+          return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
+        }},
         { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
         { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!' },
       ];
@@ -267,29 +290,32 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     evtOnEdit(): void{
 
-      /*if(!this.handlerValidateSelected()) return;
+      if(!this.handlerValidateSelected()) return;
 
-      this.ref = this.dialogService.open(MdlEditarConductorComponent,  {
+      this.ref = this.dialogService.open(MdlEntityEdit,  {
         width: '600px',
         closable: false,
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Editar Conductor',
+        header: 'Editar Proveedor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
         inputValues:{
-          id: this.selected()?.id
+          id: this.selected()?.id,
+          role: 'proveedor'
         },
         templates: {
           header: MdlHeader,
         }
       });
 
-      const sub = this.ref?.onChildComponentLoaded.subscribe((cmp: MdlEditarConductorComponent) => {
+      this.ref?.onChildComponentLoaded.subscribe((cmp: MdlEntityEdit) => {
 
-        const sub2 = cmp?.OnCreated.subscribe(( s: ProviderDto) => {
+        cmp?.OnUpdated
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(( s: EntityDto) => {
           this.ref?.close();
 
           this.selected.update(current => {
@@ -315,31 +341,24 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
           }, 1000);
 
         });
-        const sub3 = cmp?.OnCanceled.subscribe(() => {
+        cmp?.OnCanceled
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.ref?.close();
         });
 
-        const sub4 = cmp?.OnSubmited.subscribe(( v: boolean) => {
-          const current = this.selected()!;
-          this.selected.set({ ...current, ld_update: v });
-        });
-
-        this.subs.add(sub2);
-        this.subs.add(sub3);
-        this.subs.add(sub4);
       });
 
-      this.subs.add(sub);*/
     }
 
     evtOnDelete(): void{
-      /*if(!this.handlerValidateSelected()) return;
+      if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
-          header: '¿Eliminar conductor?',
+          header: '¿Quitar de la lista de proveedores?',
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const sub = this.api.eliminar(this.selected()!.id).subscribe({
+              /*const sub = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: EliminarConductorResponseDto) => {
 
                   this.alertService.showToast({
@@ -370,9 +389,9 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
                 }
               });
               this.subs.add(sub);
-            
+            */
           }
-      });*/
+      });
     }
 
     evtOnUpdateStatus(status: number): void{
@@ -534,7 +553,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
     private buildMenuItems(selected: ProviderDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        //{ label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];

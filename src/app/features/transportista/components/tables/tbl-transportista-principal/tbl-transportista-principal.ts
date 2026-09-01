@@ -30,6 +30,7 @@ import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-t
 import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transportista/mdl-editar-transportista.component';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { Column } from 'app/shared/models/table';
 
 @Component({
   selector: 'app-tbl-transportista-principal',

@@ -5,20 +5,6 @@
         <div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div></div> 
-                <div>
-                    <p-button
-                        fluid
-                        type="button"
-                        severity="primary"
-                        variant="text"
-                        icon="pi pi-list"
-                        styleClass="h-9! bg-primary-100! hover:bg-primary-200! text-sm!"
-                        label="Seleccionar entidad"
-                        (onClick)="evtSelectEntity()"
-                    ></p-button>
-                </div>
-
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo</label>
                     <p-select 
@@ -71,9 +57,10 @@
 
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° documento</label>
-                    <div class="flex flex-row gap-x-1 ">
+                    <div class="flex flex-row gap-x-1 items-center">
                         <input 
                             onlyNumber
+                            placeholder="N° Doc. de identidad *" 
                             pSize="small" 
                             fluid 
                             pInputText 
@@ -193,6 +180,7 @@
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
                     <app-select-departamento 
+                        #selectDepartment
                         [control]="f.department" 
                         classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
                     ></app-select-departamento>
@@ -204,11 +192,12 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia {{ data()?.ubigeo_id }}</label>
                     <app-select-provincia 
                         [control]="f.province" 
                         [idUbigeoDepartamento]="f.department.value" 
                         classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                        [valueEdit]="data()?.ubigeo_id?.substring(0,4) ?? null" 
                     ></app-select-provincia>
                     @if (frm.get('province')?.invalid && (frm.get('province')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" >
@@ -223,6 +212,7 @@
                         [control]="f.district" 
                         [idUbigeoProvincia]="f.province.value" 
                         classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                        [valueEdit]="data()?.ubigeo_id ?? null"
                     ></app-select-distrito>
                     @if (frm.get('district')?.invalid && (frm.get('district')?.touched || submitted())) {
                         <p-message severity="error" size="small" variant="simple" >

@@ -44,6 +44,7 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
     isLoading = signal(false);
 
     labelSelected: string | null = null;
+    selected = signal<UbigeoProvinciaDto | null>(null);
 
     ngOnInit(): void {
         this.getData();
@@ -51,8 +52,10 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
             if(value){
                 const provincia = this.collection().find(prov => prov.id === value);
                 this.labelSelected = provincia ? provincia.provincia : null;
+                this.selected.set(provincia || null);
             }else{
                 this.labelSelected = null;
+                this.selected.set(null);
             }
         });
     }
@@ -70,6 +73,9 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
             this.getData();
             this.control.patchValue(null);
             this.control.updateValueAndValidity();
+        }
+        if (changes['valueEdit']) {
+            this.getData();
         }
     }
 

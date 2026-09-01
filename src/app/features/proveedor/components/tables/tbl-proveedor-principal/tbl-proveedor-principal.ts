@@ -29,6 +29,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { Column } from 'app/shared/models/table';
 
 @Component({
   selector: 'app-tbl-proveedor-principal',

@@ -65,7 +65,7 @@
                 styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
                 (click)="evtOnEdit()"
             />
-            <p-button 
+            <!--<p-button 
                 icon="pi pi-trash"  
                 size="small" 
                 severity="secondary" 
@@ -75,7 +75,7 @@
                 placeholder="Top"
                 styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
                 (click)="evtOnDelete()"
-            />
+            />-->
             @if(selected()?.active === false){
                 <p-button 
                     icon="pi pi-check-circle"  
@@ -263,90 +263,6 @@
                                     }
                                 </td>
                             }
-                            @case('id'){
-                                <td 
-                                    pFrozenColumn 
-                                    [frozen]="col.sticky ?? false"
-                                    [alignFrozen]="col.alignFrozen ?? ''"
-                                    class="cursor-pointer py-2! px-2!" 
-                                >
-                                    @if(rowData['ld_update']){
-                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                    }@else {
-                                        COD-{{ rowData[col.field].toString().padStart(4,'0') }}
-                                    }
-                                </td>
-                            }
-                            @case('type'){
-                                <td 
-                                    class="text-nowrap py-1! font-light! truncate!"
-                                    [ngClass]="col.tdClassName"
-                                >
-                                    @if(rowData['type'] === 'empresa'){
-                                        <i class="fa-light fa-building"></i>
-                                    }@else {
-                                        <i class="fa-light fa-user"></i>
-                                    }
-                                </td>
-                            }
-                            @case('is_internal'){
-                                <td 
-                                    class="text-nowrap py-1! font-light! truncate!"
-                                    [ngClass]="col.tdClassName"
-                                >
-                                    @if(rowData['type'] === 'empresa'){
-                                        <i class="fa-light fa-building"></i>
-                                    }@else {
-                                        <i class="fa-light fa-user"></i>
-                                    }
-                                </td>
-                            }
-                            @case('created_at'){
-                                <td class="text-nowrap py-1! font-light! truncate!">
-                                    @if(rowData['ld_update']){
-                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                    }@else {
-                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
-                                    }
-                                </td>
-                            }
-                            @case('updated_at'){
-                                <td class="text-nowrap py-1! font-light! truncate!">
-                                    @if(rowData['ld_update']){
-                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                    }@else {
-                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
-                                    }
-                                </td>
-                            }
-                            @case('active'){
-                                <td 
-                                    class="text-nowrap py-1! font-light! truncate! w-[100px]"
-                                    
-                                > 
-
-                                    @if(rowData['ld_estado'] || rowData['ld_update']){
-                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                    }@else {
-                                        {{ col.render ? col.render(rowData, col) : rowData[col.field] }}
-                                    }
-                                </td>
-                            }
-                            @case('tipo') {
-                                <td
-                                    pFrozenColumn 
-                                    [frozen]="col.sticky ?? false"
-                                    [alignFrozen]="col.alignFrozen ?? ''"
-                                    [class.border-e-0!]="(columns.length - 1) === i"
-                                    class="uppercase text-nowrap py-1! font-light! truncate!"
-                                >
-                                    @if(rowData['ld_update']){
-                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                    }@else {
-                                        {{rowData[col.field]}}
-                                    }
-                                </td>
-                            }
                             @case('options') {
                                 <td
                                     pFrozenColumn 
@@ -378,13 +294,13 @@
                                     pFrozenColumn 
                                     [frozen]="col.sticky ?? false"
                                     [alignFrozen]="col.alignFrozen ?? ''"
-                                    [class.border-e-0!]="(columns.length - 1) === i"
                                     class="text-nowrap py-1! font-light! truncate!"
+                                    [ngClass]="col.tdClassName"
+                                    [class.border-e-0!]="(columns.length - 1) === i"
+                                    [innerHTML]="!rowData['ld_update'] ? (col.render ? col.render(rowData, col) : rowData[col.field] ) : ''"
                                 >
                                     @if(rowData['ld_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                    }@else {
-                                        {{rowData[col.field]}}
                                     }
                                 </td>
                             }
@@ -416,8 +332,8 @@
                 >
                     <i class="pi pi-question text-5xl!"></i>
                 </div>
-                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
-                <p class="mb-0">{{ message.message }}</p>
+                <span class="font-semibold text-2xl block mb-2 mt-6 text-center roboto-condensed">{{ message.header }}</span>
+                <p class="mb-0 text-sm!">{{ message.message }}</p>
                 <div class="flex items-center gap-2 mt-6">
                     <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
                     <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>

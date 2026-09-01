@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { EntityCreateDto, EntityDto } from "../models/entity";
+import { EntityCreateDto, EntityDto, EntityListDto } from "../models/entity";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "@core/models/table";
 
@@ -41,8 +41,22 @@ export class EntityApiService {
         )
     }
 
-    getById(id: number): Observable<TableData<EntityDto[]>>{
-        return this.http.get<TableData<EntityDto[]>>(`${this.baseUrl}/${id}`).pipe(
+    getList(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EntityListDto[]>>{
+        let httpParams = new HttpParams();
+        httpParams = search 
+        ? httpParams.set('search', search) 
+        : httpParams;
+        
+        return this.http.get<TableData<EntityListDto[]>>(`${this.baseUrl}/list/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
+            map((res) => res),
+            catchError((e: HttpErrorResponse) => {
+                return throwError(() => e);
+            })
+        )
+    }
+
+    getById(id: number): Observable<EntityDto>{
+        return this.http.get<EntityDto>(`${this.baseUrl}/${id}`).pipe(
             map((res) => res),
             catchError((e: HttpErrorResponse) => {
                 return throwError(() => e);

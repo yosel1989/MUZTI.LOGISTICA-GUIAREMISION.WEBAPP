@@ -9,7 +9,7 @@ const routes: Routes = [
     children: [
       {
         path: 'administracion/proveedor',
-        loadComponent: () => import('@features/proveedor/pages/page-proveedor-principal/page-proveedor-principal').then(m => m.PageProveedorPrincipalComponent)
+        loadComponent: () => import('@features/entity/pages/page-providers-principal/page-providers-principal').then(m => m.PageProvidersPrincipal)
       },
       {
         path: 'administracion/conductor',

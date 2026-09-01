@@ -57,6 +57,7 @@ import { Router } from '@angular/router';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
 import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/headers/mdl-header-previsualizar-guia-remision/mdl-header-previsualizar-guia-remision';
+import { Column } from 'app/shared/models/table';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',

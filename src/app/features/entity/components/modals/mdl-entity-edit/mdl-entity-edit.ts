@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { finalize, Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/se
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
-import { EntityCreateDto } from '@features/entity/models/entity';
+import { EntityCreateDto, EntityDto } from '@features/entity/models/entity';
 import { EntityApiService } from '@features/entity/services/entity-service';
 import { SelectCountry } from '@features/catalogo/components/selects/select-country/select-country';
 import { EntityInfoApiService } from '@features/entity-info/services/entity-info-api-service';
@@ -30,12 +30,10 @@ import { CompanyInfoDto, PersonInfoDto } from '@features/entity-info/models/enti
 import { TooltipModule } from 'primeng/tooltip';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CheckboxModule } from 'primeng/checkbox';
-import { MdlEntityList } from '../mdl-entity-list/mdl-entity-list';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 
 
 @Component({
-  selector: 'app-mdl-entity-create',
+  selector: 'app-mdl-entity-edit',
   imports: [
     FormsModule, 
     InputNumberModule,
@@ -58,27 +56,29 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
     ToggleSwitchModule,
     CheckboxModule
   ],
-  templateUrl: './mdl-entity-create.html',
-  styleUrl: './mdl-entity-create.scss',
+  templateUrl: './mdl-entity-edit.html',
+  styleUrl: './mdl-entity-edit.scss',
   providers: [ConfirmationService]
 })
-export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
+export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
 
   private destroyRef = inject(DestroyRef);
   private api = inject(EntityApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
   private entityInfoApiService = inject(EntityInfoApiService);
-  private dialogService = inject(DialogService);
-  
 
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() OnUpdated: EventEmitter<EntityDto> = new EventEmitter<EntityDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
   role = input.required<'cliente' | 'proveedor' | 'transportista' | 'emisor'>();
+  id = input.required<number>();
 
   frm: FormGroup = new FormGroup({});
   isSubmitted = signal(false);
   ldSubmit = signal(false);
+
+  ldData = signal(false);
+  data = signal<EntityDto | null>(null);
 
   private subs = new Subscription();
   
@@ -95,14 +95,8 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
     {value: 'empresa', label: 'EMPRESA'},
     {value: 'persona', label: 'PERSONA'},
   ];
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ref: DynamicDialogRef<any> | undefined | null;
   
-  constructor( 
-    public config: DynamicDialogConfig,
-    private dialogRef: DynamicDialogRef
-  ) {}
+  constructor( public config: DynamicDialogConfig ) {}
 
   ngOnInit(): void {
     this.frm = new FormGroup({
@@ -119,7 +113,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       country_id: new FormControl(null, Validators.required),
       code_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)]),
-      is_internal:  new FormControl(false, Validators.required),
+      is_internal:  new FormControl(true, Validators.required),
     });
 
     this.headerValue = this.config.header ?? '';
@@ -144,6 +138,8 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       }
       this.frm.updateValueAndValidity();
     });
+
+    this.loadData();
   }
 
   ngAfterViewInit(): void {
@@ -180,6 +176,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Events
+
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
@@ -198,17 +195,17 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
               this.ldSubmit.set(false);
             }))
             .subscribe({
-              next: () => {
+              next: (data: EntityDto) => {
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
-                  title: `Se registro el ${this.role()} con éxito`,
+                  title: `Se actualizó el ${this.role()} con éxito`,
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnUpdated.emit(data);
               },
               error: (err: HttpErrorResponse) => {
                 this.alertService.showToast({
@@ -282,29 +279,35 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       this.handlerFindCompanyInfo(this.f.document_number.value);
     }
 
+
   }
 
-  evtSelectEntity(): void{
-    this.ref = this.dialogService.open(MdlEntityList, {
-      width: '600px',
-      closable: false,
-      modal: true,
-      draggable: false,
-      position: 'top',
-      header: 'Seleccionar entidad',
-      styleClass: 'max-h-none! slide-down-dialog',
-      maskStyleClass: 'overflow-y-auto py-4',
-      appendTo: 'body',
-      templates: {
-        header: MdlHeader,
-      },
-    });
+  // Data
 
+  loadData(): void{
+    this.ldData.set(true);
+    this.api.getById(this.id())
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.ldData.set(false))
+      )
+      .subscribe({
+        next: (value: EntityDto) => {
+          this.data.set(value);
+          this.handlerPatchValue(value);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alertService.showToast({
+            position: 'top-end',
+            title: err.error.detalle,
+            icon: 'error'
+          })
+        }
+      })
 
   }
 
   // Handlers
-
 
   handlerFindPersonInfo(documentNumber: string): void{
     this.ldInfo.set(true);
@@ -319,7 +322,12 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
               document_number: value.document_number,
               first_name: value.first_name,
               last_name: value.last_name
-           })
+           });
+           this.alertService.showToast({
+            position: 'top-end',
+            icon: "success",
+            title: "Se obtuvo la información de la persona.",
+          });
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.showToast({
@@ -344,7 +352,13 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
               document_number: value.document_number,
               name: value.name,
               address: value.address
-           })
+           });
+           this.alertService.showToast({
+            position: 'top-end',
+            icon: "success",
+            title: "Se obtuvo la información de la empresa.",
+            timer: 99999999,
+          });
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.showToast({
@@ -355,5 +369,24 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
         },
       })
   }
+
+  handlerPatchValue(model: EntityDto): void{
+    this.frm.patchValue({
+      type: model.type,
+      document_type_id: model.document_type_id,
+      document_number: model.document_number,
+      name: model.name,
+      first_name: model.first_name,
+      last_name: model.last_name,
+      department: model.ubigeo_id?.substring(0, 2),
+      province: model.ubigeo_id?.substring(2, 4),
+      district: model.ubigeo_id,
+      address: model.address,
+      country_id: model.country_id,
+      code_sunat: null,
+      is_internal: model.is_internal
+    });
+  }
+
 
 }
