@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { finalize, Subscription } from 'rxjs';
@@ -27,18 +27,26 @@ import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.ser
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
 import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
+import { CheckboxModule } from 'primeng/checkbox';
+import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
+import { EntityDto } from '@features/entity/models/entity';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-mdl-registrar-establecimiento',
   imports: [
-    FormsModule, 
+    FormsModule,
     InputNumberModule,
-    InputTextModule, 
-    TextareaModule, 
-    ButtonModule, 
-    EditorModule, 
-    ReactiveFormsModule, 
-    MessageModule, 
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    EditorModule,
+    ReactiveFormsModule,
+    MessageModule,
     ConfirmDialog,
     SelectModule,
     SelectDepartamentoComponent,
@@ -47,7 +55,11 @@ import { EstablecimientoApiService } from '@features/establecimiento/services/es
     OnlyNumberDirective,
     OnlyUpperDirective,
     DividerModule,
-    SkeletonModule
+    SkeletonModule,
+    CheckboxModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    AvatarModule
   ],
   templateUrl: './mdl-registrar-establecimiento.component.html',
   styleUrl: './mdl-registrar-establecimiento.component.scss',
@@ -60,6 +72,8 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   private alertService = inject(AlertService);
   private empresaApiService = inject(EmpresaApiService);
   private catalogoApiService = inject(CatalogoApiService);
+  private dialogService = inject(DialogService);
+  private destroyRef = inject(DestroyRef);
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -82,6 +96,12 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   tiposEstablecimiento = signal<TipoEstablecimientoDTO[]>([]);
   ldTipoEstablecimiento = signal(false);
 
+  entitySelected = signal<EntityDto | null>(null);
+  showEntityList = signal(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ref: DynamicDialogRef<any> | undefined | null;
+
   constructor(
     public config: DynamicDialogConfig
 	) {
@@ -90,8 +110,10 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
 
   ngOnInit(): void {
     this.frm = new FormGroup({
+      entity_id: new FormControl(null, Validators.required),
+      entity_name: new FormControl(null, Validators.required),
       ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
-      descripcion: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
+      description: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       area: new FormControl(null, [Validators.maxLength(45)]),
       departamento: new FormControl(null, Validators.required),
       provincia: new FormControl(null, Validators.required),
@@ -102,11 +124,22 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       serie: new FormControl(null, [Validators.minLength(3), Validators.maxLength(3)]),
       codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
       tipo: new FormControl(null, Validators.required),
+      is_main: new FormControl(false, Validators.required),
     });
     this.headerValue = this.config.header ?? '';
 
     this.loadEmpresas();
     this.loadTiposEstablecimiento();
+
+    this.frm.get('is_main')?.valueChanges.subscribe((value: boolean) => {
+      if(value){
+        this.frm.get('codigo_sunat')?.setValue('0000');
+        this.frm.get('codigo_sunat')?.disable();
+      }else{
+        this.frm.get('codigo_sunat')?.setValue(null);
+        this.frm.get('codigo_sunat')?.enable();
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -137,7 +170,8 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       pais: form.pais,
       serie: form.serie,
       codigo_sunat: form.codigo_sunat,
-      tipo: form.tipo
+      tipo: form.tipo,
+      is_main: form.is_main
     };
   }
 
@@ -200,7 +234,49 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     this.OnCanceled.emit(true);
   }
 
+  evtToggleShowEntityList(): void{
+    this.showEntityList.update((value) => !value);
+  }
+
+  evtShowEntityList(): void{
+
+    this.ref = this.dialogService.open(MdlEntityList, {
+      width: '700px',
+      closable: false,
+      draggable: false,
+      modal: true,
+      position: 'top',
+      header: 'Seleccionar Entidad',
+      styleClass: 'max-h-none! slide-down-dialog',
+      maskStyleClass: 'py-4',
+      appendTo: 'body',
+      templates: {
+        header: MdlHeader
+      }
+    });
+
+    this.ref?.onChildComponentLoaded
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe((childComponent: MdlEntityList) => {
+      childComponent.OnSelected
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((entity: EntityDto) => {
+        this.entitySelected.set(entity);
+        this.frm.get('entity_id')?.setValue(entity.id);
+        this.frm.get('entity_name')?.setValue(entity.name ?? `${entity.first_name} ${entity.last_name}`);
+        this.ref?.close();
+      });
+      childComponent.OnClose
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+          this.ref?.close();
+      });
+    });
+
+  }
+
   // Data
+
   loadEmpresas(): void{
     this.ldEmpresa.set(true);
     this.subs.add(

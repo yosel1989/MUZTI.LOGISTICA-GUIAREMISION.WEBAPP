@@ -38,12 +38,12 @@ import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/se
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selects/select-unidad-medida/select-unidad-medida';
 import { TypingComponent } from '@features/shared/components/typing/typing';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { EntityBranchDto } from '@features/establecimiento/models/entity-branch';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -86,8 +86,8 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     @Input() tipoGuia: string | undefined = TipoGuiaRemisionEnum.remitente;
   
     private _emisora = signal<EmpresaToSelectDto | null>(null); 
-    private _remitente = signal<EstablecimientoDTO | null>(null);
-    private _destinatario = signal<EstablecimientoDTO | null>(null);
+    private _remitente = signal<EntityBranchDto | null>(null);
+    private _destinatario = signal<EntityBranchDto | null>(null);
     private _motivoTraslado = signal<SunatMotivoTrasladoDto | undefined>(undefined);
 
     private _tipoTransporte = signal<string | 'PRIVADO' | 'PUBLICO'>('PRIVADO');
@@ -100,12 +100,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         }
     }
 
-    @Input() set remitente(value: EstablecimientoDTO | null) {
+    @Input() set remitente(value: EntityBranchDto | null) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
         }
     }
-    @Input() set destinatario(value: EstablecimientoDTO | null) {
+    @Input() set destinatario(value: EntityBranchDto | null) {
         if (this._destinatario() !== value) {
             this._destinatario.set(value);
         }
@@ -685,7 +685,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
       });
     }
 
-    handlerValueRemitente(s: EstablecimientoDTO | null): void{
+    handlerValueRemitente(s: EntityBranchDto | null): void{
         if(!s){
             //this.resetOrigenForm();
             return;
@@ -693,13 +693,13 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         if(this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
-              cod_establecimiento_origen: s.codigo_sunat,
+              cod_establecimiento_origen: s.code_sunat,
               ruc_establecimiento_origen: s.ruc
           });
         }
     }
 
-    handlerValueDestinatario(s: EstablecimientoDTO | null): void{
+    handlerValueDestinatario(s: EntityBranchDto | null): void{
         if(!s){
             //this.resetDestinoForm();
             return;
@@ -707,7 +707,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         if(this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
-              cod_establecimiento_destino: s.codigo_sunat,
+              cod_establecimiento_destino: s.code_sunat,
               ruc_establecimiento_destino: s.ruc
           });
         }

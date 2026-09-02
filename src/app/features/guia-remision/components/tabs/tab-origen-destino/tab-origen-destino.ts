@@ -11,12 +11,12 @@ import { MessageService } from 'primeng/api';
 import { MessageModule } from "primeng/message";
 import { GR_DestinoRequestDto, GR_OrigenRequestDto } from "app/features/guia-remision/models/guia-remision.model";
 import { AlertService } from "app/core/services/alert.service";
-import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
 import { TypingComponent } from "@features/shared/components/typing/typing";
 //import { SelectDepartamentoComponent } from "@features/ubigeo/components/selects/select-departamento/select-departamento";
 //import { SelectProvinciaComponent } from "@features/ubigeo/components/selects/select-provincia/select-provincia";
 //import { SelectDistritoComponent } from "@features/ubigeo/components/selects/select-distrito/select-distrito";
 import { AccordionModule } from 'primeng/accordion';
+import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
 
 @Component({
   selector: 'app-tab-origen-destino',
@@ -40,14 +40,14 @@ import { AccordionModule } from 'primeng/accordion';
 export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
     messageService = inject(MessageService);
 
-    private _remitente = signal<EstablecimientoDTO | null>(null);
-    private _destinatario = signal<EstablecimientoDTO | null>(null);
-    @Input() set remitente(value: EstablecimientoDTO | null) {
+    private _remitente = signal<EntityBranchDto | null>(null);
+    private _destinatario = signal<EntityBranchDto | null>(null);
+    @Input() set remitente(value: EntityBranchDto | null) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
         }
     }
-    @Input() set destinatario(value: EstablecimientoDTO | null) {
+    @Input() set destinatario(value: EntityBranchDto | null) {
         if (this._destinatario() !== value) {
             this._destinatario.set(value);
         }
@@ -132,22 +132,22 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         return {
             origen: {
                 ubigeo_id: this.remitente!.ubigeo_id,
-                direccion: this.remitente!.direccion,
+                direccion: this.remitente!.address,
                 pais: this.remitente!.pais,
             },
             destino: {
                 ubigeo_id: this.destinatario!.ubigeo_id,
-                direccion: this.destinatario!.direccion,
+                direccion: this.destinatario!.address,
                 pais: this.destinatario!.pais,
             }
         }
     }
 
-    get remitente(): EstablecimientoDTO | null {
+    get remitente(): EntityBranchDto | null {
         return this._remitente();
     }
 
-    get destinatario(): EstablecimientoDTO | null {
+    get destinatario(): EntityBranchDto | null {
         return this._destinatario();
     }
 
@@ -189,7 +189,7 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
 
     // handlers
 
-    //handlerValueRemitente(s: EstablecimientoDTO | null): void{
+    //handlerValueRemitente(s: EntityBranchDto | null): void{
         /*if(!s){
             this.resetOrigenForm();
             return;
@@ -211,7 +211,7 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         subDistrito1?.unsubscribe();*/
     //}
 
-    /*handlerValueDestinatario(s: EstablecimientoDTO | null): void{
+    /*handlerValueDestinatario(s: EntityBranchDto | null): void{
         if(!s){
             this.resetDestinoForm();
             return;

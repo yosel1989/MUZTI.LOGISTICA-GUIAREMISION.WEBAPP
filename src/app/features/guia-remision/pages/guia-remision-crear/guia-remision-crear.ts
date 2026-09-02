@@ -37,7 +37,6 @@ import { Router } from '@angular/router';
 import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
-import { EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { TextareaModule } from 'primeng/textarea';
@@ -56,6 +55,7 @@ import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components
 import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
 import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
+import { EntityBranchDto } from '@features/establecimiento/models/entity-branch';
 
 export interface Puerto{
     value: string;
@@ -159,8 +159,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     maxFechaEmision = new Date();
 
     empresa = signal<EmpresaToSelectDto | null>(null);
-    remitente = signal<EstablecimientoDTO | null>(null);
-    destinatario = signal<EstablecimientoDTO | null>(null);
+    remitente = signal<EntityBranchDto | null>(null);
+    destinatario = signal<EntityBranchDto | null>(null);
 
     puertos = signal<Puerto[]>([]);
     aereopuertos = signal<{value: string, label: string}[]>([]);
@@ -556,7 +556,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
-            const sub2 = cmp?.OnSelected.subscribe(( s: EstablecimientoDTO) => {
+            const sub2 = cmp?.OnSelected.subscribe(( s: EntityBranchDto) => {
                 (to === 'remitente' ? this.remitente : this.destinatario).set(s);
                 this.modalRef?.close();
                 this.alertService.showToast({

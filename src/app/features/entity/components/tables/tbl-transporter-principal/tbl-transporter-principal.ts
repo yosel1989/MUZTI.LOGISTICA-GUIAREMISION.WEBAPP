@@ -25,17 +25,17 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EntityApiService } from '@features/entity/services/entity-service';
-import { ProviderDto } from '@features/entity/models/entity';
 import { MdlEntityCreate } from '../../modals/mdl-entity-create/mdl-entity-create';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Column } from 'app/shared/models/table';
+import { TransporterDto } from '@features/entity/models/entity';
 
 @Component({
-  selector: 'app-tbl-provider-principal',
-  templateUrl: './tbl-provider-principal.html',
-  styleUrl: './tbl-provider-principal.scss',
+  selector: 'app-tbl-transporter-principal',
+  templateUrl: './tbl-transporter-principal.html',
+  styleUrl: './tbl-transporter-principal.scss',
   imports: [
       TableModule,
       SkeletonModule,
@@ -56,7 +56,7 @@ import { Column } from 'app/shared/models/table';
   providers: [DialogService, ConfirmationService, DatePipe]
 })
 
-export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
+export class TblTransporterPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     datePipe = inject(DatePipe);
     sanitizer = inject(DomSanitizer);
@@ -71,11 +71,11 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     cols: Column[] = [];
 
-    data = signal<ProviderDto[]>([]);
+    data = signal<TransporterDto[]>([]);
 
     ldData = signal(true);
 
-    selected = signal<ProviderDto | undefined>(undefined);
+    selected = signal<TransporterDto | undefined>(undefined);
     items = computed(() => this.buildMenuItems(this.selected()));
     loading: boolean = false;
 
@@ -108,7 +108,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         { field: 'select', header: '', sort: false, sticky: false  },
         { field: 'cod', header: '#', sort: false, sticky: false  },
         { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
-        { field: 'type', header: 'Tipo', sort: false, sticky: false, tdClassName: 'text-center!', render: (rowData: ProviderDto)  => { 
+        { field: 'type', header: 'Tipo', sort: false, sticky: false, tdClassName: 'text-center!', render: (rowData: TransporterDto)  => { 
           if (rowData.type === 'empresa') {
             return `<span class="uppercase px-3 text-slate-700 text-center flex items-center justify-center bg-slate-200 p-1  rounded-lg! font-medium"><i class="fa-light fa-building me-1"></i> ${rowData.type.toLocaleUpperCase()}</span>`;
           }
@@ -121,23 +121,23 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
         { field: 'address', header: 'Dirección', sort: false, sticky: false },
         { field: 'country', header: 'País', sort: false, sticky: false, tdClassName: 'uppercase text-center!' },
-        { field: 'is_internal', header: 'Interno', sort: false, sticky: false, thClassName: 'text-center!', render: (rowData: ProviderDto)  => { 
+        { field: 'is_internal', header: 'Interno', sort: false, sticky: false, thClassName: 'text-center!', render: (rowData: TransporterDto)  => { 
           if (rowData.is_internal) {
             return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center  p-1 px-2 rounded-lg! font-medium"><span class="pi pi-check-circle"></span></span>';
           }
           return '<span class="uppercase w-25 text-red-700 text-center flex items-center justify-center p-1 px-2 rounded-lg! font-medium"><span class="pi pi-times-circle"></span></span>';
         } },
-        { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: ProviderDto)  => { 
+        { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: TransporterDto)  => { 
           if (rowData.active) {
             return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
           }
           return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
         }},
-        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: ProviderDto) => {
+        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: TransporterDto) => {
           return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
         }},
         { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: ProviderDto) => {
+        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: TransporterDto) => {
           return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
         }},
         { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
@@ -161,17 +161,12 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
     }
 
     // getters
-    get paddedData(): (ProviderDto | {__empty: boolean})[] {
+    get paddedData(): (TransporterDto | {__empty: boolean})[] {
       const actual = this.data() ?? [];
       const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
       return [...actual, ...fillerRows];
     }
-
-    // setters
-    /** setSelected(data: ProviderDto | undefined) {
-      this.selectedSubject.next(data);
-    }**/
 
     // data
     loadData(reload: boolean = false): void {
@@ -186,8 +181,8 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         this.first = 0;
       }
     
-      this.subData = this.api.getCollection('proveedor', this.pageNumber, this.pageSize(), this.search).subscribe({
-        next: (res: TableData<ProviderDto[]>) => {
+      this.subData = this.api.getCollection('transportista', this.pageNumber, this.pageSize(), this.search).subscribe({
+        next: (res: TableData<TransporterDto[]>) => {
           this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);
             x.updated_at = x.updated_at ? new Date(x.updated_at) : null;
@@ -225,7 +220,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     // Events
 
-    evtToggleSelection(row: ProviderDto): void{
+    evtToggleSelection(row: TransporterDto): void{
       if (this.selected() === row) {
         this.selected.set(undefined);
       } else {
@@ -257,7 +252,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Registrar Proveedor',
+        header: 'Registrar Transportista',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -265,7 +260,8 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
           header: MdlHeader,
         },
         inputValues: {
-          role: 'proveedor'
+          role: 'transportista',
+          _type: 'empresa'
         }
       });
 
@@ -285,49 +281,6 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         });
       });
 
-    }
-
-    evtOnDelete(): void{
-      if(!this.handlerValidateSelected()) return;
-      this.confirmationService.confirm({
-          header: '¿Quitar de la lista de proveedores?',
-          message: 'Confirmar la operación.',
-          accept: () => {
-
-              /*const sub = this.api.eliminar(this.selected()!.id).subscribe({
-                next: (res: EliminarConductorResponseDto) => {
-
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
-
-                  this.loadData();
-                },
-                error: (err: HttpErrorResponse) => {
-
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
-                }
-              });
-              this.subs.add(sub);
-            */
-          }
-      });
     }
 
     evtOnUpdateStatus(status: number): void{
@@ -433,7 +386,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
       this.selected.set(event.data);
     }
 
-    evtShowContextMenu(event: MouseEvent, rowData: ProviderDto) {
+    evtShowContextMenu(event: MouseEvent, rowData: TransporterDto) {
       const target = event.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
       const currentSelected = this.selected();
@@ -470,7 +423,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
     // Functions
 
     
-    isOpenCm(rowData: ProviderDto): boolean{
+    isOpenCm(rowData: TransporterDto): boolean{
       return (this.cm?.visible() && rowData === this.selected()) ?? false;
     }
     
@@ -486,7 +439,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
       this.evtOnReload(true);
     }
 
-    private buildMenuItems(selected: ProviderDto | undefined): MenuItem[] {
+    private buildMenuItems(selected: TransporterDto | undefined): MenuItem[] {
       return [
         //{ label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         //{ label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},

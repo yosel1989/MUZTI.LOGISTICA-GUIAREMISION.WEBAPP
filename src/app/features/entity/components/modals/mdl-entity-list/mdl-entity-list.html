@@ -1,48 +1,5 @@
 <div class="p-4">
     <div class="flex flex-col gap-4">
-        <div class="">
-            @if(ldEmpresas()){
-                <p-skeleton class="h-[69px]!"></p-skeleton>
-            }@else {
-                <p-select 
-                    panelStyleClass="text-[.875rem]!"
-                    size="small" 
-                    fluid 
-                    [options]="empresas()" 
-                    [formControl]="ctrlRuc"  
-                    optionLabel="empresa" 
-                    optionValue="ruc"  
-                    filterBy="ruc,empresa"
-                    class="p-inputwrapper-filled" 
-                    placeholder="--SELECCIONAR--"
-                    (onChange)="evtChangeEmpresa()"
-                    appendTo="body"
-                    styleClass="min-h-[69px]!"
-                >
-                    <ng-template #selectedItem let-selectedOption>
-                            <div class="p-4 py-2! text-left">
-                                <div class="flex flex-row gap-x-4">
-                                    <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
-                                    <div>
-                                        <p class="font-semibold">{{ selectedOption.empresa }}</p>
-                                        <p class="uppercase">{{ selectedOption.ruc }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                    </ng-template>
-
-                    <ng-template let-item #item>
-                        <div class="flex flex-row gap-x-4">
-                            <p-avatar icon="fa-light fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
-                            <div>
-                                <p class="font-semibold">{{ item.empresa }}</p>
-                                <p class="uppercase">{{ item.ruc }}</p>
-                            </div>
-                        </div>
-                    </ng-template>
-                </p-select>
-            }
-        </div>
         <div class="lg:col-span-2">
             <p-iconfield>
                 <p-inputicon class="pi pi-search" />
@@ -81,6 +38,12 @@
             class="border-0! text-[12px]!"
 
             [loading]="ldData()"
+            [paginator]="true"
+            [totalRecords]="totalRecords()" 
+            [rows]="pageSize()"
+            [first]="first()" 
+            paginatorDropdownAppendTo="body"
+            paginatorStyleClass="text-[12px]! p-paginator-xs border-t-[.5px]! border-t-gray-300! rounded-none! py-3!"
         >
             
                 <ng-template pTemplate="header" let-columns>
@@ -88,7 +51,7 @@
                             @for (col of columns; track $index) {
                                 <th 
                                     class="text-nowrap text-[14px]! text-primary-500! font-semibold py-4! px-4! roboto-condensed border-t-0!"
-                                    [ngClass]="col.className"
+                                    [ngClass]="col.thClassName"
                                     [class.border-e-0!]="($index === columns.length - 1)"
                                     [class.border-s-0!]="$index === 0"
                                 >
@@ -142,7 +105,7 @@
     </div>
 </div>
 
-<div class="flex gap-2 justify-end pt-6">
+<div class="flex gap-2 justify-end p-4">
     <p-button (click)="evtOnClose()" size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
-    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldDataById()" [disabled]="!selected" size="small" [label]="ldSelected() ? '' : 'Seleccionar'" severity="primary"></p-button>
+    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldDataById() || ldSelected()" [disabled]="!selected" size="small" [label]="ldSelected() ? '' : 'Seleccionar'" severity="primary"></p-button>
 </div>

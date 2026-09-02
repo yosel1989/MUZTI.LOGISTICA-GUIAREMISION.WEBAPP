@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { finalize, Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/se
 import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
-import { EntityCreateDto } from '@features/entity/models/entity';
+import { EntityCreateDto, EntityDto } from '@features/entity/models/entity';
 import { EntityApiService } from '@features/entity/services/entity-service';
 import { SelectCountry } from '@features/catalogo/components/selects/select-country/select-country';
 import { EntityInfoApiService } from '@features/entity-info/services/entity-info-api-service';
@@ -31,8 +31,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MdlEntityList } from '../mdl-entity-list/mdl-entity-list';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 @Component({
   selector: 'app-mdl-entity-create',
@@ -56,7 +55,9 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
     SelectCountry,
     TooltipModule,
     ToggleSwitchModule,
-    CheckboxModule
+    CheckboxModule,
+    SelectButtonModule,
+    MdlEntityList
   ],
   templateUrl: './mdl-entity-create.html',
   styleUrl: './mdl-entity-create.scss',
@@ -69,12 +70,12 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
   private entityInfoApiService = inject(EntityInfoApiService);
-  private dialogService = inject(DialogService);
   
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
   role = input.required<'cliente' | 'proveedor' | 'transportista' | 'emisor'>();
+  _type = input<'empresa' | 'persona' | undefined>(undefined);
 
   frm: FormGroup = new FormGroup({});
   isSubmitted = signal(false);
@@ -95,9 +96,17 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
     {value: 'empresa', label: 'EMPRESA'},
     {value: 'persona', label: 'PERSONA'},
   ];
+  selected = signal<EntityDto | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref: DynamicDialogRef<any> | undefined | null;
+
+
+  stateOptions: {label: string, value: string}[] = [{ label: 'Registrar', value: 'one-way' },{ label: 'Seleccionar', value: 'return' }];
+
+  value: string = 'off';
+
+  type  = signal<'new' | 'select'>('new');
   
   constructor( 
     public config: DynamicDialogConfig,
@@ -106,7 +115,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.frm = new FormGroup({
-      type: new FormControl('empresa', Validators.required),
+      type: new FormControl({ value: this._type() ?? 'empresa', disabled: !!this._type() }, Validators.required),
       document_type_id: new FormControl(null, Validators.required),
       document_number: new FormControl(null, Validators.required),
       name: new FormControl(null, [Validators.maxLength(150)]),
@@ -118,7 +127,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       address: new FormControl(null, [Validators.required, Validators.maxLength(150)]),
       email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       country_id: new FormControl(null, Validators.required),
-      code_sunat: new FormControl(null, [Validators.maxLength(4), Validators.minLength(4)]),
+      code_sunat: new FormControl(null, [Validators.required, Validators.maxLength(4), Validators.minLength(4)]),
       is_internal:  new FormControl(false, Validators.required),
     });
 
@@ -134,7 +143,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       });
       this.frm.get('name')?.clearValidators();
       this.frm.get('first_name')?.clearValidators();
-      this.frm.get('first_name')?.clearValidators();
+      this.frm.get('last_name')?.clearValidators();
 
       if(value === 'empresa'){
         this.frm.get('name')?.setValidators([Validators.required, Validators.maxLength(150)]);
@@ -142,6 +151,9 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
         this.frm.get('first_name')?.setValidators([ Validators.required, Validators.maxLength(75) ]);
         this.frm.get('last_name')?.setValidators([ Validators.required, Validators.maxLength(75) ]);
       }
+      this.frm.get('name')?.updateValueAndValidity();
+      this.frm.get('first_name')?.updateValueAndValidity();
+      this.frm.get('last_name')?.updateValueAndValidity();
       this.frm.updateValueAndValidity();
     });
   }
@@ -162,28 +174,45 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get request(): EntityCreateDto {
-    const form = this.frm.value;
 
-    return {
-      type: form.type,
-      name: form.name,
-      first_name: form.first_name,
-      last_name: form.last_name,
-      document_type_id: form.document_type_id,
-      document_number: form.document_number,
-      ubigeo_id: form.district,
-      address: form.address,
-      country_id: form.country_id,
-      is_internal: form.is_internal,
-      role: this.role()
-    };
+    if(this.type() === 'select'){
+
+      return {
+        ...this.selected(),
+        role: this.role()
+      } as EntityCreateDto;
+
+    }else{
+
+      const form = this.frm.value;
+
+      return {
+        id: 0,
+        type: form.type,
+        name: form.name,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        document_type_id: form.document_type_id,
+        document_number: form.document_number,
+        ubigeo_id: form.district,
+        address: form.address,
+        country_id: form.country_id,
+        is_internal: form.is_internal,
+        role: this.role()
+      };
+
+    }
   }
 
   // Events
   evtOnSubmit(): void{
-    this.isSubmitted.set(true);
-    if(this.frm.invalid){
-      return;
+
+    if(this.type() === 'new'){
+      this.isSubmitted.set(true);
+      if(this.frm.invalid){
+        //console.log(this.frm);
+        return;
+      }
     }
 
     this.confirmationService.confirm({
@@ -284,27 +313,12 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  evtSelectEntity(): void{
-    this.ref = this.dialogService.open(MdlEntityList, {
-      width: '600px',
-      closable: false,
-      modal: true,
-      draggable: false,
-      position: 'top',
-      header: 'Seleccionar entidad',
-      styleClass: 'max-h-none! slide-down-dialog',
-      maskStyleClass: 'overflow-y-auto py-4',
-      appendTo: 'body',
-      templates: {
-        header: MdlHeader,
-      },
-    });
-
-
+  evtSelectedEntity(evt: EntityDto): void{
+      this.selected.set(evt);
+      this.evtOnSubmit();
   }
 
   // Handlers
-
 
   handlerFindPersonInfo(documentNumber: string): void{
     this.ldInfo.set(true);

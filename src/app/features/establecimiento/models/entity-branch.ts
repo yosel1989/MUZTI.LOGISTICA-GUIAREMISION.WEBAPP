@@ -6,20 +6,21 @@ export interface EstablecimientoListToModalDTO{
     entidad: string;
 }
 
-export interface EstablecimientoDTO{
+export interface EntityBranchDto{
     id: number;
-    ruc: string;
-    descripcion: string;
+    entity_id: number;
+    ruc: string | null;
+    description: string;
     area: string | null;
     ubigeo_id: string;
     departamento: string;
     provincia: string;
     distrito: string;
-    direccion: string;
+    address: string;
     pais: string;
     email: string | null;
     serie: string;
-    codigo_sunat: string;
+    code_sunat: string;
     fecha_registro: Date;
     fecha_modifico: Date | null;
     usuario_registro: string;
@@ -30,9 +31,18 @@ export interface EstablecimientoDTO{
     id_estado: number;
     tipo: string;
     razon_social: string;
+    is_main: boolean;
     ld_estado: boolean;
     ld_update: boolean;
 }
+
+export type EntityBranchCreateDto = Pick<
+    EntityBranchDto, 
+    'entity_id' | 
+    'description' | 
+    'ubigeo_id' | 
+    'address' 
+>;
 
 export interface EliminarEstablecimientoResponseDTO{
     detalle: string;
@@ -54,6 +64,7 @@ export interface RegistrarEstablecimientoRequestDTO{
     serie: string | null;
     codigo_sunat: string | null;
     tipo: string;
+    is_main: boolean;
 }
 
 export interface EditarEstablecimientoRequestDTO{

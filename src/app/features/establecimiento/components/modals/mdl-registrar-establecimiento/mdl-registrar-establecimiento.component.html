@@ -4,29 +4,31 @@
         <div> 
            
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Empresa</label>
-                    @if(!ldEmpresa()){
-                    <p-select 
+
+                <div class="col-span-2">
+
+                    <p-button
                         fluid
-                        size="small"
-                        [inputSize]="2"
-                        panelStyleClass="text-[.875rem]!"
-                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs! leading-2"
-                        [options]="empresas()" 
-                        placeholder="Seleccionar..." 
-                        optionValue="ruc" 
-                        optionLabel="empresa" 
-                        appendTo="body"
-                        formControlName="ruc"
-                        [invalid]="frm.get('ruc')?.invalid && ( frm.get('ruc')?.touched || isSubmitted())"
-                    />
-                    }@else{
-                    <p-skeleton width="100%" height="32px"></p-skeleton>
-                    }
-                    @if (frm.get('ruc')?.invalid && (frm.get('ruc')?.touched || isSubmitted())) {
-                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
-                    }
+                        severity="secondary"
+                        outlined="true"
+                        icon="pi pi-chevron-down"
+                        iconPos="left"
+                        styleClass="w-full! px-6! py-4! border-gray-300! hover:border-gray-400!"
+                        (onClick)="evtShowEntityList()"
+                    >
+                        <div class="flex flex-row gap-x-4 w-full">
+                            <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+                            <div class="flex flex-col justify-center text-sm text-start!">
+                                @if(entitySelected() == null){
+                                    <p>Seleccionar empresa</p>
+                                }@else{
+                                    <p class="font-semibold text-black!">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
+                                    <p class="uppercase text-black!">{{ entitySelected()?.document_number }}</p>
+                                }
+                            </div>
+                        </div>
+                    </p-button>
+
                 </div>
 
                 <div class="col-span-2">
@@ -228,6 +230,28 @@
                     }
                     @if (frm.get('tipo')?.invalid && (frm.get('tipo')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Establecimiento principal?</label>
+
+                    <label for="isMain" class="flex items-center w-full! h-9! px-4 border border-slate-300 rounded-lg hover:border-slate-400 cursor-pointer">
+                        <div class="flex flex-row gap-3 items-center">
+                            <p-checkbox inputId="isMain" formControlName="is_main" [binary]="true" class="pointer-none!"/>
+                            <span class="text-sm no-underline">{{ f.is_main.value ? 'SI' : 'NO' }}</span>
+                        </div>
+                        
+                    </label>
+
+                    @if (frm.get('is_main')?.invalid && (frm.get('is_main')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.is_main.hasError('required')) {
+                                    Este campo es requerido.
+                                }
+                            </span>
+                        </p-message>
                     }
                 </div>
             </div>

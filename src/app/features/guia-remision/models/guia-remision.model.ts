@@ -1,7 +1,7 @@
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
-import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
+import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { TransportistaDto } from "@features/transportista/models/transportista";
 import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
@@ -18,10 +18,10 @@ export interface GuiaRemisionRemitenteRequestDto {
 
   doc_relacionado: GR_DocRelacionadoDto[] | null;
   
-  remitente: EstablecimientoDTO;
+  remitente: EntityBranchDto;
   remitente_id: number;
 
-  destinatario: EstablecimientoDTO;
+  destinatario: EntityBranchDto;
   destinatario_id: number;
 
   proveedor: GR_ProveedorRequestDto | null;
@@ -209,8 +209,8 @@ export interface GuiaRemisionDto {
   observacion: string | null;
 
   empresa: EmpresaDTO;
-  remitente: EstablecimientoDTO;
-  destinatario: EstablecimientoDTO;
+  remitente: EntityBranchDto;
+  destinatario: EntityBranchDto;
   datos_envio: GuiaRemisionDatosEnvioDto;
   proveedor: ProveedorDto | null;
   productos: GuiaRemisionDetalleDto[];

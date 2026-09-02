@@ -41,12 +41,11 @@ export class EntityApiService {
         )
     }
 
-    getList(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EntityListDto[]>>{
+    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null): Observable<TableData<EntityListDto[]>>{
         let httpParams = new HttpParams();
-        httpParams = search 
-        ? httpParams.set('search', search) 
-        : httpParams;
-        
+        httpParams = search ? httpParams.set('search', search) : httpParams;
+        httpParams = type ? httpParams.set('type', type) : httpParams;
+
         return this.http.get<TableData<EntityListDto[]>>(`${this.baseUrl}/list/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
             map((res) => res),
             catchError((e: HttpErrorResponse) => {

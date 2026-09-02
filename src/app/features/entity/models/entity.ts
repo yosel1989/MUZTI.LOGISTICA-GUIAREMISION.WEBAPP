@@ -24,12 +24,14 @@ export interface EntityDto{
     loading_update: boolean;
 }
 
-export interface EntityCreateDto extends Omit<EntityDto, 'id' | 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type' | 'country'>{
+export interface EntityCreateDto extends Omit<EntityDto, 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type' | 'country'>{
     role: string
 }
 
 
-export type EntityListDto = Pick<EntityDto, 'id' | 'name' | 'first_name' | 'last_name' | 'document_number'>;
+export type EntityListDto = Pick<EntityDto, 'id' | 'type' | 'name' | 'first_name' | 'last_name' | 'document_number' | 'document_type'>;
 
 
 export type ProviderDto = EntityDto;
+
+export type TransporterDto = EntityDto;

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from "@angular/core";
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from "@angular/core";
 import { AlertService } from "@core/services/alert.service";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
@@ -13,7 +13,7 @@ import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { AvatarModule } from "primeng/avatar";
 import { Column } from "app/shared/models/table";
-import { EntityListDto } from "@features/entity/models/entity";
+import { EntityDto, EntityListDto } from "@features/entity/models/entity";
 import { EntityApiService } from "@features/entity/services/entity-service";
 import { TableData } from "@core/models/table";
 
@@ -36,13 +36,14 @@ import { TableData } from "@core/models/table";
 })
 
 export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
+    _type = input<'empresa' | 'persona' | undefined>(undefined);
 
     api = inject(EntityApiService);
     alertService = inject(AlertService);
     destroyRef = inject(DestroyRef);
 
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
-    @Output() OnSelected: EventEmitter<EntityListDto> = new EventEmitter<EntityListDto>();
+    @Output() OnSelected: EventEmitter<EntityDto> = new EventEmitter<EntityDto>();
 
     empresas = signal<EntityListDto[]>([]);
     ldEmpresas = signal(false);
@@ -65,6 +66,12 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
     placeholderLoading = 'Cargando ...';
     placeholder = 'Seleccionar ...';
 
+    pageNumber = signal<number>(1);
+    totalRecords = signal<number>(0);
+    pageSize = signal<number>(10);
+    rows = signal<number>(10);
+    first = signal<number>(0);
+
     ngOnInit(): void {
 
         this.ctrlSearch.valueChanges.subscribe(() => {
@@ -74,22 +81,27 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
             {
                 field: 'id',
                 header: '#',
-                className: 'w-[50px]',
+                thClassName: 'w-[50px]',
                 tdClassName: 'font-semibold! ps-4!',
                 render: (rowData: EntityListDto) => {
                     return `${rowData.id.toString().padStart(6, '0')}`;
                 }
             },
             {
+                field: 'document_type',
+                header: 'T. Doc',
+                thClassName: 'text-center!',
+                tdClassName: 'text-center! font-medium!'
+            },
+            {
                 field: 'name',
                 header: 'Nombre o Razón Social',
                 render: (rowData: EntityListDto) => {
-                    return rowData.name ?? (rowData.first_name + ' ' + rowData.last_name);
+                    return `
+                        <div class="font-medium">${rowData.name ?? (rowData.first_name + ' ' + rowData.last_name)}</div>
+                        <div>${rowData.document_number}</div>
+                    `;
                 }
-            },
-            {
-                field: 'document_number',
-                header: 'No de Documento'
             }
         ]
         this.loadData();
@@ -112,11 +124,15 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
         const search = this.ctrlSearch.value;
 
 
-        this.sbData = this.api.getList(1, 100, search)
+        this.sbData = this.api.getList(1, 100, search, this._type() ?? null)
         .pipe(finalize(() => this.ldData.set(false)))
         .subscribe({
             next: (value: TableData<EntityListDto[]>) => {
                 this.data.set(value.data);
+                this.pageNumber.set(value.page_number);
+                this.pageSize.set(value.page_size);
+                this.first.set((this.pageNumber() - 1) * this.pageSize());
+                this.totalRecords.set(value.total_records);
             },
             error: (err: HttpErrorResponse) =>  {
                 this.alertService.showToast({
@@ -130,17 +146,15 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
         });
     }
 
-    /*loadDataById(): void{
-        console.log('cargando establecimiento por id', this.selected!.id);
+    loadDataById(): void{
         this.ldDataById.set(true);
-        const s = this.api.getById(this.selected!.id!)
+        this.api.getById(this.selected!.id!)
         .pipe(finalize(() => {
             this.ldDataById.set(false);
             this.ldSelected.set(false);
         }))
         .subscribe({
-            next: (value: EstablecimientoDTO) => {
-                //console.log('establecimiento seleccionado', value);
+            next: (value: EntityDto) => {
                 this.OnSelected.emit(value);
             },
             error: (err: HttpErrorResponse) =>  {
@@ -152,15 +166,13 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
                 });
             },
         });
-        this.sb.add(s);
-    }*/
+    }
 
     // events 
     
     evtSelect(): void{
-        //console.log('establecimiento seleccionado', this.selected!);
         this.ldSelected.set(true);
-        //this.loadDataById();
+        this.loadDataById();
     }
 
     evtOnClose(): void{

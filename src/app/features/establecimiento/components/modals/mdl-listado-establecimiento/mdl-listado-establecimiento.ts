@@ -19,6 +19,7 @@ import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remi
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { AvatarModule } from "primeng/avatar";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Column } from "app/shared/models/table";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',

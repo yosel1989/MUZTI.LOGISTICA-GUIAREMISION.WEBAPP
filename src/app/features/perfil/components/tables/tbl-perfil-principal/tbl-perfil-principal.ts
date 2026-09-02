@@ -27,6 +27,7 @@ import { ActualizarEstadoPerfilRequestDTO, ActualizarEstadoPerfilResponseDTO, El
 import { MdlRegistrarPerfilComponent } from '../../modals/mdl-registrar-perfil/mdl-registrar-perfil.component';
 import { MdlEditarPerfilComponent } from '../../modals/mdl-editar-perfil/mdl-editar-perfil.component';
 import { PerfilApiService } from '@features/perfil/services/perfil-api.service';
+import { Column } from 'app/shared/models/table';
 
 @Component({
   selector: 'app-tbl-perfil-principal',

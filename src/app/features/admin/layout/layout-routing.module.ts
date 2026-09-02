@@ -33,7 +33,7 @@ const routes: Routes = [
       },
       {
         path: 'administracion/transportista',
-        loadComponent: () => import('@features/transportista/pages/page-transportista-principal/page-transportista-principal').then(m => m.PageTransportistaPrincipalComponent)
+        loadComponent: () => import('@features/entity/pages/page-transporters-principal/page-transporters-principal').then(m => m.PageTransportersPrincipal)
       },
       {
         path: 'administracion/establecimiento',
