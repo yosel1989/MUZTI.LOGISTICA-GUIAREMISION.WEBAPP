@@ -11,10 +11,10 @@ import { MessageService } from 'primeng/api';
 import { MessageModule } from "primeng/message";
 import { GR_DestinoRequestDto } from "app/features/guia-remision/models/guia-remision.model";
 import { AlertService } from "app/core/services/alert.service";
-import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
 import { TypingComponent } from "@features/shared/components/typing/typing";
 import { AccordionModule } from 'primeng/accordion';
 import { FieldsetModule } from "primeng/fieldset";
+import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
 
 @Component({
   selector: 'app-section-guia-remision-destino',
@@ -39,8 +39,8 @@ export class SectionGuiaRemisionDestino {
     messageService = inject(MessageService);
     alertService = inject(AlertService);
 
-    private _destinatario = signal<EstablecimientoDTO | null>(null);
-    @Input() set destinatario(value: EstablecimientoDTO | null) {
+    private _destinatario = signal<EntityBranchDto | null>(null);
+    @Input() set destinatario(value: EntityBranchDto | null) {
         if (this._destinatario() !== value) {
             this._destinatario.set(value);
         }
@@ -60,12 +60,12 @@ export class SectionGuiaRemisionDestino {
     get getFormData(): GR_DestinoRequestDto {
         return {
             ubigeo_id: this.destinatario!.ubigeo_id,
-            direccion: this.destinatario!.direccion,
+            direccion: this.destinatario!.address,
             pais: this.destinatario!.pais,
         }
     }
 
-    get destinatario(): EstablecimientoDTO | null {
+    get destinatario(): EntityBranchDto | null {
         return this._destinatario();
     }
 

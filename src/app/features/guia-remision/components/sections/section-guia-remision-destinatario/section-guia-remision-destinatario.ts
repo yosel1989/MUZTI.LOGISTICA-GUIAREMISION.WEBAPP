@@ -16,14 +16,14 @@ import { FieldsetModule } from "primeng/fieldset";
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { TooltipModule } from "primeng/tooltip";
-import { EstablecimientoDTO } from "@features/establecimiento/models/establecimiento.model";
-import { GR_DestinoRequestDto, GR_OrigenRequestDto } from "@features/guia-remision/models/guia-remision.model";
+import { GR_DestinoRequestDto } from "@features/guia-remision/models/guia-remision.model";
 import { DialogService } from "primeng/dynamicdialog";
 import { MdlListadoEstablecimientoComponent } from "@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
 
 @Component({
   selector: 'app-section-guia-remision-destinatario',
@@ -53,21 +53,21 @@ export class SectionGuiaRemisionDestinatario {
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
-    private _remitente = signal<EstablecimientoDTO | undefined>(undefined);
-    @Input() set remitente(value: EstablecimientoDTO | undefined) {
+    private _remitente = signal<EntityBranchDto | undefined>(undefined);
+    @Input() set remitente(value: EntityBranchDto | undefined) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
         }
     }
     
-    private _destinatario = signal<EstablecimientoDTO | undefined>(undefined);
-    @Input() set destinatario(value: EstablecimientoDTO | undefined) {
+    private _destinatario = signal<EntityBranchDto | undefined>(undefined);
+    @Input() set destinatario(value: EntityBranchDto | undefined) {
         if (this._destinatario() !== value) {
             this._destinatario.set(value);
         }
     }
     
-    selected = signal<EstablecimientoDTO | undefined>(undefined);
+    selected = signal<EntityBranchDto | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>();
     empresa = input.required<EmpresaToSelectDto | undefined>(); 
 
@@ -88,16 +88,16 @@ export class SectionGuiaRemisionDestinatario {
     get getFormData(): GR_DestinoRequestDto {
         return {
             ubigeo_id: this.destinatario!.ubigeo_id,
-            direccion: this.destinatario!.direccion,
+            direccion: this.destinatario!.address,
             pais: this.destinatario!.pais,
         }
     }
     
-    get destinatario(): EstablecimientoDTO | null {
+    get destinatario(): EntityBranchDto | null {
         return this._destinatario() ?? null;
     }
 
-    get remitente(): EstablecimientoDTO | null {
+    get remitente(): EntityBranchDto | null {
         return this._remitente() ?? null;
     }
 
@@ -183,7 +183,7 @@ export class SectionGuiaRemisionDestinatario {
         .subscribe((cmp: MdlListadoEstablecimientoComponent) => {
             cmp?.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(( s: EstablecimientoDTO) => {
+            .subscribe(( s: EntityBranchDto) => {
                 this.selected.set(s);
                 this._destinatario.set(s);
                 this.modalRef?.close();

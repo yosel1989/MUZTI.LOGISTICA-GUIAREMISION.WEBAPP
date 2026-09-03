@@ -32,6 +32,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MdlEntityList } from '../mdl-entity-list/mdl-entity-list';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-mdl-entity-create',
@@ -57,7 +58,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
     ToggleSwitchModule,
     CheckboxModule,
     SelectButtonModule,
-    MdlEntityList
+    MdlEntityList,
+    RadioButtonModule
   ],
   templateUrl: './mdl-entity-create.html',
   styleUrl: './mdl-entity-create.scss',
@@ -74,7 +76,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
-  role = input.required<'cliente' | 'proveedor' | 'transportista' | 'emisor'>();
+  role = input.required<'cliente' | 'proveedor' | 'transportista' | 'emisor' | 'entidad'>();
   _type = input<'empresa' | 'persona' | undefined>(undefined);
 
   frm: FormGroup = new FormGroup({});
@@ -118,7 +120,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       type: new FormControl({ value: this._type() ?? 'empresa', disabled: !!this._type() }, Validators.required),
       document_type_id: new FormControl(null, Validators.required),
       document_number: new FormControl(null, Validators.required),
-      name: new FormControl(null, [Validators.maxLength(150)]),
+      name: new FormControl(null, [Validators.required, Validators.maxLength(150)]),
       first_name: new FormControl(null, [Validators.maxLength(75)]),
       last_name: new FormControl(null, [Validators.maxLength(75)]),
       department: new FormControl(null, Validators.required),
@@ -127,7 +129,6 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
       address: new FormControl(null, [Validators.required, Validators.maxLength(150)]),
       email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       country_id: new FormControl(null, Validators.required),
-      code_sunat: new FormControl(null, [Validators.required, Validators.maxLength(4), Validators.minLength(4)]),
       is_internal:  new FormControl(false, Validators.required),
     });
 
@@ -333,7 +334,12 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
               document_number: value.document_number,
               first_name: value.first_name,
               last_name: value.last_name
-           })
+           });
+
+           this.alertService.showToast({
+            title: 'Información de la persona se encontro con éxito.',
+            icon: 'success'
+           });
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.showToast({
@@ -358,7 +364,11 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
               document_number: value.document_number,
               name: value.name,
               address: value.address
-           })
+           });
+           this.alertService.showToast({
+            title: 'Información de la empresa se encontro con éxito.',
+            icon: 'success'
+           });
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.showToast({

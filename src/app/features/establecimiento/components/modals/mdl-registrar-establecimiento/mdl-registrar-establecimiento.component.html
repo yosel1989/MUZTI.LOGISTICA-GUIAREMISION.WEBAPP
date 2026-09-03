@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="col-span-2">
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Descripción</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Descripción / Alías</label>
                     <input 
                     fluid 
                     onlyUpper 
@@ -40,21 +40,21 @@
                     type="text" 
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="descripcion" 
-                    [invalid]="frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || isSubmitted())"/>
-                    @if (frm.get('descripcion')?.invalid && (frm.get('descripcion')?.touched || isSubmitted())) {
+                    formControlName="description" 
+                    [invalid]="frm.get('description')?.invalid && (frm.get('description')?.touched || isSubmitted())"/>
+                    @if (frm.get('description')?.invalid && (frm.get('description')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.descripcion.hasError('required')) {
+                        @if (f.description.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.descripcion.hasError('maxlength')) {
+                        @if (f.description.hasError('maxlength')) {
                             La descripción no debe exceder los 200 caracteres.
                         }</span>
                         </p-message>
                     }
                 </div>
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Area</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Area <span class="text-[11px]! text-slate-400 roboto-condensed ">(opcional)</span></label>
                     <input 
                     fluid 
                     onlyUpper 
@@ -126,15 +126,15 @@
                     type="text" 
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="direccion" 
+                    formControlName="address" 
                     autofocus="true"
-                    [invalid]="frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || isSubmitted())"/>
-                    @if (frm.get('direccion')?.invalid && (frm.get('direccion')?.touched || isSubmitted())) {
+                    [invalid]="frm.get('address')?.invalid && (frm.get('address')?.touched || isSubmitted())"/>
+                    @if (frm.get('address')?.invalid && (frm.get('address')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.direccion.hasError('required')) {
+                        @if (f.address.hasError('required')) {
                             Este campo es requerido.
                         }
-                        @if (f.direccion.hasError('maxlength')) {
+                        @if (f.address.hasError('maxlength')) {
                             La dirección no debe exceder los 250 caracteres.
                         }</span>
                         </p-message>
@@ -142,7 +142,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Email</label>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Email <span class="text-[11px]! text-slate-400 roboto-condensed ">(opcional)</span></label>
                     <input 
                     fluid 
                     onlyUpper
@@ -190,15 +190,15 @@
                     fluid 
                     onlyNumber
                     pInputText 
-                    type="codigo_sunat" 
+                    type="code_sunat" 
                     pSize="small" 
                     class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="codigo_sunat" 
+                    formControlName="code_sunat" 
                     autofocus="true"
-                    [invalid]="frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || isSubmitted())"/>
-                    @if (frm.get('codigo_sunat')?.invalid && (frm.get('codigo_sunat')?.touched || isSubmitted())) {
+                    [invalid]="frm.get('code_sunat')?.invalid && (frm.get('code_sunat')?.touched || isSubmitted())"/>
+                    @if (frm.get('code_sunat')?.invalid && (frm.get('code_sunat')?.touched || isSubmitted())) {
                         <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                            @if (f.codigo_sunat.hasError('required')) {
+                            @if (f.code_sunat.hasError('required')) {
                                 Este campo es requerido.
                             }
                             @else{

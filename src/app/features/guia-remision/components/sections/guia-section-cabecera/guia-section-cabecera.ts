@@ -2,8 +2,8 @@ import { AsyncPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, inject} from '@angular/core';
 import { AlertService } from '@core/services/alert.service';
-import { EstablecimientoRemitenteGuiaDTO } from '@features/establecimiento/models/establecimiento.model';
-import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
+import { EstablecimientoRemitenteGuiaDTO } from '@features/establecimiento/models/entity-branch';
+import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BehaviorSubject, finalize } from 'rxjs';
@@ -22,7 +22,7 @@ import { BehaviorSubject, finalize } from 'rxjs';
 
 export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
 
-  private establecimientoApiService = inject(EstablecimientoApiService);
+  private entityBranchApiService = inject(EntityBranchApiService);
   private alertService = inject(AlertService);
 
   @Input() tipoGuiaRemision!: 'TRANSPORTISTA' | 'REMITENTE' | string | undefined;
@@ -52,7 +52,7 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
   ngOnChanges(): void {
     if(this.idEstablecimiento && this.tipoGuiaRemision){
       this.loading.next(true);
-      this.establecimientoApiService.getByIdToGuia(this.idEstablecimiento, this.tipoGuiaRemision)
+      this.entityBranchApiService.getByIdToGuia(this.idEstablecimiento, this.tipoGuiaRemision)
       .pipe(finalize(() => this.loading.next(false)))
       .subscribe({
         next: (res: EstablecimientoRemitenteGuiaDTO) => {

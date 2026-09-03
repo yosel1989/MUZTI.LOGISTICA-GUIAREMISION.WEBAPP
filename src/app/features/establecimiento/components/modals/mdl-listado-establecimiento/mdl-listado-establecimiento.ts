@@ -8,9 +8,7 @@ import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { IconFieldModule } from "primeng/iconfield";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { EstablecimientoDTO, EstablecimientoListToModalDTO } from "@features/establecimiento/models/establecimiento.model";
 import { SkeletonModule } from "primeng/skeleton";
-import { EstablecimientoApiService } from "@features/establecimiento/services/establecimiento.service";
 import { finalize, Subscription } from "rxjs";
 import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
@@ -20,6 +18,8 @@ import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo
 import { AvatarModule } from "primeng/avatar";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Column } from "app/shared/models/table";
+import { EntityBranchApiService } from "@features/establecimiento/services/establecimiento.service";
+import { EntityBranchDto, EstablecimientoListToModalDTO } from "@features/establecimiento/models/entity-branch";
 
 @Component({
     selector: 'app-mdl-listado-establecimiento',
@@ -42,16 +42,16 @@ import { Column } from "app/shared/models/table";
 export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy{
 
     empresaApiService = inject(EmpresaApiService);
-    api = inject(EstablecimientoApiService);
+    api = inject(EntityBranchApiService);
     alertService = inject(AlertService);
     destroyRef = inject(DestroyRef);
 
     @Input() ruc: string | null = null;
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
-    @Output() OnSelected: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
+    @Output() OnSelected: EventEmitter<EntityBranchDto> = new EventEmitter<EntityBranchDto>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
     @Input() motivoTraslado: SunatMotivoTrasladoDto | undefined;
-    @Input() remitente: EstablecimientoDTO | undefined;
+    @Input() remitente: EntityBranchDto | undefined;
 
     empresas = signal<EmpresaToSelectDto[]>([]);
     ldEmpresas = signal(false);
@@ -217,7 +217,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
             this.ldSelected.set(false);
         }))
         .subscribe({
-            next: (value: EstablecimientoDTO) => {
+            next: (value: EntityBranchDto) => {
                 //console.log('establecimiento seleccionado', value);
                 this.OnSelected.emit(value);
             },

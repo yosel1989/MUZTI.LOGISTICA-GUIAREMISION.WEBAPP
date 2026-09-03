@@ -8,6 +8,10 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       {
+        path: 'administracion/entidad',
+        loadComponent: () => import('@features/entity/pages/page-entities-principal/page-entities-principal').then(m => m.PageEntitiesPrincipal)
+      },
+      {
         path: 'administracion/proveedor',
         loadComponent: () => import('@features/entity/pages/page-providers-principal/page-providers-principal').then(m => m.PageProvidersPrincipal)
       },

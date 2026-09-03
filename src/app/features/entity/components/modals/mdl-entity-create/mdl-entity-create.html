@@ -1,29 +1,33 @@
-<div class="grid grid-cols-1 gap-3 p-4">
-    <div class="mb-3">
-        <div class="grid grid-cols-2 rounded-lg bg-gray-100 gap-x-2 p-2">
-            <p-button
-                fluid
-                type="button"
-                severity="primary"
-                variant="text"
-                icon="pi pi-plus"
-                [styleClass]="type() === 'new' ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
-                label="Nueva entidad"
-                (onClick)="type.set('new')"
-            ></p-button>
-            <p-button
-                fluid
-                type="button"
-                severity="primary"
-                variant="text"
-                icon="pi pi-list"
-                [styleClass]="type() === 'select' ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
-                label="Seleccionar entidad"
-                (onClick)="type.set('select')"
-            ></p-button>
+@if(role() !== 'entidad' ){
+    <div class="grid grid-cols-1 gap-3 p-4">
+        <div class="mb-3">
+            <div class="grid grid-cols-2 rounded-lg bg-gray-100 gap-x-2 p-2">
+                <p-button
+                    fluid
+                    type="button"
+                    severity="primary"
+                    variant="text"
+                    icon="pi pi-plus"
+                    [styleClass]="type() === 'new' ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
+                    label="Nueva entidad"
+                    (onClick)="type.set('new')"
+                ></p-button>
+                <p-button
+                    fluid
+                    type="button"
+                    severity="primary"
+                    variant="text"
+                    icon="pi pi-list"
+                    [styleClass]="type() === 'select' ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
+                    label="Seleccionar entidad"
+                    (onClick)="type.set('select')"
+                ></p-button>
+            </div>
         </div>
     </div>
-</div>
+}
+
+
 
 @if(type() === 'select'){
 
@@ -109,6 +113,7 @@
                         styleClass="w-9! h-9! bg-primary-100! hover:bg-primary-200!"
                         (onClick)="evtSearchEntityInfo()"
                         [loading]="ldInfo()"
+                        [disabled]="f.country_id.value !== 135"
                     ></p-button>
                 </div>
 
@@ -249,32 +254,6 @@
                 }
             </div>
 
-            <div>
-                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Código Sunat</label>
-                <input 
-                    fluid 
-                    onlyNumber
-                    pInputText 
-                    type="text" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="code_sunat" 
-                    maxlength="4" 
-                    minlength="4" 
-                    autofocus="true"
-                    [invalid]="frm.get('code_sunat')?.invalid && (frm.get('code_sunat')?.touched || submitted())"
-                />
-                @if (frm.get('code_sunat')?.invalid && (frm.get('code_sunat')?.touched || submitted())) {
-                    <p-message severity="error" size="small" variant="simple" >
-                        <span class="text-[10px]! ">
-                            @if (f.code_sunat.hasError('maxLength')) {
-                                El código de sunat debe tener 4 caracteres.
-                            }
-                        </span>
-                    </p-message>
-                }
-            </div>
-
             <div class="col-span-2">
                 <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
                 <input 
@@ -303,7 +282,7 @@
             </div>
 
             <div>
-                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Correo</label>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Correo <span class="roboto-condensed text-[11px]! text-slate-400">(opcional)</span></label>
                 <input 
                     fluid 
                     onlyUpper
@@ -336,13 +315,19 @@
             <div>
                 <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Pertenece al consorcio?</label>
 
-                <label for="isInternal" class="flex items-center w-full! h-9! px-4 border border-slate-300 rounded-lg hover:border-slate-400 cursor-pointer">
-                    <div class="flex flex-row gap-3 items-center">
-                        <p-checkbox inputId="isInternal" formControlName="is_internal" [binary]="true" class="pointer-none!"/>
-                        <span class="text-sm no-underline">{{ f.is_internal.value ? 'SI' : 'NO' }}</span>
+                <div class="flex items-center w-full! h-9! px-4 border border-slate-300 rounded-lg hover:border-slate-400">
+                    <div class="grid grid-cols-2 gap-6 items-center">
+                        <div class="flex items-center">
+                            <p-radiobutton name="is_internal" [value]="true" formControlName="is_internal" inputId="is_internal1" />
+                            <label for="is_internal1" class="ml-2">SI</label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <p-radiobutton name="is_internal" [value]="false" formControlName="is_internal" inputId="is_internal2" />
+                            <label for="is_internal2" class="ml-2">NO</label>
+                        </div>
                     </div>
-                    
-                </label>
+                </div>
 
                 @if (frm.get('is_internal')?.invalid && (frm.get('is_internal')?.touched || submitted())) {
                     <p-message severity="error" size="small" variant="simple" >

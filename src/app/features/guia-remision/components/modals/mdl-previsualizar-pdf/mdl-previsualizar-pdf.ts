@@ -7,7 +7,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { SafeUrlPipe } from 'app/core/pipes/safe-url-pipe/safe-url-pipe';
 import { BehaviorSubject } from 'rxjs';
 
-import { TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
 import pdfMake from "pdfmake/build/pdfmake";
 import "pdfmake/build/vfs_fonts";
@@ -70,7 +70,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 { 
                   stack: [
                     {text: this.data.remitente.razon_social, bold: true, marginBottom: 2},
-                    {text: this.data.remitente.direccion.toUpperCase(), marginBottom:10, color: '#adadad'},
+                    {text: this.data.remitente.address.toUpperCase(), marginBottom:10, color: '#adadad'},
                     {text: `${this.data.remitente.distrito} - ${this.data.remitente.provincia} - ${this.data.remitente.departamento}`, color: '#adadad'},
                   ],
                   border: [false,false,false,false],
@@ -139,9 +139,9 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
               ],
               [
                 {text: `${'RUC'}:`, border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
-                {text: this.data.destinatario.ruc, border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
+                {text: this.data.destinatario.ruc ?? '-', border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
                 {text: 'Dirección:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
-                {text: this.data.destinatario.direccion ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
+                {text: this.data.destinatario.address ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
               ],
               [
                 {text: 'Fecha de emisión:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 

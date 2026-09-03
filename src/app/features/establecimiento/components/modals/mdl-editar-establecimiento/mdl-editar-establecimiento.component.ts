@@ -26,9 +26,9 @@ import { EmpresaApiService } from '@features/empresa/services/empresa-api.servic
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
-import { EditarEstablecimientoRequestDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
-import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
+import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
+import { EditarEstablecimientoRequestDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
 
 @Component({
   selector: 'app-mdl-editar-establecimiento',
@@ -57,14 +57,14 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 })
 export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
-  private api = inject(EstablecimientoApiService);
+  private api = inject(EntityBranchApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
   private empresaApiService = inject(EmpresaApiService);
   private catalogoApiService = inject(CatalogoApiService);
 
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<EstablecimientoDTO> = new EventEmitter<EstablecimientoDTO>();
+  @Output() OnCreated: EventEmitter<EntityBranchDto> = new EventEmitter<EntityBranchDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @ViewChild('departamento') ctrlDepartamento: SelectDepartamentoComponent | undefined;
@@ -88,7 +88,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
   ];
 
   ldData = signal(false);
-  data = signal<EstablecimientoDTO | undefined>(undefined);
+  data = signal<EntityBranchDto | undefined>(undefined);
 
   ldEmpresa = signal(false);
   empresas = signal<EmpresaToSelectDto[]>([]);
@@ -184,7 +184,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
             const sub = this.api.editar(this.data()!.id, this.request)
             .pipe(finalize(() => { this.ldSubmit.set(false) }))
             .subscribe({
-              next: (res: EstablecimientoDTO) => {
+              next: (res: EntityBranchDto) => {
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -231,7 +231,7 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     const sub = this.api.getById(this.id)
     .pipe(finalize(() => this.ldData.set(false)))
     .subscribe({
-      next: (res: EstablecimientoDTO) => {
+      next: (res: EntityBranchDto) => {
         this.handlerLoadData(res);
       },
       error: (err: HttpErrorResponse) => {
@@ -311,18 +311,18 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
 
 
   // handlers
-  handlerLoadData(res: EstablecimientoDTO): void{
+  handlerLoadData(res: EntityBranchDto): void{
     this.data.set(res);
     this.frm.patchValue({
       codigo: 'COD-' + res.id.toString().padStart(4,'0'),
       ruc: res.ruc,
-      descripcion: res.descripcion.toUpperCase(),
+      descripcion: res.description.toUpperCase(),
       area: res.area?.toUpperCase(),
-      direccion: res.direccion.toUpperCase(),
+      direccion: res.address.toUpperCase(),
       email: res.email?.toUpperCase(),
       pais: res.pais,
       serie: res.serie,
-      codigo_sunat: res.codigo_sunat,
+      codigo_sunat: res.code_sunat,
       departamento: res.ubigeo_id.substring(0,2),
       tipo: res.tipo
     });

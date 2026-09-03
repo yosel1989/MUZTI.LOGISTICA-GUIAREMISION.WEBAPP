@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -23,14 +23,14 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ColumnsFilterDto } from 'app/core/models/filter';
-import { EliminarEstablecimientoResponseDTO, EstablecimientoDTO } from '@features/establecimiento/models/establecimiento.model';
-import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
 import { MdlEditarEstablecimientoComponent } from '../../modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
 import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { Column } from 'app/shared/models/table';
+import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
+import { EliminarEstablecimientoResponseDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
 
 @Component({
   selector: 'app-tbl-establecimiento-principal',
@@ -51,7 +51,8 @@ import { Column } from 'app/shared/models/table';
         ContextMenuModule,
         ConfirmDialogModule,
         LoaderComponent,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NgClass
   ],
   providers: [DialogService, ConfirmationService],
   animations: [fadeDownAnimation]
@@ -62,16 +63,16 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     @ViewChild('cm') cm: ContextMenu | undefined;
 
     public dialogService = inject(DialogService);
-    private api = inject(EstablecimientoApiService);
+    private api = inject(EntityBranchApiService);
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
 
     cols: Column[] = [];
 
-    data = signal<EstablecimientoDTO[]>([]);
+    data = signal<EntityBranchDto[]>([]);
     ldData = signal(true);
-    selected = signal<EstablecimientoDTO | undefined>(undefined);
+    selected = signal<EntityBranchDto | undefined>(undefined);
     items = computed(() => this.buildMenuItems(this.selected()));
     loading = signal(false);
 
@@ -103,18 +104,19 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'razon_social', header: 'Empresa', sort: false, sticky: false },
-          { field: 'ruc', header: 'RUC', sort: false, sticky: false },
-          { field: 'descripcion', header: 'Descripción', sort: false, sticky: false },
+          { field: 'razon_social', header: 'Nombre o Razón Social', sort: false, sticky: false },
+          { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
+          { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!' },
           { field: 'area', header: 'Area', sort: false, sticky: false },
+          { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!' },
           { field: 'departamento', header: 'Departamento', sort: false, sticky: false },
           { field: 'provincia', header: 'Provincia', sort: false, sticky: false },
           { field: 'distrito', header: 'Distrito', sort: false, sticky: false },
-          { field: 'direccion', header: 'Dirección', sort: false, sticky: false },
+          { field: 'address', header: 'Dirección', sort: false, sticky: false },
           { field: 'email', header: 'Correo', sort: false, sticky: false },
-          { field: 'pais', header: 'País', sort: false, sticky: false },
+          { field: 'pais', header: 'País', sort: false, sticky: false, tdClassName: 'text-center!' },
           { field: 'serie', header: 'Serie', sort: false, sticky: false },
-          { field: 'codigo_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
+          { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
           { field: 'estado', header: 'Estado', sort: false, sticky: false },
           { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
           { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
@@ -138,7 +140,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     }
 
     // getters
-    get paddedData(): (EstablecimientoDTO | {__empty: boolean})[] {
+    get paddedData(): (EntityBranchDto | {__empty: boolean})[] {
       const actual = this.data() ?? [];
       const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
@@ -164,7 +166,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
         this.ldData.set(false);
       }))
       .subscribe({
-        next: (res: TableData<EstablecimientoDTO[]>) => {
+        next: (res: TableData<EntityBranchDto[]>) => {
           
           this.data.set(res.data.map(x => {
             x.fecha_registro = new Date(x.fecha_registro);
@@ -199,7 +201,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     }
 
     //events
-    evtToggleSelection(row: EstablecimientoDTO): void{
+    evtToggleSelection(row: EntityBranchDto): void{
       if (this.selected() === row) {
         this.selected.set(undefined);
       } else {
@@ -279,7 +281,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
       });
 
       const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarEstablecimientoComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: EstablecimientoDTO) => {
+        const sub2 = cmp?.OnCreated.subscribe(( s: EntityBranchDto) => {
           this.ref?.close();
 
 
@@ -461,7 +463,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
       this.selected.set( event.data );
     }
 
-    evtShowContextMenu(event: MouseEvent, rowData: EstablecimientoDTO) {
+    evtShowContextMenu(event: MouseEvent, rowData: EntityBranchDto) {
       const target = event.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
       const currentSelected = this.selected();
@@ -496,7 +498,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
 
     // Functions
 
-    isOpenCm(rowData: EstablecimientoDTO): boolean{
+    isOpenCm(rowData: EntityBranchDto): boolean{
       return (this.cm?.visible() && rowData === this.selected()) ?? false;
     }
 
@@ -512,7 +514,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
       this.evtOnReload();
     }
 
-    private buildMenuItems(selected: EstablecimientoDTO | undefined): MenuItem[] {
+    private buildMenuItems(selected: EntityBranchDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},

@@ -83,7 +83,12 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
       .subscribe({
         next: (value: TipoDocumentoDTO[]) =>  {
           this.data.set(value);
-          if(this.default) this.control.setValue(this.default);
+          if(this.default){
+            this.control.setValue(this.default);
+          }else{
+            this.control.setValue(value[0].id)
+          }
+
           //this.selectedChange.emit(value.find(x => x.id === this.default));
         },
         error: (err: HttpErrorResponse) => {

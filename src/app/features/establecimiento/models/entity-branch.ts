@@ -10,6 +10,7 @@ export interface EntityBranchDto{
     id: number;
     entity_id: number;
     ruc: string | null;
+    document_number: string | null;
     description: string;
     area: string | null;
     ubigeo_id: string;
@@ -54,15 +55,16 @@ export interface ActualizarEstadoEstablecimientoRequestDTO{
 
 
 export interface RegistrarEstablecimientoRequestDTO{
-    ruc: string;
-    descripcion: string;
+    entity_id: number;
+    ruc: string | null;
+    description: string;
     area: string | null;
     ubigeo_id: string;
-    direccion: string;
+    address: string;
     email: string | null;
     pais: string;
     serie: string | null;
-    codigo_sunat: string | null;
+    code_sunat: string | null;
     tipo: string;
     is_main: boolean;
 }

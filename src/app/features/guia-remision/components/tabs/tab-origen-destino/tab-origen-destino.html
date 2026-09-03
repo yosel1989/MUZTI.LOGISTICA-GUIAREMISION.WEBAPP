@@ -11,7 +11,7 @@
                                 <div class="col-span-3">
                                     <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
                                     <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                        <app-typing [text]="remitente?.direccion ?? '--'"></app-typing>
+                                        <app-typing [text]="remitente?.address ?? '--'"></app-typing>
                                     </div>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                             <div class="col-span-4 ">
                                 <label class="text-[11px]! text-gray-500 font-semibold">Dirección *</label>
                                 <div class="border-b border-b-gray-200 text-[.875rem] py-1 ps-3">
-                                    <app-typing [text]="destinatario?.direccion ?? '--'"></app-typing>
+                                    <app-typing [text]="destinatario?.address ?? '--'"></app-typing>
                                 </div>
                             </div>
                         </div>

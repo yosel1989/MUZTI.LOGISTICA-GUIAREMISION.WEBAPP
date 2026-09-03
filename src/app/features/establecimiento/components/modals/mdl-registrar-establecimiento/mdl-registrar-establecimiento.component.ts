@@ -25,8 +25,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
-import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/models/establecimiento.model';
-import { EstablecimientoApiService } from '@features/establecimiento/services/establecimiento.service';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
 import { EntityDto } from '@features/entity/models/entity';
@@ -35,6 +33,8 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AvatarModule } from 'primeng/avatar';
+import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
+import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/models/entity-branch';
 
 @Component({
   selector: 'app-mdl-registrar-establecimiento',
@@ -67,7 +67,7 @@ import { AvatarModule } from 'primeng/avatar';
 })
 export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  private api = inject(EstablecimientoApiService);
+  private api = inject(EntityBranchApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
   private empresaApiService = inject(EmpresaApiService);
@@ -111,18 +111,17 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   ngOnInit(): void {
     this.frm = new FormGroup({
       entity_id: new FormControl(null, Validators.required),
-      entity_name: new FormControl(null, Validators.required),
-      ruc: new FormControl(null, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
+      ruc: new FormControl(null, [Validators.minLength(11), Validators.maxLength(11)]),
       description: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       area: new FormControl(null, [Validators.maxLength(45)]),
       departamento: new FormControl(null, Validators.required),
       provincia: new FormControl(null, Validators.required),
       distrito: new FormControl(null, Validators.required),
-      direccion: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
+      address: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
       email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
       pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       serie: new FormControl(null, [Validators.minLength(3), Validators.maxLength(3)]),
-      codigo_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
+      code_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
       tipo: new FormControl(null, Validators.required),
       is_main: new FormControl(false, Validators.required),
     });
@@ -133,11 +132,11 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
 
     this.frm.get('is_main')?.valueChanges.subscribe((value: boolean) => {
       if(value){
-        this.frm.get('codigo_sunat')?.setValue('0000');
-        this.frm.get('codigo_sunat')?.disable();
+        this.frm.get('code_sunat')?.setValue('0000');
+        this.frm.get('code_sunat')?.disable();
       }else{
-        this.frm.get('codigo_sunat')?.setValue(null);
-        this.frm.get('codigo_sunat')?.enable();
+        this.frm.get('code_sunat')?.setValue(null);
+        this.frm.get('code_sunat')?.enable();
       }
     });
   }
@@ -161,15 +160,16 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     const form = this.frm.value;
 
     return {
-      ruc: form.ruc,
-      descripcion: form.descripcion,
+      entity_id: form.entity_id,
+      ruc: form.ruc, 
+      description: form.description,
       area: form.area,
       ubigeo_id: form.distrito,
-      direccion: form.direccion,
+      address: form.address,
       email: form.email,
       pais: form.pais,
       serie: form.serie,
-      codigo_sunat: form.codigo_sunat,
+      code_sunat: form.code_sunat,
       tipo: form.tipo,
       is_main: form.is_main
     };
@@ -263,7 +263,6 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
       .subscribe((entity: EntityDto) => {
         this.entitySelected.set(entity);
         this.frm.get('entity_id')?.setValue(entity.id);
-        this.frm.get('entity_name')?.setValue(entity.name ?? `${entity.first_name} ${entity.last_name}`);
         this.ref?.close();
       });
       childComponent.OnClose

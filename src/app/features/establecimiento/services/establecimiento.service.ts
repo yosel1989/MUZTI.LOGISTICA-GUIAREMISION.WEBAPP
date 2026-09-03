@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EstablecimientoDTO, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/establecimiento.model";
+import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EntityBranchDto, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/entity-branch";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
 import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
@@ -10,7 +10,7 @@ import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/model
     providedIn: "root"
 })
 
-export class EstablecimientoApiService{
+export class EntityBranchApiService{
 
     private baseUrl = "";
 
@@ -33,9 +33,9 @@ export class EstablecimientoApiService{
     }
 
 
-    getById(id: number): Observable<EstablecimientoDTO>{
-        return this.http.get<EstablecimientoDTO>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
-            map(response =>{ return response as EstablecimientoDTO }),
+    getById(id: number): Observable<EntityBranchDto>{
+        return this.http.get<EntityBranchDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+            map(response =>{ return response as EntityBranchDto }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
@@ -43,16 +43,16 @@ export class EstablecimientoApiService{
     }
 
 
-    getAll(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EstablecimientoDTO[]>>{
+    getAll(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EntityBranchDto[]>>{
         let httpParams = new HttpParams();
         if(search){
             httpParams = httpParams.set('search', search);
         }
 
-        return this.http.get<TableData<EstablecimientoDTO[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, {
+        return this.http.get<TableData<EntityBranchDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, {
             params: httpParams
         }).pipe(
-            map(response =>{ return response as TableData<EstablecimientoDTO[]> }),
+            map(response =>{ return response as TableData<EntityBranchDto[]> }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
@@ -93,13 +93,13 @@ export class EstablecimientoApiService{
         );
     }
 
-    editar(id: number, request: EditarEstablecimientoRequestDTO): Observable<EstablecimientoDTO> {
-        return this.http.put<EstablecimientoDTO>(`${this.baseUrl}/${id}`, request).pipe(
+    editar(id: number, request: EditarEstablecimientoRequestDTO): Observable<EntityBranchDto> {
+        return this.http.put<EntityBranchDto>(`${this.baseUrl}/${id}`, request).pipe(
             map(response => ({ 
                 ...response,
                 fecha_registro: new Date(response.fecha_registro),
                 fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
-            }) as EstablecimientoDTO ),
+            }) as EntityBranchDto ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })

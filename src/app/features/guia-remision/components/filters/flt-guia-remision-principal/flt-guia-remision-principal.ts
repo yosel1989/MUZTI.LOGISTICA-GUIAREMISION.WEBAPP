@@ -20,12 +20,12 @@ import { heroQuestionMarkCircleMini } from "@ng-icons/heroicons/mini";
 import { EmpresaApiService } from "@features/empresa/services/empresa-api.service";
 import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
-import { EstablecimientoListToSelectDTO } from "@features/establecimiento/models/establecimiento.model";
-import { EstablecimientoApiService } from "@features/establecimiento/services/establecimiento.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { SunatCatalogoApiService } from "@features/catalogo/services/sunat-catalogo-api.service";
 import { GuiaRemisionEstadoApiService } from "@features/guia-remision-estado/services/guia-remision-estado.service";
 import { GuiaRemisionEstadoDTO } from "@features/guia-remision-estado/models/guia-remision-estado.model";
+import { EntityBranchApiService } from "@features/establecimiento/services/establecimiento.service";
+import { EstablecimientoListToSelectDTO } from "@features/establecimiento/models/entity-branch";
 
 
 @Component({
@@ -52,7 +52,7 @@ import { GuiaRemisionEstadoDTO } from "@features/guia-remision-estado/models/gui
 
 export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-    private establecimientoApiService = inject(EstablecimientoApiService);
+    private entityBranchApiService = inject(EntityBranchApiService);
     private alertService = inject(AlertService);
     private empresaApiService = inject(EmpresaApiService);
     private sunatCatalogoApiService = inject(SunatCatalogoApiService);
@@ -255,7 +255,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
             this.ldEstablecimientosDestinatario.set(true);
         }
 
-        const s = this.establecimientoApiService.getAllToSelectByRuc(ruc)
+        const s = this.entityBranchApiService.getAllToSelectByRuc(ruc)
         .pipe(finalize(()=>{
             this.ldEstablecimientosRemitente.set(false);
             this.ldEstablecimientosDestinatario.set(false);
