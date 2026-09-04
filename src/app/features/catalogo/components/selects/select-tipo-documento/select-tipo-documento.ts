@@ -5,6 +5,7 @@ import { AlertService } from '@core/services/alert.service';
 import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
 import { finalize, Subscription } from 'rxjs';
 
 export interface SelectTipoDocumento{
@@ -19,7 +20,8 @@ export interface SelectTipoDocumento{
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
-    FormsModule
+    FormsModule,
+    SkeletonModule
   ]
 })
 
@@ -34,6 +36,7 @@ export class SelectTipoDocumentoComponent implements OnInit, AfterViewInit, OnDe
     @Input() default: string | number | null = null;
     @Input() disabled: boolean = false;
     @Input() invalid: boolean = false;
+    @Input() loading: boolean = false;
     tipoRegimen = input<string | null | 'natural' | 'juridico'>(null);
 
     @Input() optionLabel: string = 'descripcion';

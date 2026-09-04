@@ -1,3 +1,20 @@
+@reference "tailwindcss";
+@reference "tailwindcss-primeui";
+
+:host {
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .nav-label{
+    @apply text-[12px]!
+  }
+}
+.p-scrollpanel{
+  --p-scrollpanel-bar-size : 5px;
+  --p-scrollpanel-bar-background: rgba(0,0,0,.2);
+}
+
 /* Importing Google Fonts - Poppins */
 body {
   min-height: 100vh;
@@ -60,7 +77,7 @@ body {
   gap: 4px;
   padding: 0 0 0 12px;
   flex-direction: column;
-  transform: translateY(15px);
+  //transform: translateY(15px);
   transition: 0.4s ease;
 }
 .sidebar .sidebar-nav .primary-nav {
@@ -68,7 +85,7 @@ body {
   overflow: hidden;
   scrollbar-width: thin;
   padding-bottom: 20px;
-  height: calc(100vh - 127px);
+  //height: calc(100vh - 127px);
   scrollbar-color: transparent transparent;
 }
 .sidebar .sidebar-nav .primary-nav:hover {
@@ -164,9 +181,6 @@ body.collapsed :host ::ng-deep{
   .sidebar .sidebar-header .sidebar-toggler {
     transform: none;
   }
-  .sidebar .sidebar-nav .primary-nav {
-    transform: translateY(15px);
-  }
   .sidebar {
     width: 85px;
 
@@ -186,10 +200,15 @@ body.collapsed :host ::ng-deep{
   }
   .sidebar .sidebar-nav .primary-nav {
     overflow: unset;
-    transform: translateY(65px);
+    //transform: translateY(65px);
   }
 
-
+  .header{
+    display: none !important;
+  }
+  .header ~ span{
+    @apply w-9!;
+  }
 
 }
 
@@ -261,10 +280,3 @@ body.collapsed :host ::ng-deep{
   }
 }
 
-:host{
-  z-index: 11;
-
-  .nav-label{
-    @apply text-[12px]!
-  }
-}

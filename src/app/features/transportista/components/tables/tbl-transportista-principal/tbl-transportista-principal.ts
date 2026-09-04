@@ -28,7 +28,7 @@ import { TransportistaApiService } from '@features/transportista/services/transp
 import { ActualizarEstadoResponseDto, EliminarResponseDto, ResponseDTO } from '@features/shared/models/shared';
 import { MdlRegistrarTransportistaComponent } from '../../modals/mdl-registrar-transportista/mdl-registrar-transportista.component';
 import { MdlEditarTransportistaComponent } from '../../modals/mdl-editar-transportista/mdl-editar-transportista.component';
-import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { ToggleActiveRequestDto } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { Column } from 'app/shared/models/table';
 
@@ -362,7 +362,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
       });
     }
 
-    evtOnUpdateStatus(status: number): void{
+    evtOnToggleActive(status: boolean): void{
       if(!this.handlerValidateSelected()) return;
 
       this.confirmationService.confirm({
@@ -381,8 +381,8 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
               const request = {
                 id: this.selected()!.id,
-                id_estado: status
-              } as EstadoActualizarRequestDTO;
+                active: status
+              } as ToggleActiveRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
                 next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
@@ -520,8 +520,8 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 

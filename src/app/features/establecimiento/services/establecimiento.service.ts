@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoEstablecimientoRequestDTO, EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EntityBranchDto, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/entity-branch";
+import { EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EntityBranchDto, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/entity-branch";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
 import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
+import { ToggleActiveRequestDto } from "app/shared/models/request";
 
 @Injectable({
     providedIn: "root"
@@ -68,7 +69,7 @@ export class EntityBranchApiService{
         );
     }
 
-    actualizarEstado(id: number, request: ActualizarEstadoEstablecimientoRequestDTO ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+    actualizarEstado(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
         return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
             map(response => ({  
                 ...response,

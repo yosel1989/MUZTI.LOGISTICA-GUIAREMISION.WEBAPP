@@ -84,7 +84,7 @@
                         tooltipStyleClass="text-xs! text-slate-300!"
                         placeholder="Top"
                         styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
-                        (click)="evtOnUpdateStatus(1)"
+                        (click)="evtOnToggleActive(true)"
                     />
                 }
                 @if(selected()?.id_estado === 1){
@@ -97,7 +97,7 @@
                         tooltipStyleClass="text-xs! text-slate-300!"
                         placeholder="Top"
                         styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
-                        (click)="evtOnUpdateStatus(0)"
+                        (click)="evtOnToggleActive(false)"
                     />
                 }
             }

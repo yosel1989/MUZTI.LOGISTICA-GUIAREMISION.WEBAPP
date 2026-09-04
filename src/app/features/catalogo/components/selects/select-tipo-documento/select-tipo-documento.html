@@ -1,53 +1,57 @@
 @if(label){<label [attr.class]="classLabel">{{ label }}</label>}
-<p-select 
-    panelStyleClass="text-[.875rem]!"
-    size="small" 
-    fluid 
-    [options]="data()"
-    [loading]="ldData()" 
-    [formControl]="control"  
-    [optionLabel]="optionLabel"
-    [optionValue]="optionValue"
-    class="p-inputwrapper-filled" 
-    placeholder="--SELECCIONAR--"
-    appendTo="body"
-    [invalid]="invalid"
->
-    <ng-template #selectedItem let-selectedOption>
-        <div class="flex items-center">
-            @switch(type){
-                @case('short'){
-                    {{selectedOption.descripcion_corta}}
+@if(loading && ldData()){
+    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+}@else{
+    <p-select 
+        panelStyleClass="text-[.875rem]!"
+        size="small" 
+        fluid 
+        [options]="data()"
+        [loading]="ldData()" 
+        [formControl]="control"  
+        [optionLabel]="optionLabel"
+        [optionValue]="optionValue"
+        class="p-inputwrapper-filled" 
+        placeholder="--SELECCIONAR--"
+        appendTo="body"
+        [invalid]="invalid"
+    >
+        <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center">
+                @switch(type){
+                    @case('short'){
+                        {{selectedOption.descripcion_corta}}
+                    }
+                    @case('normal'){
+                        {{selectedOption.descripcion}}
+                    }
+                    @case('large'){
+                        ({{selectedOption.descripcion_corta}}) {{selectedOption.descripcion}}
+                    }
+                    @default{
+                        {{selectedOption.descripcion}}
+                    }
                 }
-                @case('normal'){
-                    {{selectedOption.descripcion}}
+                
+            </div>
+        </ng-template>
+        <ng-template let-item #item>
+            <div class="flex items-center">
+                @switch(type){
+                    @case('short'){
+                        {{item.descripcion_corta}}
+                    }
+                    @case('normal'){
+                        {{item.descripcion}}
+                    }
+                    @case('large'){
+                        ({{item.descripcion_corta}}) {{item.descripcion}}
+                    }
+                    @default{
+                        {{item.descripcion}}
+                    }
                 }
-                @case('large'){
-                    ({{selectedOption.descripcion_corta}}) {{selectedOption.descripcion}}
-                }
-                @default{
-                    {{selectedOption.descripcion}}
-                }
-            }
-            
-        </div>
-    </ng-template>
-    <ng-template let-item #item>
-        <div class="flex items-center">
-            @switch(type){
-                @case('short'){
-                    {{item.descripcion_corta}}
-                }
-                @case('normal'){
-                    {{item.descripcion}}
-                }
-                @case('large'){
-                    ({{item.descripcion_corta}}) {{item.descripcion}}
-                }
-                @default{
-                    {{item.descripcion}}
-                }
-            }
-        </div>
-    </ng-template>
-</p-select>
+            </div>
+        </ng-template>
+    </p-select>
+}

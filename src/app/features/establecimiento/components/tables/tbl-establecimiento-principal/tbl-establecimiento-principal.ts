@@ -26,7 +26,7 @@ import { ColumnsFilterDto } from 'app/core/models/filter';
 import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
 import { MdlEditarEstablecimientoComponent } from '../../modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
 import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
-import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { ToggleActiveRequestDto } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { Column } from 'app/shared/models/table';
 import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
@@ -364,7 +364,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
       });
     }
 
-    evtOnUpdateStatus(status: number): void{
+    evtOnToggleActive(status: boolean): void{
       if(!this.handlerValidateSelected()) return;
 
       this.confirmationService.confirm({
@@ -383,8 +383,8 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
 
               const request = {
                 id: this.selected()!.id,
-                id_estado: status
-              } as EstadoActualizarRequestDTO;
+                active: status
+              } as ToggleActiveRequestDto;
 
               const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
                 next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
@@ -518,8 +518,8 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: selected?.id_estado === 0,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.id_estado === 1,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 

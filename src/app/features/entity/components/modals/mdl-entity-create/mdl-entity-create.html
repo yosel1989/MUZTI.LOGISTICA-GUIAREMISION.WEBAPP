@@ -280,38 +280,7 @@
                     </p-message>
                 }
             </div>
-
-            <div>
-                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Correo <span class="roboto-condensed text-[11px]! text-slate-400">(opcional)</span></label>
-                <input 
-                    fluid 
-                    onlyUpper
-                    pInputText 
-                    type="email" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="email" 
-                    maxlength="250" 
-                    autofocus="true"
-                    [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || submitted())"
-                />
-                @if (frm.get('email')?.invalid && (frm.get('email')?.touched || submitted())) {
-                    <p-message severity="error" size="small" variant="simple" >
-                        <span class="text-[10px]! ">
-                            @if (f.email.hasError('required')) {
-                                Este campo es requerido.
-                            }
-                            @if (f.email.hasError('email')) {
-                                Por favor, ingrese un correo electrónico válido.
-                            }
-                            @if (f.email.hasError('maxLength')) {
-                                El correo no debe exceder los 50 caracteres.
-                            }
-                        </span>
-                    </p-message>
-                }
-            </div>
-
+            
             <div>
                 <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Pertenece al consorcio?</label>
 

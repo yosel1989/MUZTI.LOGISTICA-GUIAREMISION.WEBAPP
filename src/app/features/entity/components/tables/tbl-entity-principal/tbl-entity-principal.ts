@@ -31,6 +31,9 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Column } from 'app/shared/models/table';
+import { MdlEntityEdit } from '../../modals/mdl-entity-edit/mdl-entity-edit';
+import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
+import { ResponseDTO } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-tbl-entity-principal',
@@ -287,8 +290,47 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     }
 
-    evtOnEdit(): void {
-      
+    evtOnEdit(): void{
+      this.ref = this.dialogService.open(MdlEntityEdit,  {
+        width: '600px',
+        closable: false,
+        modal: true,
+        draggable: false,
+        position: 'top',
+        header: 'Modificar Entidad',
+        styleClass: 'max-h-none! slide-down-dialog',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader,
+        },
+        inputValues: {
+          role: 'entidad',
+          id: this.selected()?.id
+        }
+      });
+
+      this.ref?.onChildComponentLoaded
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((cmp: MdlEntityEdit) => {
+        cmp?.OnUpdated
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((res: EntityDto) => {
+          const idx = this.data().findIndex(x => x.id === this.selected()!.id);
+          if (idx > -1) {
+            this.data()[idx] = res;
+            this.selected.set(res);
+          }
+          //this.evtOnReload();
+          this.ref?.close();
+        });
+        cmp?.OnCanceled
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.ref?.close();
+        });
+      });
+
     }
 
     evtOnDelete(): void{
@@ -334,10 +376,10 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
       });
     }
 
-    evtOnUpdateStatus(status: number): void{
-      /*if(!this.handlerValidateSelected()) return;
+    evtOnToggleActive(status: boolean): void{
+      if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
+          header: !status ? '¿Desactivar la entidad?' : '¿Activar la entidad?',
           message: 'Confirmar la operación.',
           accept: () => {
               this.selected.update(current => {
@@ -352,12 +394,12 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
               const request = {
                 id: this.selected()!.id,
-                id_estado: status
-              } as EstadoActualizarRequestDTO;
+                active: status
+              } as ToggleActiveRequestDto;
 
-              const sub = this.api.actualizarEstado(this.selected()!.id, request)
+              const sub = this.api.toggleActive(this.selected()!.id, request)
               .subscribe({
-                next: (res: ResponseDTO<ActualizarEstadoConductorResponseDto>) => {
+                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -368,23 +410,22 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
                     timer: 4000
                   });
 
-                  this.selected.update(current => {
+                  this.selected.update((current: EntityDto | undefined) => {
                     const updated = {
                       ...current!,
-                      ld_estado: false,
-                      ld_update: false,
-                      id_estado: res.data.id_estado,
-                      estado: res.data.estado,
-                      fecha_modifico: res.data.fecha_modifico,
-                      usuario_modifico: res.data.usuario_modifico,
-                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
+                      loading_status: false,
+                      loading_update: false,
+                      active: res.data.active,
+                      updated_at: res.data.updated_at,
+                      uddated_at_user: res.data.updated_at_user,
+                      updated_at_user_name: res.data.updated_at_user_name
                     };
 
                     this.data.update(arr =>
                       arr.map(c => c.id === updated.id ? updated : c)
                     );
 
-                    return updated;
+                    return current;
                   });
 
                 
@@ -419,7 +460,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
               this.subs.add(sub);
             
           }
-      });*/
+      });
     }
 
     evtFirstChange(first: number): void{
@@ -494,8 +535,8 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         //{ label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnToggleActive(true); }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnToggleActive(false); }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 

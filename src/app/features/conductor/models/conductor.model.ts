@@ -14,7 +14,7 @@ export interface ConductorDto{
     fecha_modifico: Date | null;
     usuario_modifico: string | null;
     usuario_modifico_nombre: string | null;
-    estado: string;
+    active: boolean;
     tipo: string | 'interno' | 'externo';
     id_estado: number;
     ld_estado: boolean;
@@ -90,7 +90,7 @@ export interface ActualizarEstadoConductorRequestDto{
   id_estado: number;
 }
 
-export interface ActualizarEstadoConductorResponseDto{
+export interface ChangeStatusResponseDto{
   id: number;
   id_estado: number;
   estado: string;
@@ -99,6 +99,8 @@ export interface ActualizarEstadoConductorResponseDto{
   usuario_modifico_nombre: string;
   detalle: string;
 }
+
+
 
 export interface ConductorSugeridoDto{
   id: number;

@@ -19,14 +19,14 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
 import { MdlRegistrarConductorComponent } from '../../modals/mdl-registrar-conductor/mdl-registrar-conductor';
 import { MdlEditarConductorComponent } from '../../modals/mdl-editar-conductor/mdl-editar-conductor';
-import { ActualizarEstadoConductorResponseDto, ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
+import { ConductorDto, EliminarConductorResponseDto } from '@features/conductor/models/conductor.model';
 import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { ResponseDTO } from '@features/shared/models/shared';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { Column } from 'app/shared/models/table';
@@ -370,7 +370,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       });
     }
 
-    evtOnUpdateStatus(status: number): void{
+    evtOnToggleActive(status: boolean): void{
       if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
           header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
@@ -388,12 +388,12 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
 
               const request = {
                 id: this.selected()!.id,
-                id_estado: status
-              } as EstadoActualizarRequestDTO;
+                active: status
+              } as ToggleActiveRequestDto;
 
               const sub = this.api.actualizarEstado(this.selected()!.id, request)
               .subscribe({
-                next: (res: ResponseDTO<ActualizarEstadoConductorResponseDto>) => {
+                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -404,16 +404,15 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
                     timer: 4000
                   });
 
-                  this.selected.update(current => {
+                  this.selected.update((current: ConductorDto | undefined) => {
                     const updated = {
                       ...current!,
                       ld_estado: false,
                       ld_update: false,
-                      id_estado: res.data.id_estado,
-                      estado: res.data.estado,
-                      fecha_modifico: res.data.fecha_modifico,
-                      usuario_modifico: res.data.usuario_modifico,
-                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
+                      estado: res.data.active,
+                      fecha_modifico: res.data.updated_at,
+                      usuario_modifico: res.data.updated_at_user,
+                      usuario_modifico_nombre: res.data.updated_at_user
                     };
 
                     this.data.update(arr =>
@@ -530,8 +529,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnToggleActive(true); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnToggleActive(false); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 

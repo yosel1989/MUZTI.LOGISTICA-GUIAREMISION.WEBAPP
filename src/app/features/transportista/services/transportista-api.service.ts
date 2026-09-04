@@ -5,7 +5,7 @@ import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
 import { ActualizarEstadoResponseDto, EliminarResponseDto, ResponseDTO } from "@features/shared/models/shared";
 import { EditarTransportistaRequestDto, RegistrarTransportistaRequestDto, RegistrarTransportistaResponseDto, TransportistaDto, TransportistaSugeridoDto } from "../models/transportista";
-import { EstadoActualizarRequestDTO } from "app/shared/models/request";
+import { ToggleActiveRequestDto } from "app/shared/models/request";
 
 @Injectable({
   providedIn: 'root'
@@ -96,7 +96,7 @@ export class TransportistaApiService {
     );
   }
 
-  actualizarEstado(id: number, request: EstadoActualizarRequestDTO ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+  actualizarEstado(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
     return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(res =>{ 
         return {

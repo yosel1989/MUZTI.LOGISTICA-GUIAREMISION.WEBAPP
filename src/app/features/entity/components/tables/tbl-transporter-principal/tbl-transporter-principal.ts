@@ -302,11 +302,11 @@ export class TblTransporterPrincipal implements OnInit, AfterViewInit, OnDestroy
               const request = {
                 id: this.selected()!.id,
                 id_estado: status
-              } as EstadoActualizarRequestDTO;
+              } as ToggleActiveRequestDto;
 
               const sub = this.api.actualizarEstado(this.selected()!.id, request)
               .subscribe({
-                next: (res: ResponseDTO<ActualizarEstadoConductorResponseDto>) => {
+                next: (res: ResponseDTO<ChangeStatusResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',

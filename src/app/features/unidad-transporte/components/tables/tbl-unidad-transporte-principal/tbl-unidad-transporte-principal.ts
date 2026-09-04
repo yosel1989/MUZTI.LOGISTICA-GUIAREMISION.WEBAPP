@@ -27,7 +27,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
-import { EstadoActualizarRequestDTO } from 'app/shared/models/request';
+import { ToggleActiveRequestDto } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { Column } from 'app/shared/models/table';
 
@@ -354,7 +354,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       });
     }
 
-    evtOnUpdateStatus(status: number): void{
+    evtOnToggleActive(status: boolean): void{
       this.confirmationService.confirm({
           header: !status ? '¿Desactivar la Unidad de Transporte?' : '¿Activar la Unidad de Transporte',
           message: 'Confirmar la operación.',
@@ -371,10 +371,10 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
 
               const request = {
                 id: this.selected()!.id,
-                id_estado: status
-              } as EstadoActualizarRequestDTO;
+                active: status
+              } as ToggleActiveRequestDto;
 
-              const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
+              const subs = this.api.toogleActive(this.selected()!.id, request).subscribe({
                 next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
 
                   this.alertService.showToast({
@@ -508,8 +508,8 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnUpdateStatus(1); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 }

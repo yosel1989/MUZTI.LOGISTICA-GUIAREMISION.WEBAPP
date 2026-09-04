@@ -1,0 +1,389 @@
+@if(role() !== 'entidad' ){
+    <div class="grid grid-cols-1 gap-3 p-4">
+        <div class="mb-3">
+            <div class="grid grid-cols-2 rounded-lg bg-gray-100 gap-x-2 p-2">
+                <p-button
+                    fluid
+                    type="button"
+                    severity="primary"
+                    variant="text"
+                    icon="pi pi-plus"
+                    [styleClass]="type() === 'new' ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
+                    label="Nueva entidad"
+                    (onClick)="type.set('new')"
+                ></p-button>
+                <p-button
+                    fluid
+                    type="button"
+                    severity="primary"
+                    variant="text"
+                    icon="pi pi-list"
+                    [styleClass]="type() === 'select' ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
+                    label="Seleccionar entidad"
+                    (onClick)="type.set('select')"
+                ></p-button>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@if(type() === 'select'){
+
+    <div class="col-span-2">
+        <app-mdl-entity-list (OnSelected)="evtSelectedEntity($event)" [_type]="_type()"></app-mdl-entity-list> 
+    </div>
+
+}@else{
+    
+    <form [formGroup]="frm" (ngSubmit)="evtOnSubmit()" class="p-4">
+
+        <div class="grid grid-cols-2 gap-3">
+            
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <p-select 
+                        panelStyleClass="text-[.875rem]!"
+                        size="small" 
+                        fluid 
+                        [options]="types" 
+                        formControlName="type"
+                        [invalid]="f.type.invalid && ( f.type.touched || submitted())" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        [class]="f.type.invalid && ( f.type.touched || submitted()) ? 'min-h-9! shadow-none! border-primary-400! focus:border-primary-400!' : ' min-h-9! shadow-none! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!'" 
+                        placeholder="Seleccionar..." 
+                        appendTo="body"
+                    ></p-select>
+                    @if (frm.get('type')?.invalid && (frm.get('type')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                }
+            </div>
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">País</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <app-select-country
+                        [control]="f.country_id"
+                        [optionValue]="'id'"
+                        class="uppercase"
+                        [default]="135"
+                    ></app-select-country>
+                    @if (frm.get('country_id')?.invalid && (frm.get('country_id')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                    }
+                }
+            </div>
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de documento</label>
+                
+                <app-select-tipo-documento
+                    class="w-full!"
+                    #tipoDocumento
+                    [control]="f.document_type_id"
+                    [tipoRegimen]="f.type.value === 'empresa' ? 'juridica' : 'natural'"
+                    [invalid]="f.document_type_id.invalid && ( f.document_type_id.touched || submitted())"
+                    (selectedChange)="evtSelectedChangeTipoDocumento($event)"
+                    type="large"
+                    [loading]="true"
+                ></app-select-tipo-documento>
+                @if (frm.get('document_type_id')?.invalid && (frm.get('document_type_id')?.touched || submitted())) {
+                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                }
+                
+            </div>
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">N° documento</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <div class="flex flex-row gap-x-1 ">
+                        <input 
+                            onlyNumber
+                            pSize="small" 
+                            fluid 
+                            pInputText 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!" formControlName="document_number"
+                            [invalid]="frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())"
+                        />
+                        <p-button
+                            pTooltip="Buscar info"
+                            tooltipPosition="top"
+                            tooltipStyleClass="text-xs!"
+                            type="button"
+                            severity="primary"
+                            variant="text"
+                            icon="pi pi-search"
+                            styleClass="w-9! h-9! bg-primary-100! hover:bg-primary-200!"
+                            (onClick)="evtSearchEntityInfo()"
+                            [loading]="ldInfo()"
+                            [disabled]="f.country_id.value !== 135"
+                        ></p-button>
+                    </div>
+
+                    @if (frm.get('document_number')?.invalid && (frm.get('document_number')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
+                            @if(f.document_number.errors?.['required']){
+                                Este campo es requerido.
+                            }@else if(f.document_number.errors?.['minlength']){
+                                El documento debe tener mínimo 
+                                {{ tipoDocumento?.selected()?.min }}
+                                caracteres.
+                            }@else{
+                                El documento debe tener máximo
+                                {{ tipoDocumento?.selected()?.max }}
+                                caracteres.
+                            }
+                        </span></p-message>
+                    }
+                }
+            </div>
+
+            @if(f.type.value === 'empresa'){
+                <div class="col-span-2">
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Razón Social</label>
+                    @if(ldData()){
+                        <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                    }@else{
+                        <input 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            type="text" 
+                            pSize="small" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            formControlName="name" 
+                            autofocus="true"
+                            [invalid]="frm.get('name')?.invalid && (frm.get('name')?.touched || submitted())"
+                        />
+                        @if (frm.get('name')?.invalid && (frm.get('name')?.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            @if (f.name.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @if (f.name.hasError('maxLength')) {
+                                El nombre no debe exceder los 150 caracteres.
+                            }</span>
+                            </p-message>
+                        }
+                    }
+                </div>
+            }@else {
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Nombres</label>
+                    @if(ldData()){
+                        <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                    }@else{
+                        <input 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            type="text" 
+                            pSize="small" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            formControlName="first_name" 
+                            autofocus="true"
+                            [invalid]="frm.get('first_name')?.invalid && (frm.get('first_name')?.touched || submitted())"
+                        />
+                        @if (frm.get('first_name')?.invalid && (frm.get('first_name')?.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            @if (f.first_name.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @if (f.first_name.hasError('maxLength')) {
+                                El nombre no debe exceder los 75 caracteres.
+                            }</span>
+                            </p-message>
+                        }
+                    }
+                </div>
+
+                <div>
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Apellidos</label>
+                    @if(ldData()){
+                        <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                    }@else{
+                        <input 
+                            fluid 
+                            onlyUpper
+                            pInputText 
+                            type="text" 
+                            pSize="small" 
+                            class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                            formControlName="last_name" 
+                            autofocus="true"
+                            [invalid]="frm.get('last_name')?.invalid && (frm.get('last_name')?.touched || submitted())"
+                        />
+                        @if (frm.get('last_name')?.invalid && (frm.get('last_name')?.touched || submitted())) {
+                            <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                            @if (f.last_name.hasError('required')) {
+                                Este campo es requerido.
+                            }
+                            @if (f.last_name.hasError('maxLength')) {
+                                El nombre no debe exceder los 75 caracteres.
+                            }</span>
+                            </p-message>
+                        }
+                    }
+                </div>
+
+            }
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <app-select-departamento 
+                        [control]="f.department" 
+                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                    ></app-select-departamento>
+                    @if (frm.get('department')?.invalid && (frm.get('department')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">Este campo es requerido.</span>
+                        </p-message>
+                    }
+                }
+            </div>
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Provincia</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <app-select-provincia 
+                        [control]="f.province" 
+                        [idUbigeoDepartamento]="f.department.value" 
+                        [valueEdit]="data()?.ubigeo_id?.substring(0,4) ?? null"
+                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold"
+                    ></app-select-provincia>
+                    @if (frm.get('province')?.invalid && (frm.get('province')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">Este campo es requerido.</span>
+                        </p-message>
+                    }
+                }
+            </div>
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <app-select-distrito 
+                        [control]="f.district" 
+                        [idUbigeoProvincia]="f.province.value" 
+                        classLabel="text-[11px]! h-4.5! text-gray-500 font-semibold" 
+                        [valueEdit]="data()?.ubigeo_id ?? null"
+                    ></app-select-distrito>
+                    @if (frm.get('district')?.invalid && (frm.get('district')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">Este campo es requerido.</span>
+                        </p-message>
+                    }
+                }
+            </div>
+
+            <div class="col-span-2">
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <input 
+                        fluid 
+                        onlyUpper
+                        pInputText 
+                        type="text" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="address" 
+                        autofocus="true"
+                        [invalid]="frm.get('address')?.invalid && (frm.get('address')?.touched || submitted())"
+                    />
+                    @if (frm.get('address')?.invalid && (frm.get('address')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.address.hasError('required')) {
+                                    Este campo es requerido.
+                                }
+                                @if (f.address.hasError('maxLength')) {
+                                    La dirección no debe exceder los 150 caracteres.
+                                }
+                            </span>
+                        </p-message>
+                    }
+                }
+            </div>
+        
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Pertenece al consorcio?</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <div class="flex items-center w-full! h-9! px-4 border border-slate-300 rounded-lg hover:border-slate-400">
+                        <div class="grid grid-cols-2 gap-6 items-center">
+                            <div class="flex items-center">
+                                <p-radiobutton name="is_internal" [value]="true" formControlName="is_internal" inputId="is_internal1" />
+                                <label for="is_internal1" class="ml-2">SI</label>
+                            </div>
+
+                            <div class="flex items-center">
+                                <p-radiobutton name="is_internal" [value]="false" formControlName="is_internal" inputId="is_internal2" />
+                                <label for="is_internal2" class="ml-2">NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (frm.get('is_internal')?.invalid && (frm.get('is_internal')?.touched || submitted())) {
+                        <p-message severity="error" size="small" variant="simple" >
+                            <span class="text-[10px]! ">
+                                @if (f.is_internal.hasError('required')) {
+                                    Este campo es requerido.
+                                }
+                            </span>
+                        </p-message>
+                    }
+                }
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-2 mt-6">
+            <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
+            <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" />
+        </div>
+    </form>
+
+}
+
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>

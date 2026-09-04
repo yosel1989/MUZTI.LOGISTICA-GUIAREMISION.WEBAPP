@@ -3,8 +3,9 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
-import { ActualizarEstadoUnidadTransporteRequestDto, EditarUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
+import { EditarUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
 import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
+import { ToggleActiveRequestDto } from "app/shared/models/request";
 
 @Injectable({
   providedIn: 'root'
@@ -80,7 +81,7 @@ export class UnidadTransporteApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoUnidadTransporteRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
+  toogleActive(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
     return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>({
         ...response,

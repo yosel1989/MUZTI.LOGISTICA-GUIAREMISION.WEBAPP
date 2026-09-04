@@ -2,9 +2,10 @@ import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActualizarEstadoConductorRequestDto, ActualizarEstadoConductorResponseDto, ConductorByNumeroDocumento, ConductorDto, ConductorSugeridoDto, EditarConductorRequestDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
+import { ConductorByNumeroDocumento, ConductorDto, ConductorSugeridoDto, EditarConductorRequestDto, EliminarConductorResponseDto, RegistrarConductorRequestDto, RegistrarConductorResponseDto } from "../models/conductor.model";
 import { TableData } from "app/core/models/table";
 import { ResponseDTO } from '@features/shared/models/shared';
+import { ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
 
 @Injectable({
   providedIn: 'root'
@@ -83,13 +84,13 @@ export class ConductorApiService {
     );
   }
 
-  actualizarEstado(id: number, request: ActualizarEstadoConductorRequestDto ): Observable<ResponseDTO<ActualizarEstadoConductorResponseDto>> {
-    return this.http.put<ResponseDTO<ActualizarEstadoConductorResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+  actualizarEstado(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ToggleActiveResponseDto>> {
+    return this.http.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>({ 
         ...response,
         data: {
           ...response.data,
-          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+          fecha_modifico: response.data.updated_at ? new Date(response.data.updated_at) : null
         }
       })),
       catchError((error: HttpErrorResponse) => {

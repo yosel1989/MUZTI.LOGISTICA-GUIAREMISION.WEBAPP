@@ -1,13 +1,13 @@
-<aside class="sidebar flex flex-col h-full">
+<aside class="sidebar flex! flex-col! h-screen!">
 
     <header class="sidebar-header shrink-0">
         <a href="#" class="header-logo">
             <img src="/guia-remision/assets/media/logo/mutzi-logistico-logo-sin-fondo.png" alt="CodingNepal" />
         </a>
     </header>
-    <div class="flex justify-self-stretch flex-1 min-h-0 h-full!">
+    <div class="flex-1 min-h-0 flex">
         <p-scrollpanel [style]="{ width: '100%', height: '100%' }">
-            <nav class="sidebar-nav">
+            <nav class="sidebar-nav py-4!">
                 <ul class="nav-list primary-nav">
                     <li class="nav-item" routerLinkActive="open">
                         <a 
@@ -16,18 +16,14 @@
                             <span class="nav-label">Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item" routerLinkActive="open"> 
-                        <a 
-                            routerLink="administracion/conductor" 
-                            class="nav-link"
-                            pTooltip="Conductor"
-                            tooltipPosition="right"
-                            tooltipStyleClass="text-sm!"
-                        >
-                            <i class="fa-thin fa-user text-[14px]! text-center! w-9! h-9! min-w-9! min-h-9!  flex! items-center! justify-center! rounded-lg! bg-black/10!"></i>
-                            <span class="nav-label">Conductor</span>
-                        </a>
+
+                    <li>
+                        <div class="flex flex-row items-center px-4 py-3 gap-2">
+                            <span class="text-xs! text-primary-400 uppercase font-semibold header">Administración</span>
+                            <span class="w-full bg-black/20! h-[1px]"></span>
+                        </div>
                     </li>
+
                     <li class="nav-item" routerLinkActive="open">
                         <a 
                             routerLink="administracion/entidad" 
@@ -36,10 +32,24 @@
                             tooltipPosition="right"
                             tooltipStyleClass="text-sm!"
                         >
-                            <i class="fa-thin fa-user-tag text-[14px]! text-center! w-9! h-9! min-w-9! min-h-9! flex! items-center! justify-center! rounded-lg! bg-black/20!"></i>
+                            <i class="fa-thin fa-user text-[14px]! text-center! w-9! h-9! min-w-9! min-h-9! flex! items-center! justify-center! rounded-lg! bg-black/20!"></i>
                             <span class="nav-label">Entidad</span>
                         </a>
                     </li>
+
+                    <li class="nav-item" routerLinkActive="open"> 
+                        <a 
+                            routerLink="administracion/conductor" 
+                            class="nav-link"
+                            pTooltip="Conductor"
+                            tooltipPosition="right"
+                            tooltipStyleClass="text-sm!"
+                        >
+                            <i class="fa-thin fa-user-gear text-[14px]! text-center! w-9! h-9! min-w-9! min-h-9!  flex! items-center! justify-center! rounded-lg! bg-black/20!"></i>
+                            <span class="nav-label">Conductor</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item" routerLinkActive="open">
                         <a 
                             routerLink="administracion/proveedor" 
@@ -52,6 +62,7 @@
                             <span class="nav-label">Proveedor</span>
                         </a>
                     </li>
+                    
                     <li class="nav-item" routerLinkActive="open">
                         <a 
                             routerLink="administracion/unidad-transporte" 
@@ -102,6 +113,13 @@
                             <i class="fa-thin fa-file text-[14px]! text-center! w-9! h-9! min-w-9! min-h-9! flex! items-center! justify-center! rounded-lg! bg-black/20!"></i>
                             <span class="nav-label">Guia de remisión</span>
                         </a>
+                    </li>
+
+                    <li>
+                        <div class="flex flex-row items-center px-4 py-3 gap-2">
+                            <span class="text-xs! text-primary-400 uppercase font-semibold header">Configuración</span>
+                            <span class="w-full bg-black/20! h-[1px]"></span>
+                        </div>
                     </li>
 
                     <li class="nav-item" routerLinkActive="open">
@@ -167,29 +185,7 @@
                     </ul>
                     </li>-->
                 </ul>
-                <!-- Secondary Bottom Nav 
-            <ul class="nav-list secondary-nav">
-                <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <span class="material-symbols-rounded">help</span>
-                    <span class="nav-label">Support</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li class="nav-item"><a class="nav-link dropdown-title">Support</a></li>
-                </ul>
-                </li>
-                <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <span class="material-symbols-rounded">logout</span>
-                    <span class="nav-label">Sign Out</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li class="nav-item"><a class="nav-link dropdown-title">Sign Out</a></li>
-                </ul>
-                </li>
-            </ul>-->
             </nav>
-
         </p-scrollpanel>
     </div>
     
