@@ -16,7 +16,6 @@ export interface ConductorDto{
     usuario_modifico_nombre: string | null;
     active: boolean;
     tipo: string | 'interno' | 'externo';
-    id_estado: number;
     ld_estado: boolean;
     ld_update: boolean;
     job_title: string;

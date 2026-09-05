@@ -76,7 +76,7 @@
                 styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
                 (click)="evtOnDelete()"
             />
-            @if(selected()?.id_estado === 0){
+            @if(selected()?.active === false){
                 <p-button 
                     icon="pi pi-check-circle"  
                     size="small" 
@@ -89,7 +89,7 @@
                     (click)="evtOnToggleActive(true)"
                 />
             }
-            @if(selected()?.id_estado === 1){
+            @if(selected()?.active === true){
                 <p-button 
                     icon="pi pi-ban" 
                     size="small" 
@@ -295,19 +295,19 @@
                                     }
                                 </td>
                             }
-                            @case('estado'){
+                            @case('active'){
                                 <td class="text-nowrap py-1! font-light! truncate! w-[100px]"> 
 
                                     @if(rowData['ld_estado'] || rowData['ld_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
-                                        @if(rowData['id_estado']){
+                                        @if(rowData['active']){
                                             <span class="w-25 text-green-700 uppercase text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium!">
-                                                {{rowData[col.field]}}
+                                                ACTIVO
                                             </span>
                                         }@else{
                                             <span class="w-25 text-gray-700 uppercase text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-lg! font-medium!">
-                                                {{rowData[col.field]}}
+                                                INACTIVO
                                             </span>
                                         }
                                     }

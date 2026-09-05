@@ -112,7 +112,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         { field: 'cargo', header: 'Cargo', sort: false, sticky: false },
         { field: 'licencia', header: 'Distrito', sort: false, sticky: false },
         { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
-        { field: 'estado', header: 'Estado', sort: false, sticky: false },
+        { field: 'active', header: 'Estado', sort: false, sticky: false },
         { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
         { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
         { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
@@ -529,8 +529,8 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnToggleActive(true); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnToggleActive(false); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnToggleActive(true); }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnToggleActive(false); }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 
