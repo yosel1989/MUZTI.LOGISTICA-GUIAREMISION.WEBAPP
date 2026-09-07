@@ -1,0 +1,117 @@
+<div class="p-4 flex flex-col gap-3">
+    <div class="flex flex-row gap-x-4 w-full border border-slate-400 rounded-xl p-4">
+        <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+        <div class="flex flex-col justify-center text-sm text-start!">
+            <p class="font-semibold text-black!">{{ entity().name ?? entity().first_name + ' ' + entity().last_name }}</p>
+            <p class="uppercase text-black!">{{ entity().document_number }}</p>
+            
+        </div>
+    </div>
+
+    <div>
+        <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Seleccionar roles</label>
+        <p-inputgroup>
+            <p-multiselect 
+                panelStyleClass="text-[.875rem]!"
+                size="small" 
+                fluid 
+                [options]="rolesComputed()"
+                [formControl]="ctrlRol"
+                optionLabel="label" 
+                optionValue="role"  
+                class="p-inputwrapper-filled border-slate-400!" 
+                styleClass="text-sm!"
+                placeholder="--SELECCIONAR--"
+                appendTo="body" 
+                [filter]="false"
+                [showToggleAll]="false"
+                [showHeader]="false"
+            />
+
+            <p-inputgroup-addon>
+                <p-button 
+                    class="w-full!"
+                    size="small"
+                    pTooltip="Añadir"
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs!"
+                    icon="pi pi-plus" 
+                    severity="primary" 
+                    styleClass="h-9! w-full!"
+                    (onClick)="evtAddRole()"
+                />
+            </p-inputgroup-addon>
+        </p-inputgroup>
+    </div>
+
+    <div>
+        <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Roles asignados:</label>
+        <div class="flex flex-wrap gap-3 border border-slate-300 rounded-xl p-4">
+            @if(ldData()){
+                <p-skeleton width="100px" class="rounded-2xl! h-9!"></p-skeleton>
+                <p-skeleton width="100px" class="rounded-2xl! h-9!"></p-skeleton>
+                <p-skeleton width="100px" class="rounded-2xl! h-9!"></p-skeleton>
+                <p-skeleton width="100px" class="rounded-2xl! h-9!"></p-skeleton>
+            }@else {
+                @if(data().length){
+                    @for(role of data(); let i = $index; track role){
+                        <p-chip 
+                            size="small" 
+                            [label]="role.role" 
+                            [removable]="true" 
+                            icon="pi pi-tag text-slate-500!" 
+                            styleClass="text-sm! font-semibold! text-slate-600!" 
+                            (onRemove)="evtOnRemoveRole(role)"
+                            class="bg-slate-200!"
+                        />
+                    }
+                }@else{
+                    <div class="w-full flex flex-col items-center justify-center  text-center py-4 text-slate-300!">
+                        <span class="flex border-2 border-slate-300! w-12! h-12! rounded-[100px]! mb-2">
+                            <span class="pi pi-tags text-2xl m-auto"></span>  
+                        </span>
+                        <span class="text-xs! text-slate-400!">No tiene roles asignados</span>
+                    </div>
+                }
+                
+            }
+            
+        </div>
+    </div>
+    
+</div>
+
+<div class="flex gap-2 justify-end p-4">
+    <p-button size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
+    <p-button 
+        (onClick)="evtOnSubmit()" 
+        styleClass="min-w-[100px]! text-[12px]!" 
+        [loading]="ldData() || ldRoles() || ldSubmit()"  
+        size="small" 
+        label="Registrar" 
+        severity="primary"
+    ></p-button>
+</div>
+
+
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>

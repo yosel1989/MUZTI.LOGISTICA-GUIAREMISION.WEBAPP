@@ -34,6 +34,7 @@ import { Column } from 'app/shared/models/table';
 import { MdlEntityEdit } from '../../modals/mdl-entity-edit/mdl-entity-edit';
 import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { ResponseDTO } from '@features/shared/models/shared';
+import { MdlEntityRoleSyncList } from '@features/entity-role/components/modals/mdl-entity-rol-sync/mdl-entity-role-sync';
 
 @Component({
   selector: 'app-tbl-entity-principal',
@@ -110,6 +111,12 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
       this.cols = [
         { field: 'select', header: '', sort: false, sticky: false  },
         { field: 'cod', header: '#', sort: false, sticky: false  },
+        { field: 'name', header: 'Nombre o Razón Social', sort: false, sticky: false, tdClassName: 'font-medium!', render: (rowData: EntityDto)  => { 
+          return rowData.type === 'empresa' ? rowData.name : `${rowData.first_name} ${rowData.last_name}`
+        }},
+        //{ field: 'first_name', header: 'Nombre', sort: false, sticky: false },
+        //{ field: 'last_name', header: 'Apellido', sort: false, sticky: false },
+        { field: 'document_type', header: 'Tipo Documento', sort: false, sticky: false, tdClassName: 'text-center!' },
         { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
         { field: 'type', header: 'Tipo', sort: false, sticky: false, tdClassName: 'text-center!', render: (rowData: EntityDto)  => { 
           if (rowData.type === 'empresa') {
@@ -117,10 +124,6 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
           }
           return `<span class="uppercase px-3 text-slate-700 text-center flex items-center justify-center bg-slate-200 p-1 rounded-lg! font-medium"><i class="fa-light fa-user me-1"></i> ${rowData.type.toLocaleUpperCase()}</span>`;
         }},
-        { field: 'name', header: 'Razón Social', sort: false, sticky: false },
-        { field: 'first_name', header: 'Nombre', sort: false, sticky: false },
-        { field: 'last_name', header: 'Apellido', sort: false, sticky: false },
-        { field: 'document_type', header: 'Tipo Documento', sort: false, sticky: false, tdClassName: 'text-center!' },
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
         { field: 'address', header: 'Dirección', sort: false, sticky: false },
         { field: 'country', header: 'País', sort: false, sticky: false, tdClassName: 'uppercase text-center!' },
@@ -511,6 +514,32 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
       }
     }
 
+    evtOnShowRoles(): void{
+      this.ref = this.dialogService.open(MdlEntityRoleSyncList,  {
+        width: '600px',
+        closable: false,
+        modal: true,
+        draggable: false,
+        position: 'top',
+        header: 'Asignar roles',
+        styleClass: 'max-h-none! slide-down-dialog',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader,
+        },
+        inputValues: {
+          entity: this.selected(),
+          id: this.selected()?.id
+        }
+      });
+
+      this.ref?.onChildComponentLoaded.subscribe((el: MdlEntityRoleSyncList) => {
+        el?.OnSaved.subscribe(() => {
+          this.ref?.close();
+        })
+      });
+    }
 
     // Functions
 
@@ -534,6 +563,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
     private buildMenuItems(selected: EntityDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Asignar Roles', icon: 'pi pi-tags', command: () => { this.evtOnShowRoles(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         //{ label: 'Eliminar', icon: 'pi pi-trash ', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'pi pi-check-circle ', command: () => { this.evtOnToggleActive(true); }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Desactivar', icon: 'pi pi-ban ', command: () => { this.evtOnToggleActive(false); }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
