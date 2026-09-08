@@ -189,7 +189,7 @@ export class MdlEntityCreate implements OnInit, AfterViewInit, OnDestroy {
 
       return {
         id: 0,
-        type: form.type,
+        type: !!this._type() ? this._type() : form.type,
         name: form.name,
         first_name: form.first_name,
         last_name: form.last_name,

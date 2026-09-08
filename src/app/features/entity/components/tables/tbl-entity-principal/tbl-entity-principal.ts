@@ -125,7 +125,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
           return `<span class="uppercase px-3 text-slate-700 text-center flex items-center justify-center bg-slate-200 p-1 rounded-lg! font-medium"><i class="fa-light fa-user me-1"></i> ${rowData.type.toLocaleUpperCase()}</span>`;
         }},
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
-        { field: 'address', header: 'Dirección', sort: false, sticky: false },
+        { field: 'address', header: 'Dirección Fiscal', sort: false, sticky: false },
         { field: 'country', header: 'País', sort: false, sticky: false, tdClassName: 'uppercase text-center!' },
         { field: 'is_internal', header: 'Interno', sort: false, sticky: false, thClassName: 'text-center!', render: (rowData: EntityDto)  => { 
           if (rowData.is_internal) {

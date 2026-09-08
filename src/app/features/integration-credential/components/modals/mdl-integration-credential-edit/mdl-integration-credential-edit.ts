@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,20 +10,14 @@ import { MessageModule } from 'primeng/message';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { finalize, Subscription } from 'rxjs';
+import { finalize, Subscription, takeUntil } from 'rxjs';
 import { SelectModule } from 'primeng/select';
-import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
-import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
-import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
-import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
@@ -33,11 +27,13 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AvatarModule } from 'primeng/avatar';
-import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
-import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/models/entity-branch';
+import { IntegrationCredentialApiService } from '@features/integration-credential/services/integration-credential-api.service';
+import { IntegrationCredentialCreateDto, IntegrationCredentialDto, IntegrationCredentialUpdateDto } from '@features/integration-credential/models/integration-credential.model';
 
 @Component({
-  selector: 'app-mdl-registrar-establecimiento',
+  selector: 'app-mdl-integration-credential-edit',
+  templateUrl: './mdl-integration-credential-edit.html',
+  styleUrl: './mdl-integration-credential-edit.scss',
   imports: [
     FormsModule,
     InputNumberModule,
@@ -49,33 +45,29 @@ import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/mo
     MessageModule,
     ConfirmDialog,
     SelectModule,
-    SelectDepartamentoComponent,
-    SelectProvinciaComponent,
-    SelectDistritoComponent,
-    OnlyNumberDirective,
-    OnlyUpperDirective,
     DividerModule,
     SkeletonModule,
     CheckboxModule,
     InputGroupModule,
     InputGroupAddonModule,
-    AvatarModule
+    AvatarModule,
+    TextareaModule,
+    SkeletonModule
   ],
-  templateUrl: './mdl-registrar-establecimiento.component.html',
-  styleUrl: './mdl-registrar-establecimiento.component.scss',
   providers: [ConfirmationService]
 })
-export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDestroy {
 
-  private api = inject(EntityBranchApiService);
+  private config = inject(DynamicDialogConfig);
+  private api = inject(IntegrationCredentialApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
   private empresaApiService = inject(EmpresaApiService);
-  private catalogoApiService = inject(CatalogoApiService);
   private dialogService = inject(DialogService);
   private destroyRef = inject(DestroyRef);
 
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
+  id = input.required<number>();
+  @Output() OnUpdated: EventEmitter<IntegrationCredentialDto> = new EventEmitter<IntegrationCredentialDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
@@ -99,46 +91,27 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   entitySelected = signal<EntityDto | null>(null);
   showEntityList = signal(false);
 
+  providers = signal<{label: string, value: string}[]>([]);
+  ldProviders = signal<boolean>(true);
+
+  ldData = signal<boolean>(false);
+  data = signal<IntegrationCredentialDto | undefined>(undefined);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref: DynamicDialogRef<any> | undefined | null;
-
-  constructor(
-    public config: DynamicDialogConfig
-	) {
-    
-  }
 
   ngOnInit(): void {
     this.frm = new FormGroup({
       entity_id: new FormControl(null, Validators.required),
-      ruc: new FormControl(null, [Validators.minLength(11), Validators.maxLength(11)]),
-      description: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
-      area: new FormControl(null, [Validators.maxLength(45)]),
-      departamento: new FormControl(null, Validators.required),
-      provincia: new FormControl(null, Validators.required),
-      distrito: new FormControl(null, Validators.required),
-      address: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
-      email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
-      pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
-      serie: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
-      code_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
-      tipo: new FormControl(null, Validators.required),
-      is_main: new FormControl(false, Validators.required),
+      provider: new FormControl(null, Validators.required),
+      key: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
+      key_test: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
     });
     this.headerValue = this.config.header ?? '';
 
     this.loadEmpresas();
-    this.loadTiposEstablecimiento();
-
-    this.frm.get('is_main')?.valueChanges.subscribe((value: boolean) => {
-      if(value){
-        this.frm.get('code_sunat')?.setValue('0000');
-        this.frm.get('code_sunat')?.disable();
-      }else{
-        this.frm.get('code_sunat')?.setValue(null);
-        this.frm.get('code_sunat')?.enable();
-      }
-    });
+    this.loadProviders();
+    this.loadData();
   }
 
   ngAfterViewInit(): void {
@@ -146,7 +119,7 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   }
 
   ngOnDestroy(): void {
-    this.subs.unsubscribe();
+
   }
 
   // Getters
@@ -156,22 +129,15 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     return this.frm.controls;
   }
 
-  get request(): RegistrarEstablecimientoRequestDTO {
+  get request(): IntegrationCredentialUpdateDto {
     const form = this.frm.value;
 
     return {
+      id: this.id(),
       entity_id: form.entity_id,
-      ruc: form.ruc, 
-      description: form.description,
-      area: form.area,
-      ubigeo_id: form.distrito,
-      address: form.address,
-      email: form.email,
-      pais: form.pais,
-      serie: form.serie,
-      code_sunat: form.code_sunat,
-      tipo: form.tipo,
-      is_main: form.is_main
+      provider: form.provider,
+      key: form.key,
+      key_test: form.key_test
     };
   }
 
@@ -184,26 +150,31 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     }
 
     this.confirmationService.confirm({
-        header: '¿Registrar establecimiento?',
+        header: '¿Registrar integración?',
         message: 'Confirmar la operación.',
         accept: () => {
 
             this.ldSubmit.set(true);
             
-            const subs = this.api.registrar(this.request).subscribe({
-              next: () => {
+            this.api.update(this.request.id, this.request)
+            .pipe(
+              finalize(()=>{this.ldSubmit.set(false)}),
+              takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe({
+              next: ( res: IntegrationCredentialDto) => {
                 this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
-                  title: "Se registro el establecimiento con éxito",
+                  title: "Se modificó los datos de la integración con éxito",
                   showCloseButton: true,
                   timerProgressBar: true,
                   timer: 4000
                 });
 
-                this.OnCreated.emit(true);
+                this.OnUpdated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
@@ -221,7 +192,6 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
                 });
               }
             });
-            this.subs.add(subs);
            
         },
     });
@@ -301,31 +271,61 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     )
   }
 
-  loadTiposEstablecimiento(): void{
-    this.ldTipoEstablecimiento.set(true);
-    this.subs.add(
-      this.catalogoApiService.getTipoEstablecimiento().subscribe({
-        next: (value: TipoEstablecimientoDTO[]) => {
-          this.tiposEstablecimiento.set(value);
-          this.ldTipoEstablecimiento.set(false);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            position: 'top-end',
-            icon: "error",
-            title: err.error.detalle,
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            customClass: {
-              container: 'z-[9999]!',
-              popup: 'z-[9999]!'
-            }
-          });
-          this.ldTipoEstablecimiento.set(false);
-        },
-      })
+  loadProviders(): void{
+    this.ldProviders.set(true);
+    this.api.getProviderToSelect()
+    .pipe(
+      finalize(()=>{this.ldProviders.set(false)}),
+      takeUntilDestroyed(this.destroyRef)
     )
+    .subscribe({
+      next: (res: {label: string, value: string}[]) => {
+        this.providers.set(res);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showToast({
+          title: err.error.detalle,
+          icon: 'error'
+        });
+      },
+    })
+  }
+
+  loadData(): void{
+    this.ldData.set(true);
+    this.api.getById(this.id())
+    .pipe(
+      finalize(()=>{this.ldData.set(false)}),
+      takeUntilDestroyed(this.destroyRef)
+    )
+    .subscribe({
+      next : (res: IntegrationCredentialDto) => {
+        this.data.set(res);
+        this.handlerFormSetValues(res);
+        this.entitySelected.set({
+          type: 'empresa',
+          document_number: res.entity_document_number,
+          name: res.entity_name,
+        } as EntityDto)
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showToast({
+          title: err.error.detalle,
+          icon: 'error'
+        });
+      },
+    });
+  }
+
+  // Handlers
+
+  handlerFormSetValues(data: IntegrationCredentialDto): void{
+    this.frm.patchValue({
+      entity_id: data.entity_id,
+      provider: data.provider,
+      key: data.key,
+      key_test: data.key_test
+    })
   }
 
 }

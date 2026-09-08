@@ -29,6 +29,11 @@ export class PageConfiguracionPrincipalComponent implements OnInit, AfterViewIni
 
         this.items = [
             {
+                label: 'Integraciones',
+                styleClass: 'text-[12px]! font-semibold text-primary!',
+                routerLink: 'integraciones'
+            },
+            {
                 label: 'Perfiles',
                 styleClass: 'text-[12px]! font-semibold text-primary!',
                 routerLink: 'perfiles'

@@ -48,6 +48,10 @@ const routes: Routes = [
         loadComponent: () => import('@features/configuracion/pages/page-configuracion-principal/page-configuracion-principal').then(m => m.PageConfiguracionPrincipalComponent),
         children: [
           {
+            path: 'integraciones',
+            loadComponent: () => import('@features/integration-credential/pages/page-integration-credential-principal/page-integration-credential-principal').then(m => m.PageIntegrationCredentialPrincipal)
+          },
+          {
             path: 'perfiles',
             loadComponent: () => import('@features/perfil/pages/page-perfil-principal/page-perfil-principal').then(m => m.PagePerfilPrincipalComponent)
           },

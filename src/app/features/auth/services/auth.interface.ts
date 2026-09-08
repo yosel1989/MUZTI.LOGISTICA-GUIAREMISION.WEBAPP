@@ -29,4 +29,5 @@ export interface User {
   profiles: UserProfile[];
   token: string;
   refreshToken: string;
+  rucEmpresa: string;
 }

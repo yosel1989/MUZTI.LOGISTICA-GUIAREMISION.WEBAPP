@@ -15,6 +15,7 @@ export interface JwtPayloadDto {
   UserLocalId3: string;
   UserLocalComercialId: string;
   IdUsuarioSN: string;
+  RucEmpresa: string;
   ProfileAppId: string[];
   exp: number;
   iss: string;

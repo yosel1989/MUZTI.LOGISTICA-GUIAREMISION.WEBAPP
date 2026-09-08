@@ -37,6 +37,8 @@ import { TableData } from "@core/models/table";
 
 export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
     _type = input<'empresa' | 'persona' | undefined>(undefined);
+    _roles = input<string | undefined>(undefined);
+    _isInternal = input<boolean | undefined>(undefined);
 
     api = inject(EntityApiService);
     alertService = inject(AlertService);
@@ -124,7 +126,7 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
         const search = this.ctrlSearch.value;
 
 
-        this.sbData = this.api.getList(1, 100, search, this._type() ?? null)
+        this.sbData = this.api.getList(1, 100, search, this._type() ?? null, this._roles() ?? null, this._isInternal() ?? null)
         .pipe(finalize(() => this.ldData.set(false)))
         .subscribe({
             next: (value: TableData<EntityListDto[]>) => {

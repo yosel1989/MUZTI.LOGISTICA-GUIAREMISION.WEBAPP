@@ -28,8 +28,7 @@ export interface EntityBranchDto{
     usuario_registro_nombre: string;
     usuario_modifico: string | null;
     usuario_modifico_nombre: string | null;
-    estado: string;
-    id_estado: number;
+    active: boolean;
     tipo: string;
     razon_social: string;
     is_main: boolean;

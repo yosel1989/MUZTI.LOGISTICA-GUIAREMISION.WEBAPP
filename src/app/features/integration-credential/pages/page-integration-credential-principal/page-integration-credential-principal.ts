@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { LayoutService } from "@core/services/layout.service";
-import { TblPerfilPrincipalComponent } from "@features/perfil/components/tables/tbl-perfil-principal/tbl-perfil-principal";
+import { TableIntegrationCredentialPrincipal } from "@features/integration-credential/components/tables/tbl-integration-credential-principal/tbl-integration-credential-principal";
 import { CardModule } from "primeng/card";
 
 @Component({
@@ -8,12 +8,12 @@ import { CardModule } from "primeng/card";
     templateUrl: "./page-integration-credential-principal.html",
     styleUrls: ["./page-integration-credential-principal.scss"],
     imports: [
-        TblPerfilPrincipalComponent,
+        TableIntegrationCredentialPrincipal,
         CardModule
     ]
 })
 
-export class PagePerfilPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PageIntegrationCredentialPrincipal implements OnInit, AfterViewInit, OnDestroy {
     private ls = inject(LayoutService);
     
     constructor() { }  
@@ -21,7 +21,7 @@ export class PagePerfilPrincipalComponent implements OnInit, AfterViewInit, OnDe
     ngOnInit(): void {
         this.ls.breadCrumbItems = [
             { label: 'Configuración', labelClass: 'text-[12px]! font-semibold text-primary!' },
-            { label: 'Perfiles', labelClass : 'text-[12px]!' }
+            { label: 'Integraciones', labelClass : 'text-[12px]!' }
         ];
     }
 

@@ -16,7 +16,7 @@ import { MenuItem } from "primeng/api";
 
 export class PageEntitiesPrincipal{
     
-    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Proveedor', labelClass : 'text-[12px]!' }];
+    breadCrumbItems: MenuItem[] = [{ label: 'Administración', labelClass: 'text-[12px]! font-semibold text-primary!' }, { label: 'Entidad', labelClass : 'text-[12px]!' }];
 
     constructor(
       private ls: LayoutService

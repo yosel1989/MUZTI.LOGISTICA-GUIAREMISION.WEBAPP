@@ -67,10 +67,26 @@ export class EntityApiService {
         )
     }
 
-    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null): Observable<TableData<EntityListDto[]>>{
+    getCollectionByRole(role: string, pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EntityDto[]>>{
+        let httpParams = new HttpParams();
+        httpParams = search 
+        ? httpParams.set('search', search) 
+        : httpParams;
+        
+        return this.http.get<TableData<EntityDto[]>>(`${this.baseUrl}/collection-by-role/${role}/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
+            map((res) => res),
+            catchError((e: HttpErrorResponse) => {
+                return throwError(() => e);
+            })
+        )
+    }
+
+    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null, roles: string | null, isInternal: boolean | null): Observable<TableData<EntityListDto[]>>{
         let httpParams = new HttpParams();
         httpParams = search ? httpParams.set('search', search) : httpParams;
         httpParams = type ? httpParams.set('type', type) : httpParams;
+        httpParams = roles ? httpParams.set('roles', roles) : httpParams;
+        httpParams = isInternal ? httpParams.set('isInternal', isInternal) : httpParams;
 
         return this.http.get<TableData<EntityListDto[]>>(`${this.baseUrl}/list/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
             map((res) => res),

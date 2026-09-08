@@ -10,10 +10,30 @@
         <div class="rounded-2xl! overflow-hidden! border border-gray-200! p-4 bg-white">
             <div class="p-4! grid grid-cols-1 lg:grid-cols-3 gap-y-4 lg:gap-4">
                 <div class="col-span-2">
-                    <app-select-empresa-remitente 
-                        #selectEmpresaRemitente 
-                        [control]="f.empresa_id" 
-                    ></app-select-empresa-remitente>
+
+                    <p-button
+                        fluid
+                        severity="secondary"
+                        outlined="true"
+                        icon="pi pi-chevron-down"
+                        iconPos="left"
+                        styleClass="w-full! px-6! py-4! border-gray-300! hover:border-gray-400! min-h-[105px]! rounded-2xl!"
+                        (onClick)="evtShowEntityList()"
+                    >
+                        <div class="flex flex-row gap-x-4 w-full">
+                            <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+                            <div class="flex flex-col justify-center text-sm text-start! text-xl! text-slate-800!">
+                                @if(entitySelected() == null){
+                                    <p class="font-semibold!">Seleccionar empresa</p>
+                                }@else{
+                                    <p class="font-semibold ">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
+                                    <p class="uppercase ">{{ entitySelected()?.document_number }}</p>
+                                }
+                            </div>
+                        </div>
+                    </p-button>
+
+
                 </div>
                 <div class="col">
                     <app-guia-section-cabecera 

@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect, ViewChildren, QueryList, inject, DestroyRef } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
@@ -56,6 +56,10 @@ import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/compone
 import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
 import { EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { EntityDto } from '@features/entity/models/entity';
+import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AvatarModule } from 'primeng/avatar';
 
 export interface Puerto{
     value: string;
@@ -105,6 +109,7 @@ export interface Puerto{
     SectionGuiaRemisionConductor,
     SectionGuiaRemisionOrigen,
     SectionGuiaRemisionDestino,
+    AvatarModule
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
@@ -132,6 +137,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('guiaCabecera') guiaCabecera: GuiaSectionCabeceraComponent | undefined;
 
     @ViewChildren(AccordionHeader) headers!: QueryList<AccordionHeader>;
+
+
+    private destroyRef = inject(DestroyRef);
 
     tipoGuia = TipoGuiaRemisionEnum;
 
@@ -169,6 +177,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     activePanel: string | null = null;
 
+
+    entitySelected = signal<EntityDto | undefined>(undefined);
+
     constructor(
         private formBuilder: FormBuilder,
         public dialogService: DialogService,
@@ -184,6 +195,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.ls.breadCrumbItems = this.breadCrumbItems;
 
         this.formGroup = this.formBuilder.group({
+
+
+            entity_id: new FormControl(null, Validators.required),
 
             empresa_id: new FormControl(null, Validators.required),
 
@@ -350,6 +364,49 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
     // Events
+
+    evtShowEntityList(): void{
+
+        this.modalRef = this.dialogService.open(MdlEntityList, {
+            width: '700px',
+            closable: false,
+            draggable: false,
+            modal: true,
+            position: 'top',
+            header: 'Seleccionar Empresa',
+            styleClass: 'max-h-none! slide-down-dialog',
+            maskStyleClass: 'py-4',
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
+            },
+            inputValues: {
+                _type : 'empresa',
+                _roles : 'emisor',
+                _isInternal : true
+            }
+        });
+
+        this.modalRef?.onChildComponentLoaded
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((childComponent: MdlEntityList) => {
+            childComponent.OnSelected
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((entity: EntityDto) => {
+                this.entitySelected.set(entity);
+                this.formGroup.get('entity_id')?.setValue(entity.id);
+                this.modalRef?.close();
+            });
+            childComponent.OnClose
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.modalRef?.close();
+            });
+        });
+
+    }
+
+
     evtOnSubmit(): void{
 
         this.submitted.set(true);

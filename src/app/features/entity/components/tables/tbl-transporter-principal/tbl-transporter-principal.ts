@@ -181,7 +181,7 @@ export class TblTransporterPrincipal implements OnInit, AfterViewInit, OnDestroy
         this.first = 0;
       }
     
-      this.subData = this.api.getCollection('transportista', this.pageNumber, this.pageSize(), this.search).subscribe({
+      this.subData = this.api.getCollectionByRole('transportista', this.pageNumber, this.pageSize(), this.search).subscribe({
         next: (res: TableData<TransporterDto[]>) => {
           this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);

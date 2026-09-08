@@ -1,4 +1,9 @@
-<div class="container-fluid p-4 relative mx-auto " @fadeDown>
+<div class="container-fluid p-4 relative mx-auto" @fadeDown>
+    <h1 class="inline-flex items-center mb-4 md:text-md! lg:text-xl! font-semibold! text-slate-500 roboto-condensed">
+        <span class="block w-[3px]! h-[30px]! rounded-xl! bg-slate-500 me-3"></span>
+        Configuración del sistema
+    </h1>
+
     <div class="flex flex-col gap-3">
         <div class="card">
             <p-menubar [model]="items">
@@ -6,7 +11,6 @@
                 <a 
                     [routerLink]="item.routerLink" 
                     routerLinkActive="actives" 
-                    [routerLinkActiveOptions]="{ exact: true }"
                     class="{{item.styleClass}}"
                 >
                     {{ item.label }}
