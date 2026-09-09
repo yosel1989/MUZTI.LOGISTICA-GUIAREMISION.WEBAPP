@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, signal, inject, Input, input } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, signal, inject, input } from '@angular/core';
 import { GuiaRemisionDto, } from '@features/guia-remision/models/guia-remision.model';
 import "pdfmake/build/vfs_fonts";
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';

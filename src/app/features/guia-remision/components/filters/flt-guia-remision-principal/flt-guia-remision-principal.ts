@@ -24,8 +24,8 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { SunatCatalogoApiService } from "@features/catalogo/services/sunat-catalogo-api.service";
 import { GuiaRemisionEstadoApiService } from "@features/guia-remision-estado/services/guia-remision-estado.service";
 import { GuiaRemisionEstadoDTO } from "@features/guia-remision-estado/models/guia-remision-estado.model";
-import { EntityBranchApiService } from "@features/establecimiento/services/establecimiento.service";
-import { EstablecimientoListToSelectDTO } from "@features/establecimiento/models/entity-branch";
+import { EntityBranchApiService } from "@features/entity-branch/services/establecimiento.service";
+import { EntityBranchListToSelectDTO } from "@features/entity-branch/models/entity-branch";
 
 
 @Component({
@@ -83,10 +83,10 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
         { label: 'ERROR', value: 'ERROR' },
     ];
 
-    establecimientosRemitente = signal<EstablecimientoListToSelectDTO[]>([]);
+    establecimientosRemitente = signal<EntityBranchListToSelectDTO[]>([]);
     ldEstablecimientosRemitente = signal(false);
 
-    establecimientosDestinatario = signal<EstablecimientoListToSelectDTO[]>([]);
+    establecimientosDestinatario = signal<EntityBranchListToSelectDTO[]>([]);
     ldEstablecimientosDestinatario = signal(false);
 
     motivosTraslado = signal<SunatMotivoTrasladoDto[]>([]);

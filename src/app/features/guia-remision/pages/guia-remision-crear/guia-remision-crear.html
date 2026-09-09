@@ -24,7 +24,7 @@
                             <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
                             <div class="flex flex-col justify-center text-sm text-start! text-xl! text-slate-800!">
                                 @if(entitySelected() == null){
-                                    <p class="font-semibold!">Seleccionar empresa</p>
+                                    <p class="font-semibold!">Seleccionar empresa emisora</p>
                                 }@else{
                                     <p class="font-semibold ">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
                                     <p class="uppercase ">{{ entitySelected()?.document_number }}</p>
@@ -147,7 +147,7 @@
                                 <span class="inline-flex items-center ps-4 py-2">
                                     <span class="roboto-condensed">Remitente</span>
                                     @if(submitted() && sectionRemitente?.invalid){
-                                        <i 
+                                        <i
                                             class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
                                             [class.text-primary-200!]="headerRemitente.active()"
                                         ></i>
@@ -164,7 +164,7 @@
                                 <app-section-guia-remision-remitente
                                     #sectionRemitente
                                     [motivoTraslado]="selectMotivoTraslado?.selected()"
-                                    [empresa]="empresa() ?? undefined"
+                                    [entity]="entitySelected() ?? undefined"
                                 ></app-section-guia-remision-remitente>
                             </p-accordion-content>
                         </p-accordion-panel>
@@ -404,10 +404,11 @@
                                             pSize="small" 
                                             class="text-xs" 
                                             flluid rows="4" 
-                                            maxlength="250" 
                                             pTextarea
+                                            maxlength="2500"
+                                            autoResize="true"
                                         ></textarea>
-                                        <small class="text-[10px]! text-gray-500">{{ ta.value.length }} / 250 carácteres</small>
+                                        <small class="text-[10px]! text-gray-500">{{ ta.value.length }} / 2500 carácteres</small>
                                     </div>
                                 </div>
                             </p-accordion-content>

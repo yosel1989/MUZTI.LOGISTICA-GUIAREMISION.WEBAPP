@@ -36,7 +36,6 @@ import { AlertService } from 'app/core/services/alert.service';
 import { Router } from '@angular/router';
 import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
-import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { TextareaModule } from 'primeng/textarea';
@@ -55,11 +54,12 @@ import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components
 import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
 import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
-import { EntityBranchDto } from '@features/establecimiento/models/entity-branch';
 import { EntityDto } from '@features/entity/models/entity';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AvatarModule } from 'primeng/avatar';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
 
 export interface Puerto{
     value: string;
@@ -89,7 +89,6 @@ export interface Puerto{
     IconFieldModule,
     InputIconModule,
     CardModule,
-    SelectEmpresaRemitenteComponent,
     GuiaSectionCabeceraComponent,
     AsyncPipe,
     AutoCompleteModule,
@@ -206,7 +205,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             fecha_emision: new FormControl(new Date(), Validators.required),
             docs_ref: new FormArray([]),
-            observacion: new FormControl(null)
+            observacion: new FormControl(null, Validators.maxLength(2500))
         });
 
         this.formGroup.get('fecha_emision')?.setValue(new Date());
@@ -585,7 +584,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             return;
         }
 
-        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
+        this.modalRef = this.dialogService.open(MdlEntityBranchList, {
             width: '700px',
             keepInViewport: false,
             closable: false,
@@ -612,7 +611,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         });
 
 
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchList) => {
             const sub2 = cmp?.OnSelected.subscribe(( s: EntityBranchDto) => {
                 (to === 'remitente' ? this.remitente : this.destinatario).set(s);
                 this.modalRef?.close();

@@ -4,7 +4,8 @@ import { catchError, map, Observable, throwError } from "rxjs";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
 import { IntegrationCredentialCreateDto, IntegrationCredentialDto, IntegrationCredentialTableDto, IntegrationCredentialUpdateDto } from "../models/integration-credential.model";
-import { ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
+import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
+import { ResponseDTO } from "@features/shared/models/shared";
 
 @Injectable({
     providedIn: "root"
@@ -52,9 +53,9 @@ export class IntegrationCredentialApiService{
         );
     }
 
-    toggleActive(id: number, request: ToggleActiveRequestDto ): Observable<ToggleActiveResponseDto> {
-        return this.http.put<ToggleActiveResponseDto>(`${this.baseUrl}/${id}/toggle-active`, request).pipe(
-            map((res: ToggleActiveResponseDto) =>  res),
+    toggleActive(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ToggleActiveResponseDto>> {
+        return this.http.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${id}/toggle-active`, request).pipe(
+            map((res: ResponseDTO<ToggleActiveResponseDto>) =>  res),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
@@ -86,6 +87,15 @@ export class IntegrationCredentialApiService{
     getProviderToSelect(): Observable<{label: string, value:string}[]>{
         return this.http.get<{label: string, value:string}[]>(`${this.baseUrl}/provider-to-select`).pipe(
             map((res: {label: string, value:string}[]) => res),
+            catchError((error: HttpErrorResponse) => {
+                return throwError(() => error);
+            })
+        );
+    }
+
+    eliminar(id: number): Observable<DeleteResponseDto> {
+        return this.http.delete<DeleteResponseDto>(`${this.baseUrl}/${id}`).pipe(
+            map(response =>{ return response as DeleteResponseDto }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })

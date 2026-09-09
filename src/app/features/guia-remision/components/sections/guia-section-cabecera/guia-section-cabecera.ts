@@ -2,8 +2,8 @@ import { AsyncPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, inject} from '@angular/core';
 import { AlertService } from '@core/services/alert.service';
-import { EstablecimientoRemitenteGuiaDTO } from '@features/establecimiento/models/entity-branch';
-import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
+import { EstablecimientoRemitenteGuiaDTO } from '@features/entity-branch/models/entity-branch';
+import { EntityBranchApiService } from '@features/entity-branch/services/establecimiento.service';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BehaviorSubject, finalize } from 'rxjs';
@@ -56,7 +56,7 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
       .pipe(finalize(() => this.loading.next(false)))
       .subscribe({
         next: (res: EstablecimientoRemitenteGuiaDTO) => {
-          this.rucEmpresa = res.ruc;
+          this.rucEmpresa = res.entity_document_number;
           this.serieNumero = res.nuevo_numero_guia ?? '';
           this.establecimientoRemitente = res;
         },

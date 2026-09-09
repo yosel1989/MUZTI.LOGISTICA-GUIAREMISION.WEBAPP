@@ -5,6 +5,7 @@ import { AlertService } from '@core/services/alert.service';
 import { UbigeoDistritoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
 import { finalize, Subscription } from 'rxjs';
 
 @Component({
@@ -14,7 +15,8 @@ import { finalize, Subscription } from 'rxjs';
   imports: [
     SelectModule, 
     ReactiveFormsModule, 
-    FormsModule
+    FormsModule,
+    SkeletonModule
   ]
 })
 
@@ -30,6 +32,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() control!: FormControl;
     @Input() invalid: boolean = false;
     @Input() readonly: boolean = false;
+    @Input() skeleton: boolean = false;
     @Input() inputId: string = '';
     @Input() valueEdit: string | null = null;
 

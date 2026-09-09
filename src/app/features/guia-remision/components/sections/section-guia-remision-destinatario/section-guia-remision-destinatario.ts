@@ -18,12 +18,12 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { TooltipModule } from "primeng/tooltip";
 import { GR_DestinoRequestDto } from "@features/guia-remision/models/guia-remision.model";
 import { DialogService } from "primeng/dynamicdialog";
-import { MdlListadoEstablecimientoComponent } from "@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
+import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
+import { MdlEntityBranchList } from "@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list";
 
 @Component({
   selector: 'app-section-guia-remision-destinatario',
@@ -89,7 +89,7 @@ export class SectionGuiaRemisionDestinatario {
         return {
             ubigeo_id: this.destinatario!.ubigeo_id,
             direccion: this.destinatario!.address,
-            pais: this.destinatario!.pais,
+            pais: this.destinatario!.entity_country,
         }
     }
     
@@ -152,7 +152,7 @@ export class SectionGuiaRemisionDestinatario {
             return;
         }
 
-        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
+        this.modalRef = this.dialogService.open(MdlEntityBranchList, {
             width: '700px',
             keepInViewport: false,
             closable: false,
@@ -180,7 +180,7 @@ export class SectionGuiaRemisionDestinatario {
 
         this.modalRef.onChildComponentLoaded
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+        .subscribe((cmp: MdlEntityBranchList) => {
             cmp?.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(( s: EntityBranchDto) => {

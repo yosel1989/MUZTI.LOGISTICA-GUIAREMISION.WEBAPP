@@ -14,7 +14,7 @@ import { AlertService } from "app/core/services/alert.service";
 import { TypingComponent } from "@features/shared/components/typing/typing";
 import { AccordionModule } from 'primeng/accordion';
 import { FieldsetModule } from "primeng/fieldset";
-import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
+import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 
 @Component({
   selector: 'app-section-guia-remision-destino',
@@ -61,7 +61,7 @@ export class SectionGuiaRemisionDestino {
         return {
             ubigeo_id: this.destinatario!.ubigeo_id,
             direccion: this.destinatario!.address,
-            pais: this.destinatario!.pais,
+            pais: this.destinatario!.entity_country,
         }
     }
 

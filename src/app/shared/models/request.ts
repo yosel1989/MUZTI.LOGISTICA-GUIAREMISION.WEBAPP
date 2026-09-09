@@ -9,3 +9,8 @@ export interface ToggleActiveResponseDto extends ToggleActiveRequestDto{
     updated_at_user_name: string;
     detalle: string;
 }
+
+export interface DeleteResponseDto{
+    id: number;
+    detalle: string;
+}

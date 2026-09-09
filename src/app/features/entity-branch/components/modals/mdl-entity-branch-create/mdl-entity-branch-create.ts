@@ -12,12 +12,8 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
-import { SelectDepartamentoComponent } from '@features/guia-remision/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/guia-remision/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/guia-remision/components/selects/select-distrito/select-distrito';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
-import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
@@ -33,11 +29,15 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AvatarModule } from 'primeng/avatar';
-import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
-import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/models/entity-branch';
+import { EntityBranchApiService } from '@features/entity-branch/services/establecimiento.service';
+import { EntityBranchCreateDto } from '@features/entity-branch/models/entity-branch';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+
 
 @Component({
-  selector: 'app-mdl-registrar-establecimiento',
+  selector: 'app-mdl-entity-branch-create',
   imports: [
     FormsModule,
     InputNumberModule,
@@ -52,7 +52,6 @@ import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/mo
     SelectDepartamentoComponent,
     SelectProvinciaComponent,
     SelectDistritoComponent,
-    OnlyNumberDirective,
     OnlyUpperDirective,
     DividerModule,
     SkeletonModule,
@@ -61,11 +60,11 @@ import { RegistrarEstablecimientoRequestDTO } from '@features/establecimiento/mo
     InputGroupAddonModule,
     AvatarModule
   ],
-  templateUrl: './mdl-registrar-establecimiento.component.html',
-  styleUrl: './mdl-registrar-establecimiento.component.scss',
+  templateUrl: './mdl-entity-branch-create.html',
+  styleUrl: './mdl-entity-branch-create.scss',
   providers: [ConfirmationService]
 })
-export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
 
   private api = inject(EntityBranchApiService);
   private confirmationService = inject(ConfirmationService);
@@ -111,18 +110,16 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
   ngOnInit(): void {
     this.frm = new FormGroup({
       entity_id: new FormControl(null, Validators.required),
-      ruc: new FormControl(null, [Validators.minLength(11), Validators.maxLength(11)]),
       description: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       area: new FormControl(null, [Validators.maxLength(45)]),
-      departamento: new FormControl(null, Validators.required),
-      provincia: new FormControl(null, Validators.required),
-      distrito: new FormControl(null, Validators.required),
+      department: new FormControl(null, Validators.required),
+      province: new FormControl(null, Validators.required),
+      district: new FormControl(null, Validators.required),
       address: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
       email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
-      pais: new FormControl('PE', [Validators.required, Validators.maxLength(3)]),
       serie: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
       code_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
-      tipo: new FormControl(null, Validators.required),
+      type: new FormControl(null, Validators.required),
       is_main: new FormControl(false, Validators.required),
     });
     this.headerValue = this.config.header ?? '';
@@ -156,21 +153,19 @@ export class MdlRegistrarEstablecimientoComponent implements OnInit, AfterViewIn
     return this.frm.controls;
   }
 
-  get request(): RegistrarEstablecimientoRequestDTO {
+  get request(): EntityBranchCreateDto {
     const form = this.frm.value;
 
     return {
       entity_id: form.entity_id,
-      ruc: form.ruc, 
       description: form.description,
       area: form.area,
-      ubigeo_id: form.distrito,
+      ubigeo_id: form.district,
       address: form.address,
       email: form.email,
-      pais: form.pais,
       serie: form.serie,
       code_sunat: form.code_sunat,
-      tipo: form.tipo,
+      type: form.type,
       is_main: form.is_main
     };
   }

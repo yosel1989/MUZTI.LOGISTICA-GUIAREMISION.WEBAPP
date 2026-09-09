@@ -29,7 +29,8 @@ import { MdlIntegrationCredentialCreate } from '../../modals/mdl-integration-cre
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MdlIntegrationCredentialEdit } from '../../modals/mdl-integration-credential-edit/mdl-integration-credential-edit';
-import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
+import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
+import { ResponseDTO } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-tbl-integration-credential-principal',
@@ -345,14 +346,14 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
     }
 
     evtOnDelete(): void{
-      /*if(!this.handlerValidateSelected()) return;
+      if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
-          header: '¿Eliminar conductor?',
+          header: '¿Eliminar crenciales de integración?',
           message: 'Confirmar la operación.',
           accept: () => {
 
               const sub = this.api.eliminar(this.selected()!.id).subscribe({
-                next: (res: EliminarConductorResponseDto) => {
+                next: (res: DeleteResponseDto) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -384,7 +385,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
               this.subs.add(sub);
             
           }
-      });*/
+      });
     }
 
     evtOnToggleActive(status: boolean): void{
@@ -394,7 +395,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
           message: 'Confirmar la operación.',
           accept: () => {
               this.selected.update(current => {
-                const updated = { ...current!, ld_estado: true };
+                const updated = { ...current!, loading_active: true };
 
                 this.data.update(arr =>
                   arr.map(c => c.id === updated.id ? updated : c)
@@ -410,7 +411,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
 
               const sub = this.api.toggleActive(this.selected()!.id, request)
               .subscribe({
-                next: (res: ToggleActiveResponseDto) => {
+                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -426,10 +427,10 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
                       ...current!,
                       loading_active: false,
                       loading_update: false,
-                      active: res.active,
-                      updated_at: res.updated_at,
-                      updated_at_user: res.updated_at_user,
-                      updated_at_user_name: res.updated_at_user_name
+                      active: res.data.active,
+                      updated_at: res.data.updated_at,
+                      updated_at_user: res.data.updated_at_user,
+                      updated_at_user_name: res.data.updated_at_user_name
                     };
 
                     this.data.update(arr =>
@@ -457,7 +458,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
                   });
 
                   this.selected.update(current => {
-                    const updated = { ...current!, ld_estado: false };
+                    const updated = { ...current!, loading_active: false };
 
                     this.data.update(arr =>
                       arr.map(c => c.id === updated.id ? updated : c)

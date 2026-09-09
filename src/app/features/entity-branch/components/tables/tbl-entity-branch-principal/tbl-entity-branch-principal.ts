@@ -1,18 +1,16 @@
 import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, computed, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { EliminarEstablecimientoResponseDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
-import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
-import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
+import { ResponseDTO } from '@features/shared/models/shared';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TableData } from 'app/core/models/table';
 import { AlertService } from 'app/core/services/alert.service';
 import { UtilService } from 'app/core/services/util.service';
-import { ToggleActiveRequestDto } from 'app/shared/models/request';
+import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { Column } from 'app/shared/models/table';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -29,13 +27,16 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
-import { MdlEditarEstablecimientoComponent } from '../../modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
-import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
+import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
+import { EntityBranchApiService } from '@features/entity-branch/services/establecimiento.service';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { MdlEntityBranchCreate } from '../../modals/mdl-entity-branch-create/mdl-entity-branch-create';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-tbl-establecimiento-principal',
-  templateUrl: './tbl-establecimiento-principal.html',
-  styleUrl: './tbl-establecimiento-principal.scss',
+  selector: 'app-tbl-entity-branch-principal',
+  templateUrl: './tbl-entity-branch-principal.html',
+  styleUrl: './tbl-entity-branch-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -58,10 +59,11 @@ import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar
   animations: [fadeDownAnimation]
 })
 
-export class TableEstablecimientoPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
+export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('cm') cm: ContextMenu | undefined;
 
+    private destroyRef = inject(DestroyRef);
     public dialogService = inject(DialogService);
     private api = inject(EntityBranchApiService);
     public util = inject(UtilService);
@@ -109,19 +111,18 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!' },
           { field: 'area', header: 'Area', sort: false, sticky: false },
           { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!' },
-          { field: 'departamento', header: 'Departamento', sort: false, sticky: false },
-          { field: 'provincia', header: 'Provincia', sort: false, sticky: false },
-          { field: 'distrito', header: 'Distrito', sort: false, sticky: false },
+          { field: 'department', header: 'Departamento', sort: false, sticky: false },
+          { field: 'province', header: 'Provincia', sort: false, sticky: false },
+          { field: 'district', header: 'Distrito', sort: false, sticky: false },
           { field: 'address', header: 'Dirección', sort: false, sticky: false },
           { field: 'email', header: 'Correo', sort: false, sticky: false },
-          { field: 'pais', header: 'País', sort: false, sticky: false, tdClassName: 'text-center!' },
           { field: 'serie', header: 'Serie', sort: false, sticky: false },
           { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
           { field: 'active', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
           { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
         ];
     }
@@ -169,10 +170,10 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
         next: (res: TableData<EntityBranchDto[]>) => {
           
           this.data.set(res.data.map(x => {
-            x.fecha_registro = new Date(x.fecha_registro);
-            x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : x.fecha_modifico;
-            x.ld_estado = false;
-            x.ld_update = false;
+            x.created_at = new Date(x.created_at);
+            x.updated_at = x.updated_at ? new Date(x.updated_at) : x.updated_at;
+            x.loading_active = false;
+            x.loading_update = false;
             return x;
           }));
 
@@ -229,7 +230,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlRegistrarEstablecimientoComponent,  {
+      this.ref = this.dialogService.open(MdlEntityBranchCreate,  {
         width: '700px',
         closable: false,
         draggable: false,
@@ -244,7 +245,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarEstablecimientoComponent) => {
+      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchCreate) => {
         const sub2 = cmp?.OnCreated.subscribe(() => {
           this.evtOnReload();
           this.ref?.close();
@@ -262,7 +263,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
     evtOnEdit(): void{
       if(!this.handlerValidateSelected()) return;
 
-      this.ref = this.dialogService.open(MdlEditarEstablecimientoComponent,  {
+      this.ref = this.dialogService.open(MdlEntityBranchEdit,  {
         width: '700px',
         closable: false,
         draggable: false,
@@ -280,14 +281,17 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarEstablecimientoComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: EntityBranchDto) => {
+      this.ref.onChildComponentLoaded
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((cmp: MdlEntityBranchEdit) => {
+        
+        cmp?.OnUpdated
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(( s: EntityBranchDto) => {
           this.ref?.close();
 
-
-
           this.selected.update(current => {
-            const updated = { ...current!, ...s, ld_update: true };
+            const updated = { ...current!, ...s, loading_update: true };
 
             this.data.update(arr =>
               arr.map(c => c.id === updated.id ? updated : c)
@@ -309,14 +313,13 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           }, 1000);
 
         });
-        const sub3 = cmp?.OnCanceled.subscribe(() => {
+        cmp?.OnCanceled
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.ref?.close();
         });
-        this.subs.add(sub2);
-        this.subs.add(sub3);
-      });
 
-      this.subs.add(sub);
+      });
     }
 
     evtOnDelete(): void{
@@ -326,7 +329,7 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           accept: () => {
 
               const subs = this.api.delete(this.selected()!.id).subscribe({
-                next: (res: EliminarEstablecimientoResponseDTO) => {
+                next: (res: ResponseDTO<DeleteResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -386,8 +389,8 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                 active: status
               } as ToggleActiveRequestDto;
 
-              const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
-                next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
+              const subs = this.api.toggleActive(this.selected()!.id, request).subscribe({
+                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -403,11 +406,10 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
                       ...current!,
                       ld_estado: false,
                       ld_update: false,
-                      id_estado: res.data.id_estado,
-                      estado: res.data.estado,
-                      fecha_modifico: res.data.fecha_modifico,
-                      usuario_modifico: res.data.usuario_modifico,
-                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
+                      active: res.data.active,
+                      updated_at: res.data.updated_at,
+                      updated_at_user: res.data.updated_at_user,
+                      updated_at_user_name: res.data.updated_at_user_name
                     };
 
                     this.data.update(arr =>

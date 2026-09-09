@@ -14,7 +14,7 @@ import { AlertService } from "app/core/services/alert.service";
 import { AccordionModule } from 'primeng/accordion';
 import { TypingComponent } from "@features/shared/components/typing/typing";
 import { FieldsetModule } from "primeng/fieldset";
-import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
+import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 
 @Component({
   selector: 'app-section-guia-remision-origen',
@@ -62,7 +62,7 @@ export class SectionGuiaRemisionOrigen {
         return {
             ubigeo_id: this.remitente!.ubigeo_id,
             direccion: this.remitente!.address,
-            pais: this.remitente!.pais,
+            pais: this.remitente!.entity_country,
         }
     }
 

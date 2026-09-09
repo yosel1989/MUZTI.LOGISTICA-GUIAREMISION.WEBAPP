@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EditarEstablecimientoRequestDTO, EliminarEstablecimientoResponseDTO, EntityBranchDto, EstablecimientoListToModalDTO, EstablecimientoListToSelectDTO, EstablecimientoRemitenteGuiaDTO, RegistrarEstablecimientoRequestDTO } from "../models/entity-branch";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { TableData } from "@core/models/table";
-import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
-import { ToggleActiveRequestDto } from "app/shared/models/request";
+import { ResponseDTO } from "@features/shared/models/shared";
+import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
+import { EntityBranchCreateDto, EntityBranchDto, EntityBranchListToModalDTO, EntityBranchListToSelectDTO, EntityBranchUpdateDto, EstablecimientoRemitenteGuiaDTO } from "../models/entity-branch";
 
 @Injectable({
     providedIn: "root"
@@ -16,17 +16,17 @@ export class EntityBranchApiService{
     private baseUrl = "";
 
     constructor( private http: HttpClient){
-        this.baseUrl = `${environment.apiUrl}/establecimientos`
+        this.baseUrl = `${environment.apiUrl}/entity-branchs`
     }
 
-    getAllToModalByRuc(ruc: string, search: string | null): Observable<EstablecimientoListToModalDTO[]>{
+    getAllToModalByRuc(entityId: number, search: string | null): Observable<EntityBranchListToModalDTO[]>{
         let httpParams = new HttpParams();
         if (search) {
             httpParams = httpParams.set('search', search);
         }
 
-        return this.http.get<EstablecimientoListToModalDTO[]>(`${this.baseUrl}/listar-sugerido/${ruc}`, { params: httpParams }).pipe(
-            map(response =>{ return response as EstablecimientoListToModalDTO[] }),
+        return this.http.get<EntityBranchListToModalDTO[]>(`${this.baseUrl}/listar-sugerido/${entityId}`, { params: httpParams }).pipe(
+            map(response =>{ return response as EntityBranchListToModalDTO[] }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
@@ -36,7 +36,7 @@ export class EntityBranchApiService{
 
     getById(id: number): Observable<EntityBranchDto>{
         return this.http.get<EntityBranchDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
-            map(response =>{ return response as EntityBranchDto }),
+            map(response => response ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
@@ -60,46 +60,48 @@ export class EntityBranchApiService{
         );
     }
 
-    delete(id: number): Observable<EliminarEstablecimientoResponseDTO> {
-        return this.http.delete<EliminarEstablecimientoResponseDTO>(`${this.baseUrl}/${id}`).pipe(
-            map(response =>{ return response as EliminarEstablecimientoResponseDTO }),
+    delete(id: number): Observable<ResponseDTO<DeleteResponseDto>> {
+        return this.http.delete<ResponseDTO<DeleteResponseDto>>(`${this.baseUrl}/${id}`).pipe(
+            map(response =>{ return response}),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
         );
     }
 
-    actualizarEstado(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
-        return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+    toggleActive(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ToggleActiveResponseDto>> {
+        return this.http.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
             map(response => ({  
                 ...response,
                 data: {
                     ...response.data,
-                    fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+                    updated_at: response.data.updated_at ? new Date(response.data.updated_at) : null,
+                    updated_at_user: response.data.updated_at_user,
+                    updated_at_user_name: response.data.updated_at_user_name
                 }
 
-            }) as ResponseDTO<ActualizarEstadoResponseDto>),
+            }) as ResponseDTO<ToggleActiveResponseDto>),
             catchError((error: HttpErrorResponse) => {
             return throwError(() => error);
             })
         );
     }
 
-    registrar(request: RegistrarEstablecimientoRequestDTO): Observable<RegistrarEstablecimientoRequestDTO> {
-        return this.http.post<RegistrarEstablecimientoRequestDTO>(`${this.baseUrl}`, request).pipe(
-            map(response =>{ return response as RegistrarEstablecimientoRequestDTO }),
+    registrar(request: EntityBranchCreateDto): Observable<EntityBranchDto> {
+        return this.http.post<EntityBranchDto>(`${this.baseUrl}`, request).pipe(
+            map(response => response),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
         );
     }
 
-    editar(id: number, request: EditarEstablecimientoRequestDTO): Observable<EntityBranchDto> {
+    update(id: number, request: EntityBranchUpdateDto): Observable<EntityBranchDto> {
         return this.http.put<EntityBranchDto>(`${this.baseUrl}/${id}`, request).pipe(
             map(response => ({ 
                 ...response,
-                fecha_registro: new Date(response.fecha_registro),
-                fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
+                created_at: new Date(response.created_at),
+                updated_at: response.updated_at ? new Date(response.updated_at) : null
             }) as EntityBranchDto ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -107,16 +109,16 @@ export class EntityBranchApiService{
         );
     }
 
-    getByIdToGuia(idEstablecimiento: number, tipoGuia: 'TRANSPORTISTA' | 'REMITENTE' | string): Observable<EstablecimientoRemitenteGuiaDTO> {
-        return this.http.get<EstablecimientoRemitenteGuiaDTO>(`${this.baseUrl}/buscar-por-id-para-guia/${idEstablecimiento}/${tipoGuia}`).pipe(
+    getByIdToGuia(entityBranchId: number, tipoGuia: 'TRANSPORTISTA' | 'REMITENTE' | string): Observable<EstablecimientoRemitenteGuiaDTO> {
+        return this.http.get<EstablecimientoRemitenteGuiaDTO>(`${this.baseUrl}/buscar-por-id-para-guia/${entityBranchId}/${tipoGuia}`).pipe(
             map(response =>{ return response as EstablecimientoRemitenteGuiaDTO})
         );
     }
 
 
-    getAllToSelectByRuc(ruc: string): Observable<EstablecimientoListToSelectDTO[]>{
-        return this.http.get<EstablecimientoListToSelectDTO[]>(`${this.baseUrl}/listar-select/por-ruc/${ruc}`).pipe(
-            map(response =>{ return response as EstablecimientoListToSelectDTO[] }),
+    getAllToSelectByRuc(ruc: string): Observable<EntityBranchListToSelectDTO[]>{
+        return this.http.get<EntityBranchListToSelectDTO[]>(`${this.baseUrl}/listar-select/por-ruc/${ruc}`).pipe(
+            map(response => response ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })

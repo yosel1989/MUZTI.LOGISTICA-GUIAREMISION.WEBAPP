@@ -18,12 +18,12 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { TooltipModule } from "primeng/tooltip";
 import { GR_OrigenRequestDto } from "@features/guia-remision/models/guia-remision.model";
 import { DialogService } from "primeng/dynamicdialog";
-import { MdlListadoEstablecimientoComponent } from "@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
-import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
+import { EntityDto } from "@features/entity/models/entity";
+import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
+import { MdlEntityBranchList } from "@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list";
 
 @Component({
   selector: 'app-section-guia-remision-remitente',
@@ -61,7 +61,7 @@ export class SectionGuiaRemisionRemitente {
     }
     selected = signal<EntityBranchDto | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>();
-    empresa = input.required<EmpresaToSelectDto | undefined>(); 
+    entity = input.required<EntityDto | undefined>(); 
 
     submitted = signal(false);
 
@@ -76,7 +76,7 @@ export class SectionGuiaRemisionRemitente {
         return {
             ubigeo_id: this.remitente!.ubigeo_id,
             direccion: this.remitente!.address,
-            pais: this.remitente!.pais,
+            pais: this.remitente!.entity_country,
         }
     }
     
@@ -105,6 +105,14 @@ export class SectionGuiaRemisionRemitente {
     }
 
     evtOnShowEstablecimiento( to: string ): void{
+
+        if(!this.entity()){
+            this.alertService.showToast({
+                icon: 'warning',
+                title: `Debe seleccionar la entidad emisora`
+            });
+            return;
+        }
     
         if(!this.motivoTraslado){
             this.alertService.showToast({
@@ -114,7 +122,7 @@ export class SectionGuiaRemisionRemitente {
             return;
         }
 
-        this.modalRef = this.dialogService.open( MdlListadoEstablecimientoComponent, {
+        this.modalRef = this.dialogService.open( MdlEntityBranchList, {
             width: '700px',
             keepInViewport: false,
             closable: false,
@@ -129,7 +137,7 @@ export class SectionGuiaRemisionRemitente {
             },
             appendTo: 'body',
             inputValues: {
-                ruc: this.empresa()?.ruc,
+                entity: this.entity(),
                 tipo: to,
                 motivoTraslado: this.motivoTraslado,
                 remitente: this.remitente
@@ -142,7 +150,7 @@ export class SectionGuiaRemisionRemitente {
 
         this.modalRef.onChildComponentLoaded
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+        .subscribe((cmp: MdlEntityBranchList) => {
             cmp?.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(( s: EntityBranchDto) => {

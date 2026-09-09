@@ -22,7 +22,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const headers: { [key: string]: string } = {
     Authorization: token ? `Bearer ${token}` : '',
-    AppId: environment.appId
+    AppId: environment.appId.toString()
   };
 
   if (!(req.body instanceof FormData)) {

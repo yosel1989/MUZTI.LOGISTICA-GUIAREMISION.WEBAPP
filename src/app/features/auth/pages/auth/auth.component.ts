@@ -8,10 +8,12 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthApiService } from '../../services/auth-api.service';
 import { StorageService } from '../../../../core/services/storage.service';
-import { AuthRequest, User } from '../../services/auth.interface';
+import { AuthRequest, User, UserProfile } from '../../services/auth.interface';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { AlertService } from 'app/core/services/alert.service';
+import { environment } from 'environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-auth',
@@ -61,6 +63,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
   }
 
   // Getters
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get f(): any {
     return this.frmAuth.controls;
   }
@@ -87,7 +90,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
 
     this.authApi.login(this.formData).subscribe({
       next: (res: User) => {
-        if(!res.profiles.find((x: any) => x.appId === 37)){
+        if(!res.profiles.find((x: UserProfile) => x.appId === environment.appId)){
           this.handlerOnSubmitFormError("No tienes permisos suficientes para ingresar al sistema.");
           this.loadingSubmit = false;
           return;
@@ -96,7 +99,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
         this.loadingSubmit = false;
         this.handlerOnSubmitSuccess(res);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         this.handlerOnSubmitFormError(err.error ?? "Ocurrió un error, intente nuevamente.");
         this.loadingSubmit = false;
       }
@@ -158,7 +161,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
   }
 
   hasProfile(profile: number, user: User): boolean{
-    const profileIds = user?.profiles.map((x: any) => x.id);
+    const profileIds = user?.profiles.map((x: UserProfile) => x.id);
     return profileIds?.includes(profile) ?? false;
   }
 

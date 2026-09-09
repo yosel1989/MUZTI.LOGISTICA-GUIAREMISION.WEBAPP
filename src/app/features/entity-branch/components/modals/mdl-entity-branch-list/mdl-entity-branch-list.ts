@@ -1,6 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal } from "@angular/core";
-import { EmpresaApiService } from "@features/empresa/services/empresa-api.service";
-import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, input, Input, OnDestroy, OnInit, Output, signal } from "@angular/core";
 import { AlertService } from "@core/services/alert.service";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
@@ -18,13 +16,18 @@ import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo
 import { AvatarModule } from "primeng/avatar";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Column } from "app/shared/models/table";
-import { EntityBranchApiService } from "@features/establecimiento/services/establecimiento.service";
-import { EntityBranchDto, EstablecimientoListToModalDTO } from "@features/establecimiento/models/entity-branch";
+import { EntityDto } from "@features/entity/models/entity";
+import { EntityApiService } from "@features/entity/services/entity-service";
+import { DialogService } from "primeng/dynamicdialog";
+import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
+import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
+import { EntityBranchApiService } from "@features/entity-branch/services/establecimiento.service";
+import { EntityBranchDto, EntityBranchListToModalDTO } from "@features/entity-branch/models/entity-branch";
 
 @Component({
-    selector: 'app-mdl-listado-establecimiento',
-    templateUrl: './mdl-listado-establecimiento.html',
-    styleUrl: './mdl-listado-establecimiento.scss',
+    selector: 'app-mdl-entity-branch-list',
+    templateUrl: './mdl-entity-branch-list.html',
+    styleUrl: './mdl-entity-branch-list.scss',
     imports: [
         InputIconModule,
         InputTextModule,
@@ -39,34 +42,34 @@ import { EntityBranchDto, EstablecimientoListToModalDTO } from "@features/establ
     ]
 })
 
-export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit, OnDestroy{
+export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
 
-    empresaApiService = inject(EmpresaApiService);
+    entityApiService = inject(EntityApiService);
     api = inject(EntityBranchApiService);
     alertService = inject(AlertService);
+    dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
-    @Input() ruc: string | null = null;
+    entity = input<EntityDto | null>(null);
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EntityBranchDto> = new EventEmitter<EntityBranchDto>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
     @Input() motivoTraslado: SunatMotivoTrasladoDto | undefined;
     @Input() remitente: EntityBranchDto | undefined;
 
-    empresas = signal<EmpresaToSelectDto[]>([]);
-    ldEmpresas = signal(false);
+    entitySelected = signal<EntityDto | undefined>(undefined);
 
-    ctrlRuc = new FormControl<string | null>({value: null, disabled: true});
+    ctrlRuc = new FormControl<number | null>({value: null, disabled: true});
     ctrlSearch = new FormControl<string | null>(null);
     cols: Column[] = [];
 
-    data = signal<EstablecimientoListToModalDTO[]>([]);
+    data = signal<EntityBranchListToModalDTO[]>([]);
     ldData = signal(false);
 
     ldDataById = signal(false);
 
     ldSelected = signal(false);
-    selected : EstablecimientoListToModalDTO | null = null;
+    selected : EntityBranchListToModalDTO | null = null;
 
     sb = new Subscription();
     sbData : Subscription | undefined;
@@ -74,7 +77,28 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
     placeholderLoading = 'Cargando ...';
     placeholder = 'Seleccionar ...';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    modalRef: any | undefined;
+
+    constructor(){
+        effect(()=>{
+            const entity = this.entity();
+            if(entity){
+                this.entitySelected.set(entity);
+                this.loadData();
+            }
+        });
+
+        effect(()=>{
+            const entitySelected = this.entitySelected();
+            if(entitySelected){
+                this.loadData();
+            }
+        });
+    }
+
     ngOnInit(): void {
+        console.log('entidad', this.entity());
 
         //console.log(this.tipo, this.motivoTraslado, this.remitente);
 
@@ -84,7 +108,7 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                     this.ctrlRuc.enable();
                     break;
                 default:
-                    this.ctrlRuc.setValue(this.ruc);
+                    this.ctrlRuc.setValue(this.entity()?.id ?? null);
                     break;
             }
         }
@@ -98,12 +122,12 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                     this.ctrlRuc.enable();
                     break;
                 case SunatMotivoTrasladoEnum.compra: 
-                    this.ctrlRuc.setValue(this.ruc);
+                    this.ctrlRuc.setValue(this.entity()?.id ?? null);
                     break;
                 case SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa: 
                 case SunatMotivoTrasladoEnum.recojo_bienes_transformados: 
                 case SunatMotivoTrasladoEnum.importacion:
-                    this.ctrlRuc.setValue(this.ruc);
+                    this.ctrlRuc.setValue(this.entity()?.id ?? null);
                     break;
                 case SunatMotivoTrasladoEnum.exportacion: break;
                 case SunatMotivoTrasladoEnum.otros: break;
@@ -125,12 +149,8 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                 className: 'w-[50px]',
                 tdClassName: 'font-semibold! ps-4!'
             },
-            /*{
-                field: 'entidad',
-                header: 'Entidad'
-            },*/
             {
-                field: 'descripcion',
+                field: 'description',
                 header: 'Local'
             },
             {
@@ -138,11 +158,14 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
                 header: 'Area'
             },
             {
-                field: 'codigo_sunat',
+                field: 'serie',
+                header: 'Serie'
+            },
+            {
+                field: 'code_sunat',
                 header: 'Cod. Sunat'
             }
         ]
-        this.loadEmpresas();
         this.loadData();
     }
 
@@ -157,43 +180,62 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     // data 
 
-    loadEmpresas(): void{
-        this.ldEmpresas.set(true);
-        this.empresaApiService.loadAllToSelect()
-        .pipe(
-            takeUntilDestroyed(this.destroyRef),
-            finalize(()=>{this.ldEmpresas.set(false);})
-        )
-        .subscribe({
-            next: (value: EmpresaToSelectDto[]) => {
-                this.empresas.set(value.map(x => ({
-                    ...x,
-                    disabled: this.disabledOptions(x)
-                })));
+    evtShowEntityList(): void{
+
+        this.modalRef = this.dialogService.open(MdlEntityList, {
+            width: '700px',
+            closable: false,
+            draggable: false,
+            modal: true,
+            position: 'top',
+            header: 'Seleccionar Empresa',
+            styleClass: 'max-h-none! slide-down-dialog',
+            maskStyleClass: 'py-4',
+            appendTo: 'body',
+            templates: {
+                header: MdlHeader
             },
-            error: (e: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    icon: "error",
-                    title: e.error.detalle,
-                    timer: 4000,
-                    showCloseButton: true
-                });
-            },
+            inputValues: {
+                _type : 'empresa',
+                _roles : this.tipo === 'remitente' ? 'emisor' : undefined,
+                _isInternal : undefined
+            }
         });
+
+        this.modalRef?.onChildComponentLoaded
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((childComponent: MdlEntityList) => {
+            childComponent.OnSelected
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((entity: EntityDto) => {
+                this.entitySelected.set(entity);
+                this.ctrlRuc.setValue(entity.id);
+                this.modalRef?.close();
+            });
+            childComponent.OnClose
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.modalRef?.close();
+            });
+        });
+
     }
 
+    
     loadData(): void{
+        if(this.entitySelected() === undefined){
+            return;
+        }
+
         this.sbData?.unsubscribe();
         this.ldData.set(true);
-        const ruc = this.ctrlRuc.value!;
+        const entityId = this.entitySelected()!.id;
         const search = this.ctrlSearch.value;
 
-        console.log(ruc, search);
-
-        this.sbData = this.api.getAllToModalByRuc(ruc, search)
+        this.sbData = this.api.getAllToModalByRuc(entityId, search)
         .pipe(finalize(() => this.ldData.set(false)))
         .subscribe({
-            next: (value: EstablecimientoListToModalDTO[]) => {
+            next: (value: EntityBranchListToModalDTO[]) => {
                 this.data.set(value);
             },
             error: (err: HttpErrorResponse) =>  {
@@ -252,13 +294,13 @@ export class MdlListadoEstablecimientoComponent implements OnInit, AfterViewInit
 
     // functions
 
-    disabledOptions(item: EmpresaToSelectDto): boolean{
+    /*disabledOptions(item: EmpresaToSelectDto): boolean{
         // Solo sí el motivo de traslado es igual a 'Recojo de bienes transformados' y es para seleccionar el remitente, se deshabilita la opción que tenga el mismo ruc al emisor
-        if( (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.recojo_bienes_transformados && this.tipo === 'remitente') && this.ruc === item.ruc)
+        if( (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.recojo_bienes_transformados && this.tipo === 'remitente') && this.entityId === item.ruc)
             return true;
 
-        if( (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.venta && this.remitente) && this.remitente.ruc === item.ruc ) 
+        if( (this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.venta && this.remitente) && this.remitente.entity_document_number === item.ruc ) 
             return true;
         return false;
-    }
+    }*/
 }

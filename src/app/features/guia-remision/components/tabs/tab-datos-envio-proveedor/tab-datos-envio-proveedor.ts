@@ -43,7 +43,7 @@ import { SelectUnidadMedidaComponent } from '@features/catalogo/components/selec
 import { TypingComponent } from '@features/shared/components/typing/typing';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 
 @Component({
   selector: 'app-tab-datos-envio-proveedor',
@@ -694,7 +694,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         if(this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
               cod_establecimiento_origen: s.code_sunat,
-              ruc_establecimiento_origen: s.ruc
+              ruc_establecimiento_origen: s.entity_document_number
           });
         }
     }
@@ -708,7 +708,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
         if(this.motivoTraslado?.codigo_sunat === SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa){
           this.formDatosEnvio.patchValue({
               cod_establecimiento_destino: s.code_sunat,
-              ruc_establecimiento_destino: s.ruc
+              ruc_establecimiento_destino: s.entity_document_number
           });
         }
     }

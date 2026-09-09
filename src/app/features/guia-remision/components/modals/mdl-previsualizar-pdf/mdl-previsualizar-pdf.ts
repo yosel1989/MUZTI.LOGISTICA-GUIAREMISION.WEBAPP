@@ -69,9 +69,9 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 { text: '', border: [false,false,false,false] },
                 { 
                   stack: [
-                    {text: this.data.remitente.razon_social, bold: true, marginBottom: 2},
+                    {text: this.data.remitente.entity_name, bold: true, marginBottom: 2},
                     {text: this.data.remitente.address.toUpperCase(), marginBottom:10, color: '#adadad'},
-                    {text: `${this.data.remitente.distrito} - ${this.data.remitente.provincia} - ${this.data.remitente.departamento}`, color: '#adadad'},
+                    {text: `${this.data.remitente.district} - ${this.data.remitente.province} - ${this.data.remitente.department}`, color: '#adadad'},
                   ],
                   border: [false,false,false,false],
                 },
@@ -95,7 +95,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     {
                       stack: [
                         {
-                          text: `RUC: ${this.data.remitente.ruc}`,
+                          text: `RUC: ${this.data.remitente.entity_document_number}`,
                           alignment: 'center',
                           color: '#adadad'
                         },
@@ -133,13 +133,13 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
             body: [
               [
                 {text: 'Cliente:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 1}, 
-                {text: this.data.destinatario.razon_social, border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 1, color: '#adadad'}, 
+                {text: this.data.destinatario.entity_name, border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 1, color: '#adadad'}, 
                 {text: '', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 1}, 
                 {text: '', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 1}
               ],
               [
                 {text: `${'RUC'}:`, border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
-                {text: this.data.destinatario.ruc ?? '-', border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
+                {text: this.data.destinatario.entity_document_number ?? '-', border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
                 {text: 'Dirección:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
                 {text: this.data.destinatario.address ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
               ],
@@ -147,7 +147,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 {text: 'Fecha de emisión:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
                 {text: this.utilService.dateFormat(this.data.fecha, 'dd-MMM-yyyy').toUpperCase().replace(".",""), border: [false, false, false, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}, 
                 {text: 'Ciudad:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
-                {text: `${this.data.destinatario.distrito ?? '-'} - ${this.data.destinatario.provincia ?? '-'} - ${this.data.destinatario.departamento ?? '-'}`, border: [false, false, true, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}
+                {text: `${this.data.destinatario.district ?? '-'} - ${this.data.destinatario.province ?? '-'} - ${this.data.destinatario.department ?? '-'}`, border: [false, false, true, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}
               ]
             ],
           },

@@ -41,14 +41,14 @@ import { AlertService } from 'app/core/services/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DividerModule } from 'primeng/divider';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
-import { MdlListadoEstablecimientoComponent } from '@features/establecimiento/components/modals/mdl-listado-establecimiento/mdl-listado-establecimiento';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SelectTipoDocumentoComponent } from '@features/catalogo/components/selects/select-tipo-documento/select-tipo-documento';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProveedorDto } from '@features/proveedor/models/proveedor';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
-import { EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
 
 @Component({
   selector: 'page-guia-remision-editar',
@@ -573,7 +573,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
             return;
         }
 
-        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
+        this.modalRef = this.dialogService.open(MdlEntityBranchList, {
             width: '1000px',
             keepInViewport: false,
             closable: true,
@@ -595,7 +595,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
         });
 
 
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchList) => {
             const sub2 = cmp?.OnSelected.subscribe(( s: EntityBranchDto) => {
                 (to === 'remitente' ? this.remitente : this.destinatario).set(s);
                 this.modalRef?.close();
@@ -621,7 +621,7 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
 
 
     evtOnShowDestinatarios(): void{
-        this.modalRef = this.dialogService.open(MdlListadoEstablecimientoComponent, {
+        this.modalRef = this.dialogService.open(MdlEntityBranchList, {
             width: '1000px',
             keepInViewport: false,
             closable: true,
@@ -637,15 +637,15 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
             appendTo: 'body'
         });
 
-        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlListadoEstablecimientoComponent) => {
+        const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchList) => {
             const sub2 = cmp?.OnSelected.subscribe(( s: EntityBranchDto) => {
 
                 this.formGroup.patchValue({
                     destinatario_id: s.id,
                     tipo_documento_destinatario: 'RUC',
-                    numero_documento_destinatario: s.ruc,
-                    razon_social_destinatario: s.razon_social,
-                    nombres_apellidos_destinatario: s.razon_social,
+                    numero_documento_destinatario: s.entity_document_number,
+                    razon_social_destinatario: s.entity_name,
+                    nombres_apellidos_destinatario: s.entity_name,
                     direccion_destinatario: s.address,
                     departamento_destinatario: s.ubigeo_id.substring(0, 2)
                 });
@@ -749,9 +749,9 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
         this.formGroup.patchValue({
             remitente_id: s.id,
             tipo_documento_remitente: 'RUC',
-            numero_documento_remitente: s.ruc,
-            razon_social_remitente: `${s.razon_social} (${s.description})`,
-            nombres_apellidos_remitente: s.razon_social,
+            numero_documento_remitente: s.entity_document_number,
+            razon_social_remitente: `${s.entity_name} (${s.description})`,
+            nombres_apellidos_remitente: s.entity_name,
             direccion_remitente: s.address,
             departamento_remitente: s.ubigeo_id.substring(0, 2)
         });
@@ -776,9 +776,9 @@ export class GuiaRemisionEditarComponent implements OnInit, AfterViewInit, OnDes
         this.formGroup.patchValue({
             destinatario_id: s.id,
             tipo_documento_destinatario: 'RUC',
-            numero_documento_destinatario: s.ruc,
-            razon_social_destinatario: `${s.razon_social} (${s.description})`,
-            nombres_apellidos_destinatario: s.razon_social,
+            numero_documento_destinatario: s.entity_document_number,
+            razon_social_destinatario: `${s.entity_name} (${s.description})`,
+            nombres_apellidos_destinatario: s.entity_name,
             direccion_destinatario: s.address,
             departamento_destinatario: s.ubigeo_id.substring(0, 2)
         });

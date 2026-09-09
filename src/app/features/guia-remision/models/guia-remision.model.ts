@@ -1,7 +1,7 @@
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
-import { EntityBranchDto } from "@features/establecimiento/models/entity-branch";
+import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { TransportistaDto } from "@features/transportista/models/transportista";
 import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";

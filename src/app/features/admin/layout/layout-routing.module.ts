@@ -41,7 +41,7 @@ const routes: Routes = [
       },
       {
         path: 'administracion/establecimiento',
-        loadComponent: () => import('@features/establecimiento/pages/page-establecimiento-principal/page-establecimiento-principal').then(m => m.PageEstablecimientoPrincipalComponent)
+        loadComponent: () => import('@features/entity-branch/pages/page-entity-branch-principal/page-entity-branch-principal').then(m => m.PageEntityBranchPrincipal)
       },
       {
         path: 'configuracion',
