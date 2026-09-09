@@ -1,34 +1,34 @@
-import { AfterViewChecked, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, computed, inject, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
+import { AfterViewChecked, AfterViewInit, Component, computed, EventEmitter, inject, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { TextareaModule } from 'primeng/textarea';
 
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { HttpErrorResponse } from '@angular/common/http';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
+import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { EditarEstablecimientoRequestDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
+import { DocumentEntityType } from '@features/items/models/document-entity-type';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
+import { AlertService } from 'app/core/services/alert.service';
+import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { finalize, Subscription } from 'rxjs';
-import { SelectModule } from 'primeng/select';
-import { DocumentEntityType } from '@features/items/models/document-entity-type';
-import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from 'app/core/services/alert.service';
-import { SkeletonModule } from 'primeng/skeleton';
-import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
 import { DividerModule } from 'primeng/divider';
-import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
-import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
-import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
-import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
-import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
-import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
-import { EditarEstablecimientoRequestDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mdl-editar-establecimiento',
@@ -144,8 +144,8 @@ export class MdlEditarEstablecimientoComponent implements OnInit, AfterViewInit,
     const form = this.frm.value;
 
     return {
-      establecimiento_id: this.id,
-      ruc: form.ruc,
+      id: this.id,
+      entity_id: form.entity_id,
       descripcion: form.descripcion,
       area: form.area,
       ubigeo_id: form.distrito,

@@ -1,7 +1,7 @@
 // src/app/shared/services/alert.service.ts
 import { Injectable } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
-import { ToastrService  } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class AlertService {
         ...options,
       background: 'bg-white!',
       customClass: {
-        popup: ['bg-white!', 'text-gray-900', 'dark:text-white', 'rounded-xl!', 'p-6', 'border-1!'],
+        popup: ['bg-white!', 'text-gray-900', 'dark:text-white', 'rounded-2xl!', 'p-6', 'border-0!'],
         title: ['text-gray-900', 'dark:text-white', 'text-lg'],
         confirmButton: ['bg-blue-600', 'text-gray-900', 'dark:text-white', 'px-4', 'py-2', 'rounded'],
         timerProgressBar: ['bg-gray-400!']

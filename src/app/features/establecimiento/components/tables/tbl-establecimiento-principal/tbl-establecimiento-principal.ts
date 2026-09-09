@@ -1,7 +1,25 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { EliminarEstablecimientoResponseDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
+import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
+import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { TableData } from 'app/core/models/table';
+import { AlertService } from 'app/core/services/alert.service';
+import { UtilService } from 'app/core/services/util.service';
+import { ToggleActiveRequestDto } from 'app/shared/models/request';
+import { Column } from 'app/shared/models/table';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { DividerModule } from 'primeng/divider';
+import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,26 +29,8 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
-import { DialogService } from 'primeng/dynamicdialog';
-import { TableData } from 'app/core/models/table';
-import { UtilService } from 'app/core/services/util.service';
-import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
-import { ConfirmationService, MenuItem } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AlertService } from 'app/core/services/alert.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
-import { fadeDownAnimation } from 'app/core/animations/page-animation';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ColumnsFilterDto } from 'app/core/models/filter';
-import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
 import { MdlEditarEstablecimientoComponent } from '../../modals/mdl-editar-establecimiento/mdl-editar-establecimiento.component';
-import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
-import { ToggleActiveRequestDto } from 'app/shared/models/request';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { Column } from 'app/shared/models/table';
-import { EntityBranchApiService } from '@features/establecimiento/services/establecimiento.service';
-import { EliminarEstablecimientoResponseDTO, EntityBranchDto } from '@features/establecimiento/models/entity-branch';
+import { MdlRegistrarEstablecimientoComponent } from '../../modals/mdl-registrar-establecimiento/mdl-registrar-establecimiento.component';
 
 @Component({
   selector: 'app-tbl-establecimiento-principal',
@@ -104,8 +104,8 @@ export class TableEstablecimientoPrincipalComponent implements OnInit, AfterView
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'razon_social', header: 'Nombre o Razón Social', sort: false, sticky: false },
-          { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
+          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false },
+          { field: 'entity_document_number', header: 'N° Documento', sort: false, sticky: false },
           { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!' },
           { field: 'area', header: 'Area', sort: false, sticky: false },
           { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!' },

@@ -3,14 +3,16 @@ export interface EstablecimientoListToModalDTO{
     descripcion: string;
     area: string | null;
     codigo_sunat: string;
-    entidad: string;
+    entity_id: number;
+    entity_document_number: string;
+    entity_name: string;
 }
 
 export interface EntityBranchDto{
     id: number;
     entity_id: number;
-    ruc: string | null;
-    document_number: string | null;
+    entity_document_number: string;
+    entity_name: string;
     description: string;
     area: string | null;
     ubigeo_id: string;
@@ -55,7 +57,6 @@ export interface ActualizarEstadoEstablecimientoRequestDTO{
 
 export interface RegistrarEstablecimientoRequestDTO{
     entity_id: number;
-    ruc: string | null;
     description: string;
     area: string | null;
     ubigeo_id: string;
@@ -69,8 +70,8 @@ export interface RegistrarEstablecimientoRequestDTO{
 }
 
 export interface EditarEstablecimientoRequestDTO{
-    establecimiento_id: number;
-    ruc: string;
+    id: number;
+    entity_id: number;
     descripcion: string;
     area: string | null;
     ubigeo_id: string;
@@ -83,22 +84,23 @@ export interface EditarEstablecimientoRequestDTO{
 }
 
 export interface EstablecimientoRemitenteGuiaDTO{
-  establecimiento_id: number;              
-  razon_social: string;            
-  ruc: string;                       
-  descripcion: string;               
-  area: string | null;               
-  ubigeo_id: string;                 
-  departamento: string;              
-  provincia: string;                 
-  distrito: string;                  
-  direccion: string;                 
-  email: string | null;                     
-  pais: string;                      
-  serie: string | null;              
-  nueva_serie: string | null;        
-  nuevo_correlativo: number | null;  
-  nuevo_numero_guia: string | null;           
+    id: number;              
+    entity_id: number;
+    entity_document_number: string;
+    entity_name: string;                      
+    descripcion: string;               
+    area: string | null;               
+    ubigeo_id: string;                 
+    departamento: string;              
+    provincia: string;                 
+    distrito: string;                  
+    direccion: string;                 
+    email: string | null;                     
+    pais: string;                      
+    serie: string | null;              
+    nueva_serie: string | null;        
+    nuevo_correlativo: number | null;  
+    nuevo_numero_guia: string | null;           
 } 
 
 
