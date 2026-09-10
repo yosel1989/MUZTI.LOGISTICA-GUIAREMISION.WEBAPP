@@ -1,49 +1,49 @@
-import { Component, computed, DestroyRef, inject, Input, signal} from "@angular/core";
+import { Component, computed, DestroyRef, inject, Input, signal } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
-import { TabsModule } from 'primeng/tabs';
-import { CardModule } from 'primeng/card';
 import { provideIcons } from "@ng-icons/core";
+import { CardModule } from 'primeng/card';
+import { TabsModule } from 'primeng/tabs';
 
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
+import { TypingComponent } from "@features/shared/components/typing/typing";
+import { MdlListaTransportistaComponent } from "@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista";
+import { TransportistaDto } from "@features/transportista/models/transportista";
+import { MdlListaUnidadTransporteComponent } from "@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte";
+import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
 import { tablerAlertCircle } from "@ng-icons/tabler-icons";
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { MessageModule } from "primeng/message";
 import { AlertService } from "app/core/services/alert.service";
 import { AccordionModule } from 'primeng/accordion';
-import { TypingComponent } from "@features/shared/components/typing/typing";
-import { FieldsetModule } from "primeng/fieldset";
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { DialogService } from 'primeng/dynamicdialog';
-import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FieldsetModule } from "primeng/fieldset";
+import { MessageModule } from "primeng/message";
 import { TooltipModule } from "primeng/tooltip";
-import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
-import { MdlListaUnidadTransporteComponent } from "@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte";
-import { TransportistaDto } from "@features/transportista/models/transportista";
-import { MdlListaTransportistaComponent } from "@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista";
 
 @Component({
-  selector: 'app-section-guia-remision-transportista',
-  templateUrl: './section-guia-remision-transportista.html',
-  styleUrl: './section-guia-remision-transportista.scss',
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    TabsModule,
-    InputTextModule,
-    CardModule,
-    MessageModule,
-    AccordionModule,
-    TypingComponent,
-    FieldsetModule,
-    ButtonModule,
-    ConfirmDialogModule,
-    TooltipModule
-  ],
-  viewProviders: [provideIcons({ tablerAlertCircle })],
-  providers: [ConfirmationService, MessageService]
+    selector: 'app-section-guia-remision-transportista',
+    templateUrl: './section-guia-remision-transportista.html',
+    styleUrl: './section-guia-remision-transportista.scss',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        TabsModule,
+        InputTextModule,
+        CardModule,
+        MessageModule,
+        AccordionModule,
+        TypingComponent,
+        FieldsetModule,
+        ButtonModule,
+        ConfirmDialogModule,
+        TooltipModule
+    ],
+    viewProviders: [provideIcons({ tablerAlertCircle })],
+    providers: [ConfirmationService, MessageService]
 })
 
 export class SectionGuiaRemisionTransportista {
@@ -52,15 +52,9 @@ export class SectionGuiaRemisionTransportista {
     alertService = inject(AlertService);
     confirmationService = inject(ConfirmationService);
     dialogService = inject(DialogService);
+    
 
-    private _transportista = signal<TransportistaDto | undefined>(undefined);
-    @Input() set transportista(value: TransportistaDto | undefined) {
-        if (value !== undefined && this._transportista() !== value) {
-            this._transportista.set(value);
-        }else{
-            this._transportista.set(undefined);
-        }
-    }
+    transportista = input<TransportistaDto | undefined>(undefined);
 
     private _vehiculos = signal<UnidadTransporteDto[] | undefined>([]);
     @Input() set vehiculos(value: UnidadTransporteDto[] | undefined) {
@@ -74,7 +68,7 @@ export class SectionGuiaRemisionTransportista {
     private _tipoTransporte = signal<'PRIVADO' | 'PUBLICO'>('PRIVADO');
     @Input() set tipoTransporte(value: 'PRIVADO' | 'PUBLICO' | undefined) {
         this._vehiculos.set(undefined);
-        this._transportista.set(undefined);
+        this.transportista.set(undefined);
 
         if (value !== undefined && this._tipoTransporte() !== value) {
             this._tipoTransporte.set(value);
@@ -103,7 +97,7 @@ export class SectionGuiaRemisionTransportista {
                 return null;
             }
             case 'PUBLICO':
-                return this._transportista() === undefined
+                return this.transportista() === undefined
                     ? 'Debe seleccionar un transportista.'
                     : null;
                 default:
@@ -111,7 +105,7 @@ export class SectionGuiaRemisionTransportista {
         }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     get getFormData(): {vehiculos: UnidadTransporteDto[] | null, transportista: TransportistaDto | null} {
         return {
             vehiculos: this.vehiculos.length ? this.vehiculos : null,
@@ -121,10 +115,6 @@ export class SectionGuiaRemisionTransportista {
 
     get vehiculos(): UnidadTransporteDto[] {
         return this._vehiculos() ?? [];
-    }
-
-    get transportista(): TransportistaDto | null {
-        return this._transportista() ?? null;
     }
 
     get tipoTransporte(): 'PRIVADO' | 'PUBLICO' {
