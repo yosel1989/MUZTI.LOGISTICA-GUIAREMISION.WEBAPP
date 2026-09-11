@@ -114,7 +114,7 @@ export class SectionGuiaRemisionRemitente {
             return;
         }
     
-        if(!this.motivoTraslado){
+        if(!this.motivoTraslado()){
             this.alertService.showToast({
                 icon: 'warning',
                 title: `Debe seleccionar el motivo de traslado`
@@ -139,7 +139,7 @@ export class SectionGuiaRemisionRemitente {
             inputValues: {
                 entity: this.entity(),
                 tipo: to,
-                motivoTraslado: this.motivoTraslado,
+                motivoTraslado: this.motivoTraslado(),
                 remitente: this.remitente
             },
             templates: {
@@ -160,8 +160,6 @@ export class SectionGuiaRemisionRemitente {
                 this.alertService.showToast({
                     icon: 'success',
                     title: 'Remitente seleccionado con éxito.',
-                    timer: 999999999,
-                    showCloseButton: true
                 });
             });
 

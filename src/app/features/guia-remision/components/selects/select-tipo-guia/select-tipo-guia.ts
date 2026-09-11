@@ -24,6 +24,7 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() classLabel: string = 'text-xs';
     @Input() label: string | undefined = undefined;
     @Input() inputId: string = '';
+    @Input() disabled: boolean = false;
 
     tipoGuiaSelected: 'REMITENTE' | 'TRANSPORTISTA' = TipoGuiaRemisionEnum.remitente;
 
@@ -42,6 +43,11 @@ export class SelectTipoGuiaComponent implements OnInit, AfterViewInit, OnDestroy
 
     ngOnInit(): void {
         this.frmCtrlTipoGuia.setValue('REMITENTE');
+        if(this.disabled){
+          this.frmCtrlTipoGuia.disable();
+        }else{
+          this.frmCtrlTipoGuia.enable();
+        }
     }
 
     ngAfterViewInit(): void {

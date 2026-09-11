@@ -133,6 +133,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
           }
           return '<span class="uppercase w-25 text-red-700 text-center flex items-center justify-center p-1 px-2 rounded-lg! font-medium"><span class="pi pi-times-circle"></span></span>';
         } },
+        { field: 'mtc_code', header: 'N° MTC', sort: false, sticky: false },
         { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: EntityDto)  => { 
           if (rowData.active) {
             return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';

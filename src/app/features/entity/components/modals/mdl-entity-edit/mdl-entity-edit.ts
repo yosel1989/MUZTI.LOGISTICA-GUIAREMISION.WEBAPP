@@ -136,6 +136,7 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
       email: new FormControl(null, [Validators.email, Validators.maxLength(50)]),
       country_id: new FormControl(null, Validators.required),
       is_internal:  new FormControl(false, Validators.required),
+      mtc_code:  new FormControl(null),
     });
 
     this.headerValue = this.config.header ?? '';
@@ -207,6 +208,7 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
         address: form.address,
         country_id: form.country_id,
         is_internal: form.is_internal,
+        mtc_code: form.mtc_code,
         role: this.role()
       };
 
@@ -402,6 +404,7 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
       address: data.address,
       country_id: data.country_id,
       is_internal: data.is_internal,
+      mtc_code: data.mtc_code,
     });
   }
 

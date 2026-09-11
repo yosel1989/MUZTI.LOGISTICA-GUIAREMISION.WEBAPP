@@ -9,8 +9,6 @@ import { TabsModule } from 'primeng/tabs';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { TypingComponent } from "@features/shared/components/typing/typing";
-import { MdlListaTransportistaComponent } from "@features/transportista/components/modals/mdl-lista-transportista/mdl-lista-transportista";
-import { TransportistaDto } from "@features/transportista/models/transportista";
 import { MdlListaUnidadTransporteComponent } from "@features/unidad-transporte/components/modals/mdl-lista-unidad-transporte/mdl-lista-unidad-transporte";
 import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
 import { tablerAlertCircle } from "@ng-icons/tabler-icons";
@@ -23,6 +21,8 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { FieldsetModule } from "primeng/fieldset";
 import { MessageModule } from "primeng/message";
 import { TooltipModule } from "primeng/tooltip";
+import { EntityDto } from "@features/entity/models/entity";
+import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
 
 @Component({
     selector: 'app-section-guia-remision-transportista',
@@ -54,8 +54,8 @@ export class SectionGuiaRemisionTransportista {
     dialogService = inject(DialogService);
     
 
-    transportista = input<TransportistaDto | undefined>(undefined);
-    transportistaSelected = signal<TransportistaDto | undefined>(undefined);
+    transportista = input<EntityDto | undefined>(undefined);
+    transportistaSelected = signal<EntityDto | undefined>(undefined);
 
     private _vehiculos = signal<UnidadTransporteDto[] | undefined>([]);
     @Input() set vehiculos(value: UnidadTransporteDto[] | undefined) {
@@ -92,13 +92,13 @@ export class SectionGuiaRemisionTransportista {
                 if (!vehiculos || vehiculos.length === 0) {
                     return 'Debe seleccionar al menos un vehículo.';
                 }
-                if ( !vehiculos.find(x => x.job_title === 'Principal') ) {
+                if ( !vehiculos.find(x => x.job_title === 'principal') ) {
                     return 'Debe seleccionar un vehículo principal.';
                 }
                 return null;
             }
             case 'PUBLICO':
-                return this.transportista() === undefined
+                return this.transportistaSelected() === undefined
                     ? 'Debe seleccionar un transportista.'
                     : null;
                 default:
@@ -107,7 +107,7 @@ export class SectionGuiaRemisionTransportista {
     });
 
      
-    get getFormData(): {vehiculos: UnidadTransporteDto[] | null, transportista: TransportistaDto | null} {
+    get getFormData(): {vehiculos: UnidadTransporteDto[] | null, transportista: EntityDto | null} {
         return {
             vehiculos: this.vehiculos.length ? this.vehiculos : null,
             transportista: this.transportistaSelected() ?? null
@@ -124,12 +124,12 @@ export class SectionGuiaRemisionTransportista {
 
     vehiculoPrincipal = computed(() => {
         const vehiculos = this._vehiculos();
-        return vehiculos?.find(x => x.job_title === 'Principal');
+        return vehiculos?.find(x => x.job_title === 'principal');
     });
 
     vehiculoSecundario = computed(() => {
         const vehiculos = this._vehiculos();
-        return vehiculos?.filter(x => x.job_title === 'Secundario') ?? [];
+        return vehiculos?.filter(x => x.job_title === 'secundario') ?? [];
     });
 
     // Events
@@ -168,7 +168,7 @@ export class SectionGuiaRemisionTransportista {
       }, '¿Desea remover el vehiculo seleccionado?', 'Confirmar la operación.');
     }
 
-    evtOnShowListaVehiculo(jobTitle: 'Principal' | 'Secundario'): void{
+    evtOnShowListaVehiculo(jobTitle: 'principal' | 'secundario'): void{
         this.modalRef = this.dialogService.open(MdlListaUnidadTransporteComponent, {
             width: '1000px',
             keepInViewport: false,
@@ -193,8 +193,8 @@ export class SectionGuiaRemisionTransportista {
             .subscribe(( c: UnidadTransporteDto) => {
                 const vehiculos = this._vehiculos();
                 const existe = vehiculos?.some(conduc => conduc.id === c.id);
-                const principal = jobTitle === 'Principal' ? vehiculos?.some(conduc => conduc.job_title === 'Principal' ) : false;
-                const secundarios = jobTitle === 'Secundario' ? vehiculos?.filter(conduc => conduc.job_title === 'Secundario').length : 0;
+                const principal = jobTitle === 'principal' ? vehiculos?.some(conduc => conduc.job_title === 'principal' ) : false;
+                const secundarios = jobTitle === 'secundario' ? vehiculos?.filter(conduc => conduc.job_title === 'secundario').length : 0;
 
                 if(existe || principal || secundarios === 2){
                     this.alertService.showToast({
@@ -219,42 +219,41 @@ export class SectionGuiaRemisionTransportista {
     }
 
     evtOnShowListaTransportista(): void{
-        this.modalRef = this.dialogService.open(MdlListaTransportistaComponent, {
-            width: '1000px',
-            keepInViewport: false,
+
+        this.modalRef = this.dialogService.open(MdlEntityList, {
+            width: '700px',
             closable: false,
-            modal: true,
             draggable: false,
+            modal: true,
             position: 'top',
-            header: `Lista de transportistas registrados`,
-            styleClass: 'max-h-none!',
+            header: 'Seleccionar Empresa Transportista',
+            styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'py-4',
-            contentStyle: {
-                'padding': "0 !important"
-            },
             appendTo: 'body',
             templates: {
                 header: MdlHeader
+            },
+            inputValues: {
+                _type : 'empresa',
+                _roles : 'transportista',
+                _isInternal : undefined
             }
         });
 
-        this.modalRef.onChildComponentLoaded
+        this.modalRef?.onChildComponentLoaded
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((cmp: MdlListaTransportistaComponent) => {
-            
-            cmp?.OnSelect
+        .subscribe((childComponent: MdlEntityList) => {
+            childComponent.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(( t: TransportistaDto) => {
-                this.transportistaSelected.set(t);
+            .subscribe((entity: EntityDto) => {
+                this.transportistaSelected.set(entity);
                 this.modalRef?.close();
             });
-
-            cmp?.OnClose
+            childComponent.OnClose
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.modalRef?.close();
             });
-
         });
 
     }

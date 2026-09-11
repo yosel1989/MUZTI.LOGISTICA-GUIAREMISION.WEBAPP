@@ -88,4 +88,15 @@ export class GuiaRemisionApiService {
       })
     );
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getDocument(guiaRemisionId: string, entityId: string): Observable<any> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.http.get<any>(`${this.baseUrl}/pdf/${guiaRemisionId}/${entityId}`).pipe(
+      map(response =>{ return response as GuiaRemisionDto }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
+  }
 }

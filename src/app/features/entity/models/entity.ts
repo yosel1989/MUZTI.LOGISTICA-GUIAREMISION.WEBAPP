@@ -13,6 +13,11 @@ export interface EntityDto{
     country: string | null;
     is_internal: boolean;
     active: boolean;
+
+    // opcionales
+
+    mtc_code: string | null;
+
     created_at: Date;
     created_at_user: string;
     created_at_user_name: string;

@@ -4,7 +4,7 @@
 
     @if(showFloating()){
         <div class="top-[90px]! sticky mt-[-40px] flex justify-center z-2">
-            <div class="rounded-b-2xl px-6 py-2 text-lg shadow bg-white text-slate-500 roboto-condensed font-semibold">
+            <div class="rounded-b-2xl px-6 py-2 text-lg shadow bg-white text-slate-500 roboto-condensed font-semibold mt-[-2px]">
                 N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ???????? 
             </div>
             
@@ -71,6 +71,7 @@
                         <app-select-tipo-guia 
                             #selectTipoGuia 
                             class="uppercase! font-medium!"
+                            [disabled]="true"
                         ></app-select-tipo-guia>
                     </div>
                 </div>
@@ -209,7 +210,7 @@
                                     #sectionDestinatario
                                     [remitente]="sectionRemitente?.selected()"
                                     [motivoTraslado]="selectMotivoTraslado?.selected()"
-                                    [empresa]="empresa() ?? undefined"
+                                    [entity]="entitySelected() ?? undefined"
                                 ></app-section-guia-remision-destinatario>
                             </p-accordion-content>
                         </p-accordion-panel>
@@ -433,9 +434,9 @@
                 </p-accordion>
             </div>
 
-            <app-section-responsable-listado 
+            <!--<app-section-responsable-listado 
                 #sectionResponsableListado
-            ></app-section-responsable-listado>
+            ></app-section-responsable-listado>-->
         </div>
     </form>
 </div>

@@ -39,7 +39,6 @@ import { AlertService } from 'app/core/services/alert.service';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
-import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
 import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
 import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
@@ -60,6 +59,7 @@ import { TableModule } from "primeng/table";
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 
 export interface Puerto{
     value: string;
@@ -89,7 +89,6 @@ export interface Puerto{
     IconFieldModule,
     InputIconModule,
     CardModule,
-    GuiaSectionCabeceraComponent,
     AsyncPipe,
     AutoCompleteModule,
     DividerModule,
@@ -196,8 +195,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.ls.breadCrumbItems = this.breadCrumbItems;
 
         this.formGroup = this.formBuilder.group({
-
-
             entity_id: new FormControl(null, Validators.required),
 
             empresa_id: new FormControl(null, Validators.required),
@@ -211,7 +208,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         });
 
         this.formGroup.get('fecha_emision')?.setValue(new Date());
-
 
         // detectar el cambio en motivo traslado
         this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(() => {
@@ -280,6 +276,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     get request(): GuiaRemisionRemitenteRequestDto{
 
         return {
+            entity_id: this.entitySelected()?.id ?? 0,
             tipo_transporte: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
             motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
             motivo_traslado: this.selectMotivoTraslado!.selected(),
@@ -298,6 +295,13 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             proveedor: null,
             proveedor_id: this.sectionProveedor === undefined ? null : this.sectionProveedor.getFormData!.id,
+            // id de la empresa transportista
+            entity_carrier_id: this.sectionTransportista?.transportistaSelected()?.id ?? null,
+            transport_units: this.sectionTransportista?.vehiculos ? this.sectionTransportista?.vehiculos.map(x => ({
+                guia_remision_id: 0,
+                transport_unit_id: x.id,
+                type: x.job_title
+            }) as GuiaRemisionTransportUnitCreateDto) : null,
 
             datos_envio: {
 
@@ -433,7 +437,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         console.log('request', this.request);
 
         this.loadingSubmit.next(true);
-        this.api.saveRemisionRemitente(this.request, this.selectEmpresaRemitente!.selected()!.ruc! ).subscribe({
+        this.api.saveRemisionRemitente(this.request, this.entitySelected()!.document_number ).subscribe({
             next: (response: GR_EnviarGuiaRemisionResponseDto ) => {
                 this.loadingSubmit.next(false);
                 /*if(response.success && response.respuesta_facturador.codigo === '0'){

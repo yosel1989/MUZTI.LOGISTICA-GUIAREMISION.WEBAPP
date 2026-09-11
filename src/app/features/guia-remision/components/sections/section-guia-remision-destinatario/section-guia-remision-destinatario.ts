@@ -20,10 +20,10 @@ import { GR_DestinoRequestDto } from "@features/guia-remision/models/guia-remisi
 import { DialogService } from "primeng/dynamicdialog";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
-import { EmpresaToSelectDto } from "@features/empresa/models/empresa.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 import { MdlEntityBranchList } from "@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list";
+import { EntityDto } from "@features/entity/models/entity";
 
 @Component({
   selector: 'app-section-guia-remision-destinatario',
@@ -68,8 +68,8 @@ export class SectionGuiaRemisionDestinatario {
     }
     
     selected = signal<EntityBranchDto | undefined>(undefined);
-    motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>();
-    empresa = input.required<EmpresaToSelectDto | undefined>(); 
+    motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>(); 
+    entity = input.required<EntityDto | undefined>(); 
 
     submitted = signal(false);
 
@@ -167,7 +167,7 @@ export class SectionGuiaRemisionDestinatario {
             },
             appendTo: 'body',
             inputValues: {
-                ruc: this.empresa()?.ruc,
+                entity: this.entity(),
                 tipo: to,
                 motivoTraslado: this.motivoTraslado(),
                 remitente: this.remitente

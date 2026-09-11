@@ -294,6 +294,29 @@
                 }
             </div>
 
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Número de registro MTC <i 
+                    class="fa-solid fa-circle-question text-[14px]! ms-2"
+                    pTooltip="Aquí deberás ingresar solo sí la entidad tendrá el rol de transportista." 
+                    tooltipStyleClass="text-xs! text-center" 
+                    tooltipPosition="top"
+                ></i></label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <input 
+                        fluid 
+                        pInputText 
+                        type="text" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="mtc_code" 
+                        autofocus="true"
+                        [invalid]="frm.get('mtc_code')?.invalid && (frm.get('mtc_code')?.touched || submitted())"
+                    />
+                } 
+            </div>
+
             <div class="col-span-2">
                 <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección Fiscal</label>
                 @if(ldData()){

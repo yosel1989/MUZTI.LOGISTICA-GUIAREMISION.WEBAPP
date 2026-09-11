@@ -54,12 +54,11 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EntityBranchDto> = new EventEmitter<EntityBranchDto>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
-    @Input() motivoTraslado: SunatMotivoTrasladoDto | undefined;
+    motivoTraslado  = input<SunatMotivoTrasladoDto | undefined>(undefined);
     @Input() remitente: EntityBranchDto | undefined;
 
     entitySelected = signal<EntityDto | undefined>(undefined);
 
-    ctrlRuc = new FormControl<number | null>({value: null, disabled: true});
     ctrlSearch = new FormControl<string | null>(null);
     cols: Column[] = [];
 
@@ -79,12 +78,14 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modalRef: any | undefined;
+    disabled = signal<boolean>(true);
 
     constructor(){
         effect(()=>{
             const entity = this.entity();
             if(entity){
-                this.entitySelected.set(entity);
+                console.log('entity set', entity);
+                //untracked(() => this.entitySelected.set(entity));
                 this.loadData();
             }
         });
@@ -92,49 +93,51 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         effect(()=>{
             const entitySelected = this.entitySelected();
             if(entitySelected){
+                console.log('entity selected set', entitySelected);
                 this.loadData();
             }
         });
     }
 
     ngOnInit(): void {
-        console.log('entidad', this.entity());
 
-        //console.log(this.tipo, this.motivoTraslado, this.remitente);
+        console.log('motivo traslado', this.motivoTraslado());
 
         if(this.tipo === 'remitente'){
-            switch(this.motivoTraslado?.codigo_sunat){
+            switch(this.motivoTraslado()?.codigo_sunat){
                 case SunatMotivoTrasladoEnum.recojo_bienes_transformados:
-                    this.ctrlRuc.enable();
+                    this.disabled.set(false);
                     break;
                 default:
-                    this.ctrlRuc.setValue(this.entity()?.id ?? null);
+                    this.entitySelected.set(this.entity() ?? undefined);
                     break;
             }
         }
 
         if(this.tipo === 'destinatario'){
-
-            switch(this.motivoTraslado?.codigo_sunat){
+            console.log('tipo', this.tipo);
+            switch(this.motivoTraslado()?.codigo_sunat){
                 case SunatMotivoTrasladoEnum.venta: 
                 case SunatMotivoTrasladoEnum.consignacion: 
                 case SunatMotivoTrasladoEnum.devolucion: 
-                    this.ctrlRuc.enable();
+                    this.disabled.set(false);
                     break;
                 case SunatMotivoTrasladoEnum.compra: 
-                    this.ctrlRuc.setValue(this.entity()?.id ?? null);
+                    this.entitySelected.set(this.entity() ?? undefined);
                     break;
                 case SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa: 
                 case SunatMotivoTrasladoEnum.recojo_bienes_transformados: 
                 case SunatMotivoTrasladoEnum.importacion:
-                    this.ctrlRuc.setValue(this.entity()?.id ?? null);
+                    this.entitySelected.set(this.entity() ?? undefined);
                     break;
                 case SunatMotivoTrasladoEnum.exportacion: break;
                 case SunatMotivoTrasladoEnum.otros: break;
                 case SunatMotivoTrasladoEnum.venta_sujeta_confirmacion_comprador: break;
                 case SunatMotivoTrasladoEnum.traslado_emisor_itinerante_comprobantes_pago: break;
                 case SunatMotivoTrasladoEnum.traslado_zona_primaria: break;
-                default: this.ctrlRuc.disable(); break;
+                default: 
+                    this.disabled.set(true);
+                    break;
             }
 
         }
@@ -157,15 +160,15 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
                 field: 'area',
                 header: 'Area'
             },
-            {
+            this.tipo === 'remitente' ? {
                 field: 'serie',
                 header: 'Serie'
-            },
+            } : null,
             {
                 field: 'code_sunat',
                 header: 'Cod. Sunat'
             }
-        ]
+        ].filter(c => c !== null);
         this.loadData();
     }
 
@@ -208,8 +211,8 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
             childComponent.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((entity: EntityDto) => {
+                console.log('entidad seleccionada', entity);
                 this.entitySelected.set(entity);
-                this.ctrlRuc.setValue(entity.id);
                 this.modalRef?.close();
             });
             childComponent.OnClose
@@ -226,7 +229,7 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         if(this.entitySelected() === undefined){
             return;
         }
-
+        console.log('load Data', this.entitySelected());
         this.sbData?.unsubscribe();
         this.ldData.set(true);
         const entityId = this.entitySelected()!.id;

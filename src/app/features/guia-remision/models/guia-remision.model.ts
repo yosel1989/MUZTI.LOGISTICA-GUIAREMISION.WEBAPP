@@ -2,12 +2,15 @@ import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo
 import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
+import { EntityDto } from "@features/entity/models/entity";
+import { GuiaRemisionTransportUnitCreateDto } from "@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { TransportistaDto } from "@features/transportista/models/transportista";
 import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
+  entity_id: number;
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
   motivo_traslado_id: number;
   motivo_traslado: SunatMotivoTrasladoDto | undefined;
@@ -27,6 +30,9 @@ export interface GuiaRemisionRemitenteRequestDto {
   proveedor: GR_ProveedorRequestDto | null;
   proveedor_id: number | null;
 
+  entity_carrier_id: number | null;
+  transport_units: GuiaRemisionTransportUnitCreateDto[] | null;
+  
   datos_envio: GR_DatosEnvioRequestDto;
 
   origen: GR_OrigenRequestDto;
@@ -96,7 +102,7 @@ export interface GR_DatosEnvioRequestDto {
   razon_social_currier: string | null;
   registro_mtc_currier: string | null;
 
-  transportista: TransportistaDto | null | undefined;
+  transportista: EntityDto | null | undefined;
   transportista_id: number | null | undefined;
 
   indicador_registro_vehiculo_conductor: boolean;
@@ -171,6 +177,7 @@ export interface GR_EmitirGuiaRemisionResponseDto {
 export interface GuiaRemisionDto {
   id: number;
   uuid: string;
+  entity_id: number | null;
   ruc: string;
   entidad_remitente: string;
   numero_documento_remitente: string;
