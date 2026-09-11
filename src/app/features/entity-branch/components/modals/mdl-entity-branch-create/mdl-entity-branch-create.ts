@@ -1,39 +1,39 @@
 import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { TextareaModule } from 'primeng/textarea';
 
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ConfirmationService } from 'primeng/api';
-import { ConfirmDialog } from 'primeng/confirmdialog';
-import { finalize, Subscription } from 'rxjs';
-import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from 'app/core/services/alert.service';
-import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
-import { DividerModule } from 'primeng/divider';
-import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { SkeletonModule } from 'primeng/skeleton';
-import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
-import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
+import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
+import { EntityBranchCreateDto } from '@features/entity-branch/models/entity-branch';
+import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
 import { EntityDto } from '@features/entity/models/entity';
+import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
+import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
+import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
+import { AlertService } from 'app/core/services/alert.service';
+import { ConfirmationService } from 'primeng/api';
+import { AvatarModule } from 'primeng/avatar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { DividerModule } from 'primeng/divider';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AvatarModule } from 'primeng/avatar';
-import { EntityBranchApiService } from '@features/entity-branch/services/establecimiento.service';
-import { EntityBranchCreateDto } from '@features/entity-branch/models/entity-branch';
-import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
-import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
-import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
+import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
+import { finalize, Subscription } from 'rxjs';
 
 
 @Component({
@@ -185,7 +185,7 @@ export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
 
             this.ldSubmit.set(true);
             
-            const subs = this.api.registrar(this.request).subscribe({
+            const subs = this.api.create(this.request).subscribe({
               next: () => {
                 this.ldSubmit.set(false);
 

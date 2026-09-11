@@ -1,9 +1,9 @@
 import { AsyncPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, inject} from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
 import { AlertService } from '@core/services/alert.service';
 import { EstablecimientoRemitenteGuiaDTO } from '@features/entity-branch/models/entity-branch';
-import { EntityBranchApiService } from '@features/entity-branch/services/establecimiento.service';
+import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BehaviorSubject, finalize } from 'rxjs';

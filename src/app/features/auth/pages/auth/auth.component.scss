@@ -3,17 +3,9 @@
 }
 
 .page-bg {
-    background-image: url('assets/media/images/2600x1200/bg-10.png');
+    //background-image: url('assets/media/bg/supply-chain-background.jpg');
 
     background-size: cover;
     background-repeat: no-repeat;
     background-position: top center;
-}
-:host-context(.dark) .page-bg {
-    background-image: url('assets/media/images/2600x1200/bg-10-dark.png');
-
-    @media screen and (max-width: 599px) {
-        background-position: left center !important;
-        background-size: auto 100% !important;
-    }
 }

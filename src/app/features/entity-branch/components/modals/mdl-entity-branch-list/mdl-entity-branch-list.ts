@@ -1,28 +1,28 @@
-import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, input, Input, OnDestroy, OnInit, Output, signal } from "@angular/core";
-import { AlertService } from "@core/services/alert.service";
-import { InputIconModule } from "primeng/inputicon";
-import { InputTextModule } from "primeng/inputtext";
-import { TableModule } from "primeng/table";
-import { ButtonModule } from "primeng/button";
-import { IconFieldModule } from "primeng/iconfield";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { SkeletonModule } from "primeng/skeleton";
-import { finalize, Subscription } from "rxjs";
-import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
-import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
-import { AvatarModule } from "primeng/avatar";
+import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, input, Input, OnDestroy, OnInit, Output, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Column } from "app/shared/models/table";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
+import { AlertService } from "@core/services/alert.service";
+import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
+import { EntityBranchDto, EntityBranchListToModalDTO } from "@features/entity-branch/models/entity-branch";
+import { EntityBranchApiService } from "@features/entity-branch/services/entity-branch-api-service";
+import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
 import { EntityDto } from "@features/entity/models/entity";
 import { EntityApiService } from "@features/entity/services/entity-service";
+import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
+import { Column } from "app/shared/models/table";
+import { AvatarModule } from "primeng/avatar";
+import { ButtonModule } from "primeng/button";
 import { DialogService } from "primeng/dynamicdialog";
-import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
-import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
-import { EntityBranchApiService } from "@features/entity-branch/services/establecimiento.service";
-import { EntityBranchDto, EntityBranchListToModalDTO } from "@features/entity-branch/models/entity-branch";
+import { IconFieldModule } from "primeng/iconfield";
+import { InputIconModule } from "primeng/inputicon";
+import { InputTextModule } from "primeng/inputtext";
+import { SelectModule } from "primeng/select";
+import { SkeletonModule } from "primeng/skeleton";
+import { TableModule } from "primeng/table";
+import { finalize, Subscription } from "rxjs";
 
 @Component({
     selector: 'app-mdl-entity-branch-list',

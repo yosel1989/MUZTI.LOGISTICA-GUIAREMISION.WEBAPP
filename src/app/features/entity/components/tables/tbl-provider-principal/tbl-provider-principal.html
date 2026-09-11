@@ -165,7 +165,7 @@
     [rows]="pageSize()"
     [first]="first"
     [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
-    scrollHeight="400px"
+    scrollHeight="460px"
 
     (firstChange)="evtFirstChange($event)"
     (rowsChange)="evtRowsChange($event)"
@@ -282,7 +282,7 @@
                                             size="small" 
                                             icon="fa-regular fa-ellipsis-vertical" 
                                             [severity]="isOpenCm(rowData) ? 'primary' : 'secondary'"
-                                            styleClass="hover:bg-primary-500! text-slate-600 hover:text-white! active:text-white! w-9! h-9!"
+                                            styleClass="border-none! hover:bg-primary-500! text-slate-600 hover:text-white! active:text-white! w-9! h-9!"
                                             [raised]="isOpenCm(rowData)"
                                             (onClick)="evtShowContextMenu($event, rowData)"
                                         />

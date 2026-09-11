@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
-import { environment } from "environments/environment";
-import { catchError, map, Observable, throwError } from "rxjs";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
 import { TableData } from "@core/models/table";
 import { ResponseDTO } from "@features/shared/models/shared";
 import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
+import { environment } from "environments/environment";
+import { catchError, map, Observable, throwError } from "rxjs";
 import { EntityBranchCreateDto, EntityBranchDto, EntityBranchListToModalDTO, EntityBranchListToSelectDTO, EntityBranchUpdateDto, EstablecimientoRemitenteGuiaDTO } from "../models/entity-branch";
 
 @Injectable({
@@ -70,7 +70,7 @@ export class EntityBranchApiService{
     }
 
     toggleActive(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ToggleActiveResponseDto>> {
-        return this.http.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+        return this.http.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${id}/toggle-active`, request).pipe(
             map(response => ({  
                 ...response,
                 data: {
@@ -87,7 +87,7 @@ export class EntityBranchApiService{
         );
     }
 
-    registrar(request: EntityBranchCreateDto): Observable<EntityBranchDto> {
+    create(request: EntityBranchCreateDto): Observable<EntityBranchDto> {
         return this.http.post<EntityBranchDto>(`${this.baseUrl}`, request).pipe(
             map(response => response),
             catchError((error: HttpErrorResponse) => {

@@ -1,8 +1,11 @@
 import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
 import { ResponseDTO } from '@features/shared/models/shared';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
@@ -27,11 +30,8 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
-import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
-import { EntityBranchApiService } from '@features/entity-branch/services/establecimiento.service';
-import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityBranchCreate } from '../../modals/mdl-entity-branch-create/mdl-entity-branch-create';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
 
 @Component({
   selector: 'app-tbl-entity-branch-principal',
@@ -48,14 +48,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         InputIconModule,
         TooltipModule,
         InputTextModule,
-        DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
         LoaderComponent,
         ReactiveFormsModule,
         NgClass
   ],
-  providers: [DialogService, ConfirmationService],
+  providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]
 })
 
@@ -63,6 +62,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
     @ViewChild('cm') cm: ContextMenu | undefined;
 
+    private datePipe = inject(DatePipe);
     private destroyRef = inject(DestroyRef);
     public dialogService = inject(DialogService);
     private api = inject(EntityBranchApiService);
@@ -99,13 +99,19 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
+    paddedData = computed<(EntityBranchDto | { __empty: boolean })[]>(() => {
+      const actual = this.data() ?? [];
+      const fillerCount = this.pageSize() - actual.length;
+      const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
+      return [...actual, ...fillerRows];
+    });
+
     constructor( private cd: ChangeDetectorRef ){ }
 
     ngOnInit(): void{
       this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
-          { field: 'id', header: 'Código', sort: false, sticky: false },
           { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false },
           { field: 'entity_document_number', header: 'N° Documento', sort: false, sticky: false },
           { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!' },
@@ -118,12 +124,21 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
           { field: 'email', header: 'Correo', sort: false, sticky: false },
           { field: 'serie', header: 'Serie', sort: false, sticky: false },
           { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
-          { field: 'active', header: 'Estado', sort: false, sticky: false },
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: EntityBranchDto)  => { 
+            if (rowData.active) {
+              return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
+            }
+            return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
+          }},
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: EntityBranchDto) => {
+            return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
+          }},
           { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: EntityBranchDto) => {
+            return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
+          }},
           { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
-          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
+          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!' },
         ];
     }
 
@@ -138,14 +153,6 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     ngOnDestroy(): void{
       this.subs.unsubscribe();
       this.subData?.unsubscribe();
-    }
-
-    // getters
-    get paddedData(): (EntityBranchDto | {__empty: boolean})[] {
-      const actual = this.data() ?? [];
-      const fillerCount = this.pageSize() - actual.length;
-      const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
-      return [...actual, ...fillerRows];
     }
 
     // data
@@ -375,21 +382,25 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
           message: 'Confirmar la operación.',
           accept: () => {
               this.selected.update(current => {
-                const updated = { ...current!, ld_estado: true };
+                const updated = { ...current!, loading_active: true };
 
                 this.data.update(arr =>
-                  arr.map(c => c.id === updated.id ? updated : c)
+                  arr.map(c => c.id === updated.id ? { ...c, loading_active: true } : c)
                 );
 
                 return updated;
               });
+              
+              this.cd.detectChanges();
 
               const request = {
                 id: this.selected()!.id,
                 active: status
               } as ToggleActiveRequestDto;
 
-              const subs = this.api.toggleActive(this.selected()!.id, request).subscribe({
+              this.api.toggleActive(this.selected()!.id, request)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
                 next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.showToast({
@@ -404,8 +415,8 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
                   this.selected.update(current => {
                     const updated = {
                       ...current!,
-                      ld_estado: false,
-                      ld_update: false,
+                      loading_active: false,
+                      loading_update: false,
                       active: res.data.active,
                       updated_at: res.data.updated_at,
                       updated_at_user: res.data.updated_at_user,
@@ -435,7 +446,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
                   });
 
                   this.selected.update(current => {
-                    const updated = { ...current!, ld_estado: false };
+                    const updated = { ...current!, loading_active: false };
 
                     this.data.update(arr =>
                       arr.map(c => c.id === updated.id ? updated : c)
@@ -445,7 +456,6 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
                   });
                 }
               });
-              this.subs.add(subs);
           }
       });
     }

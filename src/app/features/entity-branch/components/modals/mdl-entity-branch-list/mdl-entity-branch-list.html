@@ -1,31 +1,29 @@
 <div class="p-4">
     <div class="flex flex-col gap-4">
         <div class="">
-            @if(ldData()){
-                <p-skeleton class="h-[69px]!"></p-skeleton>
-            }@else {
-                <p-button
-                    fluid
-                    severity="secondary"
-                    outlined="true"
-                    icon="pi pi-chevron-down"
-                    iconPos="left"
-                    styleClass="w-full! px-6! py-4! border-gray-300! hover:border-gray-400! rounded-2xl!"
-                    (onClick)="evtShowEntityList()"
-                >
-                    <div class="flex flex-row gap-x-4 w-full">
-                        <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
-                        <div class="flex flex-col justify-center text-sm text-start! text-slate-800!">
-                            @if(entitySelected() == null){
-                                <p class="font-semibold!">Seleccionar entidad</p>
-                            }@else{
-                                <p class="font-semibold ">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
-                                <p class="uppercase ">{{ entitySelected()?.document_number }}</p>
-                            }
-                        </div>
+            
+            <p-button
+                fluid
+                severity="secondary"
+                outlined="true"
+                icon="pi pi-chevron-down"
+                iconPos="left"
+                styleClass="w-full! px-6! py-4! border-gray-300! hover:border-gray-400! rounded-2xl!"
+                (onClick)="evtShowEntityList()"
+            >
+                <div class="flex flex-row gap-x-4 w-full">
+                    <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
+                    <div class="flex flex-col justify-center text-sm text-start! text-slate-800!">
+                        @if(entitySelected() == null){
+                            <p class="font-semibold!">Seleccionar entidad</p>
+                        }@else{
+                            <p class="font-semibold ">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
+                            <p class="uppercase ">{{ entitySelected()?.document_number }}</p>
+                        }
                     </div>
-                </p-button>
-            }
+                </div>
+            </p-button>
+            
         </div>
         <div class="lg:col-span-2">
             <p-iconfield>

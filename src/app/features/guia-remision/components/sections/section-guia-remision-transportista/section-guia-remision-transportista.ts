@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, Input, signal } from "@angular/core";
+import { Component, computed, DestroyRef, inject, input, Input, signal } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
@@ -55,6 +55,7 @@ export class SectionGuiaRemisionTransportista {
     
 
     transportista = input<TransportistaDto | undefined>(undefined);
+    transportistaSelected = signal<TransportistaDto | undefined>(undefined);
 
     private _vehiculos = signal<UnidadTransporteDto[] | undefined>([]);
     @Input() set vehiculos(value: UnidadTransporteDto[] | undefined) {
@@ -68,7 +69,7 @@ export class SectionGuiaRemisionTransportista {
     private _tipoTransporte = signal<'PRIVADO' | 'PUBLICO'>('PRIVADO');
     @Input() set tipoTransporte(value: 'PRIVADO' | 'PUBLICO' | undefined) {
         this._vehiculos.set(undefined);
-        this.transportista.set(undefined);
+        this.transportistaSelected.set(undefined);
 
         if (value !== undefined && this._tipoTransporte() !== value) {
             this._tipoTransporte.set(value);
@@ -109,7 +110,7 @@ export class SectionGuiaRemisionTransportista {
     get getFormData(): {vehiculos: UnidadTransporteDto[] | null, transportista: TransportistaDto | null} {
         return {
             vehiculos: this.vehiculos.length ? this.vehiculos : null,
-            transportista: this.transportista
+            transportista: this.transportistaSelected() ?? null
         }
     }
 
@@ -244,7 +245,7 @@ export class SectionGuiaRemisionTransportista {
             cmp?.OnSelect
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(( t: TransportistaDto) => {
-                this._transportista.set(t);
+                this.transportistaSelected.set(t);
                 this.modalRef?.close();
             });
 

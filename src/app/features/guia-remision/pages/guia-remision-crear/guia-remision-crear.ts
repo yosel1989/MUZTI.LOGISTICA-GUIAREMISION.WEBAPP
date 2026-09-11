@@ -1,65 +1,65 @@
 import { AsyncPipe, CommonModule, formatDate } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, signal, effect, ViewChildren, QueryList, inject, DestroyRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, DestroyRef, effect, ElementRef, inject, OnDestroy, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
-import { SelectModule } from 'primeng/select';
+import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 
-import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
-import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
-import { DatePickerModule } from 'primeng/datepicker';
-import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
-import { TooltipModule } from 'primeng/tooltip';
-import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
-import { DialogService } from 'primeng/dynamicdialog';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { ConfirmationService, MenuItem } from 'primeng/api';
-import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
-import { MessageModule } from 'primeng/message';
-import { TableModule } from "primeng/table";
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { CardModule } from 'primeng/card';
-import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
-import { GR_EnviarGuiaRemisionResponseDto, GR_ProductoRequestDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
-import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
-import { fadeDownAnimation } from 'app/core/animations/page-animation';
-import { LayoutService } from 'app/core/services/layout.service';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
-import { AlertService } from 'app/core/services/alert.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { DividerModule } from 'primeng/divider';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
+import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
-import { TextareaModule } from 'primeng/textarea';
-import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { AccordionHeader, AccordionModule } from 'primeng/accordion';
-import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
-import { SectionGuiaRemisionDestino } from '@features/guia-remision/components/sections/section-guia-remision-destino/section-guia-remision-destino';
-import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
-import { ConductorDto } from '@features/conductor/models/conductor.model';
-import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
-import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
-import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
-import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/components/sections/section-guia-remision-datos-traslado/section-guia-remision-datos-traslado';
-import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
-import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
-import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
-import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
-import { EntityDto } from '@features/entity/models/entity';
-import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AvatarModule } from 'primeng/avatar';
-import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
+import { EntityDto } from '@features/entity/models/entity';
+import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
+import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
+import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/components/sections/section-guia-remision-datos-traslado/section-guia-remision-datos-traslado';
+import { SectionGuiaRemisionDestinatario } from '@features/guia-remision/components/sections/section-guia-remision-destinatario/section-guia-remision-destinatario';
+import { SectionGuiaRemisionDestino } from '@features/guia-remision/components/sections/section-guia-remision-destino/section-guia-remision-destino';
+import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
+import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
+import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
+import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
+import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
+import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
+import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
+import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
+import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { AlertService } from 'app/core/services/alert.service';
+import { LayoutService } from 'app/core/services/layout.service';
+import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
+import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
+import { GuiaSectionCabeceraComponent } from 'app/features/guia-remision/components/sections/guia-section-cabecera/guia-section-cabecera';
+import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
+import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
+import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
+import { GR_EnviarGuiaRemisionResponseDto, GR_ProductoRequestDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
+import { AccordionHeader, AccordionModule } from 'primeng/accordion';
+import { ConfirmationService, MenuItem } from 'primeng/api';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { AvatarModule } from 'primeng/avatar';
+import { CardModule } from 'primeng/card';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DividerModule } from 'primeng/divider';
+import { DialogService } from 'primeng/dynamicdialog';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { MessageModule } from 'primeng/message';
+import { TableModule } from "primeng/table";
+import { TextareaModule } from 'primeng/textarea';
+import { TooltipModule } from 'primeng/tooltip';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 export interface Puerto{
     value: string;
@@ -133,7 +133,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     @ViewChild('sectionDestino') sectionDestino: SectionGuiaRemisionDestino | undefined;
     @ViewChild('selectTipoGuia') selectTipoGuiaComponent: SelectTipoGuiaComponent | undefined;
     @ViewChild('sectionProductoListado') sectionProductoListadoComponent: SectionProductoListadoComponent | undefined;
-    @ViewChild('guiaCabecera') guiaCabecera: GuiaSectionCabeceraComponent | undefined;
+    @ViewChild('cabecera') cabecera: ElementRef<HTMLDivElement> | undefined;
 
     @ViewChildren(AccordionHeader) headers!: QueryList<AccordionHeader>;
 
@@ -178,6 +178,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
 
     entitySelected = signal<EntityDto | undefined>(undefined);
+
+    showFloating = signal(false);
 
     constructor(
         private formBuilder: FormBuilder,
@@ -233,6 +235,22 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.selectEmpresaRemitente?.onChange.subscribe((selected: EmpresaToSelectDto | null) => {
             this.empresa.set(selected);
         });
+
+        const observer = new IntersectionObserver(([entry]) => {
+        // visible parcialmente
+        if (entry.intersectionRatio < 1) {
+            this.showFloating.set(true); // ya no está completo
+        } else {
+            this.showFloating.set(false);
+        }
+        }, {
+        root: null,
+        threshold: [0, 1]
+        });
+
+        if(this.cabecera){
+            observer.observe(this.cabecera.nativeElement);
+        }
     }
 
     ngOnDestroy(): void{

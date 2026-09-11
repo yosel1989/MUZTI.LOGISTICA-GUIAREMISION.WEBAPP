@@ -1,7 +1,12 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, signal, computed, ViewChild, DestroyRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { TableData } from 'app/core/models/table';
+import { UtilService } from 'app/core/services/util.service';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { DividerModule } from 'primeng/divider';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,30 +16,25 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { TableData } from 'app/core/models/table';
-import { UtilService } from 'app/core/services/util.service';
-import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
-import { ConfirmationService, MenuItem } from 'primeng/api';
 
 
-import { AlertService } from 'app/core/services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { MdlEntityRoleSyncList } from '@features/entity-role/components/modals/mdl-entity-rol-sync/mdl-entity-role-sync';
+import { EntityDto } from '@features/entity/models/entity';
+import { EntityApiService } from '@features/entity/services/entity-service';
+import { ResponseDTO } from '@features/shared/models/shared';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { EntityApiService } from '@features/entity/services/entity-service';
-import { EntityDto } from '@features/entity/models/entity';
-import { MdlEntityCreate } from '../../modals/mdl-entity-create/mdl-entity-create';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Column } from 'app/shared/models/table';
-import { MdlEntityEdit } from '../../modals/mdl-entity-edit/mdl-entity-edit';
+import { AlertService } from 'app/core/services/alert.service';
 import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
-import { ResponseDTO } from '@features/shared/models/shared';
-import { MdlEntityRoleSyncList } from '@features/entity-role/components/modals/mdl-entity-rol-sync/mdl-entity-role-sync';
+import { Column } from 'app/shared/models/table';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MdlEntityCreate } from '../../modals/mdl-entity-create/mdl-entity-create';
+import { MdlEntityEdit } from '../../modals/mdl-entity-edit/mdl-entity-edit';
 
 @Component({
   selector: 'app-tbl-entity-principal',
@@ -127,7 +127,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
         { field: 'address', header: 'Dirección Fiscal', sort: false, sticky: false },
         { field: 'country', header: 'País', sort: false, sticky: false, tdClassName: 'uppercase text-center!' },
-        { field: 'is_internal', header: 'Interno', sort: false, sticky: false, thClassName: 'text-center!', render: (rowData: EntityDto)  => { 
+        { field: 'is_internal', header: 'Consorcio', sort: false, sticky: false, thClassName: 'text-center!', render: (rowData: EntityDto)  => { 
           if (rowData.is_internal) {
             return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center  p-1 px-2 rounded-lg! font-medium"><span class="pi pi-check-circle"></span></span>';
           }

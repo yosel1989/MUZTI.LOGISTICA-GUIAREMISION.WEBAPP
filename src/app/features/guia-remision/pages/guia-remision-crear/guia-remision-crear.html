@@ -1,4 +1,15 @@
+
+
 <div class="container-fluid xl:container p-4 relative mx-auto" @fadeDown>
+
+    @if(showFloating()){
+        <div class="top-[90px]! sticky mt-[-40px] flex justify-center z-2">
+            <div class="rounded-b-2xl px-6 py-2 text-lg shadow bg-white text-slate-500 roboto-condensed font-semibold">
+                N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ???????? 
+            </div>
+            
+        </div>
+    }
 
     <h1 class="inline-flex items-center md:text-md! lg:text-xl! font-semibold! text-slate-500 roboto-condensed mb-4">
         <span class="block w-[3px]! h-[30px]! rounded-xl! bg-slate-500 me-3 "></span>
@@ -36,11 +47,17 @@
 
                 </div>
                 <div class="col">
-                    <app-guia-section-cabecera 
+                    <!--<app-guia-section-cabecera 
                         #guiaCabecera 
                         [idEstablecimiento]="remitente() ? remitente()!.id : null" 
                         [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"
-                    ></app-guia-section-cabecera>
+                    ></app-guia-section-cabecera>-->
+
+                    <div #cabecera class="flex flex-col items-center p-4 border border-gray-300 rounded-2xl text-center h-full">
+                        <p class="text-lg font-semibold text-gray-400">RUC: {{ entitySelected()?.document_number ?? '00000000000' }}</p>
+                        <p class="font-semibold">GUIA DE REMISIÓN ELECTRÓNICA</p>
+                        <p>N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ????????</p>   
+                    </div>
                 </div>
             </div>
         </div>
