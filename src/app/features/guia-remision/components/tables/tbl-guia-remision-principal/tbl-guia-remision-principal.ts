@@ -1,63 +1,63 @@
 import { DatePipe, NgClass } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
-  Component,
-  OnDestroy,
-  OnInit,
   AfterViewInit,
   ChangeDetectorRef,
-  Input,
-  Output,
-  EventEmitter,
-  ViewChild,
+  Component,
+  computed,
   ElementRef,
-  signal,
+  EventEmitter,
   inject,
-  computed
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  signal,
+  ViewChild
 } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputTextModule } from 'primeng/inputtext';
-import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule, TableRowSelectEvent } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ToolbarModule } from 'primeng/toolbar';
-import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, finalize, Subscription } from 'rxjs';
-import { DialogService } from 'primeng/dynamicdialog';
-import { TableData } from 'app/core/models/table';
-import { UtilService } from 'app/core/services/util.service';
-import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
-import { ConfirmationService, MenuItem } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { LayoutRoutingModule } from '@features/admin/layout/layout-routing.module';
+import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/guia-remision-historial.model';
 import {
   GR_EmitirGuiaRemisionResponseDto,
   GuiaRemisionDto,
 } from '@features/guia-remision/models/guia-remision.model';
-import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
-import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
-import { LayoutRoutingModule } from '@features/admin/layout/layout-routing.module';
-import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
-import { Drawer, DrawerModule } from 'primeng/drawer';
-import { ColumnsFilterDto } from 'app/core/models/filter';
-import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
-import saveAs from 'file-saver';
-import { AlertService } from 'app/core/services/alert.service';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
-import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AvatarModule } from 'primeng/avatar';
+import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { GuiaRemisionHistorialApiService } from '@features/guia-remision/services/guia-remision-historial-api.service';
-import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/guia-remision-historial.model';
-import { TextareaModule } from 'primeng/textarea';
-import { Router } from '@angular/router';
-import { Menu, MenuModule } from 'primeng/menu';
-import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
-import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/headers/mdl-header-previsualizar-guia-remision/mdl-header-previsualizar-guia-remision';
+import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { TableData } from 'app/core/models/table';
+import { AlertService } from 'app/core/services/alert.service';
+import { UtilService } from 'app/core/services/util.service';
 import { Column } from 'app/shared/models/table';
+import saveAs from 'file-saver';
+import { ConfirmationService, MenuItem } from 'primeng/api';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
+import { DividerModule } from 'primeng/divider';
+import { Drawer, DrawerModule } from 'primeng/drawer';
+import { DialogService } from 'primeng/dynamicdialog';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { Menu, MenuModule } from 'primeng/menu';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule, TableRowSelectEvent } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { TextareaModule } from 'primeng/textarea';
+import { ToolbarModule } from 'primeng/toolbar';
+import { TooltipModule } from 'primeng/tooltip';
+import { BehaviorSubject, finalize, Subscription } from 'rxjs';
+import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remision-principal/flt-guia-remision-principal';
+import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/headers/mdl-header-previsualizar-guia-remision/mdl-header-previsualizar-guia-remision';
+import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
+import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -348,7 +348,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       appendTo: 'body',
       inputValues: {
         ticket: this.selected()!.respuesta_ticket,
-        data: this.selected!,
+        data: this.selected()!,
       },
     });
   }
@@ -401,7 +401,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   evtOnRowSelect(event: TableRowSelectEvent, menuActions: Menu) {
     menuActions.hide();
-    this.selected = event.data;
+    this.selected.set(event.data);
     this.setSelected(event.data);
   }
 

@@ -177,7 +177,7 @@ export interface GR_EmitirGuiaRemisionResponseDto {
 export interface GuiaRemisionDto {
   id: number;
   uuid: string;
-  entity_id: number | null;
+  entity_id: number;
   ruc: string;
   entidad_remitente: string;
   numero_documento_remitente: string;

@@ -19,6 +19,7 @@ import { MdlEntityBranchList } from '@features/entity-branch/components/modals/m
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
 import { EntityDto } from '@features/entity/models/entity';
+import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
 import { SectionGuiaRemisionDatosTraslado } from '@features/guia-remision/components/sections/section-guia-remision-datos-traslado/section-guia-remision-datos-traslado';
@@ -59,7 +60,6 @@ import { TableModule } from "primeng/table";
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 
 export interface Puerto{
     value: string;
