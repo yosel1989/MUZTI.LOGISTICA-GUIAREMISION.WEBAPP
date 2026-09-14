@@ -80,6 +80,8 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
     modalRef: any | undefined;
     disabled = signal<boolean>(true);
 
+    exclude = signal<number | null>(null);
+
     constructor(){
         effect(()=>{
             const entity = this.entity();
@@ -121,6 +123,7 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
                 case SunatMotivoTrasladoEnum.consignacion: 
                 case SunatMotivoTrasladoEnum.devolucion: 
                     this.disabled.set(false);
+                    this.exclude.set(this.entity()?.id ?? null);
                     break;
                 case SunatMotivoTrasladoEnum.compra: 
                     this.entitySelected.set(this.entity() ?? undefined);
@@ -201,7 +204,8 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
             inputValues: {
                 _type : 'empresa',
                 _roles : this.tipo === 'remitente' ? 'emisor' : undefined,
-                _isInternal : undefined
+                _isInternal : undefined,
+                _excludeId: this.exclude() ?? undefined
             }
         });
 

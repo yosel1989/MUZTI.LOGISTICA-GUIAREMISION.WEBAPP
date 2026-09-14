@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, Input, signal} from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, Input, signal} from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
@@ -47,7 +47,7 @@ import { EntityDto } from "@features/entity/models/entity";
   providers: [ConfirmationService, MessageService]
 })
 
-export class SectionGuiaRemisionDestinatario {
+export class SectionGuiaRemisionDestinatario{
     messageService = inject(MessageService);
     private alertService = inject(AlertService);
     dialogService = inject(DialogService);
@@ -75,6 +75,13 @@ export class SectionGuiaRemisionDestinatario {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modalRef: any | undefined;
+
+    constructor(){
+        effect(() =>{
+            this.motivoTraslado();
+            this.fncReset();
+        })
+    }
   
     get invalid(): boolean{
         return !this.destinatario;
@@ -208,4 +215,9 @@ export class SectionGuiaRemisionDestinatario {
         this._destinatario.set(undefined);
     }
 
+    // Functions
+
+    fncReset(): void{
+        this._destinatario.set(undefined);
+    }
 }

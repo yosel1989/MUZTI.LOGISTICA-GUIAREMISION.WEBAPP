@@ -348,7 +348,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       appendTo: 'body',
       inputValues: {
         ticket: this.selected()!.respuesta_ticket,
-        data: this.selected()!,
+        data: this.selected()!
       },
     });
   }

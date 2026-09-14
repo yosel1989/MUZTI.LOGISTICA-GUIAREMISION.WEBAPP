@@ -56,7 +56,8 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
 
   loadPdf(): void{
     this.loading.set(true);
-    this.api.obtenerPdf(this.data().numero_documento_remitente, this.data().tipo_guia, this.data().numero_guia)
+    this.apiGuiaRemision.getDocumentPdfInternal(this.data().id, this.data().entity_id)
+    //this.api.obtenerPdf(this.data().numero_documento_remitente, this.data().tipo_guia, this.data().numero_guia)
       .pipe(
         finalize(()=> this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef)

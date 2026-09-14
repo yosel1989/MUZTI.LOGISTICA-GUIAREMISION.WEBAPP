@@ -30,7 +30,6 @@ import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/se
 import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
 import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
 import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
-import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
 import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -94,7 +93,6 @@ export interface Puerto{
     DividerModule,
     SelectMotivoTrasladoComponent,
     TextareaModule,
-    SectionResponsableListadoComponent,
     AccordionModule,
     SelectTipoTransporte,
 
