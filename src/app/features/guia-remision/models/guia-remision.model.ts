@@ -31,6 +31,7 @@ export interface GuiaRemisionRemitenteRequestDto {
   proveedor_id: number | null;
 
   entity_carrier_id: number | null;
+  entity_carrier: EntityDto | null;
   transport_units: GuiaRemisionTransportUnitCreateDto[] | null;
   
   datos_envio: GR_DatosEnvioRequestDto;

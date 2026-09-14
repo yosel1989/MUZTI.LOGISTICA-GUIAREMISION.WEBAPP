@@ -295,13 +295,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             proveedor: null,
             proveedor_id: this.sectionProveedor === undefined ? null : this.sectionProveedor.getFormData!.id,
+
+            
             // id de la empresa transportista
             entity_carrier_id: this.sectionTransportista?.transportistaSelected()?.id ?? null,
+            entity_carrier: this.sectionTransportista?.transportistaSelected() ?? null,
+
+            // unidades de transporte
             transport_units: this.sectionTransportista?.vehiculos ? this.sectionTransportista?.vehiculos.map(x => ({
                 guia_remision_id: 0,
                 transport_unit_id: x.id,
                 type: x.job_title
-            }) as GuiaRemisionTransportUnitCreateDto) : null,
+            }) as GuiaRemisionTransportUnitCreateDto) : [],
 
             datos_envio: {
 
