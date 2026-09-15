@@ -194,7 +194,7 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
             draggable: false,
             modal: true,
             position: 'top',
-            header: 'Seleccionar Empresa',
+            header: 'Seleccionar Empresa ' + (this.tipo === 'destinatario' ? '(Destinataria)' : '(Emisora)'),
             styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'py-4',
             appendTo: 'body',

@@ -74,6 +74,7 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
     }
 
     get invalid(): boolean{
+      console.log('documentos relacionados form', this.frm);
         if(this.documentos.length){
           return this.frm.invalid;
         }
@@ -126,9 +127,9 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
       return new FormGroup({ 
         doc_relacionado_id: new FormControl(data?.doc_relacionado_id ?? null),
         tipo_doc_ref_id: new FormControl(data?.tipo_doc_ref_id ?? null, Validators.required),
-        tipo_doc_ref_codigo: new FormControl(data?.tipo_doc_ref_codigo ?? null, Validators.required),
-        tipo_doc_ref: new FormControl(data?.tipo_doc_ref ?? null, Validators.required),
-        ruc_doc_ref: new FormControl(data?.ruc_doc_ref ?? null, [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
+        tipo_doc_ref_codigo: new FormControl(data?.tipo_doc_ref_codigo ?? null),
+        tipo_doc_ref: new FormControl(data?.tipo_doc_ref ?? ''),
+        ruc_doc_ref: new FormControl(data?.ruc_doc_ref ?? '', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
         numero_doc_ref: new FormControl(data?.numero_doc_ref ?? null, Validators.required)
       });
     }

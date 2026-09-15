@@ -397,7 +397,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             draggable: false,
             modal: true,
             position: 'top',
-            header: 'Seleccionar Empresa',
+            header: 'Seleccionar Empresa Emisora',
             styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'py-4',
             appendTo: 'body',
