@@ -19,11 +19,11 @@
           "options": {
             "baseHref": "/guia-remision/",
             "allowedCommonJsDependencies": [
-                "sweetalert2",
-                "quill-delta",
-                "file-saver",
-                "pdfmake/build/pdfmake",
-                "pdfmake/build/vfs_fonts"
+              "sweetalert2",
+              "quill-delta",
+              "file-saver",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts"
             ],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
@@ -32,6 +32,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "assets"
               }
             ],
             "styles": [
@@ -109,6 +114,8 @@
   },
   "cli": {
     "analytics": false,
-    "cache": { "enabled": false }
+    "cache": {
+      "enabled": false
+    }
   }
 }

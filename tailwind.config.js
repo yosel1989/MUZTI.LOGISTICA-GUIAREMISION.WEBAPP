@@ -16,4 +16,8 @@ module.exports = {
     },
   },
   plugins: [PrimeUI],
+  safelist: [
+    { pattern: /text-\[#.+\]/ },
+    { pattern: /bg-\[#.+\]/ },
+  ]
 }

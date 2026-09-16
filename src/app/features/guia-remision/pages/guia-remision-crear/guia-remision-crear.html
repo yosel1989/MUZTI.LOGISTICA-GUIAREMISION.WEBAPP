@@ -33,12 +33,12 @@
                     >
                         <div class="flex flex-row gap-x-4 w-full">
                             <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
-                            <div class="flex flex-col justify-center text-sm text-start! text-xl! text-slate-800!">
+                            <div class="flex flex-col justify-center text-sm text-start! text-lg! text-slate-800!">
                                 @if(entitySelected() == null){
-                                    <p class="font-semibold!">Seleccionar empresa emisora</p>
+                                    <p class="font-semibold! uppercase roboto-condensed">Seleccionar empresa emisora</p>
                                 }@else{
-                                    <p class="font-semibold ">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
-                                    <p class="uppercase ">{{ entitySelected()?.document_number }}</p>
+                                    <p class="font-semibold roboto-condensed">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
+                                    <p class="uppercase roboto-condensed">{{ entitySelected()?.document_number }}</p>
                                 }
                             </div>
                         </div>
@@ -53,10 +53,10 @@
                         [tipoGuiaRemision]="selectTipoGuiaComponent?.tipoGuiaSelected"
                     ></app-guia-section-cabecera>-->
 
-                    <div #cabecera class="flex flex-col items-center p-4 border border-gray-300 rounded-2xl text-center h-full">
-                        <p class="text-lg font-semibold text-gray-400">RUC: {{ entitySelected()?.document_number ?? '00000000000' }}</p>
-                        <p class="font-semibold">GUIA DE REMISIÓN ELECTRÓNICA</p>
-                        <p>N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ????????</p>   
+                    <div #cabecera class="flex flex-col items-center p-4 border border-gray-300 rounded-2xl text-center h-full text-lg!">
+                        <p class="font-semibold text-gray-400 roboto-condensed">RUC: {{ entitySelected()?.document_number ?? '00000000000' }}</p>
+                        <p class="font-semibold roboto-condensed">GUIA DE REMISIÓN ELECTRÓNICA</p>
+                        <p class="font-semibold roboto-condensed">N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ????????</p>   
                     </div>
                 </div>
             </div>
@@ -419,6 +419,7 @@
                                         <textarea 
                                             #ta 
                                             formControlName="observacion" 
+                                            onlyUpper
                                             pSize="small" 
                                             class="text-xs" 
                                             flluid rows="4" 

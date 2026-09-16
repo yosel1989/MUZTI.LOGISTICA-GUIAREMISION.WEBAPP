@@ -377,25 +377,17 @@
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
 
-                                            @if(rowData['id_estado']){
-                                                <span 
-                                                    [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
-                                                    tooltipPosition="top"
-                                                    tooltipStyleClass="text-xs! text-center!" 
-                                                    class="uppercase font-semibold w-35 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-md"
-                                                    >
-                                                    {{rowData[col.field]}}
-                                                </span>
-                                            }@else{
-                                                <span 
-                                                    class="uppercase font-semibold w-35 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 rounded-md"
-                                                    [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
-                                                    tooltipPosition="top"
-                                                    tooltipStyleClass="text-xs! text-center!"
-                                                >
-                                                    {{rowData[col.field]}}
-                                                </span>
-                                            }
+                                            <span 
+                                                [class]="` relative uppercase font-medium min-w-35  text-left! flex items-center justify-start p-1 px-4 rounded-l-[100px]`"
+                                                [pTooltip]=" rowData['usuario_modifico_nombre'] ? rowData['usuario_modifico_nombre'] : rowData['usuario_registro_nombre'] "
+                                                tooltipPosition="top"
+                                                tooltipStyleClass="text-xs! text-center"
+                                                [style.background]="util.lightenColor(rowData.estado_color, 0)"
+                                                [style.color]="util.lightenColor(rowData.estado_color,100)"
+                                            >
+                                                {{rowData[col.field]}}
+                                            </span>
+                                            
                                         }
                                     </td>
                                 }
@@ -409,11 +401,15 @@
                                             <p-skeleton [width]="'100%'" height="20px"></p-skeleton>
                                         }@else{
                                             @if(rowData['id_estado_sunat']){
-                                                <span class="uppercase w-25 font-semibold text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 mx-auto rounded-md">
+                                                <span 
+                                                    class="uppercase w-25 font-semibold flex items-center justify-start p-1 px-4 mx-auto rounded-l-[100px]"
+                                                    [style.background]="'#54ab78'"
+                                                    [style.color]="'#dcfce7'"
+                                                >
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }@else{
-                                                <span class="uppercase w-25 font-semibold text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 mx-auto rounded-md">
+                                                <span class="uppercase w-25 font-semibold text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 mx-auto rounded-l-[100px]">
                                                     {{rowData[col.field]}}
                                                 </span>
                                             }

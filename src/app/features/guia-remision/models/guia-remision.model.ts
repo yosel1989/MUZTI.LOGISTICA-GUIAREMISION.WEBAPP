@@ -206,7 +206,8 @@ export interface GuiaRemisionDto {
   fecha_modifico: Date | null;
   usuario_modifico: string | null;
   usuario_modifico_nombre: string | null;
-  estado: string | 'registrado' | 'editado' | 'rechazado' | 'aprobado' | 'enviado';
+  estado: string;
+  estado_color: string | null;
   id_estado: number;
   estado_sunat: string;
   id_estado_sunat: number;

@@ -96,6 +96,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   private guiaRemisionHistorialApiService = inject(GuiaRemisionHistorialApiService);
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
+  util = inject(UtilService);
   
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
   @Input() filter: FltGuiaRemisionPrincipalComponent | undefined;
@@ -152,7 +153,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     private api: GuiaRemisionApiService,
     private apiGuiaRemitente: GuiaRemitenteApiService,
     private cd: ChangeDetectorRef,
-    public util: UtilService,
     public documentoApi: DocumentoApiService
   ){
       this.cols = [

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AlertService } from '@core/services/alert.service';
@@ -7,9 +7,9 @@ import { GuiaRemisionDto } from '@features/guia-remision/models/guia-remision.mo
 import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
-import { SafeUrlPipe } from 'app/core/pipes/safe-url-pipe/safe-url-pipe';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { finalize } from 'rxjs';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-mdl-ver-pdf',
@@ -17,7 +17,7 @@ import { finalize } from 'rxjs';
   styleUrls: ['./mdl-ver-pdf.scss'],                          
   imports: [
     LoaderComponent,
-    SafeUrlPipe
+    NgxExtendedPdfViewerModule
   ],
 })
 
@@ -31,6 +31,10 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
 
   ticket = input.required<string>();
   data = input.required<GuiaRemisionDto>();
+  textFile = computed(() => {
+    const guia = this.data();
+    return guia ? `${guia.numero_guia}` : ''
+  });
 
   urlBlob: string | undefined;
   pdfUrl: SafeResourceUrl | undefined = undefined;

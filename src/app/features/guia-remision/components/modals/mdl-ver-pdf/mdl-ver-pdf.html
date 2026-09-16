@@ -1,5 +1,22 @@
 @if(!loading() || pdfUrl){
-    <embed [src]="urlBlob! | safeUrl" type="application/pdf" class="w-full h-full">
+    <!--<embed [src]="urlBlob!+'#toolbar=0' | safeUrl" type="application/pdf" class="w-full h-full " style="border:none;">-->
+
+    <ngx-extended-pdf-viewer
+        [src]="urlBlob!+'#toolbar=0'"
+        [height]="'100%'"
+        [theme]="'dark'"
+        [textLayer]="true"
+        [showOpenFileButton]="false"
+        [showRotateButton]="false"
+        [showHandToolButton]="true"
+        [showTextEditor]="false"
+        [showCommentEditor]="false"
+        [showStampEditor]="false"
+        [showDrawEditor]="false"
+        [showHighlightEditor]="false"
+        [showSecondaryToolbarButton]="false"
+        [filenameForDownload]="textFile()">
+    </ngx-extended-pdf-viewer>
 }@else {
     <div class="relative h-full w-full bg-gray-700">
         <app-loader class="z-40"></app-loader>

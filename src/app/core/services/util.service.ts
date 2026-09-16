@@ -34,4 +34,23 @@ export class UtilService {
       Breakpoints.Small
     ]);
   }
+
+  lightenColor(hex: string, percent: number = 20): string {
+    // Quitar el #
+    hex = hex.replace(/^#/, "");
+
+    // Convertir a valores RGB
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    // Mezclar con blanco según el porcentaje
+    r = Math.round(r + (255 - r) * (percent / 100));
+    g = Math.round(g + (255 - g) * (percent / 100));
+    b = Math.round(b + (255 - b) * (percent / 100));
+
+    // Convertir a hex
+    const toHex = (x: number) => x.toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
 }

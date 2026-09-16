@@ -59,6 +59,7 @@ import { TableModule } from "primeng/table";
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 
 export interface Puerto{
     value: string;
@@ -105,7 +106,8 @@ export interface Puerto{
     SectionGuiaRemisionConductor,
     SectionGuiaRemisionOrigen,
     SectionGuiaRemisionDestino,
-    AvatarModule
+    AvatarModule,
+    OnlyUpperDirective
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],
