@@ -103,16 +103,12 @@ export interface GR_DatosEnvioRequestDto {
   razon_social_currier: string | null;
   registro_mtc_currier: string | null;
 
-  transportista: EntityDto | null | undefined;
-  transportista_id: number | null | undefined;
-
   indicador_registro_vehiculo_conductor: boolean;
   indicador_transbordo_programado: boolean;
   indicador_retorno_vehiculo_vacio: boolean;
   indicador_retorno_vehiculo_envases_vacios: boolean;
 
   conductor: number[] | null;
-  transporte: number[] | null;
 }
 
 export interface GR_ConductorRequestDto {

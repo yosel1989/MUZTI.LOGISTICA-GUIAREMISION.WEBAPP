@@ -166,7 +166,7 @@ export class SectionGuiaRemisionDestinatario{
             modal: true,
             draggable: false,
             position: 'top',
-            header: `Seleccionar punto de destino (destinatario)`,
+            header: `Seleccionar punto de destino`,
             styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'overflow-y-auto py-4',
             contentStyle: {

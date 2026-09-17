@@ -274,6 +274,34 @@
                             </p-accordion-panel>
                         }
 
+                        @if(selectTipoTransporte?.selected() === 'PRIVADO'){
+                            <p-accordion-panel value="drivers"> 
+                                <p-accordion-header data-value="drivers" #headerConductor class="group">
+                                    <span class="inline-flex items-center ps-4 py-2">
+                                        <span class="roboto-condensed">Conductor</span>
+                                        @if(submitted() && sectionConductor?.invalid()){
+                                            <i 
+                                                class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
+                                                [class.text-primary-200!]="headerConductor.active()"
+                                            ></i>
+                                        }
+                                        @if(!sectionConductor?.invalid()){
+                                            <i 
+                                                class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
+                                                [class.text-primary-200!]="headerConductor.active()"
+                                            ></i>
+                                        }
+                                    </span>
+                                </p-accordion-header>
+                                <p-accordion-content>
+                                    <app-section-guia-remision-conductor
+                                        #sectionConductor
+                                    >
+                                    </app-section-guia-remision-conductor>
+                                </p-accordion-content>
+                            </p-accordion-panel>
+                        }
+
                         <p-accordion-panel value="vehicles"> 
                             <p-accordion-header data-value="vehicles" #headerTransportista class="group">
                                 <span class="inline-flex items-center ps-4 py-2">
@@ -301,34 +329,6 @@
                             </p-accordion-content>
                         </p-accordion-panel>
 
-                    @if(selectTipoTransporte?.selected() === 'PRIVADO'){
-                        <p-accordion-panel value="drivers"> 
-                            <p-accordion-header data-value="drivers" #headerConductor class="group">
-                                <span class="inline-flex items-center ps-4 py-2">
-                                    <span class="roboto-condensed">Conductor</span>
-                                    @if(submitted() && sectionConductor?.invalid()){
-                                        <i 
-                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
-                                            [class.text-primary-200!]="headerConductor.active()"
-                                        ></i>
-                                    }
-                                    @if(!sectionConductor?.invalid()){
-                                        <i 
-                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
-                                            [class.text-primary-200!]="headerConductor.active()"
-                                        ></i>
-                                    }
-                                </span>
-                            </p-accordion-header>
-                            <p-accordion-content>
-                                <app-section-guia-remision-conductor
-                                    #sectionConductor
-                                >
-                                </app-section-guia-remision-conductor>
-                            </p-accordion-content>
-                        </p-accordion-panel>
-                    }
-                        
                         <p-accordion-panel value="origen"> 
                             <p-accordion-header data-value="origen" #headerOrigen class="group">
                                 <span class="inline-flex items-center ps-4 py-2">

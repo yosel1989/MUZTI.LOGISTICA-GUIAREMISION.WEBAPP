@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { SunatMotivoTrasladoDto } from "../models/sunat-catalogo.model";
+import { InvoiceTypeToSelectDto } from "../models/catalogo.model";
 
 @Injectable({
   providedIn: 'root'
@@ -22,4 +23,13 @@ export class SunatCatalogoApiService {
     );
   }
 
+  loadInvoiceTypes(): Observable<InvoiceTypeToSelectDto[]> {
+    return this.http.get<InvoiceTypeToSelectDto[]>(`${this.baseUrl}/invoice-types`).pipe(
+      map(response => response),
+      catchError(error => {
+        return throwError(() => error);
+      })
+    );
+  }
+  
 }

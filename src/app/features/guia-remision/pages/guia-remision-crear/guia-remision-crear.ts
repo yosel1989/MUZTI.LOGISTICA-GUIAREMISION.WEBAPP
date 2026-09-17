@@ -325,8 +325,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 razon_social_currier: this.sectionDatosTraslado?.formData?.nombre_rsocial_subcontratador,
                 registro_mtc_currier: this.sectionDatosTraslado?.formData?.num_mtc_transportista,
 
-                transportista: this.sectionTransportista?.getFormData.transportista,
-                transportista_id: this.sectionTransportista?.getFormData.transportista?.id,
 
                 indicador_registro_vehiculo_conductor: this.sectionDatosTraslado?.formData?.indic_registrar_vehiculos_conductores,
                 indicador_transbordo_programado: this.sectionDatosTraslado?.formData?.indic_transbordo_programado_adicional,
@@ -336,10 +334,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 conductor: this.sectionConductor?.getFormData?.map((d: ConductorDto) => {
                     return d.id
                 }) ?? null,
-
-                transporte: this.sectionTransportista?.getFormData.vehiculos?.map((d: UnidadTransporteDto) => {
-                    return d.id;
-                }) ?? null
 
             },
 
@@ -409,7 +403,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             inputValues: {
                 _type : 'empresa',
                 _roles : 'emisor',
-                _isInternal : true
+                _isInternal : true,
+                _hasBranch: true
             }
         });
 
@@ -755,8 +750,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         const submitMotivoTraslado = !this.f.motivo_traslado_id.value;
         const submitSectionDocumentoRelacionado = this.sectionDocumentoRelacionado?.evtOnSubmit();
-        const submitRemitente = this.sectionRemitente?.selected();
-        const submitDestinatario = this.sectionDestinatario?.selected();
+        const submitRemitente = this.sectionRemitente?.evtOnSubmit();
+        const submitDestinatario = this.sectionDestinatario?.evtOnSubmit();
         const submitDatosTraslado = this.sectionDatosTraslado?.evtOnSubmit();
         const submitsectionProveedor = this.sectionProveedor?.evtOnSubmit();
         const submitsectionTransportista = this.sectionTransportista?.evtOnSubmit();
@@ -804,7 +799,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             });
             return false;
         }
-
 
         if(!submitDatosTraslado) return false;
         if(!!this.sectionProveedor && !submitsectionProveedor) return false;

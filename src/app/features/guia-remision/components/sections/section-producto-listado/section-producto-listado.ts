@@ -371,7 +371,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
       this.alertService.showToast({
         position: 'top-end',
         icon: 'warning',
-        title: 'Se tiene que completar los datos obligatorios en la Sección de Productos.',
+        title: 'Se tiene que completar los datos obligatorios en la Sección de Bienes o Productos.',
         showCloseButton: true,
         timerProgressBar: true,
         timer: 4000,

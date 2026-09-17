@@ -1,0 +1,20 @@
+@if(label){<label [attr.class]="classLabel">{{ label }}</label>}
+@if(loading && ldData()){
+    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+}@else{
+    <p-select 
+        panelStyleClass="text-[.875rem]!"
+        size="small" 
+        fluid 
+        [options]="data()"
+        [loading]="ldData()" 
+        [formControl]="control"  
+        [optionLabel]="optionLabel"
+        [optionValue]="optionValue"
+        class="p-inputwrapper-filled" 
+        placeholder="--SELECCIONAR--"
+        appendTo="body"
+        [invalid]="invalid"
+    >
+    </p-select>
+}

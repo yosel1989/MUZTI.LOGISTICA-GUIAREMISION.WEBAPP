@@ -81,13 +81,14 @@ export class EntityApiService {
         )
     }
 
-    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null, roles: string | null, isInternal: boolean | null, excludeId: number | null): Observable<TableData<EntityListDto[]>>{
+    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null, roles: string | null, isInternal: boolean | null, excludeId: number | null, hasBranch: boolean | null): Observable<TableData<EntityListDto[]>>{
         let httpParams = new HttpParams();
         httpParams = search ? httpParams.set('search', search) : httpParams;
         httpParams = type ? httpParams.set('type', type) : httpParams;
         httpParams = roles ? httpParams.set('roles', roles) : httpParams;
         httpParams = isInternal ? httpParams.set('isInternal', isInternal) : httpParams;
         httpParams = excludeId ? httpParams.set('excludeId', excludeId) : httpParams;
+        httpParams = hasBranch ? httpParams.set('hasBranch', hasBranch) : httpParams;
 
         return this.http.get<TableData<EntityListDto[]>>(`${this.baseUrl}/list/${pageNumber}/${pageSize}`, { params: httpParams }).pipe(
             map((res) => res),

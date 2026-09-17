@@ -51,3 +51,12 @@ export interface DocumentoRelacionadoDTO{
     descripcion_corta: string;
     codigo_sunat: string;
 }
+
+export interface InvoiceTypeDto{
+    id: number;
+    name: string;
+    active: boolean;
+    code_sunat: string;
+}
+
+export type InvoiceTypeToSelectDto = Omit<InvoiceTypeDto, 'active'>;
