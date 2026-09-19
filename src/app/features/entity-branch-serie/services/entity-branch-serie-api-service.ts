@@ -5,37 +5,22 @@ import { ResponseDTO } from "@features/shared/models/shared";
 import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EntityBranchCreateDto, EntityBranchDto, EntityBranchListToModalDTO, EntityBranchListToSelectDTO, EntityBranchUpdateDto, EstablecimientoRemitenteGuiaDTO } from "../models/entity-branch";
+import { EntityBranchSerieCreateDto, EntityBranchSerieDto, EntityBranchSerieUpdateDto } from "../models/entity-branch-serie";
 
 @Injectable({
     providedIn: "root"
 })
 
-export class EntityBranchApiService{
+export class EntityBranchSerieApiService{
 
     private baseUrl = "";
 
     constructor( private http: HttpClient){
-        this.baseUrl = `${environment.apiUrl}/entity-branchs`
+        this.baseUrl = `${environment.apiUrl}/entity-branch-series`
     }
 
-    getAllToModalByRuc(entityId: number, search: string | null): Observable<EntityBranchListToModalDTO[]>{
-        let httpParams = new HttpParams();
-        if (search) {
-            httpParams = httpParams.set('search', search);
-        }
-
-        return this.http.get<EntityBranchListToModalDTO[]>(`${this.baseUrl}/listar-sugerido/${entityId}`, { params: httpParams }).pipe(
-            map(response =>{ return response as EntityBranchListToModalDTO[] }),
-            catchError((error: HttpErrorResponse) => {
-                return throwError(() => error);
-            })
-        );
-    }
-
-
-    getById(id: number): Observable<EntityBranchDto>{
-        return this.http.get<EntityBranchDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
+    getById(id: number): Observable<EntityBranchSerieDto>{
+        return this.http.get<EntityBranchSerieDto>(`${this.baseUrl}/${id}`).pipe(
             map(response => response ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -43,17 +28,16 @@ export class EntityBranchApiService{
         );
     }
 
-
-    getAll(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EntityBranchDto[]>>{
+    getAll(entityBranchId: number, pageNumber: number, pageSize: number, search: string | null): Observable<TableData<EntityBranchSerieDto[]>>{
         let httpParams = new HttpParams();
         if(search){
             httpParams = httpParams.set('search', search);
         }
 
-        return this.http.get<TableData<EntityBranchDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, {
+        return this.http.get<TableData<EntityBranchSerieDto[]>>(`${this.baseUrl}/branch/${entityBranchId}/list/${pageNumber}/${pageSize}`, {
             params: httpParams
         }).pipe(
-            map(response =>{ return response as TableData<EntityBranchDto[]> }),
+            map(response =>{ return response as TableData<EntityBranchSerieDto[]> }),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
@@ -87,8 +71,8 @@ export class EntityBranchApiService{
         );
     }
 
-    create(request: EntityBranchCreateDto): Observable<EntityBranchDto> {
-        return this.http.post<EntityBranchDto>(`${this.baseUrl}`, request).pipe(
+    create(request: EntityBranchSerieCreateDto): Observable<EntityBranchSerieDto> {
+        return this.http.post<EntityBranchSerieDto>(`${this.baseUrl}`, request).pipe(
             map(response => response),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
@@ -96,32 +80,17 @@ export class EntityBranchApiService{
         );
     }
 
-    update(id: number, request: EntityBranchUpdateDto): Observable<EntityBranchDto> {
-        return this.http.put<EntityBranchDto>(`${this.baseUrl}/${id}`, request).pipe(
+    update(id: number, request: EntityBranchSerieUpdateDto): Observable<EntityBranchSerieDto> {
+        return this.http.put<EntityBranchSerieDto>(`${this.baseUrl}/${id}`, request).pipe(
             map(response => ({ 
                 ...response,
                 created_at: new Date(response.created_at),
                 updated_at: response.updated_at ? new Date(response.updated_at) : null
-            }) as EntityBranchDto ),
+            }) as EntityBranchSerieDto ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })
         );
     }
 
-    getByIdToGuia(entityBranchId: number, tipoGuia: 'TRANSPORTISTA' | 'REMITENTE' | string): Observable<EstablecimientoRemitenteGuiaDTO> {
-        return this.http.get<EstablecimientoRemitenteGuiaDTO>(`${this.baseUrl}/buscar-por-id-para-guia/${entityBranchId}/${tipoGuia}`).pipe(
-            map(response =>{ return response as EstablecimientoRemitenteGuiaDTO})
-        );
-    }
-
-
-    getAllToSelectByRuc(ruc: string): Observable<EntityBranchListToSelectDTO[]>{
-        return this.http.get<EntityBranchListToSelectDTO[]>(`${this.baseUrl}/listar-select/por-ruc/${ruc}`).pipe(
-            map(response => response ),
-            catchError((error: HttpErrorResponse) => {
-                return throwError(() => error);
-            })
-        );
-    }
 }

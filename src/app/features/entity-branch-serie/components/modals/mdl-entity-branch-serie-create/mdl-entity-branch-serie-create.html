@@ -1,0 +1,114 @@
+<form [formGroup]="frm" (ngSubmit)="evtOnSubmit()">
+
+    <div class="grid grid-cols-1 p-4">
+        <div> 
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Tipo de Documento </label>
+                <app-select-invoice-type 
+                    [control]="f.invoice_type_id" 
+                    classLabel="text-[13px]! text-slate-500 font-semibold roboto-condensed" 
+                ></app-select-invoice-type>
+                @if (frm.get('invoice_type_id')?.invalid && (frm.get('invoice_type_id')?.touched || isSubmitted())) {
+                    <p-message severity="error" size="small" variant="simple" >
+                    <span class="text-[10px]! ">Este campo es requerido.</span>
+                    </p-message>
+                }
+            </div>
+
+            <div class="col-span-2">
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Area</label>
+                <input 
+                fluid 
+                onlyUpper 
+                pInputText 
+                type="text" 
+                pSize="small" 
+                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                formControlName="area" 
+                [invalid]="frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())"/>
+                @if (frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())) {
+                    <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                    @if (f.description.hasError('required')) {
+                        Este campo es requerido.
+                    }
+                    @if (f.description.hasError('maxlength')) {
+                        La descripción no debe exceder los 200 caracteres.
+                    }</span>
+                    </p-message>
+                }
+            </div>
+
+            <div class="col-span-2">
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Serie</label>
+                <input 
+                fluid 
+                onlyUpper 
+                pInputText 
+                type="text" 
+                pSize="small" 
+                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                formControlName="serie" 
+                [invalid]="frm.get('serie')?.invalid && (frm.get('serie')?.touched || isSubmitted())"/>
+                @if (frm.get('serie')?.invalid && (frm.get('serie')?.touched || isSubmitted())) {
+                    <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                    @if (f.description.hasError('required')) {
+                        Este campo es requerido.
+                    }
+                    @if (f.description.hasError('maxlength')) {
+                        La descripción no debe exceder los 200 caracteres.
+                    }</span>
+                    </p-message>
+                }
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="flex justify-end gap-2 pt-4">
+        <p-button 
+            styleClass="w-[92px]!" 
+            type="reset" 
+            icon="pi pi-times" 
+            size="small" 
+            label="Cancelar" 
+            severity="secondary" 
+            (click)="evtOnClose()"
+        />
+        <p-button 
+            styleClass="w-[92px]!" 
+            type="submit" 
+            icon="pi pi-save" 
+            size="small" 
+            [label]="ldSubmit() ? '' : 'Guardar'" 
+            [loading]="ldSubmit()" 
+            severity="primary" 
+        />
+    </div>
+
+</form>
+
+
+
+
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>

@@ -1,11 +1,10 @@
 import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
-import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
+import { EntityBranchSerieDto } from '@features/entity-branch-serie/models/entity-branch-serie';
+import { EntityBranchSerieApiService } from '@features/entity-branch-serie/services/entity-branch-serie-api-service';
 import { ResponseDTO } from '@features/shared/models/shared';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
@@ -30,13 +29,14 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
-import { MdlEntityBranchCreate } from '../../modals/mdl-entity-branch-create/mdl-entity-branch-create';
-import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
+import { MdlEntityBranchSerieCreate } from '../../modals/mdl-entity-branch-serie-create/mdl-entity-branch-serie-create';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+
 
 @Component({
-  selector: 'app-tbl-entity-branch-principal',
-  templateUrl: './tbl-entity-branch-principal.html',
-  styleUrl: './tbl-entity-branch-principal.scss',
+  selector: 'app-tbl-entity-branch-serie-principal',
+  templateUrl: './tbl-entity-branch-serie-principal.html',
+  styleUrl: './tbl-entity-branch-serie-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -58,23 +58,25 @@ import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-ent
   animations: [fadeDownAnimation]
 })
 
-export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestroy{
+export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('cm') cm: ContextMenu | undefined;
 
     private datePipe = inject(DatePipe);
     private destroyRef = inject(DestroyRef);
     public dialogService = inject(DialogService);
-    private api = inject(EntityBranchApiService);
+    private api = inject(EntityBranchSerieApiService);
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
 
     cols: Column[] = [];
 
-    data = signal<EntityBranchDto[]>([]);
+    entityBranchId = input.required<number>();
+
+    data = signal<EntityBranchSerieDto[]>([]);
     ldData = signal(true);
-    selected = signal<EntityBranchDto | undefined>(undefined);
+    selected = signal<EntityBranchSerieDto | undefined>(undefined);
     items = computed(() => this.buildMenuItems(this.selected()));
     loading = signal(false);
 
@@ -88,7 +90,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     private subs = new Subscription();
 
     pageNumber = signal(1);
-    pageSize = signal(10);
+    pageSize = signal(5);
     totalRecords = signal(0);
 
     firstChange: boolean = false;
@@ -99,7 +101,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
-    paddedData = computed<(EntityBranchDto | { __empty: boolean })[]>(() => {
+    paddedData = computed<(EntityBranchSerieDto | { __empty: boolean })[]>(() => {
       const actual = this.data() ?? [];
       const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
@@ -112,29 +114,20 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       this.cols = [
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
-          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false },
-          { field: 'entity_document_number', header: 'N° Documento', sort: false, sticky: false },
-          { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!' },
-          { field: 'area', header: 'Area', sort: false, sticky: false },
-          { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!' },
-          { field: 'department', header: 'Departamento', sort: false, sticky: false },
-          { field: 'province', header: 'Provincia', sort: false, sticky: false },
-          { field: 'district', header: 'Distrito', sort: false, sticky: false },
-          { field: 'address', header: 'Dirección', sort: false, sticky: false },
-          { field: 'email', header: 'Correo', sort: false, sticky: false },
           { field: 'serie', header: 'Serie', sort: false, sticky: false },
-          { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
-          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: EntityBranchDto)  => { 
+          { field: 'area', header: 'Area', sort: false, sticky: false },
+          { field: 'invoice_type', header: 'T. Comprobante', sort: false, sticky: false, tdClassName: 'font-medium!' },
+          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: EntityBranchSerieDto)  => { 
             if (rowData.active) {
               return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
             }
             return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
           }},
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: EntityBranchDto) => {
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: EntityBranchSerieDto) => {
             return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
           }},
           { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: EntityBranchDto) => {
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: EntityBranchSerieDto) => {
             return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
           }},
           { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
@@ -168,13 +161,13 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         this.first = 0;
       }
 
-      this.subData = this.api.getAll(this.pageNumber(), this.pageSize(), this.search)
+      this.subData = this.api.getAll(this.entityBranchId(), this.pageNumber(), this.pageSize(), this.search)
       .pipe(finalize(() => {
         this.loading.set(false);
         this.ldData.set(false);
       }))
       .subscribe({
-        next: (res: TableData<EntityBranchDto[]>) => {
+        next: (res: TableData<EntityBranchSerieDto[]>) => {
           
           this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);
@@ -209,7 +202,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     }
 
     //events
-    evtToggleSelection(row: EntityBranchDto): void{
+    evtToggleSelection(row: EntityBranchSerieDto): void{
       if (this.selected() === row) {
         this.selected.set(undefined);
       } else {
@@ -237,13 +230,13 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlEntityBranchCreate,  {
+      this.ref = this.dialogService.open(MdlEntityBranchSerieCreate,  {
         width: '700px',
         closable: false,
         draggable: false,
         modal: true,
         position: 'top',
-        header: 'Registrar Establecimiento',
+        header: 'Registrar serie',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -252,23 +245,24 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchCreate) => {
-        const sub2 = cmp?.OnCreated.subscribe(() => {
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchSerieCreate) => {
+        cmp?.OnCreated
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.evtOnReload();
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe(() => {
+        cmp?.OnCanceled
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.ref?.close();
         });
-        this.subs.add(sub2);
-        this.subs.add(sub3);
       });
 
-      this.subs.add(sub);
     }
 
     evtOnEdit(): void{
-      if(!this.handlerValidateSelected()) return;
+      /*if(!this.handlerValidateSelected()) return;
 
       this.ref = this.dialogService.open(MdlEntityBranchEdit,  {
         width: '700px',
@@ -294,7 +288,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         
         cmp?.OnUpdated
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(( s: EntityBranchDto) => {
+        .subscribe(( s: EntityBranchSerieDto) => {
           this.ref?.close();
 
           this.selected.update(current => {
@@ -326,7 +320,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
           this.ref?.close();
         });
 
-      });
+      });*/
     }
 
     evtOnDelete(): void{
@@ -475,7 +469,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       this.selected.set( event.data );
     }
 
-    evtShowContextMenu(event: MouseEvent, rowData: EntityBranchDto) {
+    evtShowContextMenu(event: MouseEvent, rowData: EntityBranchSerieDto) {
       const target = event.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
       const currentSelected = this.selected();
@@ -510,7 +504,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
     // Functions
 
-    isOpenCm(rowData: EntityBranchDto): boolean{
+    isOpenCm(rowData: EntityBranchSerieDto): boolean{
       return (this.cm?.visible() && rowData === this.selected()) ?? false;
     }
 
@@ -526,7 +520,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       this.evtOnReload();
     }
 
-    private buildMenuItems(selected: EntityBranchDto | undefined): MenuItem[] {
+    private buildMenuItems(selected: EntityBranchSerieDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
@@ -540,7 +534,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     handlerValidateSelected(): boolean{
       if(!this.selected()){
         this.alertService.showToast({
-          title: "Debe seleccionar un establecimiento",
+          title: "Debe seleccionar una serie",
           icon: "error",
           timer: 4000,
           timerProgressBar: true,

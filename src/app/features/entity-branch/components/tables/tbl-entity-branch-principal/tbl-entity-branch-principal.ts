@@ -32,6 +32,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
 import { MdlEntityBranchCreate } from '../../modals/mdl-entity-branch-create/mdl-entity-branch-create';
 import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
+import { MdlEntityBranchSerieList } from '@features/entity-branch-serie/components/modals/mdl-entity-branch-serie-list/mdl-entity-branch-serie-list';
 
 @Component({
   selector: 'app-tbl-entity-branch-principal',
@@ -508,6 +509,31 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       }
     }
 
+    evtShowSeries(): void{
+      if(!this.handlerValidateSelected()) return;
+
+      this.ref = this.dialogService.open(MdlEntityBranchSerieList,  {
+        width: '900px',
+        closable: false,
+        draggable: false,
+        modal: true,
+        position: 'top',
+        header: 'Administración de series',
+        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        inputValues:{
+          entityBranch: this.selected()!
+        },
+        templates: {
+          header: MdlHeader
+        },
+        contentStyle: {
+          padding: '0rem'
+        }
+      });
+    }
+
     // Functions
 
     isOpenCm(rowData: EntityBranchDto): boolean{
@@ -532,6 +558,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: !selected?.active,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
         { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.active,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Series', icon: 'pi pi-list', command: () => { this.evtShowSeries(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
       ];
     }
 
