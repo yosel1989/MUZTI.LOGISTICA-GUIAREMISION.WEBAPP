@@ -160,14 +160,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
                 header: 'Local'
             },
             {
-                field: 'area',
-                header: 'Area'
-            },
-            this.tipo === 'remitente' ? {
-                field: 'serie',
-                header: 'Serie'
-            } : null,
-            {
                 field: 'code_sunat',
                 header: 'Cod. Sunat'
             }

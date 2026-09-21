@@ -150,7 +150,7 @@
     }
 <p-table 
     #datatable
-    [columns]="cols"
+    [columns]="colsVisibled()"
     [value]="paddedData()"
     size="small" 
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
@@ -204,6 +204,7 @@
                             [pSortableColumn]="col.sort ? col.field : undefined" 
                             [class.border-e-0!]="(columns.length - 1) === i"
                             class="text-nowrap py-2! text-[14px]! text-primary! font-semibold px-4! border-t-0!"
+                            (click)="op.toggle($event)"
                         >
                             <div class="flex items-center gap-2 roboto-condensed" [innerHTML]="col.header">
                                 @if(col.sort){<p-sortIcon [field]="col.field" />}
@@ -345,3 +346,21 @@
         </ng-template>
     </p-confirmdialog>
 </div>
+
+
+
+
+
+
+<p-popover #op>
+    <p-listbox 
+        [options]="colsFilter()" 
+        [ngModel]="selectedColumns()"
+        [multiple]="true" 
+        [checkbox]="true" 
+        optionLabel="name" 
+        optionValue="field" 
+        class="w-full border-none! text-sm!" 
+        (onChange)="onColumnsChange($event)"
+    />
+</p-popover>

@@ -16,10 +16,9 @@ export interface UnidadTransporteDto{
     usuario_modifico: string | null;
     usuario_modifico_nombre: string | null;
     tipo: string | null;
-    estado: string;
-    id_estado: number;
-    ld_estado: boolean;
-    ld_update: boolean;
+    active: boolean;
+    loading_active: boolean;
+    loading_update: boolean;
     job_title: string;
 }
 

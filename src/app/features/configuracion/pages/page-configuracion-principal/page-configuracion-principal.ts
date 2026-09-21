@@ -29,6 +29,11 @@ export class PageConfiguracionPrincipalComponent implements OnInit, AfterViewIni
 
         this.items = [
             {
+                label: 'Personal de seguridad',
+                styleClass: 'text-[12px]! font-semibold text-primary!',
+                routerLink: 'personal-seguridad'
+            },
+            {
                 label: 'Integraciones',
                 styleClass: 'text-[12px]! font-semibold text-primary!',
                 routerLink: 'integraciones'

@@ -13,3 +13,20 @@ export interface TableData<T>{
     total_pages: number;
     data: T;
 }
+
+
+export interface TableColumnState{
+    field: string; 
+    visible: boolean;
+}
+
+export interface TableState{
+    table: string;
+    cols: TableColumnState[];
+}
+
+export interface TableColumnFilter{
+    field: string;
+    name: string;
+    checked: boolean;
+}

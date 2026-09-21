@@ -12,7 +12,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
 import { EntityDto } from '@features/entity/models/entity';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
@@ -26,7 +25,7 @@ import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dy
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { SkeletonModule } from 'primeng/skeleton';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription, takeUntil } from 'rxjs';
 import { SelectInvoiceTypeComponent } from '@features/catalogo/components/selects/select-invoice-type/select-invoice-type';
 import { EntityBranchSerieCreateDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 import { EntityBranchSerieApiService } from '@features/entity-branch-serie/services/entity-branch-serie-api-service';
@@ -67,7 +66,7 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
   private dialogService = inject(DialogService);
   private destroyRef = inject(DestroyRef);
 
-  entityBranch = input.required<EntityBranchDto>();
+  entityBranchId = input.required<number>();
 
   OnCreated = new EventEmitter<boolean>();
   OnCanceled = new EventEmitter<boolean>();
@@ -131,7 +130,7 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
     const form = this.frm.value;
 
     return {
-      entity_branch_id: this.entityBranch().id,
+      entity_branch_id: this.entityBranchId(),
       invoice_type_id: form.invoice_type_id,
       area: form.area,
       serie: form.serie,
@@ -153,9 +152,13 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
 
             this.ldSubmit.set(true);
             
-            const subs = this.api.create(this.request).subscribe({
+            this.api.create(this.request)
+            .pipe(
+              finalize(()=>{this.ldSubmit.set(false)}),
+              takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe({
               next: () => {
-                this.ldSubmit.set(false);
 
                 this.alertService.showToast({
                   position: 'top-end',
@@ -169,22 +172,13 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
                 });
               }
             });
-            this.subs.add(subs);
            
         },
     });

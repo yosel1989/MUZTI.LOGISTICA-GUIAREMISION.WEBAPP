@@ -1,7 +1,6 @@
 export interface EntityBranchListToModalDTO{
     id: number;
     descripcion: string;
-    area: string | null;
     codigo_sunat: string;
     entity_id: number;
     entity_document_number: string;
@@ -19,14 +18,12 @@ export interface EntityBranchDto{
     entity_address: string;
     entity_country: string;
     description: string;
-    area: string | null;
     ubigeo_id: string;
     department: string;
     province: string;
     district: string;
     address: string;
     email: string | null;
-    serie: string;
     code_sunat: string;
     created_at: Date;
     updated_at: Date | null;
@@ -102,16 +99,14 @@ export interface EstablecimientoRemitenteGuiaDTO{
     entity_id: number;
     entity_document_number: string;
     entity_name: string;                      
-    descripcion: string;               
-    area: string | null;               
+    descripcion: string;                             
     ubigeo_id: string;                 
     departamento: string;              
     provincia: string;                 
     distrito: string;                  
     direccion: string;                 
     email: string | null;                     
-    pais: string;                      
-    serie: string | null;              
+    pais: string;                                 
     nueva_serie: string | null;        
     nuevo_correlativo: number | null;  
     nuevo_numero_guia: string | null;           
@@ -121,5 +116,4 @@ export interface EstablecimientoRemitenteGuiaDTO{
 export interface EntityBranchListToSelectDTO{
     id: number;
     descripcion: string;
-    area: string | null;
 }

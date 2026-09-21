@@ -60,6 +60,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
+import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 
 export interface Puerto{
     value: string;
@@ -107,7 +108,9 @@ export interface Puerto{
     SectionGuiaRemisionOrigen,
     SectionGuiaRemisionDestino,
     AvatarModule,
-    OnlyUpperDirective
+    OnlyUpperDirective,
+
+    SectionResponsableListadoComponent
 ],
   viewProviders: [provideIcons({ heroQuestionMarkCircleSolid })],
   providers: [DialogService, ConfirmationService],

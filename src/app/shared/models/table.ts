@@ -7,6 +7,8 @@ export interface Column {
     className?: string;
     tdClassName?: string;
     thClassName?: string;
+    visible?: boolean;
+    canVisible?: boolean;
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render?: (rowData: any, rowIndex?: number) => string | null;

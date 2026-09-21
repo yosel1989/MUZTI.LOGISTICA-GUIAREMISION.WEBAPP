@@ -2,7 +2,7 @@ import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
@@ -33,6 +33,9 @@ import { finalize, Subscription } from 'rxjs';
 import { MdlEntityBranchCreate } from '../../modals/mdl-entity-branch-create/mdl-entity-branch-create';
 import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
 import { MdlEntityBranchSerieList } from '@features/entity-branch-serie/components/modals/mdl-entity-branch-serie-list/mdl-entity-branch-serie-list';
+import { StorageService } from '@core/services/storage.service';
+import { PopoverModule } from 'primeng/popover';
+import { ListboxModule } from 'primeng/listbox';
 
 @Component({
   selector: 'app-tbl-entity-branch-principal',
@@ -53,7 +56,11 @@ import { MdlEntityBranchSerieList } from '@features/entity-branch-serie/componen
         ConfirmDialogModule,
         LoaderComponent,
         ReactiveFormsModule,
-        NgClass
+        NgClass,
+
+        PopoverModule,
+        ListboxModule,
+        FormsModule
   ],
   providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]
@@ -61,6 +68,7 @@ import { MdlEntityBranchSerieList } from '@features/entity-branch-serie/componen
 
 export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
+    private IDTABLE = 'tbl-entity-branch-principal';
     @ViewChild('cm') cm: ContextMenu | undefined;
 
     private datePipe = inject(DatePipe);
@@ -70,8 +78,32 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private storageService = inject(StorageService);
+    private cd = inject(ChangeDetectorRef);
 
-    cols: Column[] = [];
+    cols = signal<Column[]>([]);
+
+    colsVisibled = computed(() =>
+      this.cols()
+        .filter(col => col.visible)
+    );
+
+    colsFilter = computed(() =>
+      this.cols()
+        .filter(col => col.canVisible)
+        .map(col => ({
+          field: col.field,
+          name: col.header,
+          checked: col.visible ?? true
+        }))
+    );
+
+    selectedColumns = computed(() =>
+      this.cols()
+        .filter(col => col.visible && col.canVisible)
+        .map(col => col.field)
+    );
+    
 
     data = signal<EntityBranchDto[]>([]);
     ldData = signal(true);
@@ -107,40 +139,41 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       return [...actual, ...fillerRows];
     });
 
-    constructor( private cd: ChangeDetectorRef ){ }
 
     ngOnInit(): void{
-      this.cols = [
-          { field: 'select', header: '', sort: false, sticky: false  },
-          { field: 'cod', header: '#', sort: false, sticky: false  },
-          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false },
-          { field: 'entity_document_number', header: 'N° Documento', sort: false, sticky: false },
-          { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!' },
-          { field: 'area', header: 'Area', sort: false, sticky: false },
-          { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!' },
-          { field: 'department', header: 'Departamento', sort: false, sticky: false },
-          { field: 'province', header: 'Provincia', sort: false, sticky: false },
-          { field: 'district', header: 'Distrito', sort: false, sticky: false },
-          { field: 'address', header: 'Dirección', sort: false, sticky: false },
-          { field: 'email', header: 'Correo', sort: false, sticky: false },
-          { field: 'serie', header: 'Serie', sort: false, sticky: false },
-          { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false },
-          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: EntityBranchDto)  => { 
+      this.cols.set([
+          { field: 'select', header: '', sort: false, sticky: false},
+          { field: 'cod', header: '#', sort: false, sticky: false},
+          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false, canVisible: true },
+          { field: 'entity_document_number', header: 'N° Documento', sort: false, sticky: false, canVisible: true },
+          { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!', canVisible: true },
+          { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false, canVisible: true, tdClassName: 'text-center!' },
+          { field: 'series_count', header: 'N° Series', sort: false, sticky: false, canVisible: true, tdClassName: 'text-center!' },
+          { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!', canVisible: true },
+          { field: 'department', header: 'Departamento', sort: false, sticky: false, canVisible: true },
+          { field: 'province', header: 'Provincia', sort: false, sticky: false, canVisible: true },
+          { field: 'district', header: 'Distrito', sort: false, sticky: false, canVisible: true },
+          //{ field: 'address', header: 'Dirección', sort: false, sticky: false, canVisible: true },
+          { field: 'email', header: 'Correo', sort: false, sticky: false, canVisible: true },
+          { field: 'active', header: 'Estado', sort: false, sticky: false, canVisible: true, render: (rowData: EntityBranchDto)  => { 
             if (rowData.active) {
               return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
             }
             return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
           }},
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: EntityBranchDto) => {
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, canVisible: true, render: (rowData: EntityBranchDto) => {
             return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
           }},
-          { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: EntityBranchDto) => {
+          { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false, canVisible: true },
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, canVisible: true, render: (rowData: EntityBranchDto) => {
             return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
           }},
-          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
-          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!' },
-        ];
+          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false, canVisible: true },
+          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!'},
+        ]);
+
+        this.cols.set(this.storageService.loadTable(this.IDTABLE, this.cols()));
+
     }
 
     ngAfterViewInit(): void{
@@ -513,7 +546,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       if(!this.handlerValidateSelected()) return;
 
       this.ref = this.dialogService.open(MdlEntityBranchSerieList,  {
-        width: '900px',
+        width: '1200px',
         closable: false,
         draggable: false,
         modal: true,
@@ -532,6 +565,22 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
           padding: '0rem'
         }
       });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onColumnsChange(event: any) {
+      console.log('event', event);
+
+      const selected = new Set(event.value);
+
+      this.cols.update(cols =>
+        cols.map(col => ({
+          ...col,
+          visible: selected.has(col.field)
+        }))
+      );
+
+      this.storageService.loadTable(this.IDTABLE, this.cols());
     }
 
     // Functions

@@ -159,11 +159,9 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
       id: this.id(),
       entity_id: this.entitySelected()!.id,
       description: form.description,
-      area: form.area,
       ubigeo_id: form.district,
       address: form.address,
       email: form.email,
-      serie: form.serie,
       code_sunat: form.code_sunat,
       type: form.type,
       is_main: form.is_main
@@ -350,13 +348,11 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
     this.frm.patchValue({
       entity_id: data.entity_id,
       description: data.description,
-      area: data.area,
       department: data.ubigeo_id.substring(0,2),
       province: data.ubigeo_id.substring(0,4),
       district: data.ubigeo_id,
       address: data.address,
       email: data.email,
-      serie: data.serie,
       code_sunat: data.code_sunat,
       type: data.type,
       is_main: data.is_main

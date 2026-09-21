@@ -109,7 +109,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           { field: 'entidad_reguladora_vehicular', header: 'Entidad emisora de la autorización vehícular', sort: false, sticky: false },
           { field: 'nro_autorizacion', header: 'N° Autorización', sort: false, sticky: false },
           { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
-          { field: 'estado', header: 'Estado', sort: false, sticky: false },
+          { field: 'active', header: 'Estado', sort: false, sticky: false },
           { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
           { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
           { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
@@ -161,8 +161,8 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           this.data.set(res.data.map(x => {
             x.fecha_registro = new Date(x.fecha_registro);
             x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
-            x.ld_estado = false;
-            x.ld_update = false;
+            x.loading_active = false;
+            x.loading_update = false;
             return x;
           }));
 
@@ -508,8 +508,8 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); }, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: selected?.id_estado === 0, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.id_estado === 1, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: !selected?.active, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
+        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.active, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
       ];
     }
 }

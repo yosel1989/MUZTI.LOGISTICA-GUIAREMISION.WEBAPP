@@ -31,6 +31,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
 import { MdlEntityBranchSerieCreate } from '../../modals/mdl-entity-branch-serie-create/mdl-entity-branch-serie-create';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { MdlEntityBranchSerieEdit } from '../../modals/mdl-entity-branch-serie-edit/mdl-entity-branch-serie-edit';
+import { StorageService } from '@core/services/storage.service';
 
 
 @Component({
@@ -60,6 +63,7 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
 
 export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnDestroy{
 
+    private IDTABLE = 'tbl-entity-branch-serie-principal';
     @ViewChild('cm') cm: ContextMenu | undefined;
 
     private datePipe = inject(DatePipe);
@@ -69,10 +73,11 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private storageService = inject(StorageService);
 
     cols: Column[] = [];
 
-    entityBranchId = input.required<number>();
+    entityBranch = input.required<EntityBranchDto>();
 
     data = signal<EntityBranchSerieDto[]>([]);
     ldData = signal(true);
@@ -112,27 +117,32 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
 
     ngOnInit(): void{
       this.cols = [
-          { field: 'select', header: '', sort: false, sticky: false  },
-          { field: 'cod', header: '#', sort: false, sticky: false  },
-          { field: 'serie', header: 'Serie', sort: false, sticky: false },
-          { field: 'area', header: 'Area', sort: false, sticky: false },
-          { field: 'invoice_type', header: 'T. Comprobante', sort: false, sticky: false, tdClassName: 'font-medium!' },
-          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: EntityBranchSerieDto)  => { 
+          { field: 'select', header: '', sort: false, sticky: false, visible: true  },
+          { field: 'cod', header: '#', sort: false, sticky: false, visible: true  },
+          { field: 'id', header: 'ID', sort: false, sticky: false, visible: true, render: (rowData: EntityBranchSerieDto) => {
+            return `COD-${rowData.id.toString().padStart(4,'0')}`;
+          }},
+          { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: 'font-semibold!', visible: true },
+          { field: 'area', header: 'Area', sort: false, sticky: false, visible: true },
+          { field: 'invoice_type', header: 'T. Comprobante', sort: false, sticky: false, tdClassName: 'font-medium!', visible: true },
+          { field: 'active', header: 'Estado', sort: false, sticky: false, visible: true, render: (rowData: EntityBranchSerieDto)  => { 
             if (rowData.active) {
               return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
             }
             return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
           }},
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: EntityBranchSerieDto) => {
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, visible: true, render: (rowData: EntityBranchSerieDto) => {
             return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
           }},
-          { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: EntityBranchSerieDto) => {
+          { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false, visible: true },
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, visible: true, render: (rowData: EntityBranchSerieDto) => {
             return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
           }},
-          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
-          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!' },
+          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false, visible: true },
+          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!', visible: true },
         ];
+
+      this.cols = this.storageService.loadTable(this.IDTABLE, this.cols);
     }
 
     ngAfterViewInit(): void{
@@ -161,7 +171,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
         this.first = 0;
       }
 
-      this.subData = this.api.getAll(this.entityBranchId(), this.pageNumber(), this.pageSize(), this.search)
+      this.subData = this.api.getAll(this.entityBranch().id, this.pageNumber(), this.pageSize(), this.search)
       .pipe(finalize(() => {
         this.loading.set(false);
         this.ldData.set(false);
@@ -242,6 +252,9 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
         appendTo: 'body',
         templates: {
           header: MdlHeader
+        },
+        inputValues: {
+          entityBranchId: this.entityBranch()?.id
         }
       });
 
@@ -255,6 +268,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
         cmp?.OnCanceled
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
+          console.log('cerrar');
           this.ref?.close();
         });
       });
@@ -262,19 +276,20 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
     }
 
     evtOnEdit(): void{
-      /*if(!this.handlerValidateSelected()) return;
+      if(!this.handlerValidateSelected()) return;
 
-      this.ref = this.dialogService.open(MdlEntityBranchEdit,  {
+      this.ref = this.dialogService.open(MdlEntityBranchSerieEdit,  {
         width: '700px',
         closable: false,
         draggable: false,
         modal: true,
         position: 'top',
-        header: 'Editar Establecimiento',
+        header: 'Editar serie',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
         inputValues:{
+          entityBranchId: this.entityBranch()?.id,
           id: this.selected()!.id
         },
         templates: {
@@ -284,7 +299,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
 
       this.ref.onChildComponentLoaded
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((cmp: MdlEntityBranchEdit) => {
+      .subscribe((cmp: MdlEntityBranchSerieEdit) => {
         
         cmp?.OnUpdated
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -320,7 +335,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
           this.ref?.close();
         });
 
-      });*/
+      });
     }
 
     evtOnDelete(): void{
@@ -372,7 +387,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
       if(!this.handlerValidateSelected()) return;
 
       this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el establecimiento?' : '¿Activar el establecimiento?',
+          header: !status ? '¿Desactivar la serie?' : '¿Activar la serie?',
           message: 'Confirmar la operación.',
           accept: () => {
               this.selected.update(current => {
@@ -401,9 +416,6 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
                     position: 'top-end',
                     icon: "success",
                     title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
                   });
 
                   this.selected.update(current => {

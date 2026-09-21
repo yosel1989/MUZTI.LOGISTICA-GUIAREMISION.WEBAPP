@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { EditorModule } from 'primeng/editor';
@@ -11,16 +11,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { TipoEstablecimientoDTO } from '@features/catalogo/models/catalogo.model';
-import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { EmpresaApiService } from '@features/empresa/services/empresa-api.service';
-import { EntityBranchCreateDto } from '@features/entity-branch/models/entity-branch';
-import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
 import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
 import { EntityDto } from '@features/entity/models/entity';
-import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
-import { SelectDistritoComponent } from '@features/ubigeo/components/selects/select-distrito/select-distrito';
-import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { AlertService } from 'app/core/services/alert.service';
 import { ConfirmationService } from 'primeng/api';
@@ -31,13 +24,17 @@ import { DividerModule } from 'primeng/divider';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { finalize, Subscription } from 'rxjs';
+import { SelectInvoiceTypeComponent } from '@features/catalogo/components/selects/select-invoice-type/select-invoice-type';
+import { EntityBranchSerieDto, EntityBranchSerieUpdateDto } from '@features/entity-branch-serie/models/entity-branch-serie';
+import { EntityBranchSerieApiService } from '@features/entity-branch-serie/services/entity-branch-serie-api-service';
 
 
 @Component({
-  selector: 'app-mdl-entity-branch-create',
+  selector: 'app-mdl-entity-branch-serie-edit',
+  templateUrl: './mdl-entity-branch-serie-edit.html',
+  styleUrl: './mdl-entity-branch-serie-edit.scss',
   imports: [
     FormsModule,
     InputNumberModule,
@@ -48,38 +45,39 @@ import { finalize, Subscription } from 'rxjs';
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
-    SelectModule,
-    SelectDepartamentoComponent,
-    SelectProvinciaComponent,
-    SelectDistritoComponent,
     OnlyUpperDirective,
     DividerModule,
     SkeletonModule,
     CheckboxModule,
     InputGroupModule,
     InputGroupAddonModule,
-    AvatarModule
+    AvatarModule,
+
+
+    SelectInvoiceTypeComponent
   ],
-  templateUrl: './mdl-entity-branch-create.html',
-  styleUrl: './mdl-entity-branch-create.scss',
   providers: [ConfirmationService]
 })
-export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
+export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestroy {
 
-  private api = inject(EntityBranchApiService);
+  private api = inject(EntityBranchSerieApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
-  private empresaApiService = inject(EmpresaApiService);
-  private catalogoApiService = inject(CatalogoApiService);
   private dialogService = inject(DialogService);
   private destroyRef = inject(DestroyRef);
+  private config = inject(DynamicDialogConfig);
 
-  @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
+  entityBranchId = input.required<number>();
+  id = input.required<number>();
+
+  OnUpdated = new EventEmitter<EntityBranchSerieDto>();
+  OnCanceled = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});
   isSubmitted = signal(false);
   ldSubmit = signal(false);
+  ldData = signal(false);
+  data = signal<EntityBranchSerieDto | undefined>(undefined);
 
   private subs = new Subscription();
 
@@ -101,41 +99,16 @@ export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref: DynamicDialogRef<any> | undefined | null;
 
-  constructor(
-    public config: DynamicDialogConfig
-	) {
-    
-  }
 
   ngOnInit(): void {
     this.frm = new FormGroup({
-      entity_id: new FormControl(null, Validators.required),
-      description: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
-      area: new FormControl(null, [Validators.maxLength(45)]),
-      department: new FormControl(null, Validators.required),
-      province: new FormControl(null, Validators.required),
-      district: new FormControl(null, Validators.required),
-      address: new FormControl(null, [Validators.required, Validators.maxLength(250)]),
-      email: new FormControl(null, [Validators.email, Validators.maxLength(100)]),
+      invoice_type_id: new FormControl(null, Validators.required),
+      area: new FormControl(null, [Validators.required]),
       serie: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
-      code_sunat: new FormControl(null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]),
-      type: new FormControl(null, Validators.required),
-      is_main: new FormControl(false, Validators.required),
     });
     this.headerValue = this.config.header ?? '';
 
-    this.loadEmpresas();
-    this.loadTiposEstablecimiento();
-
-    this.frm.get('is_main')?.valueChanges.subscribe((value: boolean) => {
-      if(value){
-        this.frm.get('code_sunat')?.setValue('0000');
-        this.frm.get('code_sunat')?.disable();
-      }else{
-        this.frm.get('code_sunat')?.setValue(null);
-        this.frm.get('code_sunat')?.enable();
-      }
-    });
+    this.loadData();
   }
 
   ngAfterViewInit(): void {
@@ -153,18 +126,15 @@ export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
     return this.frm.controls;
   }
 
-  get request(): EntityBranchCreateDto {
+  get request(): EntityBranchSerieUpdateDto {
     const form = this.frm.value;
 
     return {
-      entity_id: form.entity_id,
-      description: form.description,
-      ubigeo_id: form.district,
-      address: form.address,
-      email: form.email,
-      code_sunat: form.code_sunat,
-      type: form.type,
-      is_main: form.is_main
+      id: this.id(),
+      entity_branch_id: this.entityBranchId(),
+      invoice_type_id: form.invoice_type_id,
+      area: form.area,
+      serie: form.serie,
     };
   }
 
@@ -177,44 +147,36 @@ export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.confirmationService.confirm({
-        header: '¿Registrar establecimiento?',
+        header: 'Editar serie?',
         message: 'Confirmar la operación.',
         accept: () => {
 
             this.ldSubmit.set(true);
             
-            const subs = this.api.create(this.request).subscribe({
-              next: () => {
-                this.ldSubmit.set(false);
+            this.api.update(this.id(), this.request)
+            .pipe(
+              finalize(()=>{this.ldSubmit.set(false)}),
+              takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe({
+              next: (value: EntityBranchSerieDto) => {
 
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "success",
-                  title: "Se registro el establecimiento con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
+                  title: "Se modificó la serie con éxito"
                 });
 
-                this.OnCreated.emit(true);
+                this.OnUpdated.emit(value);
               },
               error: (err: HttpErrorResponse) => {
-                this.ldSubmit.set(false);
                 this.alertService.showToast({
                   position: 'top-end',
                   icon: "error",
                   title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
                 });
               }
             });
-            this.subs.add(subs);
            
         },
     });
@@ -266,59 +228,36 @@ export class MdlEntityBranchCreate implements OnInit, AfterViewInit, OnDestroy {
 
   // Data
 
-  loadEmpresas(): void{
-    this.ldEmpresa.set(true);
-    this.subs.add(
-      this.empresaApiService.loadAllToSelect()
-      .pipe(finalize(()=>{this.ldEmpresa.set(false);}))
+  loadData(): void{
+    this.ldData.set(false);
+    this.api.getById(this.id())
+      .pipe(
+        finalize(()=>{this.ldData.set(false)}),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
-        next: (value: EmpresaToSelectDto[]) => {
-          this.empresas.set(value);
+        next: (value: EntityBranchSerieDto) => {
+          this.data.set(value);
+          this.handlerSetValues(value);
         },
         error: (err: HttpErrorResponse) => {
-          console.error(err);
           this.alertService.showToast({
-            position: 'top-end',
             icon: "error",
-            title: err.error.detalle,
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            customClass: {
-              container: 'z-[9999]!',
-              popup: 'z-[9999]!'
-            }
+            title: err.error.detalle
           });
         },
-      })
-    )
+      });
   }
 
-  loadTiposEstablecimiento(): void{
-    this.ldTipoEstablecimiento.set(true);
-    this.subs.add(
-      this.catalogoApiService.getTipoEstablecimiento().subscribe({
-        next: (value: TipoEstablecimientoDTO[]) => {
-          this.tiposEstablecimiento.set(value);
-          this.ldTipoEstablecimiento.set(false);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            position: 'top-end',
-            icon: "error",
-            title: err.error.detalle,
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            customClass: {
-              container: 'z-[9999]!',
-              popup: 'z-[9999]!'
-            }
-          });
-          this.ldTipoEstablecimiento.set(false);
-        },
-      })
-    )
+  // Handlers
+
+  handlerSetValues(data: EntityBranchSerieDto): void{
+    this.frm.patchValue({
+      entity_branch_id: data.id,
+      invoice_type_id: data.invoice_type_id,
+      area: data.area,
+      serie: data.serie
+    });
   }
 
 }

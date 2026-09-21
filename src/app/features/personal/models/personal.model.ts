@@ -4,6 +4,7 @@ export interface PersonalDTO{
     apellido_paterno: string;
     apellido_materno: string;
     cargo: string;
+    numero_documento: string;
 }
 
 export interface PersonalSugeridoDTO{
@@ -11,4 +12,5 @@ export interface PersonalSugeridoDTO{
     nombre: string;
     apellido: string;
     cargo: string;
+    numero_documento: string;
 }

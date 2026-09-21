@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 p-4">
         <div> 
            
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid lg:grid-cols-2 gap-3">
 
                 <div class="col-span-2">
 
@@ -31,7 +31,7 @@
 
                 </div>
 
-                <div class="col-span-2">
+                <div class="lg:col-span-2">
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Descripción / Alías</label>
                     <input 
                     fluid 
@@ -53,28 +53,7 @@
                         </p-message>
                     }
                 </div>
-                <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Area <span class="text-[11px]! text-slate-400 roboto-condensed ">(opcional)</span></label>
-                    <input 
-                    fluid 
-                    onlyUpper 
-                    pInputText 
-                    type="text" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="area" 
-                    [invalid]="frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())"/>
-                    @if (frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())) {
-                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.area.hasError('required')) {
-                            Este campo es requerido.
-                        }
-                        @if (f.area.hasError('maxlength')) {
-                            La descripción no debe exceder los 200 caracteres.
-                        }</span>
-                        </p-message>
-                    }
-                </div>
+                
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Departamento</label>
                     <app-select-departamento 
@@ -102,6 +81,8 @@
                         </p-message>
                     }
                 </div>
+            
+            
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Distrito</label>
                     <app-select-distrito 
@@ -116,74 +97,8 @@
                         </p-message>
                     }
                 </div>
-                
-                <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
-                    <input 
-                    fluid 
-                    onlyUpper
-                    pInputText 
-                    type="text" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="address" 
-                    autofocus="true"
-                    [invalid]="frm.get('address')?.invalid && (frm.get('address')?.touched || isSubmitted())"/>
-                    @if (frm.get('address')?.invalid && (frm.get('address')?.touched || isSubmitted())) {
-                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.address.hasError('required')) {
-                            Este campo es requerido.
-                        }
-                        @if (f.address.hasError('maxlength')) {
-                            La dirección no debe exceder los 250 caracteres.
-                        }</span>
-                        </p-message>
-                    }
-                </div>
 
-                <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed">Email <span class="text-[11px]! text-slate-400 roboto-condensed ">(opcional)</span></label>
-                    <input 
-                    fluid 
-                    onlyUpper
-                    pInputText 
-                    type="email" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="email" 
-                    autofocus="true"
-                    [invalid]="frm.get('email')?.invalid && (frm.get('email')?.touched || isSubmitted())"/>
-                    @if (frm.get('email')?.invalid && (frm.get('email')?.touched || isSubmitted())) {
-                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                        @if (f.email.hasError('required')) {
-                            Este campo es requerido.
-                        }
-                        @if (f.email.hasError('maxlength')) {
-                            La dirección no debe exceder los 100 caracteres.
-                        }</span>
-                        </p-message>
-                    }
-                </div>
-
-                <div>
-                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Serie</label>
-                    <input 
-                    fluid 
-                    onlyUpper
-                    pInputText 
-                    type="serie" 
-                    pSize="small" 
-                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                    formControlName="serie" 
-                    autofocus="true"
-                    [invalid]="frm.get('serie')?.invalid && (frm.get('serie')?.touched || isSubmitted())"/>
-                    @if (frm.get('serie')?.invalid && (frm.get('serie')?.touched || isSubmitted())) {
-                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                            La serie debe tener 3 caracteres.
-                        </span></p-message>
-                    }
-                </div>
-
+        
                 <div>
                     <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Cod. Sunat</label>
                     <input 
@@ -205,6 +120,30 @@
                                La código debe tener 4 caracteres.
                             }
                         </span></p-message>
+                    }
+                </div>
+
+                <div class="lg:col-span-2">
+                    <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Dirección</label>
+                    <input 
+                    fluid 
+                    onlyUpper
+                    pInputText 
+                    type="text" 
+                    pSize="small" 
+                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                    formControlName="address" 
+                    autofocus="true"
+                    [invalid]="frm.get('address')?.invalid && (frm.get('address')?.touched || isSubmitted())"/>
+                    @if (frm.get('address')?.invalid && (frm.get('address')?.touched || isSubmitted())) {
+                        <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                        @if (f.address.hasError('required')) {
+                            Este campo es requerido.
+                        }
+                        @if (f.address.hasError('maxlength')) {
+                            La dirección no debe exceder los 250 caracteres.
+                        }</span>
+                        </p-message>
                     }
                 </div>
 

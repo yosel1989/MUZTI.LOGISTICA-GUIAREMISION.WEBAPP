@@ -74,7 +74,7 @@
                 styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
                 (click)="evtOnDelete()"
             />
-            @if(selected()?.id_estado === 0){
+            @if(!selected()?.active){
                 <p-button 
                     icon="pi pi-check-circle"  
                     size="small" 
@@ -87,7 +87,7 @@
                     (click)="evtOnToggleActive(true)"
                 />
             }
-            @if(selected()?.id_estado === 1){
+            @if(selected()?.active){
                 <p-button 
                     icon="pi pi-ban" 
                     size="small" 
@@ -256,7 +256,7 @@
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="cursor-pointer py-2! px-2!" >
-                                    @if(rowData['ld_update']){
+                                    @if(rowData['loading_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         COD-{{ rowData[col.field].toString().padStart(4,'0') }}
@@ -265,7 +265,7 @@
                             }
                             @case('fecha_registro'){
                                 <td class="text-nowrap py-1! font-light! truncate!">
-                                    @if(rowData['ld_update']){
+                                    @if(rowData['loading_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
@@ -274,7 +274,7 @@
                             }
                             @case('fecha_modifico'){
                                 <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData['ld_update']){
+                                    @if(rowData['loading_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
@@ -283,7 +283,7 @@
                             }
                             @case('tipo'){
                                 <td class="uppercase text-nowrap py-1! font-light!">
-                                    @if(rowData['ld_update']){
+                                    @if(rowData['loading_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else{
                                         {{ rowData[col.field] }}
@@ -291,14 +291,14 @@
                                     
                                 </td>
                             }
-                            @case('estado'){
+                            @case('active'){
                                 <td class="text-nowrap py-1! font-light!"> 
-                                    @if(rowData['ld_estado'] || rowData['ld_update']){
+                                    @if(rowData['loading_active'] || rowData['loading_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else{
                                         @if(rowData['id_estado']){
                                             <span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2">
-                                                @if(rowData['ld_update']){
+                                                @if(rowData['loading_update']){
                                                     <p-skeleton width='100%' height="20px"></p-skeleton>
                                                 }@else{
                                                     {{rowData[col.field]}}
@@ -306,7 +306,7 @@
                                             </span>
                                         }@else{
                                             <span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2">
-                                                @if(rowData['ld_update']){
+                                                @if(rowData['loading_update']){
                                                     <p-skeleton width='100%' height="20px"></p-skeleton>
                                                 }@else{
                                                     {{rowData[col.field]}}
@@ -325,7 +325,7 @@
                                     [class.border-e-0!]="(columns.length - 1) === i"
                                     class="text-center!"
                                 >
-                                    @if(rowData['ld_update']){
+                                    @if(rowData['loading_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
                                         <p-button 
@@ -348,7 +348,7 @@
                                 pFrozenColumn 
                                 [frozen]="col.sticky ?? false"
                                 class="text-nowrap py-1! font-light!">
-                                    @if(rowData['ld_update']){
+                                    @if(rowData['loading_update']){
                                         <p-skeleton width='100%' height="20px"></p-skeleton>
                                     }@else{
                                         {{rowData[col.field]}}

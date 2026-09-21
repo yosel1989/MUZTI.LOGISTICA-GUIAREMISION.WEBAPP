@@ -1,5 +1,5 @@
 
-<div class="">
+<div class="p-4!">
     <div class="">
         <p-inputgroup>
             <input 
@@ -7,7 +7,7 @@
                 pSize="small" 
                 (keyup.enter)="getData()" 
                 pInputText 
-                placeholder="Ingresar texto" 
+                placeholder="Ingresar textos" 
                 onlyUpper
             />
             <p-inputgroup-addon class="p-0! min-w-0!">
@@ -81,11 +81,14 @@
                             @switch (col.field) {
                                 @case('id'){
                                     <td class="text-nowrap font-light! truncate w-[40px]" >
-                                        <p-avatar icon="pi pi-user" style="background-color: #dee9fc; color: #1a2551" />
+                                        <p-avatar icon="pi pi-user" class="bg-slate-200" />
                                     </td>
                                 }
                                 @case('nombre'){
-                                    <td class="uppercase text-nowrap font-light! truncate" >{{ rowData[col.field] }}, {{ rowData['apellido'] }}</td>
+                                    <td class="uppercase text-nowrap font-light! truncate" >
+                                        <div class="font-semibold">{{ rowData[col.field] }}, {{ rowData['apellido'] }}</div>
+                                        <div>{{ rowData.numero_documento }}</div>
+                                    </td>
                                 }
                                 @default {
                                     <td class="text-nowrap font-light! truncate" >{{ rowData[col.field] }}</td>
