@@ -1,8 +1,9 @@
 export interface SecurityPersonalDto{
     id: number;
-    document_number: string;
-    full_name: string;
-    role: string | null;
+    person_id: number;
+    person_full_name: string;
+    person_document_number: string | null;
+    person_role: string | null;
     active: boolean;
     created_at: Date ;
     created_at_user: string;
@@ -16,5 +17,5 @@ export interface SecurityPersonalDto{
 }
 
 
-export type SecurityPersonalCreateDto = Pick<SecurityPersonalDto, 'document_number'>;
-export type SecurityPersonalUpdateDto = Pick<SecurityPersonalDto, 'id' | 'document_number'>;
+export type SecurityPersonalCreateDto = Pick<SecurityPersonalDto, 'person_id'>;
+export type SecurityPersonalUpdateDto = Pick<SecurityPersonalDto, 'id' | 'person_id'>;

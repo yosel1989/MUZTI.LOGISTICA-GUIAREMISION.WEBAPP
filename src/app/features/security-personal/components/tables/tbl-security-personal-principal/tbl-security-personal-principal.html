@@ -1,100 +1,85 @@
-<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-[.5px] dark:border-b-gray-700">
+<p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-0 py-4! px-4!">
     <ng-template #start>
     <div class="flex items-center gap-1">
         <p-button 
-        size="small"
-        icon="pi pi-angle-left text-[13px]!" 
-        size="small" 
-        [disabled]="isFirstPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Anterior"
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs! text-slate-300!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtPrev()"
-        />
-        <p-button icon="pi pi-refresh text-[13px]!" 
-        size="small"  
-        severity="secondary" 
-        [outlined]="true"
-        pTooltip="Actualizar" 
-        tooltipPosition="top" 
-        tooltipStyleClass="text-xs! text-slate-300!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="reload()"
+            size="small"
+            icon="pi pi-angle-left" 
+            size="small" 
+            [disabled]="isFirstPage()"
+           
+            severity="secondary"
+            pTooltip="Anterior"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-slate-300!"
+            placeholder="Top"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+            (click)="evtPrev()"
         />
         <p-button 
-        icon="pi pi-angle-right text-[13px]!" 
-        size="small" 
-        [disabled]="isLastPage()"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Siguiente"
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs! text-slate-300!"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtNext()"
+            icon="pi pi-refresh" 
+            size="small"  
+            severity="secondary" 
+            pTooltip="Actualizar" 
+            tooltipPosition="top" 
+            tooltipStyleClass="text-xs! text-slate-300!"
+            placeholder="Top"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+            (click)="reload()"
+        />
+        <p-button 
+            icon="pi pi-angle-right" 
+            size="small" 
+            [disabled]="isLastPage()"
+            severity="secondary"
+            pTooltip="Siguiente"
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-slate-300!"
+            placeholder="Top"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+            (click)="evtNext()"
         />
         
         <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
         
         <p-button 
-        icon="pi pi-plus text-[13px]!"  
-        size="small" 
-        severity="info" 
-        [outlined]="true"
-        pTooltip="Nuevo perfil" 
-        tooltipPosition="top"
-        tooltipStyleClass="text-xs! text-center"
-        placeholder="Top"
-        styleClass="w-9! h-9!"
-        (click)="evtOnCreate()"
+            icon="pi pi-plus"  
+            size="small" 
+            severity="secondary" 
+            pTooltip="Añadir personal" 
+            tooltipPosition="top"
+            tooltipStyleClass="text-xs! text-slate-300!"
+            placeholder="Top"
+            styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+            (click)="evtOnCreate()"
         />
 
-        @if(selected){
-            <p-button 
-                icon="pi pi-pencil text-[13px]!"  
-                size="small" 
-                severity="warn" 
-                [outlined]="true"
-                pTooltip="Editar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs! text-slate-300!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnEdit()"
-            />
-            <p-button 
-                icon="pi pi-trash text-[13px]!"  
-                size="small" 
-                severity="danger" 
-                [outlined]="true"
-                pTooltip="Eliminar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs! text-slate-300!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnDelete()"
-            />
-            @if(!selected.active){
-            <p-button 
-                icon="pi pi-check-circle text-[13px]!"  
-                size="small" 
-                severity="success" 
-                [outlined]="true"
-                pTooltip="Activar" 
-                tooltipPosition="top"
-                tooltipStyleClass="text-xs! text-slate-300!"
-                placeholder="Top"
-                styleClass="w-9! h-9!"
-                (click)="evtOnUpdateStatus(1)"
-            />
+        @if(selected()){
+            @if(selected()?.active === false){
+                <p-button 
+                    icon="pi pi-check-circle"  
+                    size="small" 
+                    severity="secondary" 
+                    pTooltip="Activar" 
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs! text-slate-300!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+                    (click)="evtOnToggleActive(true)"
+                />
             }
-            @if(selected.active){
+            @if(selected()?.active === true){
+                <p-button 
+                    icon="pi pi-ban" 
+                    size="small" 
+                    severity="secondary" 
+                    pTooltip="Desactivar" 
+                    tooltipPosition="top"
+                    tooltipStyleClass="text-xs! text-slate-300!"
+                    placeholder="Top"
+                    styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+                    (click)="evtOnToggleActive(false)" 
+                />
+            }
             <p-button 
                 icon="pi pi-ban text-[13px]!" 
                 size="small" 
@@ -105,9 +90,7 @@
                 tooltipStyleClass="text-xs! text-slate-300!"
                 placeholder="Top"
                 styleClass="w-9! h-9!"
-                (click)="evtOnUpdateStatus(0)"
             />
-            }
         }
 
     </div>
@@ -182,25 +165,30 @@
 >
     <ng-template pTemplate="header" let-columns>
         <tr class="text-nowrap">
-            @for (col of columns; track col) {
+            @for (col of columns; let i = $index; track $index) {
                  @switch (col.field) {
                     @case('select'){
-                        <th class="px-2 border-s-0!"></th>
+                        <th class="px-2 border-s-0! border-t-0!"></th>
                     }
                     @case('cod'){
-                        <th class="px-4! text-[12px]! text-primary! font-semibold">{{ col.header }}</th>
+                        <th 
+                            class="px-4! text-[14px]! text-primary! font-semibold border-t-0! roboto-condensed"
+                            [ngClass]="col.thClassName"
+                        >{{ col.header }}</th>
                     }
                     @default{
                         <th 
-                        pFrozenColumn 
-                        [frozen]="col.sticky ?? false"
-                        pResizableColumn 
-                        [pSortableColumn]="col.sort ? col.field : undefined" 
-                        class="text-nowrap py-2! text-[12px]! text-primary! font-semibold px-4!">
-                            <div class="flex items-center gap-2">
-                                {{ col.header }}
-                                @if(col.sort){<p-sortIcon [field]="col.field" />}
-                            </div>
+                            pFrozenColumn 
+                            [frozen]="col.sticky ?? false"
+                            [alignFrozen]="col.alignFrozen ?? ''"
+                            pResizableColumn 
+                            [pSortableColumn]="col.sort ? col.field : undefined" 
+                            [class.border-e-0!]="(columns.length - 1) === i"
+                            class="text-nowrap py-2! text-[14px]! text-primary! font-semibold px-4! border-t-0! roboto-condensed"
+                            [ngClass]="col.thClassName"
+                            [innerHTML]="col.header"
+                        >
+                            @if(col.sort){<p-sortIcon [field]="col.field" />}
                         </th>
                     }
                  }
@@ -262,51 +250,44 @@
                                     }
                                 </td>
                             }
-                            @case('created_at'){
-                                <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData.loading_update){
-                                        <p-skeleton width="100%" height="20px"></p-skeleton>
-                                    }@else{
-                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
-                                    }
-                                </td>
-                            }
-                            @case('updated_at'){
-                                <td class="text-nowrap py-1! font-light!">
-                                    @if(rowData.loading_update){
-                                        <p-skeleton width="100%" height="20px"></p-skeleton>
-                                    }@else{
-                                        {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss a" }}
-                                    }
-                                </td>
-                            }
-                            @case('active'){
-                                <td class="text-nowrap py-1! font-light!"> 
-                                    @if(rowData['loading_active'] || rowData.loading_update){
+                            @case('options') {
+                                <td
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    [alignFrozen]="col.alignFrozen ?? ''"
+                                    [class.border-e-0!]="(columns.length - 1) === i"
+                                    class="text-center!"
+                                >
+                                    @if(rowData['loading_update']){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
-                                        @if(rowData['id_estado']){
-                                            <span class="w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 uppercase">
-                                                {{rowData[col.field]}}
-                                            </span>
-                                        }@else{
-                                            <span class="w-25 text-gray-700 text-center flex items-center justify-center bg-gray-200 p-1 px-2 uppercase">
-                                                {{rowData[col.field]}}
-                                            </span>
-                                        }
+                                        <p-button 
+                                            [type]="isOpenCm(rowData) ? '' : 'text'"
+                                            pTooltip="Acciones"
+                                            tooltipPosition="top"
+                                            tooltipStyleClass="text-xs! text-slate-300!"
+                                            size="small" 
+                                            icon="fa-regular fa-ellipsis-vertical" 
+                                            [severity]="isOpenCm(rowData) ? 'primary' : 'secondary'"
+                                            styleClass="border-none! hover:bg-primary-500! text-slate-600 hover:text-white! active:text-white! w-9! h-9!"
+                                            [raised]="isOpenCm(rowData)"
+                                            (onClick)="evtShowContextMenu($event, rowData)"
+                                        />
                                     }
-                                    
                                 </td>
                             }
                             @default {
                                 <td
-                                pFrozenColumn 
-                                [frozen]="col.sticky ?? false"
-                                class="text-nowrap py-1! font-light!">
-                                    @if(rowData.loading_update){
-                                        <p-skeleton width="100%" height="20px"></p-skeleton>
-                                    }@else{
-                                        {{rowData[col.field]}}
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    [alignFrozen]="col.alignFrozen ?? ''"
+                                    class="text-nowrap py-1! font-light! truncate!"
+                                    [ngClass]="col.tdClassName"
+                                    [class.border-e-0!]="(columns.length - 1) === i"
+                                    [innerHTML]="!rowData['loading_update'] ? (col.render ? col.render(rowData, col) : rowData[col.field] ) : ''"
+                                >
+                                    @if(rowData['loading_update']){
+                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }
                                 </td>
                             }

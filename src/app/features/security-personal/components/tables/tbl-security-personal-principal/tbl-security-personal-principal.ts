@@ -1,5 +1,5 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, DestroyRef, ViewChild, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -14,7 +14,7 @@ import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableData } from 'app/core/models/table';
 import { UtilService } from 'app/core/services/util.service';
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
@@ -29,6 +29,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { PersonalDTO } from '@features/personal/models/personal.model';
 import { MdlListaPersonalComponent } from '@features/personal/components/modals/mdl-lista-personal/mdl-lista-personal';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tbl-security-personal-principal',
@@ -46,18 +47,21 @@ import { MdlListaPersonalComponent } from '@features/personal/components/modals/
         TooltipModule,
         InputTextModule,
         AsyncPipe,
-        DatePipe,
         ContextMenuModule,
         ConfirmDialogModule,
         LoaderComponent,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NgClass 
   ],
-  providers: [DialogService, ConfirmationService],
+  providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]
 })
 
 export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
+    @ViewChild('cm') cm: ContextMenu | undefined;
+
+    public datePipe = inject(DatePipe);
     public dialogService = inject(DialogService);
     private api = inject(SecurityPersonalApiService);
     public util = inject(UtilService);
@@ -70,7 +74,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     data: SecurityPersonalDto[] = [];
     ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     $ldData = this.ldData.asObservable();
-    selected: SecurityPersonalDto | undefined;
+    selected = signal<SecurityPersonalDto | undefined>(undefined);
     private selectedSubject = new BehaviorSubject<SecurityPersonalDto | undefined>(undefined);
     items$ = this.selectedSubject.pipe(
       map(selected => this.buildMenuItems(selected))
@@ -107,23 +111,31 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'full_name', header: 'Personal', sort: false, sticky: false },
-          { field: 'document_number', header: 'N° Documento', sort: false, sticky: false },
-          { field: 'role', header: 'Cargo', sort: false, sticky: false },
-          { field: 'active', header: 'Estado', sort: false, sticky: false },
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
+          { field: 'person_full_name', header: 'Personal', sort: false, sticky: false },
+          { field: 'person_document_number', header: 'N° Documento', sort: false, sticky: false },
+          { field: 'person_role', header: 'Cargo', sort: false, sticky: false },
+          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: SecurityPersonalDto)  => { 
+            if (rowData.active) {
+              return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
+            }
+            return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
+          }},
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: SecurityPersonalDto) => {
+            return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
+          }},
           { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: SecurityPersonalDto) => {
+            return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
+          }},
           { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!' },
         ];
     }
 
     ngOnInit(): void{
       this.items = [
-          { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-          { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-          { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }},
-          { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }},
+          { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnToggleActive(true); }},
+          { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnToggleActive(false); }},
       ];
     }
 
@@ -157,7 +169,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     // data
     loadData(reload: boolean = false): void {
       this.subData?.unsubscribe();
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.firstChange = false;
       this.loading = true;
       this.ldData.next(true);
@@ -211,11 +223,11 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
 
     //events
     evtToggleSelection(row: SecurityPersonalDto): void{
-      if (this.selected === row) {
-        this.selected = undefined;
+      if (this.selected() === row) {
+        this.selected.set(undefined);
         this.setSelected(undefined);
       } else {
-        this.selected = row;
+        this.selected.set(row);
         this.setSelected(row);
       }
     }
@@ -236,9 +248,43 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
 
     private evtOnReload(): void{
       this.setSelected(undefined);
-      this.selected = undefined;
+      this.selected.set(undefined);
       this.loadData();
     }
+
+    evtShowContextMenu(event: MouseEvent, rowData: SecurityPersonalDto) {
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const currentSelected = this.selected();
+
+      this.selected.set(rowData);
+      if(this.cm?.visible()){
+        if(currentSelected !== rowData){
+          this.cm?.hide();
+          const customEvent = new MouseEvent('contextmenu', {
+            bubbles: event.bubbles,
+            cancelable: event.cancelable,
+            view: event.view,
+            clientX: rect.left + target.offsetWidth,
+            clientY: rect.bottom
+          });
+          setTimeout(()=>{
+            this.cm?.show(customEvent);
+          },0);
+        }
+      }else{
+        const customEvent = new MouseEvent(event.type, {
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          view: event.view,
+          clientX: rect.left + target.offsetWidth,
+          clientY: rect.bottom
+        });
+
+        this.cm?.show(customEvent);
+      }
+    }
+
 
     evtOnCreate(): void{
       this.ref = this.dialogService.open(MdlListaPersonalComponent,  {
@@ -259,7 +305,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
         cmp?.OnSelect
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((value: PersonalDTO) => {
-          this.evtOnReload();
+          this.handlerAddPerson(value);
           this.ref?.close();
         });
         cmp?.OnClose
@@ -356,7 +402,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       });*/
     }
 
-    evtOnUpdateStatus(status: number): void{
+    evtOnToggleActive(active: boolean): void{
       /*this.confirmationService.confirm({
           header: !status ? '¿Desactivar el establecimiento?' : '¿Activar el establecimiento?',
           message: 'Confirmar la operación.',
@@ -430,11 +476,16 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     evtOnRowSelect(event: any) {
-      this.selected = event.data;
+      this.selected.set(event.data);
       this.setSelected(event.data);
     }
 
     //functions
+
+    isOpenCm(rowData: SecurityPersonalDto): boolean{
+      return (this.cm?.visible() && rowData === this.selected()) ?? false;
+    }
+
     isLastPage(): boolean {
       return this.data ? this.first >= this.recordsTotalTable : true;
     }
@@ -449,11 +500,28 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
 
     private buildMenuItems(selected: SecurityPersonalDto | undefined): MenuItem[] {
       return [
-        { label: 'Editar', icon: 'pi pi-pencil text-amber-500!', command: () => { this.evtOnEdit(); }},
-        { label: 'Eliminar', icon: 'pi pi-trash text-red-500!', command: () => { this.evtOnDelete(); }},
-        { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnUpdateStatus(1); }, visible: !selected?.active },
-        { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnUpdateStatus(0); }, visible: selected?.active },
+        { label: 'Establecimientos', icon: 'fa-light fa-house', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];
+    }
+
+    // Handlers
+
+    handlerAddPerson(value: PersonalDTO): void{
+      this.api.create({person_id: value.id})
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.evtOnReload();
+          },
+          error: (err: HttpErrorResponse) => {
+            this.alertService.showToast({
+              title: err.error.detalle,
+              icon: 'error'
+            })
+          },
+        })
     }
 
 }

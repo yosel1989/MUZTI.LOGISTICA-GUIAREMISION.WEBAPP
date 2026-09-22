@@ -67,7 +67,7 @@ export class MdlSecurityPersonalCreate implements OnInit, AfterViewInit, OnDestr
     public config: DynamicDialogConfig
 	) {
     this.frm = this.fb.group({
-      document_number: new FormControl(null),
+      person_id: new FormControl(null),
     });
 
     this.headerValue = this.config.header ?? '';
@@ -94,7 +94,7 @@ export class MdlSecurityPersonalCreate implements OnInit, AfterViewInit, OnDestr
     const form = this.frm.value;
 
     return {
-      document_number: form.document_number,
+      person_id: form.person_id,
     };
   }
 
