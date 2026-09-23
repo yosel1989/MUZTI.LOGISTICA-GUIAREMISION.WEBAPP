@@ -5,7 +5,7 @@ import { ResponseDTO } from "@features/shared/models/shared";
 import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
 import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { EntityBranchSerieCreateDto, EntityBranchSerieDto, EntityBranchSerieUpdateDto } from "../models/entity-branch-serie";
+import { EntityBranchSerieCreateDto, EntityBranchSerieDto, EntityBranchSerieToSelectDto, EntityBranchSerieUpdateDto } from "../models/entity-branch-serie";
 
 @Injectable({
     providedIn: "root"
@@ -38,6 +38,17 @@ export class EntityBranchSerieApiService{
             params: httpParams
         }).pipe(
             map(response =>{ return response as TableData<EntityBranchSerieDto[]> }),
+            catchError((error: HttpErrorResponse) => {
+                return throwError(() => error);
+            })
+        );
+    }
+
+
+    getToSelect(entityBranchId: number): Observable<EntityBranchSerieToSelectDto[]>{
+
+        return this.http.get<EntityBranchSerieToSelectDto[]>(`${this.baseUrl}/branch/${entityBranchId}/to-select`).pipe(
+            map(response => response ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);
             })

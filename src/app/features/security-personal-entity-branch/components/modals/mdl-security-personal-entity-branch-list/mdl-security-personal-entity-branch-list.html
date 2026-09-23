@@ -1,0 +1,10 @@
+<div class="p-0">
+    <div class="flex flex-col gap-4">
+        <div class="border-t border-slate-200">
+            <app-tbl-security-personal-entity-branch-principal 
+                [securityPersonal]="securityPersonal()"
+                (OnUpdate)="evtOnUpdateData($event)"
+            ></app-tbl-security-personal-entity-branch-principal>
+        </div>
+    </div>
+</div>

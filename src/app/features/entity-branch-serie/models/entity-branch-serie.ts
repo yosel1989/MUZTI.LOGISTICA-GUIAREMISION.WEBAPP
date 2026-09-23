@@ -22,3 +22,8 @@ export type EntityBranchSerieCreateDto = Pick<EntityBranchSerieDto,
 
 export type EntityBranchSerieUpdateDto = Pick<EntityBranchSerieDto, 
     'id' | 'entity_branch_id' | 'invoice_type_id' | 'serie' | 'area'>;
+
+export interface EntityBranchSerieToSelectDto extends Pick<EntityBranchSerieDto, 'id' | 'serie'>{
+  entity_name: string;
+  entity_document_number: string;
+}

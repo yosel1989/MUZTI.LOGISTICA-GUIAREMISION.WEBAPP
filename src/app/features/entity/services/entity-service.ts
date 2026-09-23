@@ -106,4 +106,13 @@ export class EntityApiService {
             })
         )
     }
+
+    getCollectionBySeriesAssigned(): Observable<EntityDto[]>{
+        return this.http.get<EntityDto[]>(`${this.baseUrl}/collection-by-assigned-series`).pipe(
+            map((res) => res),
+            catchError((e: HttpErrorResponse) => {
+                return throwError(() => e);
+            })
+        )
+    }
 }   

@@ -31,7 +31,6 @@ import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components
 import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
 import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
-import { UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
@@ -61,6 +60,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
+import { EntityApiService } from '@features/entity/services/entity-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface Puerto{
     value: string;
@@ -118,6 +119,10 @@ export interface Puerto{
 })
 
 export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
+
+    private entityServiceApi = inject(EntityApiService);
+
+
 
     @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
 
@@ -227,7 +232,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngOnInit(): void{
-
+        this.loadEntities();
     }
 
     ngAfterViewInit(): void{
@@ -907,6 +912,24 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             return null;
         };
+    }
+
+    // Data
+
+    loadEntities(): void{
+        this.entityServiceApi.getCollectionBySeriesAssigned()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (value: EntityDto[]) => {
+                    console.log(`Se encontraron ${value.length} entidades disponibles.`);
+                },
+                error: (err: HttpErrorResponse) => {
+                    this.alertService.showToast({
+                        title: err.error.detalle,
+                        icon: 'error'
+                    })
+                },
+            })
     }
 
 }

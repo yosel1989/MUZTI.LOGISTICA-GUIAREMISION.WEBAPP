@@ -30,28 +30,32 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
 import { PersonalDTO } from '@features/personal/models/personal.model';
 import { MdlListaPersonalComponent } from '@features/personal/components/modals/mdl-lista-personal/mdl-lista-personal';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MdlSecurityPersonalEntityBranchList } from '@features/security-personal-entity-branch/components/modals/mdl-security-personal-entity-branch-list/mdl-security-personal-entity-branch-list';
+import { MdlSecurityPersonalEntityBranchSerieList } from '@features/security-personal-entity-branch-serie/components/modals/mdl-security-personal-entity-branch-serie-list/mdl-security-personal-entity-branch-serie-list';
+import { Popover, PopoverModule } from 'primeng/popover';
 
 @Component({
   selector: 'app-tbl-security-personal-principal',
   templateUrl: './tbl-security-personal-principal.html',
   styleUrls: ['./tbl-security-personal-principal.scss'],
   imports: [
-        TableModule,
-        SkeletonModule,
-        TagModule,
-        ToolbarModule,
-        ButtonModule,
-        DividerModule,
-        IconFieldModule,
-        InputIconModule,
-        TooltipModule,
-        InputTextModule,
-        AsyncPipe,
-        ContextMenuModule,
-        ConfirmDialogModule,
-        LoaderComponent,
-        ReactiveFormsModule,
-        NgClass 
+      TableModule,
+      SkeletonModule,
+      TagModule,
+      ToolbarModule,
+      ButtonModule,
+      DividerModule,
+      IconFieldModule,
+      InputIconModule,
+      TooltipModule,
+      InputTextModule,
+      AsyncPipe,
+      ContextMenuModule,
+      ConfirmDialogModule,
+      LoaderComponent,
+      ReactiveFormsModule,
+      NgClass,
+      PopoverModule
   ],
   providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]
@@ -60,6 +64,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('cm') cm: ContextMenu | undefined;
+    @ViewChild('opSeries') op!: Popover;
+    @ViewChild('opEntityBranchs') opEntityBranchs!: Popover;
 
     public datePipe = inject(DatePipe);
     public dialogService = inject(DialogService);
@@ -114,6 +120,8 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
           { field: 'person_full_name', header: 'Personal', sort: false, sticky: false },
           { field: 'person_document_number', header: 'N° Documento', sort: false, sticky: false },
           { field: 'person_role', header: 'Cargo', sort: false, sticky: false },
+          { field: 'series', header: 'Series Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
+          { field: 'entity_branchs', header: 'Estab. Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: SecurityPersonalDto)  => { 
             if (rowData.active) {
               return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
@@ -144,7 +152,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
         this.search = val;
         this.evtOnReload();
       });
-      this.loadData();
+      this.loadData(true);
     }
 
     ngOnDestroy(): void{
@@ -169,7 +177,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     // data
     loadData(reload: boolean = false): void {
       this.subData?.unsubscribe();
-      this.selected.set(undefined);
+      if(reload){ this.selected.set(undefined) };
       this.firstChange = false;
       this.loading = true;
       this.ldData.next(true);
@@ -246,10 +254,13 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       this.reload();
     }
 
-    private evtOnReload(): void{
-      this.setSelected(undefined);
-      this.selected.set(undefined);
-      this.loadData();
+    private evtOnReload(reload: boolean = true): void{
+      if(reload){
+        this.setSelected(undefined);
+        this.selected.set(undefined);
+      }
+      
+      this.loadData(reload);
     }
 
     evtShowContextMenu(event: MouseEvent, rowData: SecurityPersonalDto) {
@@ -471,7 +482,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       this.pageSize = this.pageSize === rows ? this.pageSize : rows;
       this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
       this.first = (this.pageNumber - 1) * this.pageSize
-      this.loadData();
+      this.loadData(false);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -479,6 +490,80 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       this.selected.set(event.data);
       this.setSelected(event.data);
     }
+
+    evtShowEntityBranchList(): void{
+      this.ref = this.dialogService.open(MdlSecurityPersonalEntityBranchList,  {
+        width: '700px',
+        closable: false,
+        draggable: false,
+        modal: true,
+        position: 'top',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-house text-[14px]!"></span></span> Establecimientos asignados',
+        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        },
+        inputValues: {
+          securityPersonal: this.selected()!
+        },
+        contentStyle: {
+          padding: '0rem'
+        }
+      });
+
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlSecurityPersonalEntityBranchList) => {
+        cmp?.OnUpdateData
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.evtOnReload(false);
+          })
+      });
+    }
+
+
+    evtShowEntityBranchSerieList(): void{
+      this.ref = this.dialogService.open(MdlSecurityPersonalEntityBranchSerieList,  {
+        width: '700px',
+        closable: false,
+        draggable: false,
+        modal: true,
+        position: 'top',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-hashtag text-[14px]!"></span></span> Series asignadas',
+        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        },
+        inputValues: {
+          securityPersonal: this.selected()!
+        },
+        contentStyle: {
+          padding: '0rem'
+        }
+      });
+
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlSecurityPersonalEntityBranchSerieList) => {
+        cmp?.OnUpdateSeries
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.evtOnReload(false);
+          })
+      });
+    }
+
+    evtToggleOpSeries(event: PointerEvent, rowData: SecurityPersonalDto) {
+        this.selected.set(rowData);
+        this.op.toggle(event);
+    }
+
+    evtToggleOpEntityBranchs(event: PointerEvent, rowData: SecurityPersonalDto) {
+        this.selected.set(rowData);
+        this.opEntityBranchs.toggle(event);
+    }
+
 
     //functions
 
@@ -500,9 +585,10 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
 
     private buildMenuItems(selected: SecurityPersonalDto | undefined): MenuItem[] {
       return [
-        { label: 'Establecimientos', icon: 'fa-light fa-house', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Desactivar', icon: 'pi pi-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
+        { label: 'Establecimientos asignados', icon: 'fa-light fa-house', command: () => { this.evtShowEntityBranchList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Series asignadas', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];
     }
 

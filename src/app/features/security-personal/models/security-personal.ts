@@ -12,10 +12,24 @@ export interface SecurityPersonalDto{
     updated_at_user: string | null;
     updated_at_user_name: string | null;
 
+    series: SecurityPersonalSeriesDto[];
+    entity_branchs: SecurityPersonalEntityBranchesDto[];
+
     loading_update: boolean;
     loading_active: boolean;
 }
 
+export interface SecurityPersonalSeriesDto{
+    serie: string;
+    entity_name: string;
+    entity_document_number: string;
+}
+
+export interface SecurityPersonalEntityBranchesDto{
+    alias: string;
+    entity_name: string;
+    entity_document_number: string;
+}
 
 export type SecurityPersonalCreateDto = Pick<SecurityPersonalDto, 'person_id'>;
 export type SecurityPersonalUpdateDto = Pick<SecurityPersonalDto, 'id' | 'person_id'>;

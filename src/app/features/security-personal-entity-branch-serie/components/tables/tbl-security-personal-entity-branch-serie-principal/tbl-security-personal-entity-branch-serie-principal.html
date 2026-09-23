@@ -1,3 +1,13 @@
+<div class="p-4 border-b border-slate-200">
+    <div class="inline-flex items-center text-sm! py-1 px-3 rounded-lg bg-blue-100 text-blue-600 border-s-3! border-blue-500! w-full">
+        <i class="fa-solid fa-circle-info text-lg! me-3"></i>
+        <div class="w-full">
+            <p class="font-semibold">{{ securityPersonal().person_full_name }} </p>
+            <p class="font-semibold text-slate-500!">{{ securityPersonal().person_document_number }}</p>
+        </div>
+    </div>
+</div>
+
 <p-toolbar class="rounded-none! border-t-0! border-s-0! border-e-0! border-b-0 py-4! px-4!">
     <ng-template #start>
         <div class="flex items-center gap-1">
@@ -25,7 +35,7 @@
                 (click)="reload()"
             />
             <p-button 
-            icon="pi pi-angle-right text-[13px]!" 
+                icon="pi pi-angle-right text-[13px]!" 
                 size="small" 
                 [disabled]="isLastPage()"
                 severity="secondary"
@@ -43,7 +53,7 @@
                 icon="pi pi-plus text-[13px]!"  
                 size="small" 
                 severity="secondary" 
-                pTooltip="Nuevo establecimiento" 
+                pTooltip="Añadir serie" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs! text-center"
                 placeholder="Top"
@@ -53,17 +63,6 @@
 
             @if(selected()){
                 <p-button 
-                    icon="pi pi-pencil text-[13px]!"  
-                    size="small" 
-                    severity="secondary" 
-                    pTooltip="Editar" 
-                    tooltipPosition="top"
-                    tooltipStyleClass="text-xs! text-slate-300!"
-                    placeholder="Top"
-                    styleClass="w-9! h-9! text-slate-600 hover:bg-slate-300!"
-                    (click)="evtOnEdit()"
-                />
-                <p-button 
                     icon="pi pi-trash text-[13px]!"  
                     size="small" 
                     severity="secondary" 
@@ -72,46 +71,8 @@
                     tooltipStyleClass="text-xs! text-slate-300!"
                     placeholder="Top"
                     styleClass="w-9! h-9! text-slate-600 hover:bg-slate-300!"
-                    (click)="evtOnDelete()"
+                    (click)="evtOnDelete(selected()!)"
                 />
-                <p-button 
-                    icon="fa-light fa-hashtag text-[13px]!" 
-                    size="small" 
-                    severity="secondary" 
-                    pTooltip="Series" 
-                    tooltipPosition="top"
-                    tooltipStyleClass="text-xs! text-slate-300!"
-                    placeholder="Top"
-                    styleClass="w-9! h-9! text-slate-600 hover:bg-slate-300!"
-                    (click)="evtShowSeries()"
-                />
-                @if(!selected()?.active){
-                    <p-button 
-                        icon="pi pi-check-circle text-[13px]!"  
-                        size="small" 
-                        severity="secondary" 
-                        pTooltip="Activar" 
-                        tooltipPosition="top"
-                        tooltipStyleClass="text-xs! text-slate-300!"
-                        placeholder="Top"
-                        styleClass="w-9! h-9! text-slate-600 hover:bg-slate-300!"
-                        (click)="evtOnToggleActive(true)"
-                    />
-                }
-                @if(selected()?.active){
-                    <p-button 
-                        icon="pi pi-ban text-[13px]!" 
-                        size="small" 
-                        severity="secondary" 
-                        pTooltip="Desactivar" 
-                        tooltipPosition="top"
-                        tooltipStyleClass="text-xs! text-slate-300!"
-                        placeholder="Top"
-                        styleClass="w-9! h-9! text-slate-600 hover:bg-slate-300!"
-                        (click)="evtOnToggleActive(false)"
-                    />
-                }
-
             }
             
             <p-divider layout="vertical" size="small" class="h-5! mx-1!" align="center"/>
@@ -294,16 +255,16 @@
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
                                         <p-button 
-                                            [type]="isOpenCm(rowData) ? '' : 'text'"
-                                            pTooltip="Acciones"
+                                            [type]="'text'"
+                                            pTooltip="Eliminar"
                                             tooltipPosition="top"
                                             tooltipStyleClass="text-xs! text-slate-300!"
                                             size="small" 
-                                            icon="fa-regular fa-ellipsis-vertical" 
-                                            [severity]="isOpenCm(rowData) ? 'primary' : 'secondary'"
+                                            icon="pi pi-trash" 
+                                            [severity]="'secondary'"
                                             styleClass="border-none! hover:bg-primary-500! hover:text-white! w-9! h-9!"
-                                            [raised]="isOpenCm(rowData)"
-                                            (onClick)="evtShowContextMenu($event, rowData)"
+                                            [raised]="false"
+                                            (onClick)="evtOnDelete(rowData)"
                                         />
                                     }
                                 </td>
@@ -332,12 +293,6 @@
     </ng-template>
 </p-table>
 
-<p-contextmenu 
-    styleClass="text-slate-500!"
-    #cm 
-    [model]="items()" 
-    appendTo="body"
-/>
 
 <div class="card flex justify-center">
     <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
@@ -348,7 +303,7 @@
                 >
                     <i class="pi pi-question text-5xl!"></i>
                 </div>
-                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <span class="font-semibold text-2xl block mb-2 mt-6 text-center">{{ message.header }}</span>
                 <p class="mb-0">{{ message.message }}</p>
                 <div class="flex items-center gap-2 mt-6">
                     <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
@@ -358,11 +313,6 @@
         </ng-template>
     </p-confirmdialog>
 </div>
-
-
-
-
-
 
 <p-popover #op>
     <p-listbox 

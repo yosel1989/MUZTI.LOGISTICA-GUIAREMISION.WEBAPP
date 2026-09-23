@@ -1,24 +1,18 @@
 import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AfterViewInit, Component, computed, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
-import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
-import { ResponseDTO } from '@features/shared/models/shared';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TableData } from 'app/core/models/table';
 import { AlertService } from 'app/core/services/alert.service';
 import { UtilService } from 'app/core/services/util.service';
-import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { Column } from 'app/shared/models/table';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { DividerModule } from 'primeng/divider';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -30,17 +24,21 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
-import { MdlEntityBranchCreate } from '../../modals/mdl-entity-branch-create/mdl-entity-branch-create';
-import { MdlEntityBranchEdit } from '../../modals/mdl-entity-branch-edit/mdl-entity-branch-edit';
 import { MdlEntityBranchSerieList } from '@features/entity-branch-serie/components/modals/mdl-entity-branch-serie-list/mdl-entity-branch-serie-list';
 import { StorageService } from '@core/services/storage.service';
 import { PopoverModule } from 'primeng/popover';
 import { ListboxModule } from 'primeng/listbox';
+import { SecurityPersonalEntityBranchDto } from '@features/security-personal-entity-branch/models/security-personal-entity-branch';
+import { SecurityPersonalEntityBranchApiService } from '@features/security-personal-entity-branch/services/security-personal-entity-branch-api.service';
+import { SecurityPersonalDto } from '@features/security-personal/models/security-personal';
+import { MdlEntityBranchListSelect } from '@features/entity-branch/components/modals/mdl-entity-branch-list-select/mdl-entity-branch-list-select';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EntityBranchListToModalDTO } from '@features/entity-branch/models/entity-branch';
 
 @Component({
-  selector: 'app-tbl-entity-branch-principal',
-  templateUrl: './tbl-entity-branch-principal.html',
-  styleUrl: './tbl-entity-branch-principal.scss',
+  selector: 'app-tbl-security-personal-entity-branch-principal',
+  templateUrl: './tbl-security-personal-entity-branch-principal.html',
+  styleUrl: './tbl-security-personal-entity-branch-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -52,7 +50,6 @@ import { ListboxModule } from 'primeng/listbox';
         InputIconModule,
         TooltipModule,
         InputTextModule,
-        ContextMenuModule,
         ConfirmDialogModule,
         LoaderComponent,
         ReactiveFormsModule,
@@ -66,20 +63,22 @@ import { ListboxModule } from 'primeng/listbox';
   animations: [fadeDownAnimation]
 })
 
-export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestroy{
+export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
-    private IDTABLE = 'tbl-entity-branch-principal';
-    @ViewChild('cm') cm: ContextMenu | undefined;
+    private IDTABLE = 'tbl-security-personal-entity-branch-principal';
 
     private datePipe = inject(DatePipe);
     private destroyRef = inject(DestroyRef);
     public dialogService = inject(DialogService);
-    private api = inject(EntityBranchApiService);
+    private api = inject(SecurityPersonalEntityBranchApiService);
     public util = inject(UtilService);
-    private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
     private storageService = inject(StorageService);
-    private cd = inject(ChangeDetectorRef);
+    private confirmationService = inject(ConfirmationService);
+
+    @Output() OnUpdate = new EventEmitter<boolean>();
+
+    securityPersonal = input.required<SecurityPersonalDto>();
 
     cols = signal<Column[]>([]);
 
@@ -104,11 +103,9 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         .map(col => col.field)
     );
     
-
-    data = signal<EntityBranchDto[]>([]);
+    data = signal<SecurityPersonalEntityBranchDto[]>([]);
     ldData = signal(true);
-    selected = signal<EntityBranchDto | undefined>(undefined);
-    items = computed(() => this.buildMenuItems(this.selected()));
+    selected = signal<SecurityPersonalEntityBranchDto | undefined>(undefined);
     loading = signal(false);
 
     recordsTotalTable: number = 0;
@@ -121,7 +118,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     private subs = new Subscription();
 
     pageNumber = signal(1);
-    pageSize = signal(10);
+    pageSize = signal(5);
     totalRecords = signal(0);
 
     firstChange: boolean = false;
@@ -132,7 +129,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
-    paddedData = computed<(EntityBranchDto | { __empty: boolean })[]>(() => {
+    paddedData = computed<(SecurityPersonalEntityBranchDto | { __empty: boolean })[]>(() => {
       const actual = this.data() ?? [];
       const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
@@ -144,31 +141,18 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       this.cols.set([
           { field: 'select', header: '', sort: false, sticky: false},
           { field: 'cod', header: '#', sort: false, sticky: false},
-          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false, canVisible: true },
-          { field: 'entity_document_number', header: 'N° Documento', sort: false, sticky: false, canVisible: true },
-          { field: 'description', header: 'Descripción / Alías', sort: false, sticky: false, tdClassName: 'font-medium!', canVisible: true },
-          { field: 'code_sunat', header: 'Cod. Sunat', sort: false, sticky: false, canVisible: true, tdClassName: 'text-center!' },
-          { field: 'series_count', header: 'N° Series', sort: false, sticky: false, canVisible: true, tdClassName: 'text-center!' },
-          { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false, tdClassName: 'text-center!', canVisible: true },
-          { field: 'department', header: 'Departamento', sort: false, sticky: false, canVisible: true },
-          { field: 'province', header: 'Provincia', sort: false, sticky: false, canVisible: true },
-          { field: 'district', header: 'Distrito', sort: false, sticky: false, canVisible: true },
-          //{ field: 'address', header: 'Dirección', sort: false, sticky: false, canVisible: true },
-          { field: 'email', header: 'Correo', sort: false, sticky: false, canVisible: true },
-          { field: 'active', header: 'Estado', sort: false, sticky: false, canVisible: true, render: (rowData: EntityBranchDto)  => { 
-            if (rowData.active) {
-              return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
-            }
-            return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
+          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchDto) => {
+            return `
+                    <div class="font-semibold">${rowData.entity_name}</div>
+                    <div>${rowData.entity_document_number}</div>
+                  ` ;
           }},
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, canVisible: true, render: (rowData: EntityBranchDto) => {
+          { field: 'entity_branch_alias', header: 'Local', sort: false, sticky: false, canVisible: true },
+          { field: 'entity_branch_address', header: 'Dirección', sort: false, sticky: false, tdClassName: 'font-medium!', canVisible: true },
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchDto) => {
             return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
           }},
           { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false, canVisible: true },
-          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, canVisible: true, render: (rowData: EntityBranchDto) => {
-            return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
-          }},
-          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false, canVisible: true },
           { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right', thClassName: 'text-center!'},
         ]);
 
@@ -202,17 +186,16 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         this.first = 0;
       }
 
-      this.subData = this.api.getAll(this.pageNumber(), this.pageSize(), this.search)
+      this.subData = this.api.getCollection(this.securityPersonal().id, this.pageNumber(), this.pageSize(), this.search)
       .pipe(finalize(() => {
         this.loading.set(false);
         this.ldData.set(false);
       }))
       .subscribe({
-        next: (res: TableData<EntityBranchDto[]>) => {
+        next: (res: TableData<SecurityPersonalEntityBranchDto[]>) => {
           
           this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);
-            x.updated_at = x.updated_at ? new Date(x.updated_at) : x.updated_at;
             x.loading_active = false;
             x.loading_update = false;
             return x;
@@ -243,7 +226,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     }
 
     //events
-    evtToggleSelection(row: EntityBranchDto): void{
+    evtToggleSelection(row: SecurityPersonalEntityBranchDto): void{
       if (this.selected() === row) {
         this.selected.set(undefined);
       } else {
@@ -271,13 +254,13 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlEntityBranchCreate,  {
+      this.ref = this.dialogService.open(MdlEntityBranchListSelect,  {
         width: '700px',
         closable: false,
         draggable: false,
         modal: true,
         position: 'top',
-        header: 'Registrar Establecimiento',
+        header: 'Seleccionar Establecimiento',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -286,23 +269,28 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEntityBranchCreate) => {
-        const sub2 = cmp?.OnCreated.subscribe(() => {
-          this.evtOnReload();
+      this.ref.onChildComponentLoaded
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((cmp: MdlEntityBranchListSelect) => {
+        
+        cmp?.OnSelected
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: EntityBranchListToModalDTO) => {
+          this.handlerSelectedEntityBranch(value);
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe(() => {
+        
+        cmp?.OnClose
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.ref?.close();
         });
-        this.subs.add(sub2);
-        this.subs.add(sub3);
       });
 
-      this.subs.add(sub);
     }
 
     evtOnEdit(): void{
-      if(!this.handlerValidateSelected()) return;
+      /*if(!this.handlerValidateSelected()) return;
 
       this.ref = this.dialogService.open(MdlEntityBranchEdit,  {
         width: '700px',
@@ -328,7 +316,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         
         cmp?.OnUpdated
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(( s: EntityBranchDto) => {
+        .subscribe(( s: SecurityPersonalEntityBranchDto) => {
           this.ref?.close();
 
           this.selected.update(current => {
@@ -360,26 +348,29 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
           this.ref?.close();
         });
 
-      });
+      });*/
     }
 
-    evtOnDelete(): void{
+    evtOnDelete(data: SecurityPersonalEntityBranchDto): void{
+      this.selected.set(data);
       this.confirmationService.confirm({
-          header: '¿Eliminar establecimiento?',
+          header: '¿Quitar este establecimiento de los asignados?',
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const subs = this.api.delete(this.selected()!.id).subscribe({
-                next: (res: ResponseDTO<DeleteResponseDto>) => {
+              this.api.delete(data.security_person_id, data.entity_branch_id)
+              .pipe(
+                takeUntilDestroyed(this.destroyRef)
+              )
+              .subscribe({
+                next: () => {
 
                   this.alertService.showToast({
                     position: 'top-end',
                     icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
+                    title: "Se quito el establecimiento de la lista de asignados."
                   });
+                  this.OnUpdate.emit(true);
 
                   this.loadData();
                 },
@@ -389,108 +380,11 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
                     position: 'top-end',
                     icon: "error",
                     title: err.error.error,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
                   });
                 }
               });
-              this.subs.add(subs);
             
           },
-          reject: () => {
-              
-          },
-      });
-    }
-
-    evtOnToggleActive(status: boolean): void{
-      if(!this.handlerValidateSelected()) return;
-
-      this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el establecimiento?' : '¿Activar el establecimiento?',
-          message: 'Confirmar la operación.',
-          accept: () => {
-              this.selected.update(current => {
-                const updated = { ...current!, loading_active: true };
-
-                this.data.update(arr =>
-                  arr.map(c => c.id === updated.id ? { ...c, loading_active: true } : c)
-                );
-
-                return updated;
-              });
-              
-              this.cd.detectChanges();
-
-              const request = {
-                id: this.selected()!.id,
-                active: status
-              } as ToggleActiveRequestDto;
-
-              this.api.toggleActive(this.selected()!.id, request)
-              .pipe(takeUntilDestroyed(this.destroyRef))
-              .subscribe({
-                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
-
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
-
-                  this.selected.update(current => {
-                    const updated = {
-                      ...current!,
-                      loading_active: false,
-                      loading_update: false,
-                      active: res.data.active,
-                      updated_at: res.data.updated_at,
-                      updated_at_user: res.data.updated_at_user,
-                      updated_at_user_name: res.data.updated_at_user_name
-                    };
-
-                    this.data.update(arr =>
-                      arr.map(c => c.id === updated.id ? updated : c)
-                    );
-
-                    return updated;
-                  });
-                },
-                error: (err: HttpErrorResponse) => {
-
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error?.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
-
-                  this.selected.update(current => {
-                    const updated = { ...current!, loading_active: false };
-
-                    this.data.update(arr =>
-                      arr.map(c => c.id === updated.id ? updated : c)
-                    );
-
-                    return updated;
-                  });
-                }
-              });
-          }
       });
     }
 
@@ -509,38 +403,6 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       this.selected.set( event.data );
     }
 
-    evtShowContextMenu(event: MouseEvent, rowData: EntityBranchDto) {
-      const target = event.currentTarget as HTMLElement;
-      const rect = target.getBoundingClientRect();
-      const currentSelected = this.selected();
-
-      this.selected.set(rowData);
-      if(this.cm?.visible()){
-        if(currentSelected !== rowData){
-          this.cm?.hide();
-          const customEvent = new MouseEvent('contextmenu', {
-            bubbles: event.bubbles,
-            cancelable: event.cancelable,
-            view: event.view,
-            clientX: rect.left + target.offsetWidth,
-            clientY: rect.bottom
-          });
-          setTimeout(()=>{
-            this.cm?.show(customEvent);
-          },0);
-        }
-      }else{
-        const customEvent = new MouseEvent(event.type, {
-          bubbles: event.bubbles,
-          cancelable: event.cancelable,
-          view: event.view,
-          clientX: rect.left + target.offsetWidth,
-          clientY: rect.bottom
-        });
-
-        this.cm?.show(customEvent);
-      }
-    }
 
     evtShowSeries(): void{
       if(!this.handlerValidateSelected()) return;
@@ -585,10 +447,6 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
     // Functions
 
-    isOpenCm(rowData: EntityBranchDto): boolean{
-      return (this.cm?.visible() && rowData === this.selected()) ?? false;
-    }
-
     isLastPage(): boolean {
       return this.data() ? this.first >= this.recordsTotalTable : true;
     }
@@ -599,16 +457,6 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
     reload(): void{
       this.evtOnReload();
-    }
-
-    private buildMenuItems(selected: EntityBranchDto | undefined): MenuItem[] {
-      return [
-        { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Eliminar', icon: 'pi pi-trash', command: () => { this.evtOnDelete(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'pi pi-check-circle', command: () => { this.evtOnToggleActive(true); }, visible: !selected?.active,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
-        { label: 'Desactivar', icon: 'pi pi-ban', command: () => { this.evtOnToggleActive(false); }, visible: selected?.active,  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500' },
-        { label: 'Series', icon: 'fa-light fa-hashtag', command: () => { this.evtShowSeries(); },  linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-      ];
     }
 
     // Handlers
@@ -627,6 +475,25 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
       }
 
       return true;
+    }
+
+    handlerSelectedEntityBranch(value: EntityBranchListToModalDTO): void{
+      this.api.create({security_person_id: this.securityPersonal().id, entity_branch_id: value.id})
+        .pipe(
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe({
+          next: () => {
+            this.OnUpdate.emit(true);
+            this.evtOnReload();
+          },
+          error: (e: HttpErrorResponse) => {
+            this.alertService.showToast({
+              title: e.error.detalle,
+              icon: 'error'
+            })
+          }
+        });
     }
 
 }
