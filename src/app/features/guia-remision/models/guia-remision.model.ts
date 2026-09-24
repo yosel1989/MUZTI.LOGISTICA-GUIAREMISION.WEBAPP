@@ -1,8 +1,9 @@
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
+import { EntityBranchSerieDto } from "@features/entity-branch-serie/models/entity-branch-serie";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
-import { EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityBranchDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { GuiaRemisionTransportUnitCreateDto } from "@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { TransportistaDto } from "@features/transportista/models/transportista";
@@ -11,6 +12,15 @@ import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-t
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
   entity_id: number;
+  entity: EntityDto | EntityBySerieAssigned_EntityDto;
+
+  entity_branch_id: number;
+  entity_branch: EntityBranchDto;
+
+  entity_branch_serie_id: number;
+  entity_branch_serie: EntityBranchSerieDto;
+
+
   tipo_transporte: 'PUBLICO' | 'PRIVADO';
   motivo_traslado_id: number;
   motivo_traslado: SunatMotivoTrasladoDto | undefined;
@@ -21,7 +31,7 @@ export interface GuiaRemisionRemitenteRequestDto {
 
   doc_relacionado: GR_DocRelacionadoDto[] | null;
   
-  remitente: EntityBranchDto;
+  remitente: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto;
   remitente_id: number;
 
   destinatario: EntityBranchDto;
@@ -135,14 +145,12 @@ export interface GR_UnidadTransporteRequestDto {
 
 export interface GR_OrigenRequestDto {
   ubigeo_id: string; 
-  direccion: string; 
-  pais: string; 
+  direccion: string;
 }
 
 export interface GR_DestinoRequestDto {
   ubigeo_id: string; 
-  direccion: string; 
-  pais: string; 
+  direccion: string;
 }
 
 export interface GR_ProductoRequestDto {
@@ -196,12 +204,12 @@ export interface GuiaRemisionDto {
   numero_documento_destinatario: string;
   distrito_origen: string;
   distrito_destino: string;
-  fecha_registro: Date;
-  usuario_registro: string;
-  usuario_registro_nombre: string;
-  fecha_modifico: Date | null;
-  usuario_modifico: string | null;
-  usuario_modifico_nombre: string | null;
+  created_at: Date;
+  created_at_user: string;
+  created_at_user_name: string;
+  updated_at: Date | null;
+  updated_at_user: string | null;
+  updated_at_user_name: string | null;
   estado: string;
   estado_color: string | null;
   id_estado: number;

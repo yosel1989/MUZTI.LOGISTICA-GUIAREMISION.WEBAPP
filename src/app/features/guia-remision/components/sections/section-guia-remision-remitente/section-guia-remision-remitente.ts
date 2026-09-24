@@ -21,7 +21,7 @@ import { DialogService } from "primeng/dynamicdialog";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 import { MdlEntityBranchList } from "@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list";
 
@@ -61,7 +61,7 @@ export class SectionGuiaRemisionRemitente {
     }
     selected = signal<EntityBranchDto | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>();
-    entity = input.required<EntityDto | undefined>(); 
+    entity = input.required<EntityDto | EntityBySerieAssigned_EntityDto | undefined>(); 
 
     submitted = signal(false);
 
@@ -76,7 +76,6 @@ export class SectionGuiaRemisionRemitente {
         return {
             ubigeo_id: this.remitente!.ubigeo_id,
             direccion: this.remitente!.address,
-            pais: this.remitente!.entity_country,
         }
     }
     

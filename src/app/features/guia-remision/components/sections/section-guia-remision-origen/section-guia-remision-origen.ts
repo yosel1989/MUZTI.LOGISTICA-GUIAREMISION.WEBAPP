@@ -15,6 +15,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { TypingComponent } from "@features/shared/components/typing/typing";
 import { FieldsetModule } from "primeng/fieldset";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
+import { EntityBySerieAssigned_EntityBranchDto } from "@features/entity/models/entity";
 
 @Component({
   selector: 'app-section-guia-remision-origen',
@@ -40,8 +41,8 @@ export class SectionGuiaRemisionOrigen {
     alertService = inject(AlertService);
   
 
-    private _remitente = signal<EntityBranchDto | null>(null);
-    @Input() set remitente(value: EntityBranchDto | null) {
+    private _remitente = signal<EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | null>(null);
+    @Input() set remitente(value: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | null) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
         }
@@ -61,12 +62,11 @@ export class SectionGuiaRemisionOrigen {
     get getFormData(): GR_OrigenRequestDto {
         return {
             ubigeo_id: this.remitente!.ubigeo_id,
-            direccion: this.remitente!.address,
-            pais: this.remitente!.entity_country,
+            direccion: this.remitente!.address
         }
     }
 
-    get remitente(): EntityBranchDto | null {
+    get remitente(): EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | null {
         return this._remitente();
     }
 

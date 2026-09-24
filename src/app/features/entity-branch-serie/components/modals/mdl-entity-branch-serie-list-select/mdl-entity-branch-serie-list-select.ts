@@ -92,7 +92,7 @@ export class MdlEntityBranchSerieListSelect implements OnInit, AfterViewInit, On
             {
                 field: 'id',
                 header: '#',
-                className: 'w-[50px]',
+                thClassName: 'w-[50px]',
                 tdClassName: 'font-semibold! ps-4!'
             },
             {
@@ -107,9 +107,20 @@ export class MdlEntityBranchSerieListSelect implements OnInit, AfterViewInit, On
             },
             {
                 field: 'serie',
-                header: 'Local',
+                header: 'Serie',
                 thClassName: 'text-center!',
                 tdClassName: 'text-center! font-semibold!'
+            },
+            {
+                field: 'entity_branch_alias',
+                header: 'Local',
+                tdClassName: '',
+                render: (rowData: EntityBranchSerieToSelectDto) => {
+                    return `
+                        <div class="font-semibold!">${rowData.entity_branch_alias}</div>
+                        <div>${rowData.entity_branch_address}</div>
+                    `;
+                }
             },
             
         ].filter(c => c !== null);
@@ -181,7 +192,7 @@ export class MdlEntityBranchSerieListSelect implements OnInit, AfterViewInit, On
         this.ldData.set(true);
         const entityId = this.entitySelected()!.id;
 
-        this.sbData = this.api.getToSelect(entityId)
+        this.sbData = this.api.getToSelect(entityId, this.ctrlSearch.value ?? null)
         .pipe(finalize(() => this.ldData.set(false)))
         .subscribe({
             next: (value: EntityBranchSerieToSelectDto[]) => {

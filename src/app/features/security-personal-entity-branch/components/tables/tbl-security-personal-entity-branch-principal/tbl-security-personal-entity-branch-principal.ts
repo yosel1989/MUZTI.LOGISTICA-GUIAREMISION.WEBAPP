@@ -34,6 +34,7 @@ import { SecurityPersonalDto } from '@features/security-personal/models/security
 import { MdlEntityBranchListSelect } from '@features/entity-branch/components/modals/mdl-entity-branch-list-select/mdl-entity-branch-list-select';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EntityBranchListToModalDTO } from '@features/entity-branch/models/entity-branch';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-tbl-security-personal-entity-branch-principal',
@@ -57,7 +58,8 @@ import { EntityBranchListToModalDTO } from '@features/entity-branch/models/entit
 
         PopoverModule,
         ListboxModule,
-        FormsModule
+        FormsModule,
+        AvatarModule
   ],
   providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]

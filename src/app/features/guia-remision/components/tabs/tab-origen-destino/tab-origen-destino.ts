@@ -130,12 +130,10 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
             origen: {
                 ubigeo_id: this.remitente!.ubigeo_id,
                 direccion: this.remitente!.address,
-                pais: this.remitente!.entity_country,
             },
             destino: {
                 ubigeo_id: this.destinatario!.ubigeo_id,
                 direccion: this.destinatario!.address,
-                pais: this.destinatario!.entity_country,
             }
         }
     }

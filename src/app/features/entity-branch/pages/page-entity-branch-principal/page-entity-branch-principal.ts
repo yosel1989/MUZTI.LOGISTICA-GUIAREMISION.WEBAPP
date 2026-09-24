@@ -1,17 +1,17 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { TblEntityBranchPrincipal } from '@features/entity-branch/components/tables/tbl-entity-branch-principal/tbl-entity-branch-principal';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MenuItem } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-page-entity-branch-principal',
   templateUrl: './page-entity-branch-principal.html',
   styleUrl: './page-entity-branch-principal.scss',
   imports: [
-    CommonModule,
-    TblEntityBranchPrincipal
+    TblEntityBranchPrincipal,
+    ButtonModule
   ],
   viewProviders: [],
   providers: [],

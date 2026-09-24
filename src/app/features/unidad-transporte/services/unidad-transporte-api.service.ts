@@ -4,8 +4,8 @@ import { environment } from "environments/environment";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "app/core/models/table";
 import { EditarUnidadTransporteRequestDto, EliminarUnidadTransporteResponseDto, RegistrarUnidadTransporteRequestDto, RegistrarUnidadTransporteResponseDto, UnidadTransporteDto, UnidadTransporteSugeridoDto } from "../models/unidad-transporte.model";
-import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
-import { ToggleActiveRequestDto } from "app/shared/models/request";
+import { ResponseDTO } from "@features/shared/models/shared";
+import { ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
 
 @Injectable({
   providedIn: 'root'
@@ -44,8 +44,8 @@ export class UnidadTransporteApiService {
       map(response =>{ 
         return {
           ...response,
-          fecha_registro: new Date(response.fecha_registro),
-          fecha_modifico: response.fecha_modifico ? new Date(response.fecha_modifico) : null
+          created_at: new Date(response.created_at),
+          updated_at: response.updated_at ? new Date(response.updated_at) : null
         } as UnidadTransporteDto 
       }),
       catchError((error: HttpErrorResponse) => {
@@ -56,14 +56,14 @@ export class UnidadTransporteApiService {
 
   editar(id: number, request: EditarUnidadTransporteRequestDto): Observable<ResponseDTO<UnidadTransporteDto>> {
     return this.http.put<ResponseDTO<UnidadTransporteDto>>(`${this.baseUrl}/${id}`, request).pipe(
-      map(response => ({
+      map((response: ResponseDTO<UnidadTransporteDto>) => ({
         ...response,
         data: {
           ...response.data,
-          fecha_registro: new Date(response.data.fecha_registro),
-          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null,
-          ld_estado: false,
-          ld_update: false
+          created_at: new Date(response.data.created_at),
+          updated_at: response.data.updated_at ? new Date(response.data.updated_at) : null,
+          loading_active: false,
+          loading_update: false
         }
       }) ),
       catchError((error: HttpErrorResponse) => {
@@ -81,13 +81,13 @@ export class UnidadTransporteApiService {
     );
   }
 
-  toogleActive(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
-    return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
+  toogleActive(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ToggleActiveResponseDto>> {
+    return this.http.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>({
         ...response,
         data: {
           ...response.data,
-          fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
+          updated_at: response.data.updated_at ? new Date(response.data.updated_at) : null
         }
       })),
       catchError((error: HttpErrorResponse) => {

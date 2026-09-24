@@ -9,12 +9,14 @@ export interface UnidadTransporteDto{
     entidad_reguladora_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
-    fecha_registro: Date;
-    usuario_registro: string;
-    usuario_registro_nombre: string;
-    fecha_modifico: Date | null;
-    usuario_modifico: string | null;
-    usuario_modifico_nombre: string | null;
+
+    created_at: Date;
+    created_at_user: string;
+    created_at_user_name: string;
+    updated_at: Date | null;
+    updated_at_user: string | null;
+    updated_at_user_name: string | null;
+
     tipo: string | null;
     active: boolean;
     loading_active: boolean;
@@ -62,17 +64,18 @@ export interface EditarUnidadTransporteResponseDto{
     entidad_reguladora_vehicular: string | null;
     emisor_vehicular: string | null;
     nro_autorizacion: string | null;
-    fecha_registro: Date;
-    usuario_registro: string;
-    usuario_registro_nombre: string;
-    fecha_modifico: Date | null;
-    usuario_modifico: string | null;
-    usuario_modifico_nombre: string | null;
+
+    created_at: Date;
+    created_at_user: string;
+    created_at_user_name: string;
+    updated_at: Date | null;
+    updated_at_user: string | null;
+    updated_at_user_name: string | null;
+
     tipo: string | null;
-    estado: string;
-    id_estado: number;
-    ld_estado: boolean;
-    ld_update: boolean;
+    active: boolean;
+    loading_active: boolean;
+    loading_update: boolean;
 }
 
 export interface EliminarUnidadTransporteResponseDto{

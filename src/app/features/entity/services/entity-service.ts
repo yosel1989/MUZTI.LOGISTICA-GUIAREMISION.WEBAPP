@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { EntityCreateDto, EntityDto, EntityListDto, EntityUpdateDto } from "../models/entity";
+import { EntityBySerieAssignedDto, EntityCreateDto, EntityDto, EntityListDto, EntityUpdateDto } from "../models/entity";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { TableData } from "@core/models/table";
 import { ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
@@ -107,8 +107,9 @@ export class EntityApiService {
         )
     }
 
-    getCollectionBySeriesAssigned(): Observable<EntityDto[]>{
-        return this.http.get<EntityDto[]>(`${this.baseUrl}/collection-by-assigned-series`).pipe(
+
+    getListBySeriesAssigned(): Observable<EntityBySerieAssignedDto[]>{
+        return this.http.get<EntityBySerieAssignedDto[]>(`${this.baseUrl}/list-by-assigned-series`).pipe(
             map((res) => res),
             catchError((e: HttpErrorResponse) => {
                 return throwError(() => e);

@@ -23,7 +23,7 @@ import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 import { MdlEntityBranchList } from "@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list";
-import { EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityBranchDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 
 @Component({
   selector: 'app-section-guia-remision-destinatario',
@@ -53,8 +53,8 @@ export class SectionGuiaRemisionDestinatario{
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
-    private _remitente = signal<EntityBranchDto | undefined>(undefined);
-    @Input() set remitente(value: EntityBranchDto | undefined) {
+    private _remitente = signal<EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | undefined>(undefined);
+    @Input() set remitente(value: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | undefined) {
         if (this._remitente() !== value) {
             this._remitente.set(value);
         }
@@ -69,7 +69,7 @@ export class SectionGuiaRemisionDestinatario{
     
     selected = signal<EntityBranchDto | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>(); 
-    entity = input.required<EntityDto | undefined>(); 
+    entity = input.required<EntityDto | EntityBySerieAssigned_EntityDto | undefined>(); 
 
     submitted = signal(false);
 
@@ -96,7 +96,6 @@ export class SectionGuiaRemisionDestinatario{
         return {
             ubigeo_id: this.destinatario!.ubigeo_id,
             direccion: this.destinatario!.address,
-            pais: this.destinatario!.entity_country,
         }
     }
     
@@ -104,7 +103,7 @@ export class SectionGuiaRemisionDestinatario{
         return this._destinatario() ?? null;
     }
 
-    get remitente(): EntityBranchDto | null {
+    get remitente(): EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | null {
         return this._remitente() ?? null;
     }
 

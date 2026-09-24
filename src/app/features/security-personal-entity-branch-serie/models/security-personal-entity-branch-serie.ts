@@ -3,6 +3,8 @@ export interface SecurityPersonalEntityBranchSerieDto{
     entity_branch_serie_id: number;
     entity_name: string;
     entity_document_number: string;
+    entity_branch_alias: string;
+    entity_branch_address: string;
 
     created_at: Date ;
     created_at_user: string;

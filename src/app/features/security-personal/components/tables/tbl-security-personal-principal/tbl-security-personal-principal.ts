@@ -120,8 +120,8 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
           { field: 'person_full_name', header: 'Personal', sort: false, sticky: false },
           { field: 'person_document_number', header: 'N° Documento', sort: false, sticky: false },
           { field: 'person_role', header: 'Cargo', sort: false, sticky: false },
-          { field: 'series', header: 'Series Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'entity_branchs', header: 'Estab. Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
+          { field: 'series', header: 'Series Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: SecurityPersonalDto)  => { 
             if (rowData.active) {
               return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
@@ -303,7 +303,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
         closable: false,
         modal: true,
         position: 'top',
-        header: 'Seleccionar personal de seguridad',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-plus text-[14px]!"></span></span> Añadir personal',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -585,8 +585,8 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
 
     private buildMenuItems(selected: SecurityPersonalDto | undefined): MenuItem[] {
       return [
-        { label: 'Establecimientos asignados', icon: 'fa-light fa-house', command: () => { this.evtShowEntityBranchList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Series asignadas', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Establecimientos', icon: 'fa-light fa-house', command: () => { this.evtShowEntityBranchList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Series ', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];

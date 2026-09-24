@@ -34,6 +34,7 @@ import { SecurityPersonalEntityBranchSerieApiService } from '@features/security-
 import { SecurityPersonalEntityBranchSerieDto } from '@features/security-personal-entity-branch-serie/models/security-personal-entity-branch-serie';
 import { MdlEntityBranchSerieListSelect } from '@features/entity-branch-serie/components/modals/mdl-entity-branch-serie-list-select/mdl-entity-branch-serie-list-select';
 import { EntityBranchSerieToSelectDto } from '@features/entity-branch-serie/models/entity-branch-serie';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-tbl-security-personal-entity-branch-serie-principal',
@@ -57,7 +58,8 @@ import { EntityBranchSerieToSelectDto } from '@features/entity-branch-serie/mode
 
         PopoverModule,
         ListboxModule,
-        FormsModule
+        FormsModule,
+        AvatarModule
   ],
   providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]
@@ -147,6 +149,12 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
                   ` ;
           }},
           { field: 'serie', header: 'Serie', sort: false, sticky: false, canVisible: true, tdClassName: 'font-semibold! text-center!' },
+          { field: 'entity_branch_alias', header: 'Local', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchSerieDto) => {
+            return `
+                    <div class="font-semibold">${rowData.entity_branch_alias}</div>
+                    <div>${rowData.entity_branch_address}</div>
+                  ` ;
+          }},
           { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchSerieDto) => {
             return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
           }},

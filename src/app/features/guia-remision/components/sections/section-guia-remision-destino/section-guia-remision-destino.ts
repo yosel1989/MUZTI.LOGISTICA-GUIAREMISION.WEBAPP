@@ -61,7 +61,6 @@ export class SectionGuiaRemisionDestino {
         return {
             ubigeo_id: this.destinatario!.ubigeo_id,
             direccion: this.destinatario!.address,
-            pais: this.destinatario!.entity_country,
         }
     }
 

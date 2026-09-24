@@ -3,13 +3,15 @@ import { fadeDownAnimation } from "@core/animations/page-animation";
 import { LayoutService } from "@core/services/layout.service";
 import { TblProviderPrincipal } from "@features/entity/components/tables/tbl-provider-principal/tbl-provider-principal";
 import { MenuItem } from "primeng/api";
+import { ButtonModule } from "primeng/button";
 
 @Component({
     selector: "app-page-providers-principal",
     templateUrl: "./page-providers-principal.html",
     styleUrls: ["./page-providers-principal.scss"],
     imports: [
-        TblProviderPrincipal
+        TblProviderPrincipal,
+        ButtonModule
     ],
     animations: [fadeDownAnimation]
 })

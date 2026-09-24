@@ -1,5 +1,5 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject, ViewChild } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, signal, computed, inject, ViewChild, DestroyRef } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -26,10 +26,11 @@ import { MdlEditarUnidadTransporteComponent } from '../../modals/mdl-editar-unid
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActualizarEstadoResponseDto, ResponseDTO } from '@features/shared/models/shared';
-import { ToggleActiveRequestDto } from 'app/shared/models/request';
+import { ResponseDTO } from '@features/shared/models/shared';
+import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { Column } from 'app/shared/models/table';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tbl-unidad-transporte-principal',
@@ -46,20 +47,22 @@ import { Column } from 'app/shared/models/table';
       InputIconModule,
       TooltipModule,
       InputTextModule,
-      DatePipe,
       ContextMenuModule,
       ConfirmDialogModule,
       LoaderComponent,
-      ReactiveFormsModule
+      ReactiveFormsModule,
+      NgClass
   ],
-  providers: [DialogService, ConfirmationService]
+  providers: [DialogService, ConfirmationService, DatePipe]
 })
 
 export class TableUnidadTransportePrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     @ViewChild('cm') cm: ContextMenu | undefined;
 
+    public destroyRef = inject(DestroyRef);
     public util = inject(UtilService);
+    public datePipe = inject(DatePipe);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
     public dialogService = inject(DialogService);
@@ -109,11 +112,20 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           { field: 'entidad_reguladora_vehicular', header: 'Entidad emisora de la autorización vehícular', sort: false, sticky: false },
           { field: 'nro_autorizacion', header: 'N° Autorización', sort: false, sticky: false },
           { field: 'tipo', header: 'Tipo', sort: false, sticky: false },
-          { field: 'active', header: 'Estado', sort: false, sticky: false },
-          { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
-          { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
-          { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
-          { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+          { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: UnidadTransporteDto)  => { 
+            if (rowData.active) {
+              return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
+            }
+            return '<span class="uppercase w-25 text-gray-700 text-center flex items-center justify-center bg-gray-100 p-1 px-2 rounded-lg! font-medium">Inactivo</span>';
+          }},
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: UnidadTransporteDto) => {
+            return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
+          }},
+          { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
+          { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: UnidadTransporteDto) => {
+            return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
+          }},
+          { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
           { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
         ];
     }
@@ -159,8 +171,8 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
       this.subData = this.api.obtenerTodo(this.pageNumber(), this.pageSize(), this.search).subscribe({
         next: (res: TableData<UnidadTransporteDto[]>) => {
           this.data.set(res.data.map(x => {
-            x.fecha_registro = new Date(x.fecha_registro);
-            x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
+            x.created_at = new Date(x.created_at);
+            x.updated_at = x.updated_at ? new Date(x.updated_at) : null;
             x.loading_active = false;
             x.loading_update = false;
             return x;
@@ -228,7 +240,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Registrar Unidad de Transporte',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-plus text-[14px]!"></span></span> Nueva unidad de transporte',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -237,19 +249,22 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarUnidadTransporteComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(() => {
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlRegistrarUnidadTransporteComponent) => {
+        cmp?.OnCreated
+        .pipe(
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(() => {
           this.evtOnReload();
           this.ref?.close();
         });
-        const sub3 = cmp?.OnCanceled.subscribe(() => {
+        cmp?.OnCanceled
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.ref?.close();
         });
-        this.subs.add(sub2);
-        this.subs.add(sub3);
-      });
 
-      this.subs.add(sub);
+      });
     }
 
     evtOnEdit(): void{
@@ -259,7 +274,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Editar Unidad de Transporte',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-pencil text-[14px]!"></span></span> Editar unidad de transporte',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -271,12 +286,14 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
         }
       });
 
-      const sub = this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarUnidadTransporteComponent) => {
-        const sub2 = cmp?.OnCreated.subscribe(( s: UnidadTransporteDto ) => {
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlEditarUnidadTransporteComponent) => {
+        cmp?.OnCreated
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(( s: UnidadTransporteDto) => {
           this.ref?.close();
 
           this.selected.update(current => {
-            const updated = { ...current!, ...s, ld_update: true };
+            const updated = { ...current!, ...s, loading_update: true };
 
             this.data.update(arr =>
               arr.map(c => c.id === updated.id ? updated : c)
@@ -298,15 +315,14 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           }, 1000);
 
         });
-        const sub3 = cmp?.OnCanceled.subscribe(() => {
+        cmp?.OnCanceled
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
           this.ref?.close();
         });
-        this.subs.add(sub2);
-        this.subs.add(sub3);
 
       });
 
-      this.subs.add(sub);
     }
 
     evtOnDelete(): void{
@@ -315,7 +331,9 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
           message: 'Confirmar la operación.',
           accept: () => {
 
-              const subs = this.api.eliminar(this.selected()!.id).subscribe({
+              this.api.eliminar(this.selected()!.id)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
                 next: (res: EliminarUnidadTransporteResponseDto) => {
 
                   this.alertService.showToast({
@@ -345,11 +363,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                   });
                 }
               });
-              this.subs.add(subs);
             
-          },
-          reject: () => {
-              
           },
       });
     }
@@ -375,7 +389,7 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
               } as ToggleActiveRequestDto;
 
               const subs = this.api.toogleActive(this.selected()!.id, request).subscribe({
-                next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
+                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.showToast({
                     position: 'top-end',
@@ -389,13 +403,12 @@ export class TableUnidadTransportePrincipalComponent implements OnInit, AfterVie
                   this.selected.update(current => {
                     const updated = {
                       ...current!,
-                      ld_estado: false,
-                      ld_update: false,
-                      id_estado: res.data.id_estado,
-                      estado: res.data.estado,
-                      fecha_modifico: res.data.fecha_modifico,
-                      usuario_modifico: res.data.usuario_modifico,
-                      usuario_modifico_nombre: res.data.usuario_modifico_nombre
+                      loading_active: false,
+                      loading_update: false,
+                      active: res.data.active,
+                      updated_at: res.data.updated_at,
+                      updated_at_user: res.data.updated_at_user,
+                      updated_at_user_name: res.data.updated_at_user_name
                     };
 
                     this.data.update(arr =>

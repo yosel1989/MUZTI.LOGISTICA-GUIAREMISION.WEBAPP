@@ -3,13 +3,15 @@ import { TableTransportistaPrincipalComponent } from '@features/transportista/co
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MenuItem } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-page-transportista-principal',
   templateUrl: './page-transportista-principal.html',
   styleUrl: './page-transportista-principal.scss',
   imports: [
-    TableTransportistaPrincipalComponent
+    TableTransportistaPrincipalComponent,
+    ButtonModule
   ],
   viewProviders: [],
   providers: [],

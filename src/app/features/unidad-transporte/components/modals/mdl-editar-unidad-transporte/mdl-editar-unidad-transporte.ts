@@ -50,7 +50,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
 
   @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
   @Input() id!: number;
-  @Output() OnCreated: EventEmitter<UnidadTransporteDto | undefined> = new EventEmitter<UnidadTransporteDto | undefined>(undefined);
+  @Output() OnCreated: EventEmitter<UnidadTransporteDto > = new EventEmitter<UnidadTransporteDto>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   frm: FormGroup = new FormGroup({});

@@ -114,9 +114,9 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
           }
           return `<span class="uppercase px-3 text-slate-700 text-center flex items-center justify-center bg-slate-200 p-1 rounded-lg! font-medium"><i class="fa-light fa-user me-1"></i> ${rowData.type.toLocaleUpperCase()}</span>`;
         }},
-        { field: 'name', header: 'Razón Social', sort: false, sticky: false },
-        { field: 'first_name', header: 'Nombre', sort: false, sticky: false },
-        { field: 'last_name', header: 'Apellido', sort: false, sticky: false },
+        { field: 'name', header: 'Nombre / Razón Social', sort: false, sticky: false, render: (rowData: ProviderDto) => {
+          return rowData.name ? rowData.name : `${rowData.first_name} ${rowData.last_name}`
+        }},
         { field: 'document_type', header: 'Tipo Documento', sort: false, sticky: false, tdClassName: 'text-center!' },
         { field: 'ubigeo_id', header: 'Ubigeo', sort: false, sticky: false },
         { field: 'address', header: 'Dirección', sort: false, sticky: false },
@@ -257,7 +257,7 @@ export class TblProviderPrincipal implements OnInit, AfterViewInit, OnDestroy{
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Registrar Proveedor',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-plus text-[14px]!"></span></span> Nuevo proveedor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',

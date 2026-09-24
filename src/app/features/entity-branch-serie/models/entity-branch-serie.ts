@@ -26,4 +26,6 @@ export type EntityBranchSerieUpdateDto = Pick<EntityBranchSerieDto,
 export interface EntityBranchSerieToSelectDto extends Pick<EntityBranchSerieDto, 'id' | 'serie'>{
   entity_name: string;
   entity_document_number: string;
+  entity_branch_alias: string;
+  entity_branch_address: string;
 }

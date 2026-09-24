@@ -1,3 +1,6 @@
+import { EntityBranchSerieDto } from "@features/entity-branch-serie/models/entity-branch-serie";
+import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
+
 export interface EntityDto{
     id: number;
     type: 'empresa' | 'persona';
@@ -44,3 +47,43 @@ export type EntityListDto = Pick<EntityDto, 'id' | 'type' | 'name' | 'first_name
 export type ProviderDto = EntityDto;
 
 export type TransporterDto = EntityDto;
+
+
+
+
+export interface EntityBySerieAssignedDto{
+    entity: EntityBySerieAssigned_EntityDto;
+    entity_branch_serie: EntityBySerieAssigned_EntityBranchSerieDto;
+    entity_branch: EntityBySerieAssigned_EntityBranchDto;
+}
+
+export interface EntityBySerieAssigned_EntityDto extends Pick<EntityDto, 
+    'id' |
+    'name' |
+    'document_number' |
+    'ubigeo_id' |
+    'mtc_code' | 
+    'first_name' | 
+    'last_name'
+>{
+    department: string;
+    province: string;
+    district: string;
+};
+
+export type EntityBySerieAssigned_EntityBranchSerieDto = Pick<EntityBranchSerieDto, 
+    'id' | 
+    'serie' | 
+    'area'
+>;
+
+export type EntityBySerieAssigned_EntityBranchDto = Pick<EntityBranchDto, 
+    'id' | 
+    'description' | 
+    'address' | 
+    'ubigeo_id' | 
+    'department' | 
+    'province' | 
+    'district' | 
+    'code_sunat'
+>;

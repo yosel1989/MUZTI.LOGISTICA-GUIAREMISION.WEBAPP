@@ -69,7 +69,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 { text: '', border: [false,false,false,false] },
                 { 
                   stack: [
-                    {text: this.data.remitente.entity_name, bold: true, marginBottom: 2},
+                    {text: this.data.entity.document_number, bold: true, marginBottom: 2},
                     {text: this.data.remitente.address.toUpperCase(), marginBottom:10, color: '#adadad'},
                     {text: `${this.data.remitente.district} - ${this.data.remitente.province} - ${this.data.remitente.department}`, color: '#adadad'},
                   ],
@@ -95,7 +95,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     {
                       stack: [
                         {
-                          text: `RUC: ${this.data.remitente.entity_document_number}`,
+                          text: `RUC: ${this.data.entity.document_number}`,
                           alignment: 'center',
                           color: '#adadad'
                         },

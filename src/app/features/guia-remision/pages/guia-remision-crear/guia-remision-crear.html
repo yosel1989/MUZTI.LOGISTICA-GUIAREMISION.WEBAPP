@@ -4,9 +4,10 @@
 
     @if(showFloating()){
         <div class="top-[90px]! sticky mt-[-40px] flex justify-center z-2">
-            <!--<div class="rounded-b-2xl px-6 py-2 text-lg shadow bg-white text-slate-500 roboto-condensed font-semibold mt-[-2px]">
-                N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ???????? 
-            </div>-->
+
+            <div class="rounded-b-2xl px-6 py-2 text-lg shadow bg-white text-slate-500 roboto-condensed font-semibold mt-[-2px]">
+                N° {{ entitySelected()?.entity_branch_serie?.serie ?? '????' }} - ???????? 
+            </div>
             
         </div>
     }
@@ -35,10 +36,10 @@
                             <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
                             <div class="flex flex-col justify-center text-sm text-start! text-lg! text-slate-800!">
                                 @if(entitySelected() == null){
-                                    <p class="font-semibold! uppercase roboto-condensed">Seleccionar empresa emisora</p>
+                                    <p class="font-semibold! uppercase roboto-condensed">Seleccionar remitente</p>
                                 }@else{
-                                    <p class="font-semibold roboto-condensed">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
-                                    <p class="uppercase roboto-condensed">{{ entitySelected()?.document_number }}</p>
+                                    <p class="font-semibold roboto-condensed">{{ entitySelected()?.entity?.name}}</p>
+                                    <p class="uppercase roboto-condensed">{{ entitySelected()?.entity?.document_number }}</p>
                                 }
                             </div>
                         </div>
@@ -54,9 +55,9 @@
                     ></app-guia-section-cabecera>-->
 
                     <div #cabecera class="flex flex-col items-center p-4 border border-gray-300 rounded-2xl text-center h-full text-lg!">
-                        <p class="font-semibold text-gray-400 roboto-condensed">RUC: {{ entitySelected()?.document_number ?? '00000000000' }}</p>
+                        <p class="font-semibold text-gray-400 roboto-condensed">RUC: {{ entitySelected()?.entity?.document_number ?? '00000000000' }}</p>
                         <p class="font-semibold roboto-condensed">GUIA DE REMISIÓN ELECTRÓNICA</p>
-                        <!--<p class="font-semibold roboto-condensed">N° {{ sectionRemitente?.remitente?.serie ?? '????' }} - ????????</p>-->   
+                        <p class="font-semibold roboto-condensed text-slate-500!">N° {{ entitySelected()?.entity_branch_serie?.serie ?? '????' }} - ????????</p>
                     </div>
                 </div>
             </div>
@@ -160,33 +161,6 @@
                     (onOpen)="onAccordionChange($event)"
                 >
 
-                        <p-accordion-panel value="remitente"> 
-                            <p-accordion-header data-value="remitente" #headerRemitente class="group"> 
-                                <span class="inline-flex items-center ps-4 py-2">
-                                    <span class="roboto-condensed">Remitente</span>
-                                    @if(submitted() && sectionRemitente?.invalid){
-                                        <i
-                                            class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
-                                            [class.text-primary-200!]="headerRemitente.active()"
-                                        ></i>
-                                    } 
-                                    @if(!sectionRemitente?.invalid){
-                                        <i 
-                                            class="fa-regular fa-circle-check text-lg! ms-3! group-hover:text-primary-200! text-green-600"
-                                            [class.text-primary-200!]="headerRemitente.active()"
-                                        ></i>
-                                    }
-                                </span>
-                            </p-accordion-header>
-                            <p-accordion-content>
-                                <app-section-guia-remision-remitente
-                                    #sectionRemitente
-                                    [motivoTraslado]="selectMotivoTraslado?.selected()"
-                                    [entity]="entitySelected() ?? undefined"
-                                ></app-section-guia-remision-remitente>
-                            </p-accordion-content>
-                        </p-accordion-panel>
-
                         <p-accordion-panel value="destinatario"> 
                             <p-accordion-header data-value="destinatario" #headerDestinatario class="group"> 
                                 <span class="inline-flex items-center ps-4 py-2">
@@ -208,9 +182,9 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-destinatario 
                                     #sectionDestinatario
-                                    [remitente]="sectionRemitente?.selected()"
+                                    [remitente]="entitySelected()?.entity_branch"
                                     [motivoTraslado]="selectMotivoTraslado?.selected()"
-                                    [entity]="entitySelected() ?? undefined"
+                                    [entity]="entitySelected()?.entity"
                                 ></app-section-guia-remision-destinatario>
                             </p-accordion-content>
                         </p-accordion-panel>
@@ -350,7 +324,7 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-origen
                                     #sectionOrigen
-                                    [remitente]="sectionRemitente.selected() ?? null"
+                                    [remitente]="entitySelected()?.entity_branch ?? null"
                                 ></app-section-guia-remision-origen>
                             </p-accordion-content>
                         </p-accordion-panel>
@@ -442,29 +416,29 @@
     </form>
 </div>
 
-<div class="sticky bottom-0 p-4 bg-white text-end border-t shadow-lg! border-gray-300 z-10">
+<div class="sticky bottom-0 p-4 bg-white text-end border-t shadow-lg! border-slate-200! z-10">
     <div class="container mx-auto">
         <div class="inline-flex flex-row ml-auto gap-x-2" >
             <p-button 
-            [raised]="true"
-            class="ml-auto" 
-            styleClass="px-8!" 
-            icon="pi pi-eye" 
-            type="submit" 
-            label="Previsualizar" 
-            [disabled]="$loadingSubmit | async"
-            severity="secondary" 
-            (onClick)="evtPreview()"></p-button>
+                class="ml-auto" 
+                styleClass="px-8! hover:bg-slate-300!" 
+                icon="pi pi-eye" 
+                type="submit" 
+                label="Previsualizar" 
+                [disabled]="$loadingSubmit | async"
+                severity="secondary" 
+                (onClick)="evtPreview()"
+            ></p-button>
             <p-button 
-            [raised]="true"
-            class="ml-auto" 
-            styleClass="px-8!" 
-            icon="pi pi-file" 
-            type="submit" 
-            label="Emitir Guía" 
-            [loading]="$loadingSubmit | async"
-            severity="primary" 
-            (onClick)="evtOnSubmit()"></p-button>
+                class="ml-auto" 
+                styleClass="px-8!" 
+                icon="pi pi-file" 
+                type="submit" 
+                label="Emitir Guía" 
+                [loading]="$loadingSubmit | async"
+                severity="primary" 
+                (onClick)="evtOnSubmit()"
+            ></p-button>
         </div>
     </div>
 </div>

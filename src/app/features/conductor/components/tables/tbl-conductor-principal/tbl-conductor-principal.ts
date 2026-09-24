@@ -236,7 +236,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Registrar Conductor',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-plus text-[14px]!"></span></span> Nuevo conductor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -270,7 +270,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
         modal: true,
         draggable: false,
         position: 'top',
-        header: 'Editar Conductor',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-pencil text-[14px]!"></span></span> Editar conductor',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -373,7 +373,7 @@ export class TableConductorPrincipalComponent implements OnInit, AfterViewInit, 
     evtOnToggleActive(status: boolean): void{
       if(!this.handlerValidateSelected()) return;
       this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el conductor?' : '¿Activar el conductor?',
+          header: !status ? '¿Desactivar conductor?' : '¿Activar conductor?',
           message: 'Confirmar la operación.',
           accept: () => {
               this.selected.update(current => {

@@ -45,9 +45,15 @@ export class EntityBranchSerieApiService{
     }
 
 
-    getToSelect(entityBranchId: number): Observable<EntityBranchSerieToSelectDto[]>{
+    getToSelect(entityBranchId: number, search: string | null): Observable<EntityBranchSerieToSelectDto[]>{
+        let httpParams = new HttpParams();
+        if(search){
+            httpParams = httpParams.set('search', search);
+        }
 
-        return this.http.get<EntityBranchSerieToSelectDto[]>(`${this.baseUrl}/branch/${entityBranchId}/to-select`).pipe(
+        return this.http.get<EntityBranchSerieToSelectDto[]>(`${this.baseUrl}/branch/${entityBranchId}/to-select`,{
+            params: httpParams
+        }).pipe(
             map(response => response ),
             catchError((error: HttpErrorResponse) => {
                 return throwError(() => error);

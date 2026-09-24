@@ -34,6 +34,7 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityBranchSerieEdit } from '../../modals/mdl-entity-branch-serie-edit/mdl-entity-branch-serie-edit';
 import { StorageService } from '@core/services/storage.service';
+import { AvatarModule } from 'primeng/avatar';
 
 
 @Component({
@@ -55,7 +56,8 @@ import { StorageService } from '@core/services/storage.service';
         ConfirmDialogModule,
         LoaderComponent,
         ReactiveFormsModule,
-        NgClass
+        NgClass,
+        AvatarModule
   ],
   providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]

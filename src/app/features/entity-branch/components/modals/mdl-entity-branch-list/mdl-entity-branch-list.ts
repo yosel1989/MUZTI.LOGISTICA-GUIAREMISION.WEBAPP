@@ -9,7 +9,7 @@ import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo
 import { EntityBranchDto, EntityBranchListToModalDTO } from "@features/entity-branch/models/entity-branch";
 import { EntityBranchApiService } from "@features/entity-branch/services/entity-branch-api-service";
 import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
-import { EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { EntityApiService } from "@features/entity/services/entity-service";
 import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
 import { Column } from "app/shared/models/table";
@@ -50,14 +50,14 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
-    entity = input<EntityDto | null>(null);
+    entity = input<EntityDto | EntityBySerieAssigned_EntityDto | null>(null);
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EntityBranchDto> = new EventEmitter<EntityBranchDto>();
     @Input() tipo: string | 'destinatario' | 'remitente' = 'remitente';
     motivoTraslado  = input<SunatMotivoTrasladoDto | undefined>(undefined);
     @Input() remitente: EntityBranchDto | undefined;
 
-    entitySelected = signal<EntityDto | undefined>(undefined);
+    entitySelected = signal<EntityDto | EntityBySerieAssigned_EntityDto | undefined>(undefined);
 
     ctrlSearch = new FormControl<string | null>(null);
     cols: Column[] = [];

@@ -174,10 +174,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
         { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
         { field: 'area', header: 'Area', sort: false, sticky: false },
-        { field: 'fecha_registro', header: 'F. Registro', sort: false, sticky: false },
-        { field: 'usuario_registro', header: 'U. Registro', sort: false, sticky: false },
-        { field: 'fecha_modifico', header: 'F. Modifico', sort: false, sticky: false },
-        { field: 'usuario_modifico', header: 'U. Modifico', sort: false, sticky: false },
+        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
+        { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
+        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
+        { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
         { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
       ];
   }
@@ -241,8 +241,8 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
       next: (res: TableData<GuiaRemisionDto[]>) => {
         this.data = res.data.map((x) => {
-          x.fecha_registro = new Date(x.fecha_registro);
-          x.fecha_modifico = x.fecha_modifico ? new Date(x.fecha_modifico) : null;
+          x.created_at = new Date(x.created_at);
+          x.updated_at = x.updated_at ? new Date(x.updated_at) : null;
           return x;
         });
 

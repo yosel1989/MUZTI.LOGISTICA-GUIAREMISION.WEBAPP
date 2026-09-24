@@ -8,7 +8,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
@@ -17,8 +16,7 @@ import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/se
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
-import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-list/mdl-entity-list';
-import { EntityDto } from '@features/entity/models/entity';
+import { EntityBySerieAssignedDto } from '@features/entity/models/entity';
 import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
@@ -28,7 +26,6 @@ import { SectionGuiaRemisionDestino } from '@features/guia-remision/components/s
 import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision/components/sections/section-guia-remision-documento-relacionado/section-guia-remision-documento-relacionado';
 import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
 import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
-import { SectionGuiaRemisionRemitente } from '@features/guia-remision/components/sections/section-guia-remision-remitente/section-guia-remision-remitente';
 import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -61,7 +58,9 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 import { EntityApiService } from '@features/entity/services/entity-service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { MdlEntityListBySeriesAssigned } from '@features/entity/components/modals/mdl-entity-list-by-series-assigned/mdl-entity-list-by-series-assigned';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EntityBranchSerieDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 
 export interface Puerto{
     value: string;
@@ -100,7 +99,6 @@ export interface Puerto{
     SelectTipoTransporte,
 
     SectionGuiaRemisionDocumentoRelacionado,
-    SectionGuiaRemisionRemitente,
     SectionGuiaRemisionDestinatario,
     SectionGuiaRemisionDatosTraslado,
     SectionGuiaRemisionProveedor,
@@ -130,7 +128,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     @ViewChild('selectTipoTransporte') selectTipoTransporte: SelectTipoTransporte | undefined;
     @ViewChild('sectionDocumentoRelacionado') sectionDocumentoRelacionado: SectionGuiaRemisionDocumentoRelacionado | undefined;
-    @ViewChild('sectionRemitente') sectionRemitente: SectionGuiaRemisionRemitente | undefined;
     @ViewChild('sectionDestinatario') sectionDestinatario: SectionGuiaRemisionDestinatario | undefined;
     @ViewChild('sectionDatosTraslado') sectionDatosTraslado: SectionGuiaRemisionDatosTraslado | undefined;
     @ViewChild('sectionProveedor') sectionProveedor: SectionGuiaRemisionProveedor | undefined;
@@ -184,7 +181,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     activePanel: string | null = null;
 
 
-    entitySelected = signal<EntityDto | undefined>(undefined);
+    entitySelected = signal<EntityBySerieAssignedDto | undefined>(undefined);
 
     showFloating = signal(false);
 
@@ -232,7 +229,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngOnInit(): void{
-        this.loadEntities();
+      
     }
 
     ngAfterViewInit(): void{
@@ -284,7 +281,15 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     get request(): GuiaRemisionRemitenteRequestDto{
 
         return {
-            entity_id: this.entitySelected()?.id ?? 0,
+            entity_id: this.entitySelected()?.entity.id ?? 0,
+            entity: this.entitySelected()!.entity,
+
+            entity_branch_id: this.entitySelected()!.entity_branch.id,
+            entity_branch: this.entitySelected()!.entity_branch as EntityBranchDto,
+
+            entity_branch_serie_id: this.entitySelected()!.entity_branch_serie.id,
+            entity_branch_serie: this.entitySelected()!.entity_branch_serie as EntityBranchSerieDto,
+
             tipo_transporte: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
             motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
             motivo_traslado: this.selectMotivoTraslado!.selected(),
@@ -295,8 +300,8 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             doc_relacionado: this.sectionDocumentoRelacionado?.getFormData.length ? this.sectionDocumentoRelacionado?.getFormData : null,
 
-            remitente: this.sectionRemitente!.selected()!,
-            remitente_id: this.sectionRemitente!.selected()!.id,
+            remitente: this.entitySelected()!.entity_branch,
+            remitente_id: this.entitySelected()!.entity_branch.id,
 
             destinatario: this.sectionDestinatario!.selected()!,
             destinatario_id: this.sectionDestinatario!.selected()!.id,
@@ -347,14 +352,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             origen: {
                 ubigeo_id: this.sectionOrigen!.getFormData.ubigeo_id!,
-                direccion: this.sectionOrigen!.getFormData.direccion!,
-                pais: 'PE'
+                direccion: this.sectionOrigen!.getFormData.direccion!
             },
 
             destino: [{
                 ubigeo_id: this.sectionDestino!.getFormData.ubigeo_id!,
                 direccion: this.sectionDestino!.getFormData.direccion!,
-                pais: 'PE'
             }],
 
             productos: this.sectionProductoListadoComponent!.getFormData.map((x: GR_ProductoRequestDto) => {
@@ -395,35 +398,29 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     evtShowEntityList(): void{
 
-        this.modalRef = this.dialogService.open(MdlEntityList, {
+        this.modalRef = this.dialogService.open(MdlEntityListBySeriesAssigned, {
             width: '700px',
             closable: false,
             draggable: false,
             modal: true,
             position: 'top',
-            header: 'Seleccionar Empresa Emisora',
+            header: 'Seleccionar Remitente',
             styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'py-4',
             appendTo: 'body',
             templates: {
                 header: MdlHeader
-            },
-            inputValues: {
-                _type : 'empresa',
-                _roles : 'emisor',
-                _isInternal : true,
-                _hasBranch: true
             }
         });
 
         this.modalRef?.onChildComponentLoaded
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((childComponent: MdlEntityList) => {
+        .subscribe((childComponent: MdlEntityListBySeriesAssigned) => {
             childComponent.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((entity: EntityDto) => {
+            .subscribe((entity: EntityBySerieAssignedDto) => {
                 this.entitySelected.set(entity);
-                this.formGroup.get('entity_id')?.setValue(entity.id);
+                this.formGroup.get('entity_id')?.setValue(entity.entity.id);
                 this.modalRef?.close();
             });
             childComponent.OnClose
@@ -445,7 +442,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         console.log('request', this.request);
 
         this.loadingSubmit.next(true);
-        this.api.saveRemisionRemitente(this.request, this.entitySelected()!.document_number ).subscribe({
+        this.api.saveRemisionRemitente(this.request, this.entitySelected()!.entity.document_number ).subscribe({
             next: (response: GR_EnviarGuiaRemisionResponseDto ) => {
                 this.loadingSubmit.next(false);
                 /*if(response.success && response.respuesta_facturador.codigo === '0'){
@@ -758,7 +755,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         const submitMotivoTraslado = !this.f.motivo_traslado_id.value;
         const submitSectionDocumentoRelacionado = this.sectionDocumentoRelacionado?.evtOnSubmit();
-        const submitRemitente = this.sectionRemitente?.evtOnSubmit();
         const submitDestinatario = this.sectionDestinatario?.evtOnSubmit();
         const submitDatosTraslado = this.sectionDatosTraslado?.evtOnSubmit();
         const submitsectionProveedor = this.sectionProveedor?.evtOnSubmit();
@@ -775,18 +771,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         if(submitMotivoTraslado){
             this.alertService.showToast({
                 title: "Debe seleccionar el motivo de traslado",
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true,
-                target: 'body'
-            });
-            return false;
-        }
-
-        if(!submitRemitente){
-            this.alertService.showToast({
-                title: "Debe seleccionar el remitente",
                 icon: 'error',
                 timer: 4000,
                 timerProgressBar: true,
@@ -912,24 +896,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             return null;
         };
-    }
-
-    // Data
-
-    loadEntities(): void{
-        this.entityServiceApi.getCollectionBySeriesAssigned()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-                next: (value: EntityDto[]) => {
-                    console.log(`Se encontraron ${value.length} entidades disponibles.`);
-                },
-                error: (err: HttpErrorResponse) => {
-                    this.alertService.showToast({
-                        title: err.error.detalle,
-                        icon: 'error'
-                    })
-                },
-            })
     }
 
 }
