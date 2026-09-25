@@ -23,7 +23,6 @@ import {
   GR_EmitirGuiaRemisionResponseDto,
   GuiaRemisionDto,
 } from '@features/guia-remision/models/guia-remision.model';
-import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { GuiaRemisionHistorialApiService } from '@features/guia-remision/services/guia-remision-historial-api.service';
 import { GuiaRemitenteApiService } from '@features/guia-remitente/services/guia-remitente-api.service';
@@ -32,6 +31,7 @@ import { DragScrollDirective } from 'app/core/directives/drag-scroll.directive';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TableData } from 'app/core/models/table';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { UtilService } from 'app/core/services/util.service';
 import { Column } from 'app/shared/models/table';
 import saveAs from 'file-saver';
@@ -150,10 +150,10 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   constructor(
     public dialogService: DialogService,
     private alertService: AlertService,
+    private errorHandler: ErrorHandlerService,
     private api: GuiaRemisionApiService,
     private apiGuiaRemitente: GuiaRemitenteApiService,
-    private cd: ChangeDetectorRef,
-    public documentoApi: DocumentoApiService
+    private cd: ChangeDetectorRef
   ){
       this.cols = [
         { field: 'select', header: '', sort: false, sticky: false  },
@@ -202,6 +202,13 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   // getters
 
+  /** Filtros del panel + búsqueda actual, sin modificar `this.filters`. */
+  private get requestFilters(): ColumnsFilterDto[] {
+    return this.search
+      ? [...this.filters, { data: 'search', search: { value: this.search } }]
+      : this.filters;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get paddedData(): any[] {
     const actual = this.data ?? [];
@@ -229,16 +236,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       this.first = 0;
     }
 
-    if (this.search) {
-      this.filters.push({
-        data: 'search',
-        search: {
-          value: this.search,
-        },
-      });
-    }
-
-    this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.filters).subscribe({
+    this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.requestFilters).subscribe({
       next: (res: TableData<GuiaRemisionDto[]>) => {
         this.data = res.data.map((x) => {
           x.created_at = new Date(x.created_at);
@@ -255,23 +253,11 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.loading = false;
         },
         error: (e: HttpErrorResponse) => {
-          console.log(e);
           this.ldData.set(false);
           this.loading = false;
           this.data = [];
 
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: 'error',
-          title: e.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!',
-          },
-        });
+        this.errorHandler.handle(e);
       },
     });
   }
@@ -285,13 +271,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         this.history.set(value);
       },
       error : (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error',
-          timer: 4000,
-          showCloseButton: true,
-          timerProgressBar: true
-        });
+        this.errorHandler.handle(err);
         this.showHistory.set(false);
         drawer.hide();
       },
@@ -355,7 +335,6 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   evtOnShowInfo(): void {
-    console.log('selected', this.selected());
 
     this.ref = this.dialogService.open(MdlPrevisualizarGuiaRemisionComponent, {
       width: '90%',
@@ -408,34 +387,17 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   evtToggleHand(): void{
     this.hands.set(!this.hands());
-    console.log(this.hands());
   }
 
   evtExport(): void {
     this.loadingDownload.set(true);
 
-    if (this.search) {
-      this.filters.push({
-        data: 'search',
-        search: {
-          value: this.search,
-        },
-      });
-    }
-
-      this.subData = this.api.exportarTodo(this.filters).subscribe(blob => {
+      this.subData = this.api.exportarTodo(this.requestFilters).subscribe(blob => {
           saveAs(blob, 'reporte.xlsx');
         this.loadingDownload.set(false);
         }, () => {
         this.loadingDownload.set(false);
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: 'error',
-          title: 'Error al descargar el archivo',
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-        });
+        this.alertService.error('Error al descargar el archivo');
       },
     );
   }
@@ -489,9 +451,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showHistory.set(true);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  evtHideHistory(history: any): void{
-    console.log('drawer', history);
+  evtHideHistory(): void{
     this.showHistory.set(false);
   }
 
@@ -636,13 +596,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   handleAccept(onAccept: () => void): void{
     if(this.showInputAlert() && this.ctrlDescripcion.invalid){
-      this.alertService.showToast({
-        title: "Debe ingresar el motivo o descripción",
-        icon: "error",
-        timer: 4000,
-        showCloseButton: true,
-        timerProgressBar: true
-      });
+      this.alertService.error("Debe ingresar el motivo o descripción");
       return;
     }
 
@@ -675,14 +629,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     .subscribe({
       next: (res: GuiaRemisionDto) => {
 
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "success",
-          title: "Se anuló la guía con éxito",
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000
-        });
+        this.alertService.success("Se anuló la guía con éxito");
         
         const idx = this.data.findIndex(x => x.id === this.selected()!.id);
         if (idx > -1) {
@@ -695,18 +642,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       error: (err: HttpErrorResponse) => {
 
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error?.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.selected()!.loading_update = false;
         this.cd.detectChanges();
       }
@@ -722,14 +658,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     .subscribe({
       next: (res: GuiaRemisionDto) => {
         
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "success",
-          title: "Se rechazó la guía con éxito",
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000
-        });
+        this.alertService.success("Se rechazó la guía con éxito");
         
         const idx = this.data.findIndex(x => x.id === this.selected()!.id);
         if (idx > -1) {
@@ -742,18 +671,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       error: (err: HttpErrorResponse) => {
 
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error?.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.selected()!.loading_update = false;
         this.cd.detectChanges();
       }
@@ -773,21 +691,11 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.selected()!.loading_update = false;
           this.reload();
         }else{
-          this.alertService.showToast({
-            icon: "error",
-            title: "Ocurrio un error al emitir la guía",
-            timer: 4000,
-            showCloseButton: true
-          });
+          this.alertService.error("Ocurrio un error al emitir la guía");
         }
       },
       error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            icon: "error",
-            title: err.error.detalle,
-            timer: 4000,
-            showCloseButton: true
-          });
+          this.errorHandler.handle(err);
           this.selected()!.loading_update = false;
           this.cd.detectChanges();
       }
@@ -802,14 +710,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     .subscribe({
       next: (res: GuiaRemisionDto) => {
 
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "success",
-          title: "Se confirmó la guía con éxito",
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000
-        });
+        this.alertService.success("Se confirmó la guía con éxito");
         
         const idx = this.data.findIndex(x => x.id === this.selected()!.id);
         if (idx > -1) {
@@ -821,18 +722,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       },
       error: (err: HttpErrorResponse) => {
 
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error?.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.selected()!.loading_update = false;
         this.cd.detectChanges();
       }
@@ -842,12 +732,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   validateSelected(): void{
     if(!this.selected){
-      this.alertService.showToast({
-        title: "Debe seleccionar una guía",
-        icon: "error",
-        showCloseButton: true,
-        timer: 4000
-      });
+      this.alertService.error("Debe seleccionar una guía");
 
       return;
     }

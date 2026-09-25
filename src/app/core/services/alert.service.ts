@@ -1,6 +1,5 @@
 // src/app/shared/services/alert.service.ts
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 
 @Injectable({
@@ -8,8 +7,19 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 })
 export class AlertService {
 
-  constructor(private hotToast: ToastrService){
+  /** Toast de operación exitosa. */
+  success(message: string): void {
+    this.showToast({ icon: 'success', title: message });
+  }
 
+  /** Toast de advertencia (validaciones del formulario, selección requerida, etc.). */
+  warning(message: string): void {
+    this.showToast({ icon: 'warning', title: message });
+  }
+
+  /** Toast de error con un mensaje propio. Los errores HTTP usan `ErrorHandlerService`. */
+  error(message: string): void {
+    this.showToast({ icon: 'error', title: message });
   }
 
   showSwalAlert(options: SweetAlertOptions): any {
@@ -53,24 +63,6 @@ export class AlertService {
         timerProgressBar: ['bg-blue-400']
       },
     });
-  }
-
-  showHotToast(title: string | undefined, message:string | undefined, type: 'success' | 'error' | 'info' | 'warning' = 'success', options: {}) 
-  { 
-    switch (type) { 
-      case 'success': 
-        this.hotToast.success(title, message, {timeOut: 99999}); 
-        break; 
-      case 'error': 
-        this.hotToast.error(title, message, {timeOut: 99999}); 
-        break; 
-      case 'info': 
-        this.hotToast.info(title, message, {timeOut: 99999}); 
-        break; 
-      case 'warning': 
-        this.hotToast.warning(title, message, {timeOut: 99999}); 
-        break; 
-    } 
   }
 
 }

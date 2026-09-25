@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -16,6 +15,7 @@ import { DocumentEntityType } from '@features/items/models/document-entity-type'
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ConductorDto, EditarConductorRequestDto } from '@features/conductor/models/conductor.model';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
@@ -32,7 +32,6 @@ import { ResponseDTO } from '@features/shared/models/shared';
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -51,6 +50,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
   private api = inject(ConductorApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @ViewChild('tipoDocumento') tipoDocumento: SelectTipoDocumentoComponent | undefined;
   @Input() id!: number;
@@ -155,30 +155,12 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
             }))
             .subscribe({
               next: (res: ResponseDTO<ConductorDto>) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: res.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success(res.detalle);
 
                 this.OnCreated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(sub);
@@ -216,18 +198,7 @@ export class MdlEditarConductorComponent implements OnInit, AfterViewInit, OnDes
         this.handlerLoadData(res);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       }
     });
     this.subs.add(sub);

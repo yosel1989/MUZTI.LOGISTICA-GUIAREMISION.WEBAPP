@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 import { SunatCatalogoApiService } from '@features/catalogo/services/sunat-catalogo-api.service';
 import { SelectModule } from 'primeng/select';
@@ -26,7 +26,7 @@ export interface SelectTipoTraslado{
 export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnDestroy{
 
     private api = inject(SunatCatalogoApiService);
-    private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
 
     @Input() control!: FormControl;
     @Input() defaultValue: number | null = null;
@@ -72,13 +72,7 @@ export class SelectMotivoTrasladoComponent implements OnInit, AfterViewInit, OnD
                 this.data.set(value);
             },
             error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: err.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                });
+                this.errorHandler.handle(err);
             },
         });
     }

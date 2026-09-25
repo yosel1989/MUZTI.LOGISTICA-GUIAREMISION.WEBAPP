@@ -11,6 +11,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TableData } from 'app/core/models/table';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { UtilService } from 'app/core/services/util.service';
 import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { Column } from 'app/shared/models/table';
@@ -75,6 +76,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private storageService = inject(StorageService);
 
     cols: Column[] = [];
@@ -197,18 +199,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
         error: (e: HttpErrorResponse) => {
           this.data.set([]);
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              customClass: {
-                container: 'z-[9999]!',
-                popup: 'z-[9999]!'
-              }
-          });
+          this.errorHandler.handle(e);
         }
       });
     }
@@ -270,7 +261,6 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
         cmp?.OnCanceled
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
-          console.log('cerrar');
           this.ref?.close();
         });
       });
@@ -349,31 +339,13 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
               const subs = this.api.delete(this.selected()!.id).subscribe({
                 next: (res: ResponseDTO<DeleteResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.error,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(subs);
@@ -414,11 +386,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
               .subscribe({
                 next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.selected.update(current => {
                     const updated = {
@@ -440,18 +408,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error?.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
 
                   this.selected.update(current => {
                     const updated = { ...current!, loading_active: false };
@@ -547,13 +504,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.showToast({
-          title: "Debe seleccionar una serie",
-          icon: "error",
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.alertService.error("Debe seleccionar una serie");
 
         return false;
       }

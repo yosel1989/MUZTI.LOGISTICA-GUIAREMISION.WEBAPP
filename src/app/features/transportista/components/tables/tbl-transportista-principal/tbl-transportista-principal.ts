@@ -18,6 +18,7 @@ import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
@@ -64,6 +65,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     public dialogService =  inject(DialogService);
     private api =  inject(TransportistaApiService);
 
@@ -185,18 +187,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
           console.error(e);
           this.data.set([]);
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              customClass: {
-                container: 'z-[9999]!',
-                popup: 'z-[9999]!'
-              }
-          });
+          this.errorHandler.handle(e);
         }
       });
     }
@@ -329,31 +320,13 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
               const subs = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: EliminarResponseDto) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(subs);
@@ -387,14 +360,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
               const subs = this.api.actualizarEstado(this.selected()!.id, request).subscribe({
                 next: (res: ResponseDTO<ActualizarEstadoResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.selected.update(current => {
                     const updated = {
@@ -416,18 +382,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
                   });
                 },
                 error: (err: HttpErrorResponse) => {
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
 
                   this.selected.update(current => {
                     const updated = { ...current!, ld_estado: false };
@@ -530,13 +485,7 @@ export class TableTransportistaPrincipalComponent implements OnInit, AfterViewIn
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.showToast({
-          title: "Debe seleccionar un transportista",
-          icon: "error",
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.alertService.error("Debe seleccionar un transportista");
 
         return false;
       }

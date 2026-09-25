@@ -1,5 +1,6 @@
 import { Component, computed, DestroyRef, inject, input, OnInit, output, signal } from "@angular/core";
 import { AlertService } from "@core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
 import { TableModule } from "primeng/table";
@@ -52,6 +53,7 @@ export class MdlEntityRoleSyncList implements OnInit{
 
     confirmationService = inject(ConfirmationService);
     alertService = inject(AlertService);
+    errorHandler = inject(ErrorHandlerService);
     destroyRef = inject(DestroyRef);
     api = inject(EntityRoleApiService);
     id = input.required<number>();
@@ -107,10 +109,7 @@ export class MdlEntityRoleSyncList implements OnInit{
         .subscribe({
             next: (value: EntityRolesToSelectDto[]) => {this.roles.set(value) },
             error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: err.error.detalle,
-                    icon: 'error'
-                })
+                this.errorHandler.handle(err);
             },
         });
     }
@@ -125,10 +124,7 @@ export class MdlEntityRoleSyncList implements OnInit{
         .subscribe({
             next: (value: EntityRoleDto[]) => {this.data.set(value) },
             error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: err.error.detalle,
-                    icon: 'error'
-                })
+                this.errorHandler.handle(err);
             },
         });
     }
@@ -138,10 +134,7 @@ export class MdlEntityRoleSyncList implements OnInit{
     
     evtAddRole(): void{
         if(this.ctrlRol.invalid){
-            this.alertService.showToast({
-                title: 'Debe seleccionar minímo un rol a asignar.',
-                icon: 'warning'
-            });
+            this.alertService.warning('Debe seleccionar minímo un rol a asignar.');
             return;
         }
         const roles = this.roles().filter(x => this.ctrlRol?.value?.includes(x.role) );
@@ -161,10 +154,7 @@ export class MdlEntityRoleSyncList implements OnInit{
             this.ctrlRol.setValue([]);
 
         }else{
-            this.alertService.showToast({
-                title: 'Debe seleccionar minimo un rol a asignar.',
-                icon: 'warning'
-            });
+            this.alertService.warning('Debe seleccionar minimo un rol a asignar.');
             return;
         }
     }
@@ -184,17 +174,11 @@ export class MdlEntityRoleSyncList implements OnInit{
                 )
                 .subscribe({
                     next: (value: boolean) => {
-                        this.alertService.showToast({
-                            title: 'Se asignaron los roles con éxito.',
-                            icon: 'success'
-                        });
+                        this.alertService.success('Se asignaron los roles con éxito.');
                         this.OnSaved.emit(value);
                     },
                     error: (err: HttpErrorResponse) => {
-                        this.alertService.showToast({
-                            title: err.error.detalle,
-                            icon: 'error'
-                        });
+                        this.errorHandler.handle(err);
                     },
                 });
 

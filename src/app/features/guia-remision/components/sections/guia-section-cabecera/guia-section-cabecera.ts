@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { EstablecimientoRemitenteGuiaDTO } from '@features/entity-branch/models/entity-branch';
 import { EntityBranchApiService } from '@features/entity-branch/services/entity-branch-api-service';
 import { ButtonModule } from 'primeng/button';
@@ -23,7 +23,7 @@ import { BehaviorSubject, finalize } from 'rxjs';
 export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
 
   private entityBranchApiService = inject(EntityBranchApiService);
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @Input() tipoGuiaRemision!: 'TRANSPORTISTA' | 'REMITENTE' | string | undefined;
   @Input() idEstablecimiento: number | null = null;
@@ -61,13 +61,7 @@ export class GuiaSectionCabeceraComponent implements OnInit, AfterViewInit, OnDe
           this.establecimientoRemitente = res;
         },
         error: (e: HttpErrorResponse) => {
-          console.log(e);
-          this.alertService.showToast({
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timer: 4000
-          });
+          this.errorHandler.handle(e);
         } 
       });
     }

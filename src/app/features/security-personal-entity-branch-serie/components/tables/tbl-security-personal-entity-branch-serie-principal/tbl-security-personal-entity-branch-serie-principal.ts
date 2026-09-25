@@ -8,6 +8,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TableData } from 'app/core/models/table';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { UtilService } from 'app/core/services/util.service';
 import { Column } from 'app/shared/models/table';
 import { ConfirmationService } from 'primeng/api';
@@ -75,6 +76,7 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
     private api = inject(SecurityPersonalEntityBranchSerieApiService);
     public util = inject(UtilService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private storageService = inject(StorageService);
     private confirmationService = inject(ConfirmationService);
 
@@ -215,18 +217,7 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
         error: (e: HttpErrorResponse) => {
           this.data.set([]);
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              customClass: {
-                container: 'z-[9999]!',
-                popup: 'z-[9999]!'
-              }
-          });
+          this.errorHandler.handle(e);
         }
       });
     }
@@ -309,21 +300,13 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
               .subscribe({
                 next: () => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: "Se quito la serie de la lista de asignados."
-                  });
+                  this.alertService.success("Se quito la serie de la lista de asignados.");
                   this.OnUpdate.emit(true);
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.error,
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
             
@@ -374,7 +357,6 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onColumnsChange(event: any) {
-      console.log('event', event);
 
       const selected = new Set(event.value);
 
@@ -406,13 +388,7 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.showToast({
-          title: "Debe seleccionar una serie",
-          icon: "error",
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.alertService.error("Debe seleccionar una serie");
 
         return false;
       }
@@ -431,10 +407,7 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
             this.evtOnReload();
           },
           error: (e: HttpErrorResponse) => {
-            this.alertService.showToast({
-              title: e.error.detalle,
-              icon: 'error'
-            })
+            this.errorHandler.handle(e);
           }
         });
     }

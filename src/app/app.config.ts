@@ -6,10 +6,9 @@ import Aura from '@primeuix/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 
 import { es } from 'primelocale/es.json';
-import { definePreset } from '@primeng/themes';
+import { definePreset } from '@primeuix/themes';
 import { registerLocaleData } from '@angular/common';
 import localeEsPe from '@angular/common/locales/es-PE';
-import { provideToastr } from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from '@core/interceptors/auth.interceptor';
@@ -95,8 +94,6 @@ export const appConfig: ApplicationConfig = {
         },
         ripple: true
     }),
-
-    provideToastr(),
 
     provideAnimations()
   ]

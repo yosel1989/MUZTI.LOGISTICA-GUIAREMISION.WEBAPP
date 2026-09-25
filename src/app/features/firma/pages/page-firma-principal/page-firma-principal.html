@@ -57,7 +57,7 @@
                 @if(editarFirma()){
                     <signature-pad
                         [options]="signaturePadOptions"
-                        (drawStart)="drawStart($event)"
+                        (drawStart)="drawStart()"
                         (drawEnd)="drawComplete($event)"
                         (drawClear)="drawCleared()" 
                         class="bg-white! ml-auto mt-2"

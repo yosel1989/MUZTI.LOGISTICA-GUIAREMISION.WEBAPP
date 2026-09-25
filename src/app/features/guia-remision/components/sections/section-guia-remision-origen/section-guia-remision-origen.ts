@@ -74,15 +74,7 @@ export class SectionGuiaRemisionOrigen {
         this.submitted.set(true);
 
         if(!this.remitente){
-            console.log('Invalido: Datos de Origen');
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de partida.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de partida.");
             return false;
         }
         return true;

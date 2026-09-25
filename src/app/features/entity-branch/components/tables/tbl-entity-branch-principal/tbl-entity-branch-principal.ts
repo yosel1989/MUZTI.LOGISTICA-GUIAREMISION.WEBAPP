@@ -12,6 +12,7 @@ import { LoaderComponent } from 'app/core/components/loaders/loader/loder.compon
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { TableData } from 'app/core/models/table';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { UtilService } from 'app/core/services/util.service';
 import { DeleteResponseDto, ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { Column } from 'app/shared/models/table';
@@ -78,6 +79,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private storageService = inject(StorageService);
     private cd = inject(ChangeDetectorRef);
 
@@ -226,18 +228,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
         error: (e: HttpErrorResponse) => {
           this.data.set([]);
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              customClass: {
-                container: 'z-[9999]!',
-                popup: 'z-[9999]!'
-              }
-          });
+          this.errorHandler.handle(e);
         }
       });
     }
@@ -372,31 +363,13 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
               const subs = this.api.delete(this.selected()!.id).subscribe({
                 next: (res: ResponseDTO<DeleteResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.error,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(subs);
@@ -437,14 +410,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
               .subscribe({
                 next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.selected.update(current => {
                     const updated = {
@@ -466,18 +432,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error?.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
 
                   this.selected.update(current => {
                     const updated = { ...current!, loading_active: false };
@@ -569,7 +524,6 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onColumnsChange(event: any) {
-      console.log('event', event);
 
       const selected = new Set(event.value);
 
@@ -615,13 +569,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.showToast({
-          title: "Debe seleccionar un establecimiento",
-          icon: "error",
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.alertService.error("Debe seleccionar un establecimiento");
 
         return false;
       }

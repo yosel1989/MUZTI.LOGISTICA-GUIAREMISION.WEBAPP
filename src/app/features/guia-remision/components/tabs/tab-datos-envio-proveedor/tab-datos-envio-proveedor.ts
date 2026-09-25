@@ -394,13 +394,7 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
     get isInvalid(): boolean{
       if(this.formDatosEnvio.invalid){
-        this.alertService.showToast({
-          title: "Faltan datos por completar en Datos Envio",
-          icon: "error",
-          timer: 4000,
-          showCloseButton: true,
-          timerProgressBar: true
-        });
+        this.alertService.error("Faltan datos por completar en Datos Envio");
         return true;
       }
 
@@ -427,7 +421,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
     ngOnChanges(changes: SimpleChanges): void {
 
       if(changes['tipoGuia']){
-        //console.log('tipoGuia', changes['tipoGuia']);
         if(this.tipoGuia === 'TRANSPORTISTA'){
           this.setTipoTransporte('PRIVADO');
         }
@@ -456,27 +449,12 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
 
         this.submitted.set(true);
         if(this.formDatosEnvio.invalid){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de Datos de envío.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
-            console.log('invalid form datos-envio', this.formDatosEnvio);
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de Datos de envío.");
             return false;
         }
 
         if(this.mostrarProveedor() && !this._proveedor()){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que seleccionar el proveedor",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que seleccionar el proveedor");
             return false;
         }
 
@@ -612,7 +590,6 @@ export class TabDatosEnvioProveedorComponent implements OnInit, AfterViewInit, O
             indic_registrar_vehiculos_conductores: false
           });
 
-          //console.log('actualizado', this.formDatosEnvio);
 
           // Aquí dependiendo el tipo de transporte
           switch(tipoTransporte){

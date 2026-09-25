@@ -1,9 +1,14 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { catchError, map, Observable, throwError } from "rxjs";
+import { Observable } from "rxjs";
 import { EmpresaToSelectDto } from "../models/empresa.model";
 
+/**
+ * Servicio para consumir los endpoints de empresas.
+ *
+ * Base: `{apiUrl}/Empresa`
+ */
 @Injectable({
     providedIn: "root"
 })
@@ -17,14 +22,14 @@ export class EmpresaApiService{
         this.baseUrl = `${environment.apiUrl}/Empresa`;
     }
 
+    /**
+     * Lista las empresas para usarlas en un select.
+     *
+     * `GET /Empresa`
+     *
+     * @returns Lista de empresas en formato para select.
+     */
     loadAllToSelect(): Observable<EmpresaToSelectDto[]>{
-        return this.http.get(`${this.baseUrl}`).pipe(
-            map((res) => {
-                return res as EmpresaToSelectDto[];
-            }),
-            catchError((error: HttpErrorResponse) => {
-                return throwError(() => error);
-            })
-        )
+        return this.http.get<EmpresaToSelectDto[]>(`${this.baseUrl}`)
     }
 }

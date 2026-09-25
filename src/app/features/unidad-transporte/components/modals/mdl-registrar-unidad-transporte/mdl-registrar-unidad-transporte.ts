@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -14,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { RegistrarUnidadTransporteRequestDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
 import { SelectEmisorVehicularComponent } from '@features/catalogo/components/selects/select-emisor-vehicular/select-emisor-vehicular';
@@ -29,7 +29,6 @@ import { SelectEntidadReguladoraComponent } from '@features/catalogo/components/
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -49,6 +48,7 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
   private api = inject(UnidadTransporteApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
 
@@ -141,32 +141,14 @@ export class MdlRegistrarUnidadTransporteComponent implements OnInit, AfterViewI
                 this.frm.enable();
                 this.ldSubmit.set(false);
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se registro el conductor con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se registro el conductor con éxito");
 
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
                 this.frm.enable();
                 this.ldSubmit.set(false);
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(subs);

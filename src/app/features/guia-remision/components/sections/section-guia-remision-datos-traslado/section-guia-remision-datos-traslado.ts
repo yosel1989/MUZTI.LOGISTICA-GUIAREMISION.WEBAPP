@@ -204,16 +204,7 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
         this.submitted.set(true);
 
         if(this.invalid){
-            console.log('Invalido: Datos de Traslado');
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: 'Debe ingresar los datos requeridos en Datos de Traslado',
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000,
-                target: 'body'
-            });
+            this.alertService.warning('Debe ingresar los datos requeridos en Datos de Traslado');
             return false;
         }
         return true;

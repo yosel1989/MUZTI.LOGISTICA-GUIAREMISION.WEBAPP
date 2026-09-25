@@ -25,10 +25,8 @@ export class SignalRService {
     this.hubConnection
       .start()
       .then(() => {
-        console.log(`[Socket] Conectado al Hub`)
         this.hubConnection?.invoke('UnirseAlAdmin')
         .then(() => {
-          console.log('[Socket] Suscrito al grupo: admin');
         })
         .catch(err => console.error('[Socket] Error al suscribirse al grupo admin:', err));
       })
@@ -38,7 +36,6 @@ export class SignalRService {
       if (this.grupo) {
         this.hubConnection?.invoke('UnirseAlAdmin')
         .then(() => {
-          console.log('[Socket] Suscrito al grupo: admin');
         })
         .catch(err => console.error('[Socket] Error al suscribirse al grupo admin:', err));
       }

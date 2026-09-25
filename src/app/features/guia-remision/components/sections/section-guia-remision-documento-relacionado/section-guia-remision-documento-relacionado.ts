@@ -10,6 +10,7 @@ import { tablerAlertCircle } from "@ng-icons/tabler-icons";
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { MessageModule } from "primeng/message";
 import { AlertService } from "app/core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from "primeng/button";
 import { GuiaRemisionDocumentoRelacionadoDto } from "@features/guia-remision/models/guia-remision.model";
@@ -51,6 +52,7 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
     confirmationService = inject(ConfirmationService);
     messageService = inject(MessageService);
     alertService = inject(AlertService);
+    errorHandler = inject(ErrorHandlerService);
     
     _tipo =  input<string | 'REMITENTE' | 'TRANSPORTISTA' | undefined>( undefined );
 
@@ -74,7 +76,6 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
     }
 
     get invalid(): boolean{
-      console.log('documentos relacionados form', this.frm);
         if(this.documentos.length){
           return this.frm.invalid;
         }
@@ -108,15 +109,7 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
         this.submitted.set(true);
 
         if(this.invalid){
-          console.log('Invalido: Documentos Relacionados');
-            this.alertService.showToast({
-                title: "Debe ingresar correctamente los documentos relacionados.",
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true,
-                target: 'body'
-            });
+            this.alertService.error("Debe ingresar correctamente los documentos relacionados.");
             return false;
         }
 
@@ -170,13 +163,7 @@ export class SectionGuiaRemisionDocumentoRelacionado implements OnInit{
           this.data.set(value);
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            title: err.error.detalle,
-            icon: 'error',
-            timer: 4000,
-            timerProgressBar: true,
-            showCloseButton: true
-          });
+          this.errorHandler.handle(err);
         },
       });
     }

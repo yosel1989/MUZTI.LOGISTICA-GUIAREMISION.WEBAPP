@@ -11,6 +11,7 @@ import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-t
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
+
   entity_id: number;
   entity: EntityDto | EntityBySerieAssigned_EntityDto;
 
@@ -20,12 +21,14 @@ export interface GuiaRemisionRemitenteRequestDto {
   entity_branch_serie_id: number;
   entity_branch_serie: EntityBranchSerieDto;
 
-
-  tipo_transporte: 'PUBLICO' | 'PRIVADO';
   motivo_traslado_id: number;
   motivo_traslado: SunatMotivoTrasladoDto | undefined;
-  fecha: string;
-  hora: string;
+
+  tipo_transporte: 'PUBLICO' | 'PRIVADO';
+
+  fecha_emision: string;
+  hora_emision: string;
+
   observacion: string | null;
   registro_mtc: string | null;
 

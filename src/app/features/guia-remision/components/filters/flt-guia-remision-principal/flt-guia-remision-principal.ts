@@ -16,7 +16,7 @@ import { heroQuestionMarkCircleMini } from "@ng-icons/heroicons/mini";
 import { FltDateComponent } from "app/core/components/filters/flt-date/flt-date";
 import { OnlyNumberDirective } from "app/core/directives/only-numbers.directive";
 import { ColumnsFilterDto } from "app/core/models/filter";
-import { AlertService } from "app/core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { ButtonModule } from "primeng/button";
 import { IconFieldModule } from "primeng/iconfield";
 import { InputIconModule } from "primeng/inputicon";
@@ -53,7 +53,7 @@ import { BehaviorSubject, finalize, Subscription } from "rxjs";
 export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     private entityBranchApiService = inject(EntityBranchApiService);
-    private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private empresaApiService = inject(EmpresaApiService);
     private sunatCatalogoApiService = inject(SunatCatalogoApiService);
     private guiaRemisionEstadoApiService = inject(GuiaRemisionEstadoApiService);
@@ -236,12 +236,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
                 this.ldEmpresas.set(false);
             },
             error: () => {
-                this.alertService.showToast({
-                    title: 'No se pudo obtener las entidades',
-                    icon: 'error',
-                    timer: 4000,
-                    showCloseButton: true
-                });
+                this.errorHandler.showError('No se pudo obtener las entidades');
                 this.ldEmpresas.set(false);
             }
         });
@@ -269,13 +264,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
                 }
             },
             error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: err.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                });
+                this.errorHandler.handle(err);
             }
         });
         this.subs.add(s);
@@ -292,13 +281,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
                 this.motivosTraslado.set(val);
             },
             error : (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: err.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                })
+                this.errorHandler.handle(err);
             }
         });
         this.subs.add(s);
@@ -315,13 +298,7 @@ export class FltGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit,
                 this.guiaRemisionEstados.set(value);
             },
             error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: err.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                })
+                this.errorHandler.handle(err);
             }
         });
         this.subs.add(s);

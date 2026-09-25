@@ -4,7 +4,7 @@ import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, inp
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
-import { AlertService } from "@core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { EntityBranchDto, EntityBranchListToModalDTO } from "@features/entity-branch/models/entity-branch";
 import { EntityBranchApiService } from "@features/entity-branch/services/entity-branch-api-service";
@@ -46,7 +46,7 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
 
     entityApiService = inject(EntityApiService);
     api = inject(EntityBranchApiService);
-    alertService = inject(AlertService);
+    errorHandler = inject(ErrorHandlerService);
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
@@ -86,7 +86,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         effect(()=>{
             const entity = this.entity();
             if(entity){
-                console.log('entity set', entity);
                 //untracked(() => this.entitySelected.set(entity));
                 this.loadData();
             }
@@ -95,7 +94,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         effect(()=>{
             const entitySelected = this.entitySelected();
             if(entitySelected){
-                console.log('entity selected set', entitySelected);
                 this.loadData();
             }
         });
@@ -103,7 +101,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
 
     ngOnInit(): void {
 
-        console.log('motivo traslado', this.motivoTraslado());
 
         if(this.tipo === 'remitente'){
             switch(this.motivoTraslado()?.codigo_sunat){
@@ -117,7 +114,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         }
 
         if(this.tipo === 'destinatario'){
-            console.log('tipo', this.tipo);
             switch(this.motivoTraslado()?.codigo_sunat){
                 case SunatMotivoTrasladoEnum.venta: 
                 case SunatMotivoTrasladoEnum.consignacion: 
@@ -208,7 +204,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
             childComponent.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((entity: EntityDto) => {
-                console.log('entidad seleccionada', entity);
                 this.entitySelected.set(entity);
                 this.modalRef?.close();
             });
@@ -226,7 +221,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         if(this.entitySelected() === undefined){
             return;
         }
-        console.log('load Data', this.entitySelected());
         this.sbData?.unsubscribe();
         this.ldData.set(true);
         const entityId = this.entitySelected()!.id;
@@ -239,19 +233,13 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
                 this.data.set(value);
             },
             error: (err: HttpErrorResponse) =>  {
-                this.alertService.showToast({
-                    icon: "error",
-                    title: err.error.detalle,
-                    timer: 4000,
-                    showCloseButton: true
-                });
+                this.errorHandler.handle(err);
                 this.OnClose.emit(true);
             },
         });
     }
 
     loadDataById(): void{
-        console.log('cargando establecimiento por id', this.selected!.id);
         this.ldDataById.set(true);
         const s = this.api.getById(this.selected!.id!)
         .pipe(finalize(() => {
@@ -260,16 +248,10 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
         }))
         .subscribe({
             next: (value: EntityBranchDto) => {
-                //console.log('establecimiento seleccionado', value);
                 this.OnSelected.emit(value);
             },
             error: (err: HttpErrorResponse) =>  {
-                this.alertService.showToast({
-                    icon: "error",
-                    title: err.error.detalle,
-                    showCloseButton: true,
-                    timer: 4000
-                });
+                this.errorHandler.handle(err);
             },
         });
         this.sb.add(s);
@@ -278,7 +260,6 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
     // events 
     
     evtSelect(): void{
-        //console.log('establecimiento seleccionado', this.selected!);
         this.ldSelected.set(true);
         this.loadDataById();
     }

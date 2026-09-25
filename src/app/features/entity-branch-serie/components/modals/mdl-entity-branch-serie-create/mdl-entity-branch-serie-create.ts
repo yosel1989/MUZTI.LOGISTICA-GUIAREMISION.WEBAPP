@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -16,6 +15,7 @@ import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-lis
 import { EntityDto } from '@features/entity/models/entity';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { ConfirmationService } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -41,7 +41,6 @@ import { EntityBranchSerieApiService } from '@features/entity-branch-serie/servi
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    EditorModule,
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
@@ -63,6 +62,7 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
   private api = inject(EntityBranchSerieApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private dialogService = inject(DialogService);
   private destroyRef = inject(DestroyRef);
 
@@ -141,7 +141,6 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -160,23 +159,12 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
             .subscribe({
               next: () => {
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se registro la serie con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se registro la serie con éxito");
 
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                });
+                this.errorHandler.handle(err);
               }
             });
            

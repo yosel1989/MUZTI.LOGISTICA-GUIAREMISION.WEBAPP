@@ -12,7 +12,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { finalize, Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PersonalApiService } from '@features/personal/services/personal-api.service';
 import { PersonalDTO, PersonalSugeridoDTO } from '@features/personal/models/personal.model';
@@ -50,7 +50,7 @@ import { AvatarModule } from 'primeng/avatar';
 
 export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestroy{
 
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private api = inject(PersonalApiService);
   public util = inject(UtilService);
 
@@ -106,18 +106,7 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
       },
       error: (err: HttpErrorResponse) => {
         this.data.set([]);
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.OnClose.emit();
       },
     });
@@ -136,18 +125,7 @@ export class MdlListaPersonalComponent implements OnInit, AfterViewInit, OnDestr
         this.OnSelect.emit(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       }
     });
   }

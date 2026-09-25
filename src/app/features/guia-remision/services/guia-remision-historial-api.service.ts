@@ -1,9 +1,14 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { catchError, map, Observable, throwError } from "rxjs";
+import { Observable } from "rxjs";
 import { GuiaRemisionHistorialListDTO } from './../models/guia-remision-historial.model';
 
+/**
+ * Servicio para consultar el historial de cambios de una guía de remisión.
+ *
+ * Base: `{apiUrl}/guia-remision-historial`
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -12,13 +17,16 @@ export class GuiaRemisionHistorialApiService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Lista el historial de una guía de remisión.
+   *
+   * `GET /guia-remision-historial/{guiaRemisionId}`
+   *
+   * @param guiaRemisionId Id de la guía de remisión.
+   * @returns Lista de eventos del historial de la guía.
+   */
   obtenerTodoPorGuia(guiaRemisionId: number): Observable<GuiaRemisionHistorialListDTO[]> {
-    return this.http.get<any>(`${this.baseUrl}/${guiaRemisionId}`).pipe(
-      map(response =>{ return response as GuiaRemisionHistorialListDTO[] }),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
+    return this.http.get<GuiaRemisionHistorialListDTO[]>(`${this.baseUrl}/${guiaRemisionId}`);
   }
   
 }

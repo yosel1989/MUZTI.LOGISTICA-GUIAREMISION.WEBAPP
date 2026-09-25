@@ -17,6 +17,7 @@ import { UtilService } from 'app/core/services/util.service';
 import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
@@ -65,6 +66,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     public dialogService = inject(DialogService);
     private api = inject(IntegrationCredentialApiService);
 
@@ -195,18 +197,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
           this.loading = false; 
           this.data.set([]);
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              customClass: {
-                container: 'z-[9999]!',
-                popup: 'z-[9999]!'
-              }
-          });
+          this.errorHandler.handle(e);
           
         }
       });
@@ -355,31 +346,13 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
               const sub = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: DeleteResponseDto) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(sub);
@@ -413,14 +386,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
               .subscribe({
                 next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.selected.update((current: IntegrationCredentialTableDto | undefined) => {
                     const updated = {
@@ -444,18 +410,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error?.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
 
                   this.selected.update(current => {
                     const updated = { ...current!, loading_active: false };
@@ -556,13 +511,7 @@ export class TableIntegrationCredentialPrincipal implements OnInit, AfterViewIni
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.showToast({
-          title: "Debe seleccionar un conductor",
-          icon: "error",
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.alertService.error("Debe seleccionar un conductor");
 
         return false;
       }

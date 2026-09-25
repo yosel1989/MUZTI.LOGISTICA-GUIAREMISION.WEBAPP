@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output, output } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { GuiaRemisionIndicadorTrasladoToSelectDto } from '@features/guia-remision-indicador-traslado/models/guia-remision-indicador-traslado';
 import { GuiaRemisionIndicadorTrasladoService } from '@features/guia-remision-indicador-traslado/services/guia-remision-indicador-traslado-service';
 import { SelectModule } from 'primeng/select';
@@ -21,7 +21,7 @@ import { finalize, Subscription } from 'rxjs';
 export class SelectGuiaRemisionIndicadorTraslado implements OnInit, AfterViewInit, OnDestroy{
 
     private api = inject(GuiaRemisionIndicadorTrasladoService);
-    private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
 
     @Input() classLabel: string = 'text-xs';
     @Input() label: string | null = null;
@@ -76,13 +76,7 @@ export class SelectGuiaRemisionIndicadorTraslado implements OnInit, AfterViewIni
           if(this.default) this.control.setValue(this.default);
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            title: err.error.detalle,
-            icon: 'error',
-            timer: 4000,
-            timerProgressBar: true,
-            showCloseButton: true
-          });
+          this.errorHandler.handle(err);
         },
       });
       this.subs.add(s);

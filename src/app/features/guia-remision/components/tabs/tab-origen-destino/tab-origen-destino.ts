@@ -150,26 +150,12 @@ export class TabOrigenDestinoComponent implements OnInit, AfterViewInit, OnDestr
         this.submitted.set(true);
 
         if(!this.remitente){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de partida.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de partida.");
             return false;
         }
 
         if(!this.destinatario){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de llegada.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de llegada.");
             return false;
         }
 

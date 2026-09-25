@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -23,6 +22,7 @@ import { SelectDistritoComponent } from '@features/ubigeo/components/selects/sel
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { ConfirmationService } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -45,7 +45,6 @@ import { finalize, Subscription } from 'rxjs';
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    EditorModule,
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
@@ -68,6 +67,7 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
   private api = inject(EntityBranchApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private empresaApiService = inject(EmpresaApiService);
   private catalogoApiService = inject(CatalogoApiService);
   private dialogService = inject(DialogService);
@@ -172,7 +172,6 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -187,31 +186,13 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
               next: (res : EntityBranchDto) => {
                 this.ldSubmit.set(false);
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se modificó el establecimiento con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se modificó el establecimiento con éxito");
 
                 this.OnUpdated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(subs);
@@ -277,18 +258,7 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
-          this.alertService.showToast({
-            position: 'top-end',
-            icon: "error",
-            title: err.error.detalle,
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            customClass: {
-              container: 'z-[9999]!',
-              popup: 'z-[9999]!'
-            }
-          });
+          this.errorHandler.handle(err);
         },
       })
     )
@@ -303,18 +273,7 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
           this.ldTipoEstablecimiento.set(false);
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            position: 'top-end',
-            icon: "error",
-            title: err.error.detalle,
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            customClass: {
-              container: 'z-[9999]!',
-              popup: 'z-[9999]!'
-            }
-          });
+          this.errorHandler.handle(err);
           this.ldTipoEstablecimiento.set(false);
         },
       })
@@ -332,10 +291,7 @@ export class MdlEntityBranchEdit implements OnInit, AfterViewInit, OnDestroy {
           this.handlerSetFormValues(res);
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            icon: "error",
-            title: err.error.detalle,
-          });
+          this.errorHandler.handle(err);
         },
       })
     )

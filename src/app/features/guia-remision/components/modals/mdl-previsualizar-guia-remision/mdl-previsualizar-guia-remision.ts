@@ -5,7 +5,7 @@ import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-re
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { finalize, Subscription } from 'rxjs';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DatePipe, DecimalPipe, UpperCasePipe } from '@angular/common';
@@ -27,7 +27,7 @@ import { DatePipe, DecimalPipe, UpperCasePipe } from '@angular/common';
 export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewInit, OnDestroy{
 
   private api = inject(GuiaRemisionApiService);
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   guiaRemision = input.required<GuiaRemisionDto>();
 
   loading = signal(false);
@@ -36,7 +36,6 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
   localData = signal<GuiaRemisionDto | undefined | null>(undefined);
 
   ngOnInit(): void {
-    console.log('guia seleccionada', this.guiaRemision());
     this.loadData();
   }
 
@@ -59,13 +58,7 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
         this.localData.set(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error',
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.errorHandler.handle(err);
       }
     });
     this.subs.add(s);

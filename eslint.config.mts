@@ -9,6 +9,8 @@ import { defineConfig } from "eslint/config";
 export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.browser } },
   tseslint.configs.recommended,
+  // console.log deja datos en la consola del usuario; console.error se permite para fallos reales.
+  { files: ["**/*.ts"], rules: { "no-console": ["warn", { allow: ["error"] }] } },
   { files: ["**/*.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
   { files: ["**/*.jsonc"], plugins: { json }, language: "json/jsonc", extends: ["json/recommended"] },
   { files: ["**/*.json5"], plugins: { json }, language: "json/json5", extends: ["json/recommended"] },

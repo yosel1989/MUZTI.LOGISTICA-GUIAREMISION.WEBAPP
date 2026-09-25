@@ -4,7 +4,7 @@ import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, OnD
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
-import { AlertService } from "@core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { EntityBranchSerieToSelectDto } from "@features/entity-branch-serie/models/entity-branch-serie";
 import { EntityBranchSerieApiService } from "@features/entity-branch-serie/services/entity-branch-serie-api-service";
 import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
@@ -44,7 +44,7 @@ export class MdlEntityBranchSerieListSelect implements OnInit, AfterViewInit, On
 
     entityApiService = inject(EntityApiService);
     api = inject(EntityBranchSerieApiService);
-    alertService = inject(AlertService);
+    errorHandler = inject(ErrorHandlerService);
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
@@ -78,7 +78,6 @@ export class MdlEntityBranchSerieListSelect implements OnInit, AfterViewInit, On
         effect(()=>{
             const entitySelected = this.entitySelected();
             if(entitySelected){
-                //console.log('entity selected set', entitySelected);
                 this.loadData();
             }
         });
@@ -199,10 +198,7 @@ export class MdlEntityBranchSerieListSelect implements OnInit, AfterViewInit, On
                 this.data.set(value);
             },
             error: (err: HttpErrorResponse) =>  {
-                this.alertService.showToast({
-                    icon: "error",
-                    title: err.error.detalle,
-                });
+                this.errorHandler.handle(err);
                 this.OnClose.emit(true);
             },
         });

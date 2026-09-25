@@ -100,16 +100,7 @@ export class SectionGuiaRemisionConductor {
         this.submitted.set(true);
 
         if(this.invalid()){
-            console.log('Invalido: Datos de Conductor');
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: this.invalid() ?? '',
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000,
-                target: 'body'
-            });
+            this.alertService.warning(this.invalid() ?? '');
             return false;
         }
         return true;
@@ -161,13 +152,7 @@ export class SectionGuiaRemisionConductor {
                 const secundarios = jobTitle === 'Secundario' ? conductores?.filter(conduc => conduc.job_title === 'Secundario').length : 0;
 
                 if(existe || principal || secundarios === 2){
-                    this.alertService.showToast({
-                        text: existe ? "El conductor ya se encuentra seleccionado" : principal ? "El conductor principal ya se encuentra seleccionado" : "Máximo se pueden seleccionar 2 conductores",
-                        icon: "error",
-                        timer: 4000,
-                        timerProgressBar: true,
-                        showCloseButton: true
-                    });
+                    this.alertService.error(existe ? "El conductor ya se encuentra seleccionado" : principal ? "El conductor principal ya se encuentra seleccionado" : "Máximo se pueden seleccionar 2 conductores");
                 }else{
                     
                     this.evtAddConductor({...c, job_title: jobTitle});

@@ -141,7 +141,7 @@
 <p-table
     #datatable
     [columns]="cols"
-    [value]="paddedData"
+    [value]="paddedData()"
     size="small" 
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [showCurrentPageReport]="true"
@@ -160,9 +160,9 @@
     [rowHover]="true"
     [paginator]="true"
 
-    [totalRecords]="totalRecords"
+    [totalRecords]="totalRecords()"
     [rows]="pageSize()"
-    [first]="first"
+    [first]="first()"
     [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
     scrollHeight="460px"
 

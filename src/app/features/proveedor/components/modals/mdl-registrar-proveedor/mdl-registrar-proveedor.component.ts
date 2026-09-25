@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -18,6 +17,7 @@ import { DocumentEntityType } from '@features/items/models/document-entity-type'
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -34,7 +34,6 @@ import { TipoDocumentoDTO } from '@features/catalogo/models/catalogo.model';
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -55,6 +54,7 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
   private api = inject(ProveedorApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -149,30 +149,12 @@ export class MdlRegistrarProveedorComponent implements OnInit, AfterViewInit, On
             }))
             .subscribe({
               next: () => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se registro el proveedor con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se registro el proveedor con éxito");
 
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(subs);

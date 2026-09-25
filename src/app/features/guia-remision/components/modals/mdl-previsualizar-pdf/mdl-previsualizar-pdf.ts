@@ -2,7 +2,6 @@ import { AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { GuiaRemisionRemitenteRequestDto } from '@features/guia-remision/models/guia-remision.model';
-import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { SafeUrlPipe } from 'app/core/pipes/safe-url-pipe/safe-url-pipe';
 import { BehaviorSubject } from 'rxjs';
@@ -35,7 +34,6 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private api: DocumentoApiService,
     private sanitizer: DomSanitizer,
     private utilService: UtilService
   ) {
@@ -145,7 +143,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
               ],
               [
                 {text: 'Fecha de emisión:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
-                {text: this.utilService.dateFormat(this.data.fecha, 'dd-MMM-yyyy').toUpperCase().replace(".",""), border: [false, false, false, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}, 
+                {text: this.utilService.dateFormat(this.data.fecha_emision, 'dd-MMM-yyyy').toUpperCase().replace(".",""), border: [false, false, false, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}, 
                 {text: 'Ciudad:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
                 {text: `${this.data.destinatario.district ?? '-'} - ${this.data.destinatario.province ?? '-'} - ${this.data.destinatario.department ?? '-'}`, border: [false, false, true, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}
               ]

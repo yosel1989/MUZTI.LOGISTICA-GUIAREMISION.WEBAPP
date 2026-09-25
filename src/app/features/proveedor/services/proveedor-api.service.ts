@@ -1,12 +1,17 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { catchError, map, Observable, throwError } from "rxjs";
+import { map, Observable } from "rxjs";
 import { EditarProveedorRequestDto, EliminarProveedorResponseDto, ProveedorDto, ProveedorSugeridoDto, RegistrarProveedorRequestDto, RegistrarProveedorResponseDto } from "../models/proveedor";
 import { TableData } from "app/core/models/table";
 import { ActualizarEstadoResponseDto, ResponseDTO } from "@features/shared/models/shared";
 import { ToggleActiveRequestDto } from "app/shared/models/request";
 
+/**
+ * Servicio para consumir los endpoints de proveedores.
+ *
+ * Base: `{apiUrl}/proveedores`
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -15,6 +20,16 @@ export class ProveedorApiService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Lista los proveedores de forma paginada.
+   *
+   * `GET /proveedores/listar/{pageNumber}/{pageSize}?search=`
+   *
+   * @param pageNumber Número de página.
+   * @param pageSize Cantidad de registros por página.
+   * @param search Texto para filtrar; si es `null` no se filtra.
+   * @returns Página de proveedores, con fechas como `Date` y los flags `ld_estado` / `ld_update` en `false`.
+   */
   obtenerTodo(pageNumber: number, pageSize: number, search: string | null): Observable<TableData<ProveedorDto[]>> {
 
     let httpParams = new HttpParams();
@@ -31,31 +46,42 @@ export class ProveedorApiService {
           ld_estado: false,
           ld_update: false
         }))
-      }) ),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
+      }) )
     );
   }
 
+  /**
+   * Registra un nuevo proveedor.
+   *
+   * `POST /proveedores`
+   *
+   * @param request Datos del proveedor a registrar.
+   * @returns Respuesta de la API con el resultado del registro.
+   */
   registrar(request: RegistrarProveedorRequestDto): Observable<RegistrarProveedorResponseDto> {
-    return this.http.post<RegistrarProveedorResponseDto>(`${this.baseUrl}`, request).pipe(
-      map(response =>{ return response as RegistrarProveedorResponseDto }),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
+    return this.http.post<RegistrarProveedorResponseDto>(`${this.baseUrl}`, request);
   }
 
+  /**
+   * Obtiene un proveedor por su id.
+   *
+   * `GET /proveedores/buscar-por-id/{id}`
+   *
+   * @param id Id del proveedor.
+   * @returns Datos del proveedor.
+   */
   obtenerPorId(id: number): Observable<ProveedorDto> {
-    return this.http.get<ProveedorDto>(`${this.baseUrl}/buscar-por-id/${id}`).pipe(
-      map(response =>{ return response as ProveedorDto }),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
+    return this.http.get<ProveedorDto>(`${this.baseUrl}/buscar-por-id/${id}`);
   }
 
+  /**
+   * Actualiza los datos de un proveedor.
+   *
+   * `PUT /proveedores/{request.id}`
+   *
+   * @param request Datos actualizados; `request.id` indica el proveedor a editar.
+   * @returns El proveedor actualizado, con `fecha_registro` y `fecha_modifico` como `Date`.
+   */
   editar(request: EditarProveedorRequestDto): Observable<ResponseDTO<ProveedorDto>> {
     return this.http.put<ResponseDTO<ProveedorDto>>(`${this.baseUrl}/${request.id}`, request).pipe(
       map((response: ResponseDTO<ProveedorDto>) =>({ 
@@ -65,22 +91,31 @@ export class ProveedorApiService {
           fecha_registro: new Date(response.data.fecha_registro),
           fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
         }
-      })),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
+      }))
     );
   }
 
+  /**
+   * Elimina un proveedor.
+   *
+   * `DELETE /proveedores/{id}`
+   *
+   * @param id Id del proveedor a eliminar.
+   * @returns Respuesta de la API con el resultado de la eliminación.
+   */
   eliminar(id: number): Observable<EliminarProveedorResponseDto> {
-    return this.http.delete<EliminarProveedorResponseDto>(`${this.baseUrl}/${id}`).pipe(
-      map(response =>{ return response as EliminarProveedorResponseDto }),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
+    return this.http.delete<EliminarProveedorResponseDto>(`${this.baseUrl}/${id}`);
   }
 
+  /**
+   * Activa o desactiva un proveedor.
+   *
+   * `PUT /proveedores/{id}/actualizar-estado`
+   *
+   * @param id Id del proveedor.
+   * @param request Nuevo estado (activo/inactivo).
+   * @returns El estado actualizado, con `fecha_modifico` como `Date`.
+   */
   actualizarEstado(id: number, request: ToggleActiveRequestDto ): Observable<ResponseDTO<ActualizarEstadoResponseDto>> {
     return this.http.put<ResponseDTO<ActualizarEstadoResponseDto>>(`${this.baseUrl}/${id}/actualizar-estado`, request).pipe(
       map(response =>({ 
@@ -89,25 +124,25 @@ export class ProveedorApiService {
           ...response.data,
           fecha_modifico: response.data.fecha_modifico ? new Date(response.data.fecha_modifico) : null
         }
-      })),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
+      }))
     );
   }
 
+  /**
+   * Busca proveedores sugeridos (autocompletado).
+   *
+   * `GET /proveedores/listar-sugerido?numeroDoc=`
+   *
+   * @param texto Texto a buscar; si es `null` se envía sin filtro.
+   * @returns Lista de proveedores que coinciden con la búsqueda.
+   */
   buscarSugerido(texto: string | null): Observable<ProveedorSugeridoDto[]> {
       let params = new HttpParams();
       if (texto) {
           params = params.set('numeroDoc', texto);
       }
 
-      return this.http.get<ProveedorSugeridoDto[]>(`${this.baseUrl}/listar-sugerido`, { params }).pipe(
-          map(response =>{ return response as ProveedorSugeridoDto[] }),
-          catchError((error: HttpErrorResponse) => {
-              return throwError(() => error);
-          })
-      );
+      return this.http.get<ProveedorSugeridoDto[]>(`${this.baseUrl}/listar-sugerido`, { params });
   }
 
 }

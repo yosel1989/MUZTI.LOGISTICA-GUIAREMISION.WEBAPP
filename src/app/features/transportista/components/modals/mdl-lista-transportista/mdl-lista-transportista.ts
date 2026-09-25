@@ -12,7 +12,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { finalize, Subscription } from 'rxjs';
 import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -45,7 +45,7 @@ import { TransportistaDto, TransportistaSugeridoDto } from '@features/transporti
 })
 
 export class MdlListaTransportistaComponent implements OnInit, AfterViewInit, OnDestroy{
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private api = inject(TransportistaApiService);
   public util = inject(UtilService);
 
@@ -112,18 +112,7 @@ export class MdlListaTransportistaComponent implements OnInit, AfterViewInit, On
       },
       error: (err: HttpErrorResponse) => {
         this.data.set([]);
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       },
     });
   }
@@ -138,22 +127,10 @@ export class MdlListaTransportistaComponent implements OnInit, AfterViewInit, On
      }))
     .subscribe({
       next: (value: TransportistaDto) => {
-        console.log('Transportista seleccionado', value);
         this.OnSelect.emit(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       }
     });
     this.sb.add(s);

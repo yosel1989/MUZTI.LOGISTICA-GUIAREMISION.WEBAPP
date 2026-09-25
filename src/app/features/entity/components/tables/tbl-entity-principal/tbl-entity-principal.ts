@@ -30,6 +30,7 @@ import { ResponseDTO } from '@features/shared/models/shared';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { ToggleActiveRequestDto, ToggleActiveResponseDto } from 'app/shared/models/request';
 import { Column } from 'app/shared/models/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -70,6 +71,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     public dialogService = inject(DialogService);
     private api = inject(EntityApiService);
 
@@ -216,15 +218,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
           this.loading = false; 
           this.data.set([]);
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: e.error.detalle,
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              target: 'body'
-          });
+          this.errorHandler.handle(e);
           
         }
       });
@@ -347,31 +341,13 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
               /*const sub = this.api.eliminar(this.selected()!.id).subscribe({
                 next: (res: EliminarConductorResponseDto) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(sub);
@@ -405,14 +381,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
               .subscribe({
                 next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.selected.update((current: EntityDto | undefined) => {
                     const updated = {
@@ -436,18 +405,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error?.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
 
                   this.selected.update(current => {
                     const updated = { ...current!, ld_estado: false };
@@ -575,13 +533,7 @@ export class TblEntityPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.showToast({
-          title: "Debe seleccionar un conductor",
-          icon: "error",
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.alertService.error("Debe seleccionar un conductor");
 
         return false;
       }

@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -14,6 +13,7 @@ import { finalize, Subscription, takeUntil } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { DividerModule } from 'primeng/divider';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -40,7 +40,6 @@ import { IntegrationCredentialCreateDto, IntegrationCredentialDto, IntegrationCr
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    EditorModule,
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
@@ -62,6 +61,7 @@ export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDe
   private api = inject(IntegrationCredentialApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private empresaApiService = inject(EmpresaApiService);
   private dialogService = inject(DialogService);
   private destroyRef = inject(DestroyRef);
@@ -145,7 +145,6 @@ export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDe
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -165,31 +164,13 @@ export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDe
               next: ( res: IntegrationCredentialDto) => {
                 this.ldSubmit.set(false);
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se modificó los datos de la integración con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se modificó los datos de la integración con éxito");
 
                 this.OnUpdated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
            
@@ -254,18 +235,7 @@ export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDe
         },
         error: (err: HttpErrorResponse) => {
           console.error(err);
-          this.alertService.showToast({
-            position: 'top-end',
-            icon: "error",
-            title: err.error.detalle,
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            customClass: {
-              container: 'z-[9999]!',
-              popup: 'z-[9999]!'
-            }
-          });
+          this.errorHandler.handle(err);
         },
       })
     )
@@ -283,10 +253,7 @@ export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDe
         this.providers.set(res);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error'
-        });
+        this.errorHandler.handle(err);
       },
     })
   }
@@ -309,10 +276,7 @@ export class MdlIntegrationCredentialEdit implements OnInit, AfterViewInit, OnDe
         } as EntityDto)
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error'
-        });
+        this.errorHandler.handle(err);
       },
     });
   }

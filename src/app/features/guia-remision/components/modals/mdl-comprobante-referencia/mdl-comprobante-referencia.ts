@@ -128,7 +128,6 @@ export class MdlComprobanteReferenciaComponent implements OnInit, AfterViewInit,
 
       let pattern: RegExp | null = null;
 
-      // console.log(valor, tipoDocumento);
 
       switch (tipoDocumento) {
         case '01': // Factura

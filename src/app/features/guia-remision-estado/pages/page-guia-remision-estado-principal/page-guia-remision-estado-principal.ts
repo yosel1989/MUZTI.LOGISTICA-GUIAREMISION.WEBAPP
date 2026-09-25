@@ -2,6 +2,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { AlertService } from "@core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { LayoutService } from "@core/services/layout.service";
 import { UtilService } from "@core/services/util.service";
 import { EstadoAsignarPermisosDTO, GuiaRemisionEstadoDTO, GuiaRemisionEstadoWithPermisosDTO } from "@features/guia-remision-estado/models/guia-remision-estado.model";
@@ -30,6 +31,7 @@ import { finalize, Subscription } from "rxjs";
 export class PageGuiaRemisionEstadoPrincipalComponent implements OnInit, AfterViewInit, OnDestroy{
 
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private api = inject(GuiaRemisionEstadoApiService);
     public utilService = inject(UtilService);
     private ls = inject(LayoutService);
@@ -84,13 +86,7 @@ export class PageGuiaRemisionEstadoPrincipalComponent implements OnInit, AfterVi
                 this.estados = response;
             },
             error: (error: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: error.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    showCloseButton: true,
-                    timerProgressBar: true
-                });
+                this.errorHandler.handle(error);
             }
         });
         this.sb.add(s);
@@ -111,13 +107,7 @@ export class PageGuiaRemisionEstadoPrincipalComponent implements OnInit, AfterVi
                 });
             },
             error: (error: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: error.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    showCloseButton: true,
-                    timerProgressBar: true
-                }); 
+                this.errorHandler.handle(error); 
             }
         });
         this.sb.add(s);
@@ -134,25 +124,11 @@ export class PageGuiaRemisionEstadoPrincipalComponent implements OnInit, AfterVi
             this.form.enable();
         }))
         .subscribe({
-            next: (response) => {
-                this.alertService.showToast({
-                    title: 'Se configuró los estados con éxito',
-                    icon: 'success',
-                    position: 'top-end',
-                    showCloseButton: true,
-                    timer: 4000,
-                    timerProgressBar: true
-                });
+            next: () => {
+                this.alertService.success('Se configuró los estados con éxito');
             },
             error: (error: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: error.error.detalle,
-                    icon: 'success',
-                    position: 'top-end',
-                    showCloseButton: true,
-                    timer: 4000,
-                    timerProgressBar: true
-                });
+                this.errorHandler.handle(error);
             }
         });
         this.sb.add(s);

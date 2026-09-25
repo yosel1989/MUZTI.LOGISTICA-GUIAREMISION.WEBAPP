@@ -15,7 +15,7 @@ import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConductorDto, ConductorSugeridoDto } from '@features/conductor/models/conductor.model';
 import { ConductorApiService } from '@features/conductor/services/conductor-api.service';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -40,7 +40,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDestroy{
 
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private api = inject(ConductorApiService);
   public util = inject(UtilService);
 
@@ -98,18 +98,7 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
       },
       error: (err: HttpErrorResponse) => {
         this.data.set([]);
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.OnClose.emit();
       },
     });
@@ -128,18 +117,7 @@ export class MdlListaConductorComponent implements OnInit, AfterViewInit, OnDest
         this.OnSelect.emit(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       }
     });
   }

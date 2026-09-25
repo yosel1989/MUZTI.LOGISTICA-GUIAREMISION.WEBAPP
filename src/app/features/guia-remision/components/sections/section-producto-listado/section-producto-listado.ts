@@ -48,6 +48,7 @@ import { UnitOfMeasure } from 'app/features/items/models/unit-of-measure';
 import { SubNationalCode } from 'app/features/items/models/sub-national-code';
 import { CODIGO_SUBNACIONAL_FAKE } from 'app/fake/items/data/subNationalCode';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
 import { GR_ProductoRequestDto, GuiaRemisionDetalleDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { CardModule } from 'primeng/card';
@@ -102,6 +103,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
 
   public dialogService = inject(DialogService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private catalogoApiService = inject(CatalogoApiService);
 
   private _detalle = signal<GuiaRemisionDetalleDto[]>([]);
@@ -367,16 +369,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   evtOnSubmit(): boolean {
     this.submitted.set(true);
     if (this.invalid) {
-      console.log('Invalido: Datos de Productos');
-      this.alertService.showToast({
-        position: 'top-end',
-        icon: 'warning',
-        title: 'Se tiene que completar los datos obligatorios en la Sección de Bienes o Productos.',
-        showCloseButton: true,
-        timerProgressBar: true,
-        timer: 4000,
-        target: 'body'
-      });
+      this.alertService.warning('Se tiene que completar los datos obligatorios en la Sección de Bienes o Productos.');
       return false;
     }
 
@@ -448,7 +441,6 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
   }
 
   handlerValueDetalle(s: GuiaRemisionDetalleDto[]): void{
-      console.log('items', s);
       const newItems = this.buildItemsFormArray(s);
       this.form.setControl('items', newItems);
       newItems.controls.forEach((row) => row.updateValueAndValidity({ emitEvent: false }));
@@ -470,13 +462,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
           this.updateUnidadValues();
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            title: err.error.detalle,
-            icon: 'error',
-            timer: 4000,
-            timerProgressBar: true,
-            showCloseButton: true
-          })
+          this.errorHandler.handle(err);
         },
       });
 
@@ -494,13 +480,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
         this.bienesNormalizados.set(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error',
-          timer: 4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.errorHandler.handle(err);
       },
     });
     this.subs.add(s);

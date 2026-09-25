@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, HostBinding, inject, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, inject, OnDestroy, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -34,11 +34,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class AuthComponent implements AfterViewInit, OnDestroy{
 
   messageService = inject(MessageService);
+  private route = inject(ActivatedRoute);
 
   @HostBinding('class') claseHost = 'flex w-full';
 
   isSubmitted = false;
-  loadingSubmit: boolean = false;
+  loadingSubmit = signal(false);
   frmAuth: FormGroup;
 
   constructor(
@@ -68,6 +69,12 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
     return this.frmAuth.controls;
   }
 
+  /** Pantalla donde estaba el usuario cuando expiró su sesión (solo rutas internas). */
+  get returnUrl(): string | null {
+    const url = this.route.snapshot.queryParamMap.get('returnUrl');
+    return url?.startsWith('/') && !url.startsWith('//') ? url : null;
+  }
+
   get formData(): AuthRequest {
     return { 
       username: this.f.usuario.value,
@@ -86,22 +93,22 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
       return;
     }
 
-    this.loadingSubmit = true;
+    this.loadingSubmit.set(true);
 
     this.authApi.login(this.formData).subscribe({
       next: (res: User) => {
         if(!res.profiles.find((x: UserProfile) => x.appId === environment.appId)){
           this.handlerOnSubmitFormError("No tienes permisos suficientes para ingresar al sistema.");
-          this.loadingSubmit = false;
+          this.loadingSubmit.set(false);
           return;
         }
 
-        this.loadingSubmit = false;
+        this.loadingSubmit.set(false);
         this.handlerOnSubmitSuccess(res);
       },
       error: (err: HttpErrorResponse) => {
         this.handlerOnSubmitFormError(err.error ?? "Ocurrió un error, intente nuevamente.");
-        this.loadingSubmit = false;
+        this.loadingSubmit.set(false);
       }
     });
   }
@@ -121,7 +128,7 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
       allowOutsideClick: false,
       allowEscapeKey: false,
       didClose: () => {
-        this.router.navigate(['/administracion/guia-remision']);
+        this.router.navigateByUrl(this.returnUrl ?? '/administracion/guia-remision');
       },
     });
   }
@@ -141,23 +148,11 @@ export class AuthComponent implements AfterViewInit, OnDestroy{
 
     /*this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe rellenar todos los campos requeridos.', life: 3000 });*/
 
-    this.alertService.showToast({
-      position: 'top-end',
-      icon: "error",
-      title: mensaje,
-      showCloseButton: true,
-      timerProgressBar: true
-    });
+    this.alertService.error(mensaje);
   }
 
   handlerOnSubmitFormError(mensaje: string): void {
-    this.alertService.showToast({
-      position: 'top-end',
-      icon: "error",
-      title: mensaje,
-      showCloseButton: true,
-      timerProgressBar: true,
-    });
+    this.alertService.error(mensaje);
   }
 
   hasProfile(profile: number, user: User): boolean{

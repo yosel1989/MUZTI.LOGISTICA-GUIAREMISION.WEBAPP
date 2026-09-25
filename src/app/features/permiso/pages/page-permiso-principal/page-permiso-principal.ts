@@ -132,14 +132,7 @@ export class PagePermisoPrincipalComponent implements OnInit, AfterViewInit, OnD
         }))
         .subscribe({
             next: (response) => {
-                this.alertService.showToast({
-                    title: 'Se configuró los permisos con éxito',
-                    icon: 'success',
-                    position: 'top-end',
-                    showCloseButton: true,
-                    timer: 4000,
-                    timerProgressBar: true
-                });
+                this.alertService.success('Se configuró los permisos con éxito');
             },
             error: (error) => {
                 console.error("Error submitting form:", error); 

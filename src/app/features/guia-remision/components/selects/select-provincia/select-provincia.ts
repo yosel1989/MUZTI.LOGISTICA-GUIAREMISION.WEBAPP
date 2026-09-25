@@ -81,7 +81,6 @@ export class SelectProvinciaComponent implements OnInit, AfterViewInit, OnDestro
             this.sub?.add(this.ubigeoService.getProvinciasByDepartamento(this.idUbigeoDepartamento).subscribe({
                 next: (response) => {
                     this.collection = response;
-                    console.log('val', this._valueEdit);
                     if(this._valueEdit){
                         this.control.setValue(this._valueEdit);
                     }

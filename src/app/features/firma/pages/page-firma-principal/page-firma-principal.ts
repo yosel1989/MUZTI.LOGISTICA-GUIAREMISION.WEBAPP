@@ -82,13 +82,7 @@ export class PageFirmaPrincipalComponent implements OnInit, AfterViewInit, OnDes
 
     evtGuardarFirma(): void{
         if(this.signaturePad()?.isEmpty()){
-            this.alertService.showToast({
-                title: "Debe rellenar su firma",
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true
-            });
+            this.alertService.error("Debe rellenar su firma");
             return;
         }
         this.imageUrl.set(this.signaturePad()?.toDataURL());
@@ -100,13 +94,11 @@ export class PageFirmaPrincipalComponent implements OnInit, AfterViewInit, OnDes
         this.imageUrl.set(this.signaturePad()?.toDataURL());
     }
 
-    drawStart(event: MouseEvent | Touch) {
+    drawStart() {
         // will be notified of szimek/signature_pad's onBegin event
-        console.log('Start drawing', event);
     }
 
     drawCleared() {
         // will be notified when clear() is called on the pad
-        console.log('Pad cleared');
     }
 }

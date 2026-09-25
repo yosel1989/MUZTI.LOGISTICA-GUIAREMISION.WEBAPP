@@ -2,9 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, computed, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { GuiaRemisionDto } from '@features/guia-remision/models/guia-remision.model';
-import { DocumentoApiService } from '@features/guia-remision/services/documento-api.service';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -25,7 +24,7 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
 
   private destroyRef = inject(DestroyRef);
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private ref = inject(DynamicDialogRef);
   private apiGuiaRemision = inject(GuiaRemisionApiService);
 
@@ -41,14 +40,12 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
   loading = signal(false);
 
   constructor(
-    private api: DocumentoApiService,
     private sanitizer: DomSanitizer
   ) {
 
   }
 
   ngOnInit(): void {
-    console.log(this.data());
   }
 
   ngAfterViewInit(): void {
@@ -61,7 +58,6 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
   loadPdf(): void{
     this.loading.set(true);
     this.apiGuiaRemision.getDocumentPdfInternal(this.data().id, this.data().entity_id)
-    //this.api.obtenerPdf(this.data().numero_documento_remitente, this.data().tipo_guia, this.data().numero_guia)
       .pipe(
         finalize(()=> this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef)
@@ -79,13 +75,7 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
               try {
                 const jsonErr = JSON.parse(reader.result as string);
 
-                this.alertService.showToast({
-                  title: jsonErr.detalle || 'Error desconocido',
-                  icon: 'error',
-                  timer: 4000,
-                  timerProgressBar: true,
-                  showCloseButton: true
-                });
+                this.errorHandler.showError(jsonErr.detalle || 'Error desconocido');
               } catch {
                 console.error("No se pudo parsear el blob como JSON");
               }
@@ -97,7 +87,6 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
         }
     });
 
-    console.log(this.data());
 
     this.apiGuiaRemision.getDocument(this.data().id.toString(), this.data().entity_id.toString()) 
     .subscribe({
@@ -115,13 +104,7 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
           reader.onload = () => {
             try {
               const jsonErr = JSON.parse(reader.result as string);
-              this.alertService.showToast({
-                title: jsonErr.detalle || 'Error desconocido',
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true
-              });
+              this.errorHandler.showError(jsonErr.detalle || 'Error desconocido');
             } catch {
               console.error("No se pudo parsear el blob como JSON");
             }

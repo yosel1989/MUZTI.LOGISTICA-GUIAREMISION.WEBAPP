@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from "@angular/core";
-import { AlertService } from "@core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
 import { TableModule } from "primeng/table";
@@ -35,7 +35,7 @@ import { EntityApiService } from "@features/entity/services/entity-service";
 export class MdlEntityListBySeriesAssigned implements OnInit, AfterViewInit, OnDestroy{
 
     api = inject(EntityApiService);
-    alertService = inject(AlertService);
+    errorHandler = inject(ErrorHandlerService);
     destroyRef = inject(DestroyRef);
 
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -127,10 +127,7 @@ export class MdlEntityListBySeriesAssigned implements OnInit, AfterViewInit, OnD
                 this.totalRecords.set(value.length);
             },
             error: (err: HttpErrorResponse) =>  {
-                this.alertService.showToast({
-                    icon: "error",
-                    title: err.error.detalle,
-                });
+                this.errorHandler.handle(err);
                 this.OnClose.emit(true);
             },
         });

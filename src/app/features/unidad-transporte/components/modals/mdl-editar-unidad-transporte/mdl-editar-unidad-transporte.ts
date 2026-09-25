@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -14,6 +13,7 @@ import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EditarUnidadTransporteRequestDto, UnidadTransporteDto } from '@features/unidad-transporte/models/unidad-transporte.model';
 import { UnidadTransporteApiService } from '@features/unidad-transporte/services/unidad-transporte-api.service';
@@ -29,7 +29,6 @@ import { SelectEntidadReguladoraComponent } from '@features/catalogo/components/
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -47,6 +46,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
   private api = inject(UnidadTransporteApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @ViewChild('ctrlEmisorVehicular') ctrlEmisorVehicular: SelectEmisorVehicularComponent | undefined;
   @Input() id!: number;
@@ -151,30 +151,12 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
             .subscribe({
               next: (res: ResponseDTO<UnidadTransporteDto>) => {
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: res.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success(res.detalle);
 
                 this.OnCreated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(subs);
@@ -203,18 +185,7 @@ export class MdlEditarUnidadTransporteComponent implements OnInit, AfterViewInit
         this.handlerLoadData(res);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.OnCanceled.emit(true);
       }
     });

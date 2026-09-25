@@ -18,6 +18,7 @@ import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -73,6 +74,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     public util = inject(UtilService);
     private confirmationService = inject(ConfirmationService);
     private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private destroyRef = inject(DestroyRef);
 
     cols: Column[] = [];
@@ -207,24 +209,12 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
           this.cd.detectChanges();
           this.loading = false;
         },
-        error: (e) => {
-          console.log(e);
-          this.ldData.next(false); 
+        error: () => {
+          this.ldData.next(false);
           this.loading = false; 
           this.data = [];
 
-          this.alertService.showToast({
-              position: 'top-end',
-              icon: "error",
-              title: "Ocurrio un error al obtener los registros",
-              showCloseButton: true,
-              timerProgressBar: true,
-              timer: 4000,
-              customClass: {
-                container: 'z-[9999]!',
-                popup: 'z-[9999]!'
-              }
-          });
+          this.errorHandler.showError("Ocurrio un error al obtener los registros");
         }
       });
     }
@@ -377,31 +367,13 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
               const subs = this.api.delete(this.selected!.id).subscribe({
                 next: (res: EliminarPerfilResponseDTO) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.error,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(subs);
@@ -430,14 +402,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
               const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
                 next: (res: ActualizarEstadoPerfilResponseDTO) => {
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "success",
-                    title: res.detalle,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000
-                  });
+                  this.alertService.success(res.detalle);
 
                   this.selected!.ld_estado = false;
                   this.selected!.id_estado = res.id_estado;
@@ -451,18 +416,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
                   this.selected!.ld_estado = false;
                   this.cd.detectChanges();
 
-                  this.alertService.showToast({
-                    position: 'top-end',
-                    icon: "error",
-                    title: err.error.error,
-                    showCloseButton: true,
-                    timerProgressBar: true,
-                    timer: 4000,
-                    customClass: {
-                      container: 'z-[9999]!',
-                      popup: 'z-[9999]!'
-                    }
-                  });
+                  this.errorHandler.handle(err);
                 }
               });
               this.subs.add(subs);
@@ -602,10 +556,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
             this.evtOnReload();
           },
           error: (err: HttpErrorResponse) => {
-            this.alertService.showToast({
-              title: err.error.detalle,
-              icon: 'error'
-            })
+            this.errorHandler.handle(err);
           },
         })
     }

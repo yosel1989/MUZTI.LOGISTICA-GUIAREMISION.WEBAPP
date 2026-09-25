@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
@@ -12,6 +11,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -28,7 +28,6 @@ import { PerfilApiService } from '@features/perfil/services/perfil-api.service';
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -44,6 +43,7 @@ export class MdlRegistrarPerfilComponent implements OnInit, AfterViewInit, OnDes
   private api = inject(PerfilApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @Output() OnCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() OnCanceled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -103,7 +103,6 @@ export class MdlRegistrarPerfilComponent implements OnInit, AfterViewInit, OnDes
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -120,32 +119,14 @@ export class MdlRegistrarPerfilComponent implements OnInit, AfterViewInit, OnDes
                 this.frm.enable();
                 this.ldSubmit = false;
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se registro el perfil con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se registro el perfil con éxito");
 
                 this.OnCreated.emit(true);
               },
               error: (err: HttpErrorResponse) => {
                 this.frm.enable();
                 this.ldSubmit = false;
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(subs);

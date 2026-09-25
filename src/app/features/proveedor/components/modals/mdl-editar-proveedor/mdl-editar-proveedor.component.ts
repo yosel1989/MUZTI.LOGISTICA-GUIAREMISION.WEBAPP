@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -18,6 +17,7 @@ import { DocumentEntityType } from '@features/items/models/document-entity-type'
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
@@ -36,7 +36,6 @@ import { ResponseDTO } from '@features/shared/models/shared';
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -58,6 +57,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
   private api = inject(ProveedorApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
   @Input() id!: number;
   @Output() OnCreated: EventEmitter<ProveedorDto> = new EventEmitter<ProveedorDto>();
@@ -151,7 +151,6 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
     this.isSubmitted.set(true);
     this.submitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -170,30 +169,12 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
             .subscribe({
               next: (res: ResponseDTO<ProveedorDto>) => {
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: res.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success(res.detalle);
 
                 this.OnCreated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(sub);
@@ -227,18 +208,7 @@ export class MdlEditarProveedorComponent implements OnInit, AfterViewInit, After
         this.handlerLoadData(res);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.OnCanceled.emit(true);
       }
     });

@@ -196,13 +196,7 @@ export class FltDateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.op.hide();
         this.cd.detectChanges();
     } catch (error: any) {
-      this.alertService.showToast({
-        icon: 'warning',
-        title: error.message,
-        showCloseButton: true,
-        timer: 4000,
-        timerProgressBar: true
-      });
+      this.alertService.warning(error.message);
     }
   }
 

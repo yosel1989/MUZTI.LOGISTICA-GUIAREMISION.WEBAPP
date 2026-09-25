@@ -130,7 +130,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy{
     evtLogout(): void{
         this.handlerConfirmDialog(() => {
             this.authApi.logout().subscribe(() => {
-                console.log('Se cerró sesión');
             });
         }, 
         '¿Desea cerrar sesión?', 

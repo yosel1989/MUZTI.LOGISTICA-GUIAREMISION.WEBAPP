@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -16,6 +15,7 @@ import { MdlEntityList } from '@features/entity/components/modals/mdl-entity-lis
 import { EntityDto } from '@features/entity/models/entity';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { ConfirmationService } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -41,7 +41,6 @@ import { EntityBranchSerieApiService } from '@features/entity-branch-serie/servi
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    EditorModule,
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
@@ -63,6 +62,7 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
   private api = inject(EntityBranchSerieApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private dialogService = inject(DialogService);
   private destroyRef = inject(DestroyRef);
   private config = inject(DynamicDialogConfig);
@@ -142,7 +142,6 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -161,20 +160,12 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
             .subscribe({
               next: (value: EntityBranchSerieDto) => {
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se modificó la serie con éxito"
-                });
+                this.alertService.success("Se modificó la serie con éxito");
 
                 this.OnUpdated.emit(value);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                });
+                this.errorHandler.handle(err);
               }
             });
            
@@ -241,10 +232,7 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
           this.handlerSetValues(value);
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            icon: "error",
-            title: err.error.detalle
-          });
+          this.errorHandler.handle(err);
         },
       });
   }

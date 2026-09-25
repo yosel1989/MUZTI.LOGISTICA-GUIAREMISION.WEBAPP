@@ -114,14 +114,7 @@ export class SectionResponsableListadoComponent implements OnInit, AfterViewInit
   evtOnSubmit(): boolean {
     this.submitted = true;
     if(this.items().length === 0){
-      this.alertService.showToast({
-        position: 'top-end',
-        icon: 'warning',
-        title: 'Se tiene que seleccionar al menos un responsable',
-        showCloseButton: true,
-        timerProgressBar: true,
-        timer: 4000
-      });
+      this.alertService.warning('Se tiene que seleccionar al menos un responsable');
       return false;
     }
 
@@ -149,15 +142,7 @@ export class SectionResponsableListadoComponent implements OnInit, AfterViewInit
       const sub2 = cmp?.OnSelect.subscribe((data: PersonalDTO) => {
         const existe = this.items().some((item: PersonalDTO) => item.id === data.id);
         if(existe){
-          this.alertService.showToast({
-            position: 'top-end',
-            icon: 'warning',
-            title: 'El personal ya se encuentra agregado',
-            showCloseButton: true,
-            timerProgressBar: true,
-            timer: 4000,
-            target: 'body'
-          });
+          this.alertService.warning('El personal ya se encuentra agregado');
           return;
         }
         this.handleNewPerson(data);

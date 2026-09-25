@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -16,6 +15,7 @@ import { DocumentEntityType } from '@features/items/models/document-entity-type'
 import { FAKE_DOCUMENT_TYPE_PROVIDER } from 'app/fake/items/data/fakeDocumenType';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
 import { SelectProvinciaComponent } from '@features/ubigeo/components/selects/select-provincia/select-provincia';
@@ -37,7 +37,6 @@ import { SelectTipoDocumentoComponent } from '@features/catalogo/components/sele
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    EditorModule,
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
@@ -60,6 +59,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   private api = inject(TransportistaApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private catalogoApiService = inject(CatalogoApiService);
 
   @Input() id!: number;
@@ -163,7 +163,6 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -178,31 +177,13 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
               next: (res: TransportistaDto) => {
                 this.ldSubmit.set(false);
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se edito al transportista con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se edito al transportista con éxito");
 
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(sub);
@@ -239,18 +220,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
         this.handlerLoadData(res);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
         this.OnCanceled.emit(true);
       }
     });
@@ -268,13 +238,7 @@ export class MdlEditarTransportistaComponent implements OnInit, AfterViewInit, A
         this.tiposDocumento.set(value);
       },
       error: (err) =>  {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error',
-          timer:4000,
-          timerProgressBar: true,
-          showCloseButton: true
-        });
+        this.errorHandler.handle(err);
       },
     });
     this.subs.add(s);

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { PaisDto } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { SelectModule } from 'primeng/select';
@@ -22,7 +22,7 @@ import { finalize, Subscription } from 'rxjs';
 
 export class SelectCountry implements OnInit, AfterViewInit, OnDestroy{
 
-    private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
     private api = inject(CatalogoApiService);
 
     @Input() classLabel: string = '';
@@ -69,13 +69,7 @@ export class SelectCountry implements OnInit, AfterViewInit, OnDestroy{
                 }
             },
             error: (error: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: error.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                });
+                this.errorHandler.handle(error);
             }
         });
         this.subs.add(sub);

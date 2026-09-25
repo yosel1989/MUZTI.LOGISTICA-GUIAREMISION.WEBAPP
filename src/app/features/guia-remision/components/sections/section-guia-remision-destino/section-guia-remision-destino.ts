@@ -72,15 +72,7 @@ export class SectionGuiaRemisionDestino {
         this.submitted.set(true);
 
         if(!this.destinatario){
-            console.log('Invalido: Datos de Destino');
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de llegada.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de llegada.");
             return false;
         }
 

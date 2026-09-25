@@ -14,7 +14,6 @@ export class Loader2Component{
   // Getters
 
   get classes(): string{
-    console.log()
     return `pi pi-spinner-dotted transition  duration-200 animate-spin  ${this.styleClass}`;
   }
 

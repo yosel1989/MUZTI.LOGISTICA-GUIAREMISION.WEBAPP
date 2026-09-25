@@ -78,8 +78,6 @@ export class SectionGuiaRemisionTransportista {
         }
     }
 
-    messageError = signal<string | undefined>(undefined);
-
     submitted = signal(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,17 +135,9 @@ export class SectionGuiaRemisionTransportista {
     evtOnSubmit(): boolean {
         this.submitted.set(true);
 
-        if(this.invalid()){
-            console.log('Invalido: Datos de Transportista');
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: this.messageError(),
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000,
-                target: 'body'
-            });
+        const error = this.invalid();
+        if(error){
+            this.alertService.warning(error);
             return false;
         }
         return true;
@@ -157,7 +147,6 @@ export class SectionGuiaRemisionTransportista {
       this._vehiculos.update(v => {
         return [...v ?? [], item];
       });
-      console.log('vehiculos', this._vehiculos());
     }
 
     evtRemoveVehiculo(id: number): void{
@@ -197,13 +186,7 @@ export class SectionGuiaRemisionTransportista {
                 const secundarios = jobTitle === 'secundario' ? vehiculos?.filter(conduc => conduc.job_title === 'secundario').length : 0;
 
                 if(existe || principal || secundarios === 2){
-                    this.alertService.showToast({
-                        text: existe ? "El vehículo ya se encuentra seleccionado" : principal ? "El vehículo principal ya se encuentra seleccionado" : "Máximo se pueden seleccionar 2 vehiculos secundarios",
-                        icon: "error",
-                        timer: 4000,
-                        timerProgressBar: true,
-                        showCloseButton: true
-                    });
+                    this.alertService.error(existe ? "El vehículo ya se encuentra seleccionado" : principal ? "El vehículo principal ya se encuentra seleccionado" : "Máximo se pueden seleccionar 2 vehiculos secundarios");
                 }else{
                     
                     this.evtAddVehiculo({...c, job_title: jobTitle});

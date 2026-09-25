@@ -113,26 +113,12 @@ export class SectionGuiaRemisionDestinatario{
         this.submitted.set(true);
 
         if(!this.remitente){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de origen.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de origen.");
             return false;
         }
 
         if(!this.destinatario){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de destino.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de destino.");
             return false;
         }
 
@@ -142,19 +128,12 @@ export class SectionGuiaRemisionDestinatario{
     evtOnShowEstablecimiento( to: string ): void{
         
         if(!this.motivoTraslado()){
-            console.log(this.motivoTraslado());
-            this.alertService.showToast({
-                icon: 'warning',
-                title: `Debe seleccionar el motivo de traslado`
-            });
+            this.alertService.warning(`Debe seleccionar el motivo de traslado`);
             return;
         }
 
         if(!this.remitente){
-            this.alertService.showToast({
-                icon: 'warning',
-                title: `Debe seleccionar un remitente`
-            });
+            this.alertService.warning(`Debe seleccionar un remitente`);
             return;
         }
 
@@ -193,12 +172,7 @@ export class SectionGuiaRemisionDestinatario{
                 this.selected.set(s);
                 this._destinatario.set(s);
                 this.modalRef?.close();
-                this.alertService.showToast({
-                    icon: 'success',
-                    title: 'Destinatario seleccionado con éxito.',
-                    timer: 4000,
-                    showCloseButton: true
-                });
+                this.alertService.success('Destinatario seleccionado con éxito.');
             });
 
             cmp?.OnClose

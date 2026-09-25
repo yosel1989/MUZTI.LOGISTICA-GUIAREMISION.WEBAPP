@@ -89,14 +89,7 @@ export class SectionGuiaRemisionRemitente {
         this.submitted.set(true);
 
         if(!this.remitente){
-            this.alertService.showToast({
-                position: 'top-end',
-                icon: "warning",
-                title: "Se tiene que completar los datos obligatorios en la sección de punto de partida.",
-                showCloseButton: true,
-                timerProgressBar: true,
-                timer: 4000
-            });
+            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de partida.");
             return false;
         }
 
@@ -106,18 +99,12 @@ export class SectionGuiaRemisionRemitente {
     evtOnShowEstablecimiento( to: string ): void{
 
         if(!this.entity()){
-            this.alertService.showToast({
-                icon: 'warning',
-                title: `Debe seleccionar la entidad emisora`
-            });
+            this.alertService.warning(`Debe seleccionar la entidad emisora`);
             return;
         }
     
         if(!this.motivoTraslado()){
-            this.alertService.showToast({
-                icon: 'warning',
-                title: `Debe seleccionar el motivo de traslado`
-            });
+            this.alertService.warning(`Debe seleccionar el motivo de traslado`);
             return;
         }
 
@@ -156,10 +143,7 @@ export class SectionGuiaRemisionRemitente {
                 this.selected.set(s);
                 this._remitente.set(s);
                 this.modalRef?.close();
-                this.alertService.showToast({
-                    icon: 'success',
-                    title: 'Remitente seleccionado con éxito.',
-                });
+                this.alertService.success('Remitente seleccionado con éxito.');
             });
 
             cmp?.OnClose

@@ -32,6 +32,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
@@ -193,6 +194,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         private api: GuiaRemitenteApiService,
         private ls: LayoutService,
         private alertService: AlertService,
+        private errorHandler: ErrorHandlerService,
         private router: Router
     ){
         this.minFechaEmision.setDate(this.maxFechaEmision.getDate() - 1);
@@ -290,11 +292,14 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             entity_branch_serie_id: this.entitySelected()!.entity_branch_serie.id,
             entity_branch_serie: this.entitySelected()!.entity_branch_serie as EntityBranchSerieDto,
 
-            tipo_transporte: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
             motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
             motivo_traslado: this.selectMotivoTraslado!.selected(),
-            fecha: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
-            hora: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
+
+            tipo_transporte: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
+
+            fecha_emision: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
+            hora_emision: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
+
             observacion: this.f.observacion.value ?? '',
             registro_mtc: null,
 
@@ -439,23 +444,11 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
         if( !this.handlerValidation() ) return;
 
-        console.log('request', this.request);
 
         this.loadingSubmit.next(true);
         this.api.saveRemisionRemitente(this.request, this.entitySelected()!.entity.document_number ).subscribe({
             next: (response: GR_EnviarGuiaRemisionResponseDto ) => {
                 this.loadingSubmit.next(false);
-                /*if(response.success && response.respuesta_facturador.codigo === '0'){
-                    this.documentApi.obtenerPdfByTicketEfact(response.respuesta_facturador.descripcion)
-                    .subscribe({
-                        next: ({blob, filename}) => {
-                            saveAs(blob, filename);
-                        },
-                        error: (e) => {
-                            console.log('error');
-                        }
-                    });
-                }*/
                 this.alertService.showSwalAlert({
                     icon: "success",
                     title: "¡Guía de Remisión Registrada!",
@@ -467,12 +460,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                //this.router.navigate(['/administracion/guia-remision']);
             },
             error: (error) => {
-                this.alertService.showToast({
-                    icon: "error",
-                    text: error.error.detalle,
-                    showCloseButton: true,
-                    timer: 4000
-                });
+                this.errorHandler.handle(error);
                 this.loadingSubmit.next(false);
             }
         });
@@ -480,13 +468,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     evtShowAddDocRef(): void{
         if(!this.selectMotivoTraslado?.selected()){
-            this.alertService.showToast({
-                title: 'Debe seleccionar un motivo de traslado',
-                icon: 'warning',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true
-            });
+            this.alertService.warning('Debe seleccionar un motivo de traslado');
             return;
         }
 
@@ -517,7 +499,6 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         const sub = this.modalRef.onChildComponentLoaded.subscribe((cmp: MdlComprobanteReferenciaComponent) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const sub2 = cmp?.OnAdded.subscribe(( s: any) => {
-                console.log('documento relacional', s);
                 this.evtAddDocRef(s);
                 this.modalRef?.close();
             });
@@ -596,18 +577,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     evtOnShowEstablecimiento( to: string ): void{
 
         if(!this.selectMotivoTraslado?.selected()){
-            this.alertService.showToast({
-                icon: 'warning',
-                title: `Debe seleccionar el motivo de traslado`
-            });
+            this.alertService.warning(`Debe seleccionar el motivo de traslado`);
             return;
         }
 
         if(to === 'destinatario' && !this.remitente()){
-            this.alertService.showToast({
-                icon: 'warning',
-                title: `Debe seleccionar un remitente`
-            });
+            this.alertService.warning(`Debe seleccionar un remitente`);
             return;
         }
 
@@ -642,12 +617,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             const sub2 = cmp?.OnSelected.subscribe(( s: EntityBranchDto) => {
                 (to === 'remitente' ? this.remitente : this.destinatario).set(s);
                 this.modalRef?.close();
-                this.alertService.showToast({
-                    icon: 'success',
-                    title: `${to === 'remitente' ? 'Remitente' : 'Destinatario' } seleccionado con éxito.`,
-                    timer: 4000,
-                    showCloseButton: true
-                });
+                this.alertService.success(`${to === 'remitente' ? 'Remitente' : 'Destinatario' } seleccionado con éxito.`);
             });
 
             const sub3 = cmp?.OnClose.subscribe(() => {
@@ -769,26 +739,12 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         }
 
         if(submitMotivoTraslado){
-            this.alertService.showToast({
-                title: "Debe seleccionar el motivo de traslado",
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true,
-                target: 'body'
-            });
+            this.alertService.error("Debe seleccionar el motivo de traslado");
             return false;
         }
 
         if(!submitDestinatario){
-            this.alertService.showToast({
-                title: "Debe seleccionar el destinatario",
-                icon: 'error',
-                timer: 4000,
-                timerProgressBar: true,
-                showCloseButton: true,
-                target: 'body'
-            });
+            this.alertService.error("Debe seleccionar el destinatario");
             return false;
         }
 

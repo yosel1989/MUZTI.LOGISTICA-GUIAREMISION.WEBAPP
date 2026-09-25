@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, inject, signal, EventEmitter, Output, output } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { BienNormalizadoDTO } from '@features/catalogo/models/catalogo.model';
 import { CatalogoApiService } from '@features/catalogo/services/catalogo-api.service';
 import { SelectModule } from 'primeng/select';
@@ -21,7 +21,7 @@ import { finalize, Subscription } from 'rxjs';
 export class SelectBienNormalizadoComponent implements OnInit, AfterViewInit, OnDestroy{
 
     private catalogoApiService = inject(CatalogoApiService);
-    private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
 
     @Input() classLabel: string = 'text-xs';
     @Input() label: string | null = null;
@@ -75,13 +75,7 @@ export class SelectBienNormalizadoComponent implements OnInit, AfterViewInit, On
           if(this.default) this.control.setValue(this.default);
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            title: err.error.detalle,
-            icon: 'error',
-            timer: 4000,
-            timerProgressBar: true,
-            showCloseButton: true
-          });
+          this.errorHandler.handle(err);
         },
       });
       this.subs.add(s);

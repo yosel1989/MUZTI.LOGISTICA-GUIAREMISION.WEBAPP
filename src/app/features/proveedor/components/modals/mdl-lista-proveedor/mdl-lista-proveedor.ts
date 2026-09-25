@@ -14,7 +14,7 @@ import { UtilService } from 'app/core/services/util.service';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ProveedorApiService } from '@features/proveedor/services/proveedor-api.service';
 import { ProveedorDto, ProveedorSugeridoDto } from '@features/proveedor/models/proveedor';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -45,7 +45,7 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 })
 
 export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDestroy{
-  private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private api = inject(ProveedorApiService);
   public util = inject(UtilService);
 
@@ -114,18 +114,7 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
       },
       error: (err: HttpErrorResponse) => {
         this.data.set([]);
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       },
     });
   }
@@ -140,22 +129,10 @@ export class MdlListaProveedorComponent implements OnInit, AfterViewInit, OnDest
      }))
     .subscribe({
       next: (value: ProveedorDto) => {
-        console.log('proveedor seleccionado', value);
         this.OnSelect.emit(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.detalle,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       }
     });
     this.sb.add(s);

@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -14,6 +13,7 @@ import { finalize, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { OnlyNumberDirective } from 'app/core/directives/only-numbers.directive';
 import { OnlyUpperDirective } from 'app/core/directives/only-uppers.directive';
 import { SelectDepartamentoComponent } from '@features/ubigeo/components/selects/select-departamento/select-departamento';
@@ -43,7 +43,6 @@ import { SkeletonModule } from 'primeng/skeleton';
     InputTextModule, 
     TextareaModule, 
     ButtonModule, 
-    EditorModule, 
     ReactiveFormsModule, 
     MessageModule, 
     ConfirmDialog,
@@ -73,6 +72,7 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
   private api = inject(EntityApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
   private entityInfoApiService = inject(EntityInfoApiService);
   
 
@@ -221,7 +221,6 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
     if(this.type() === 'new'){
       this.isSubmitted.set(true);
       if(this.frm.invalid){
-        //console.log(this.frm);
         return;
       }
     }
@@ -239,30 +238,12 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
             }))
             .subscribe({
               next: (res: EntityDto) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: `Se actualizó la entidad con éxito`,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success(`Se actualizó la entidad con éxito`);
 
                 this.OnUpdated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(subs);
@@ -287,31 +268,19 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
 
   evtSearchEntityInfo(): void{
     if(this.f.country_id.value !== 135){
-      this.alertService.showToast({
-        position: 'top-end',
-        icon: "warning",
-        title: "Solo se pueden consultar datos de Perú",
-      });
+      this.alertService.warning("Solo se pueden consultar datos de Perú");
 
       return;
     }
 
     if(!(this.f.document_type_id.value === 1 || this.f.document_type_id.value === 4)){
-      this.alertService.showToast({
-        position: 'top-end',
-        icon: "warning",
-        title: "Solo se pueden consultar datos con DNI o RUC",
-      });
+      this.alertService.warning("Solo se pueden consultar datos con DNI o RUC");
 
       return;
     }
 
     if( this.f.document_number.invalid ){
-      this.alertService.showToast({
-        position: 'top-end',
-        icon: "warning",
-        title: "El número de documento debe ser válido",
-      });
+      this.alertService.warning("El número de documento debe ser válido");
 
       return;
     }
@@ -346,17 +315,10 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
               last_name: value.last_name
            });
 
-           this.alertService.showToast({
-            title: 'Información de la persona se encontro con éxito.',
-            icon: 'success'
-           });
+           this.alertService.success('Información de la persona se encontro con éxito.');
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            position: 'top-end',
-            title: err.error.detalle,
-            icon: 'error'
-          })
+          this.errorHandler.handle(err);
         },
       })
   }
@@ -375,17 +337,10 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
               name: value.name,
               address: value.address
            });
-           this.alertService.showToast({
-            title: 'Información de la empresa se encontro con éxito.',
-            icon: 'success'
-           });
+           this.alertService.success('Información de la empresa se encontro con éxito.');
         },
         error: (err: HttpErrorResponse) => {
-          this.alertService.showToast({
-            position: 'top-end',
-            title: err.error.detalle,
-            icon: 'error'
-          })
+          this.errorHandler.handle(err);
         },
       })
   }
@@ -423,10 +378,7 @@ export class MdlEntityEdit implements OnInit, AfterViewInit, OnDestroy {
         this.handlerSetValues(value);
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showToast({
-          title: err.error.detalle,
-          icon: 'error'
-        });
+        this.errorHandler.handle(err);
       },
     });
   }

@@ -11,7 +11,7 @@ import { ToastModule } from "primeng/toast";
 import { finalize } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AlertService } from "@core/services/alert.service";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { AvatarModule } from "primeng/avatar";
 import saveAs from "file-saver";
 
@@ -37,7 +37,7 @@ export class MdlImportDetails  {
 
     api = inject(GuiaRemisionDetalleApiService);
     destroyRef = inject(DestroyRef);
-    alertService = inject(AlertService);
+    errorHandler = inject(ErrorHandlerService);
 
     ctrlFile = new FormControl<File[]>([], { 
         validators: [this.fileExtensionValidator(['XLS', 'XLSX'])], 
@@ -62,7 +62,6 @@ export class MdlImportDetails  {
     constructor(private config: PrimeNG, private messageService: MessageService) {}
 
     choose(event: Event, callback: () => void ) {
-        console.log(callback);
         callback();
     }
 
@@ -103,26 +102,17 @@ export class MdlImportDetails  {
                     saveAs(val.blob, val.filename);
                 },
                 error: (e) => {
-                    this.alertService.showToast({
-                        title: e.error.detalle,
-                        icon: 'error',
-                        timer: 4000,
-                        timerProgressBar: true,
-                        showCloseButton: true,
-                        target: 'body'
-                    });
+                    this.errorHandler.handle(e);
                 }
             });
     }
 
     onDragOver(event: DragEvent) {
-        console.log('onDragOver');
         event.preventDefault();
         this.isDragOver = true;
     }
 
     onDragLeave(event: DragEvent) {
-        console.log('onDragLeave');
         event.preventDefault();
         this.isDragOver = false;
     }
@@ -146,23 +136,11 @@ export class MdlImportDetails  {
         const input = event.target as HTMLInputElement;
         if (input.files) {
             const files = Array.from(input.files);
-            console.log('files', files);
             this.ctrlFile.setValue(files);
             this.ctrlFile.updateValueAndValidity();
             this.file.set(input.files[0]);
             this.importData(input.files[0]);
         }
-    }
-
-    readExcel(file: File) {
-        console.log('readExcel');
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target?.result as ArrayBuffer);
-            console.log(data);
-            // Aquí procesas el Excel con SheetJS/XLSX si lo necesitas
-        };
-        reader.readAsArrayBuffer(file);
     }
 
     // Functions
@@ -235,14 +213,7 @@ export class MdlImportDetails  {
                     this.importDetails.set(value);
                 },
                 error: (e: HttpErrorResponse) => {
-                    this.alertService.showToast({
-                        title: e.error.detalle,
-                        icon: 'error',
-                        timer: 4000,
-                        timerProgressBar: true,
-                        showCloseButton: true,
-                        target: 'body'
-                    });
+                    this.errorHandler.handle(e);
                 }
             });
     }

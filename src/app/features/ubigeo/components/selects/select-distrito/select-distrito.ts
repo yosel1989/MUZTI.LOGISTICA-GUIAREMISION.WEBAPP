@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output, signal, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertService } from '@core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { UbigeoDistritoDto } from 'app/features/ubigeo/models/ubigeo.model';
 import { UbigeoApiService } from 'app/features/ubigeo/services/ubigeo-api.service';
 import { SelectModule } from 'primeng/select';
@@ -22,7 +22,7 @@ import { finalize, Subscription } from 'rxjs';
 
 export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges{
     private ubigeoService = inject(UbigeoApiService);
-    private alertService = inject(AlertService);
+    private errorHandler = inject(ErrorHandlerService);
 
     @Input() idUbigeoProvincia: string | null = null;
     @Input() classLabel: string = '';
@@ -93,13 +93,7 @@ export class SelectDistritoComponent implements OnInit, AfterViewInit, OnDestroy
                 if(this.valueEdit) this.control.setValue(this.valueEdit);
             },
             error: (error: HttpErrorResponse) => {
-                this.alertService.showToast({
-                    title: error.error.detalle,
-                    icon: 'error',
-                    timer: 4000,
-                    timerProgressBar: true,
-                    showCloseButton: true
-                });
+                this.errorHandler.handle(error);
             }
         })
         this.subs.add(sub);

@@ -4,7 +4,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { EditorModule } from 'primeng/editor';
 import { MessageModule } from 'primeng/message';
 
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -14,6 +13,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from 'app/core/services/alert.service';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DividerModule } from 'primeng/divider';
 import { EditarPerfilRequestDTO, PerfilDTO } from '@features/perfil/models/perfil.model';
@@ -30,7 +30,6 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    EditorModule,
     ReactiveFormsModule,
     MessageModule,
     ConfirmDialog,
@@ -46,6 +45,7 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
   private api = inject(PerfilApiService);
   private confirmationService = inject(ConfirmationService);
   private alertService = inject(AlertService);
+  private errorHandler = inject(ErrorHandlerService);
 
 
   @Input() id!: number;
@@ -124,7 +124,6 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
   evtOnSubmit(): void{
     this.isSubmitted.set(true);
     if(this.frm.invalid){
-      console.log(this.frm);
       return;
     }
 
@@ -139,31 +138,13 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
               next: (res: PerfilDTO) => {
                 this.ldSubmit.set(false);
 
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "success",
-                  title: "Se edito el perfil con éxito",
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000
-                });
+                this.alertService.success("Se edito el perfil con éxito");
 
                 this.OnCreated.emit(res);
               },
               error: (err: HttpErrorResponse) => {
                 this.ldSubmit.set(false);
-                this.alertService.showToast({
-                  position: 'top-end',
-                  icon: "error",
-                  title: err.error.detalle,
-                  showCloseButton: true,
-                  timerProgressBar: true,
-                  timer: 4000,
-                  customClass: {
-                    container: 'z-[9999]!',
-                    popup: 'z-[9999]!'
-                  }
-                });
+                this.errorHandler.handle(err);
               }
             });
             this.subs.add(sub);
@@ -189,18 +170,7 @@ export class MdlEditarPerfilComponent implements OnInit, AfterViewInit, AfterVie
       },
       error: (err: HttpErrorResponse) => {
         this.ldData.set(false);
-        this.alertService.showToast({
-          position: 'top-end',
-          icon: "error",
-          title: err.error.error,
-          showCloseButton: true,
-          timerProgressBar: true,
-          timer: 4000,
-          customClass: {
-            container: 'z-[9999]!',
-            popup: 'z-[9999]!'
-          }
-        });
+        this.errorHandler.handle(err);
       }
     });
     this.subs.add(sub);
