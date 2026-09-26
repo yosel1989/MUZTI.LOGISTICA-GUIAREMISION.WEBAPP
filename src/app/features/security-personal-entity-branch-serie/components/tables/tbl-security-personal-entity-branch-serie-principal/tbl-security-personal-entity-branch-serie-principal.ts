@@ -151,6 +151,7 @@ export class TblSecurityPersonalEntityBranchSeriePrincipal implements OnInit, Af
                   ` ;
           }},
           { field: 'serie', header: 'Serie', sort: false, sticky: false, canVisible: true, tdClassName: 'font-semibold! text-center!' },
+          { field: 'area', header: 'Area', sort: false, sticky: false, canVisible: true},
           { field: 'entity_branch_alias', header: 'Local', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchSerieDto) => {
             return `
                     <div class="font-semibold">${rowData.entity_branch_alias}</div>

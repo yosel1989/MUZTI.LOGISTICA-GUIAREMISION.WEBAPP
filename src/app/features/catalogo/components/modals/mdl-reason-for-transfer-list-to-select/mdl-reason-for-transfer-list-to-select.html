@@ -1,45 +1,4 @@
 <div class="p-4">
-    <div class="flex flex-col gap-4">
-        <div class="">
-            
-            <p-button
-                fluid
-                severity="secondary"
-                outlined="true"
-                icon="pi pi-chevron-down"
-                iconPos="left"
-                styleClass="w-full! px-6! py-4! border-gray-300! hover:border-gray-400! rounded-2xl!"
-                (onClick)="evtShowEntityList()"
-            >
-                <div class="flex flex-row gap-x-4 w-full">
-                    <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
-                    <div class="flex flex-col justify-center text-sm text-start! text-slate-800!">
-                        @if(entitySelected() == null){
-                            <p class="font-semibold!">Seleccionar entidad</p>
-                        }@else{
-                            <p class="font-semibold ">{{ entitySelected()?.name ?? entitySelected()?.first_name + ' ' + entitySelected()?.last_name }}</p>
-                            <p class="uppercase ">{{ entitySelected()?.document_number }}</p>
-                        }
-                    </div>
-                </div>
-            </p-button>
-            
-        </div>
-        <div class="lg:col-span-2">
-            <p-iconfield>
-                <p-inputicon class="pi pi-search" />
-                <input 
-                    [formControl]="ctrlSearch" 
-                    pSize="small" 
-                    fluid 
-                    type="text" 
-                    pInputText 
-                    placeholder="Filtrar"
-                    class="min-h-9!"
-                />
-            </p-iconfield>
-        </div>
-    </div>
 
     <div class="mt-5 border rounded-xl border-slate-200 overflow-hidden">
         <p-table
@@ -52,7 +11,7 @@
             [tableStyle]="{ 'min-width': '100px' }"
             [scrollable]="true"
             [showLoader]="true"
-            [loading]="ldSelected() || ldDataById()"
+            [loading]="ldSelected()"
 
             [metaKeySelection]="true"
             dataKey="id"
@@ -127,5 +86,5 @@
 
 <div class="flex gap-2 justify-end pt-6">
     <p-button (click)="evtOnClose()" size="small" label="Cancelar" severity="secondary" styleClass="text-[12px]!"></p-button>
-    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldDataById()" [disabled]="!selected" size="small" [label]="ldSelected() ? '' : 'Seleccionar'" severity="primary"></p-button>
+    <p-button (click)="evtSelect()" styleClass="min-w-[100px]! text-[12px]!" [loading]="ldData()" [disabled]="!selected" size="small" [label]="ldSelected() ? '' : 'Seleccionar'" severity="primary"></p-button>
 </div>

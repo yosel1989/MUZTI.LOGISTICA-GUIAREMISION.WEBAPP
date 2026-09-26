@@ -1,6 +1,7 @@
 export interface EntityBranchListToModalDTO{
     id: number;
-    descripcion: string;
+    description: string;
+    address: string;
     codigo_sunat: string;
     entity_id: number;
     entity_document_number: string;

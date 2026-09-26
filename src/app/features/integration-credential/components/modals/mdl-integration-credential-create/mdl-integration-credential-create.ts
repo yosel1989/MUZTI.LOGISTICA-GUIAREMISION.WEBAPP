@@ -184,7 +184,7 @@ export class MdlIntegrationCredentialCreate implements OnInit, AfterViewInit, On
       draggable: false,
       modal: true,
       position: 'top',
-      header: 'Seleccionar Entidad',
+      header: 'Seleccionar entidad',
       styleClass: 'max-h-none! slide-down-dialog',
       maskStyleClass: 'py-4',
       appendTo: 'body',

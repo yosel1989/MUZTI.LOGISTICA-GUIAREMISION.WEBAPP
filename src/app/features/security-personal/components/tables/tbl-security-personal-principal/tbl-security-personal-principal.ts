@@ -34,6 +34,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MdlSecurityPersonalEntityBranchList } from '@features/security-personal-entity-branch/components/modals/mdl-security-personal-entity-branch-list/mdl-security-personal-entity-branch-list';
 import { MdlSecurityPersonalEntityBranchSerieList } from '@features/security-personal-entity-branch-serie/components/modals/mdl-security-personal-entity-branch-serie-list/mdl-security-personal-entity-branch-serie-list';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { MdlSecurityPersonalReasonForTransferList } from '@features/security-personal-reason-for-transfer/components/modals/mdl-security-personal-reason-for-transfer-list/mdl-security-personal-reason-for-transfer-list';
 
 @Component({
   selector: 'app-tbl-security-personal-principal',
@@ -508,6 +509,38 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       });
     }
 
+    evtShowReasonForTransferList(): void{
+      this.ref = this.dialogService.open(MdlSecurityPersonalReasonForTransferList,  {
+        width: '700px',
+        closable: false,
+        draggable: false,
+        modal: true,
+        position: 'top',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-hashtag text-[14px]!"></span></span> Motivos de traslado asignados',
+        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        },
+        inputValues: {
+          securityPersonal: this.selected()!
+        },
+        contentStyle: {
+          padding: '0rem'
+        }
+      });
+
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlSecurityPersonalEntityBranchSerieList) => {
+        cmp?.OnUpdateSeries
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.evtOnReload(false);
+          })
+      });
+    }
+
+
     evtToggleOpSeries(event: PointerEvent, rowData: SecurityPersonalDto) {
         this.selected.set(rowData);
         this.op.toggle(event);
@@ -540,7 +573,8 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     private buildMenuItems(selected: SecurityPersonalDto | undefined): MenuItem[] {
       return [
         { label: 'Establecimientos', icon: 'fa-light fa-house', command: () => { this.evtShowEntityBranchList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Series ', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Series', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Motivos de traslado', icon: 'fa-light fa-hashtag', command: () => { this.evtShowReasonForTransferList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];

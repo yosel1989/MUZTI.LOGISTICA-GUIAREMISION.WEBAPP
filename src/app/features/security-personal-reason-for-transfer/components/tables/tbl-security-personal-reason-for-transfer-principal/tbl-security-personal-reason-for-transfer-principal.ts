@@ -2,7 +2,6 @@ import { DatePipe, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, computed, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { ColumnsFilterDto } from 'app/core/models/filter';
@@ -25,22 +24,22 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
-import { MdlEntityBranchSerieList } from '@features/entity-branch-serie/components/modals/mdl-entity-branch-serie-list/mdl-entity-branch-serie-list';
 import { StorageService } from '@core/services/storage.service';
 import { PopoverModule } from 'primeng/popover';
 import { ListboxModule } from 'primeng/listbox';
-import { SecurityPersonalEntityBranchDto } from '@features/security-personal-entity-branch/models/security-personal-entity-branch';
-import { SecurityPersonalEntityBranchApiService } from '@features/security-personal-entity-branch/services/security-personal-entity-branch-api.service';
 import { SecurityPersonalDto } from '@features/security-personal/models/security-personal';
-import { MdlEntityBranchListSelect } from '@features/entity-branch/components/modals/mdl-entity-branch-list-select/mdl-entity-branch-list-select';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EntityBranchListToModalDTO } from '@features/entity-branch/models/entity-branch';
 import { AvatarModule } from 'primeng/avatar';
+import { SecurityPersonalReasonForTransferApiService } from '@features/security-personal-reason-for-transfer/services/security-personal-reason-for-transfer-api.service';
+import { SecurityPersonalReasonForTransferDeleteDto, SecurityPersonalReasonForTransferDto } from '@features/security-personal-reason-for-transfer/models/security-personal-reason-for-transfer';
+import { MdlReasonForTransferListToSelect } from '@features/catalogo/components/modals/mdl-reason-for-transfer-list-to-select/mdl-reason-for-transfer-list-to-select';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SunatMotivoTrasladoDto } from '@features/catalogo/models/sunat-catalogo.model';
 
 @Component({
-  selector: 'app-tbl-security-personal-entity-branch-principal',
-  templateUrl: './tbl-security-personal-entity-branch-principal.html',
-  styleUrl: './tbl-security-personal-entity-branch-principal.scss',
+  selector: 'app-tbl-security-personal-reason-for-transfer-principal',
+  templateUrl: './tbl-security-personal-reason-for-transfer-principal.html',
+  styleUrl: './tbl-security-personal-reason-for-transfer-principal.scss',
   imports: [
         TableModule,
         SkeletonModule,
@@ -66,23 +65,22 @@ import { AvatarModule } from 'primeng/avatar';
   animations: [fadeDownAnimation]
 })
 
-export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestroy{
+export class TblSecurityPersonalReasonForTransferPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
-    private IDTABLE = 'tbl-security-personal-entity-branch-principal';
+    private IDTABLE = 'tbl-security-personal-reason-for-transfer-principal';
 
     private datePipe = inject(DatePipe);
     private destroyRef = inject(DestroyRef);
     public dialogService = inject(DialogService);
-    private api = inject(SecurityPersonalEntityBranchApiService);
+    private api = inject(SecurityPersonalReasonForTransferApiService);
     public util = inject(UtilService);
     private alertService = inject(AlertService);
     private errorHandler = inject(ErrorHandlerService);
     private storageService = inject(StorageService);
     private confirmationService = inject(ConfirmationService);
 
-    @Output() OnUpdate = new EventEmitter<boolean>();
-
     securityPersonal = input.required<SecurityPersonalDto>();
+    @Output() OnUpdate = new EventEmitter<boolean>();
 
     cols = signal<Column[]>([]);
 
@@ -107,9 +105,9 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
         .map(col => col.field)
     );
     
-    data = signal<SecurityPersonalEntityBranchDto[]>([]);
+    data = signal<SecurityPersonalReasonForTransferDto[]>([]);
     ldData = signal(true);
-    selected = signal<SecurityPersonalEntityBranchDto | undefined>(undefined);
+    selected = signal<SecurityPersonalReasonForTransferDto | undefined>(undefined);
     loading = signal(false);
 
     recordsTotalTable: number = 0;
@@ -133,7 +131,7 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
     subData: Subscription | undefined = undefined;
     ctrlSearch = new FormControl(null);
 
-    paddedData = computed<(SecurityPersonalEntityBranchDto | { __empty: boolean })[]>(() => {
+    paddedData = computed<(SecurityPersonalReasonForTransferDto | { __empty: boolean })[]>(() => {
       const actual = this.data() ?? [];
       const fillerCount = this.pageSize() - actual.length;
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
@@ -145,19 +143,9 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
       this.cols.set([
           { field: 'select', header: '', sort: false, sticky: false},
           { field: 'cod', header: '#', sort: false, sticky: false},
-          { field: 'entity_name', header: 'Nombre o Razón Social', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchDto) => {
-            return `
-                    <div class="font-semibold">${rowData.entity_name}</div>
-                    <div>${rowData.entity_document_number}</div>
-                  ` ;
-          }},
-          { field: 'entity_branch_alias', header: 'Local', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchDto) =>{
-            return `
-              <div class="font-semibold">${rowData.entity_branch_alias}</div>
-              <div>${rowData.entity_branch_address}</div>
-            `;
-          }},
-          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalEntityBranchDto) => {
+          { field: 'reason_for_transfer_name', header: 'Motivo de Traslado', sort: false, sticky: false, canVisible: true, tdClassName: 'font-semibold! uppercase!' },
+          { field: 'reason_for_transfer_code_sunat', header: 'Cod. Sunat', sort: false, sticky: false, canVisible: true, tdClassName: 'text-center!' },
+          { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, canVisible: true, render: (rowData: SecurityPersonalReasonForTransferDto) => {
             return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
           }},
           { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false, canVisible: true },
@@ -200,7 +188,7 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
         this.ldData.set(false);
       }))
       .subscribe({
-        next: (res: TableData<SecurityPersonalEntityBranchDto[]>) => {
+        next: (res: TableData<SecurityPersonalReasonForTransferDto[]>) => {
           
           this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);
@@ -223,7 +211,7 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
     }
 
     //events
-    evtToggleSelection(row: SecurityPersonalEntityBranchDto): void{
+    evtToggleSelection(row: SecurityPersonalReasonForTransferDto): void{
       if (this.selected() === row) {
         this.selected.set(undefined);
       } else {
@@ -251,13 +239,13 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
     }
 
     evtOnCreate(): void{
-      this.ref = this.dialogService.open(MdlEntityBranchListSelect,  {
+      this.ref = this.dialogService.open(MdlReasonForTransferListToSelect,  {
         width: '700px',
         closable: false,
         draggable: false,
         modal: true,
         position: 'top',
-        header: 'Seleccionar Establecimiento',
+        header: 'Seleccionar motivo de traslado',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -268,12 +256,12 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
 
       this.ref.onChildComponentLoaded
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((cmp: MdlEntityBranchListSelect) => {
+      .subscribe((cmp: MdlReasonForTransferListToSelect) => {
         
         cmp?.OnSelected
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: EntityBranchListToModalDTO) => {
-          this.handlerSelectedEntityBranch(value);
+        .subscribe((value: SunatMotivoTrasladoDto) => {
+          this.handlerSelectedReasonForTransfer(value);
           this.ref?.close();
         });
         
@@ -286,85 +274,22 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
 
     }
 
-    evtOnEdit(): void{
-      /*if(!this.handlerValidateSelected()) return;
-
-      this.ref = this.dialogService.open(MdlEntityBranchEdit,  {
-        width: '700px',
-        closable: false,
-        draggable: false,
-        modal: true,
-        position: 'top',
-        header: 'Editar Establecimiento',
-        styleClass: 'max-h-none! slide-down-dialog',
-        maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body',
-        inputValues:{
-          id: this.selected()!.id
-        },
-        templates: {
-          header: MdlHeader
-        }
-      });
-
-      this.ref.onChildComponentLoaded
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((cmp: MdlEntityBranchEdit) => {
-        
-        cmp?.OnUpdated
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(( s: SecurityPersonalEntityBranchDto) => {
-          this.ref?.close();
-
-          this.selected.update(current => {
-            const updated = { ...current!, ...s, loading_update: true };
-
-            this.data.update(arr =>
-              arr.map(c => c.id === updated.id ? updated : c)
-            );
-            
-            return updated;
-          });
-
-          setTimeout(() => {
-              const idx = this.data().findIndex(x => x.id === this.selected()?.id);
-              if (idx > -1) {
-                this.data.update(arr => {
-                  const copy = [...arr];
-                  copy[idx] = s;
-                  return copy;
-                });
-                this.selected.set(s);
-              }
-          }, 1000);
-
-        });
-        cmp?.OnCanceled
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
-          this.ref?.close();
-        });
-
-      });*/
-    }
-
-    evtOnDelete(data: SecurityPersonalEntityBranchDto): void{
+    evtOnDelete(data: SecurityPersonalReasonForTransferDto): void{
       this.selected.set(data);
       this.confirmationService.confirm({
-          header: '¿Quitar este establecimiento de los asignados?',
+          header: '¿Quitar el motivo de traslado de los asignados?',
           message: 'Confirmar la operación.',
           accept: () => {
 
-              this.api.delete(data.security_person_id, data.entity_branch_id)
+              this.api.delete(data.security_person_id, data.reason_for_transfer_id)
               .pipe(
                 takeUntilDestroyed(this.destroyRef)
               )
               .subscribe({
                 next: () => {
 
-                  this.alertService.success("Se quito el establecimiento de la lista de asignados.");
+                  this.alertService.success("Se quito el motivo de traslado de la lista de asignados.");
                   this.OnUpdate.emit(true);
-
                   this.loadData();
                 },
                 error: (err: HttpErrorResponse) => {
@@ -393,16 +318,16 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
     }
 
 
-    evtShowSeries(): void{
+    /*evtShowList(): void{
       if(!this.handlerValidateSelected()) return;
 
-      this.ref = this.dialogService.open(MdlEntityBranchSerieList,  {
+      this.ref = this.dialogService.open(MdlReasonForTransferListToSelect,  {
         width: '1200px',
         closable: false,
         draggable: false,
         modal: true,
         position: 'top',
-        header: 'Administración de series',
+        header: 'Administración de motivos de traslado',
         styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
@@ -416,7 +341,7 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
           padding: '0rem'
         }
       });
-    }
+    }*/
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onColumnsChange(event: any) {
@@ -451,7 +376,7 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
 
     handlerValidateSelected(): boolean{
       if(!this.selected()){
-        this.alertService.error("Debe seleccionar un establecimiento");
+        this.alertService.error("Debe seleccionar una serie");
 
         return false;
       }
@@ -459,8 +384,8 @@ export class TblSecurityPersonalEntityBranchPrincipal implements OnInit, AfterVi
       return true;
     }
 
-    handlerSelectedEntityBranch(value: EntityBranchListToModalDTO): void{
-      this.api.create({security_person_id: this.securityPersonal().id, entity_branch_id: value.id})
+    handlerSelectedReasonForTransfer(value: SunatMotivoTrasladoDto): void{
+      this.api.create({security_person_id: this.securityPersonal().id, reason_for_transfer_id: value.id})
         .pipe(
           takeUntilDestroyed(this.destroyRef)
         )

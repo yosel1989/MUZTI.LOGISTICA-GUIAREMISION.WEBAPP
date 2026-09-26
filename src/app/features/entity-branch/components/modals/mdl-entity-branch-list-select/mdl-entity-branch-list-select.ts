@@ -96,7 +96,13 @@ export class MdlEntityBranchListSelect implements OnInit, AfterViewInit, OnDestr
             },
             {
                 field: 'description',
-                header: 'Local'
+                header: 'Local',
+                render: (rowData: EntityBranchListToModalDTO) => {
+                    return `
+                        <div class="font-semibold">${rowData.description}</div>
+                        <div>${rowData.address}</div>
+                    `;
+                }
             },
             {
                 field: 'code_sunat',
@@ -125,7 +131,7 @@ export class MdlEntityBranchListSelect implements OnInit, AfterViewInit, OnDestr
             draggable: false,
             modal: true,
             position: 'top',
-            header: 'Seleccionar Entidad',
+            header: 'Seleccionar entidad',
             styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'py-4',
             appendTo: 'body',
