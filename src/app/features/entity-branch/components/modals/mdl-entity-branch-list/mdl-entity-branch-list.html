@@ -107,7 +107,8 @@
                                     [class.border-s-0!]="$index === 0"
                                     [class.border-b-0!]="(rowIndex === data().length - 1)"
                                     [ngClass]="col.tdClassName"
-                                >{{ rowData[col.field] }} </td>
+                                    [innerHTML]="!rowData['loading_update'] ? (col.render ? col.render(rowData, rowIndex) : rowData[col.field] ) : ''"
+                                ></td>
                             }
                         </tr>
                     }

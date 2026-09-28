@@ -8,15 +8,22 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
+import { SelectReasonForTransferAssigned } from '@features/catalogo/components/selects/select-reason-for-transfer-assigned/select-reason-for-transfer-assigned';
 import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
+import { EntityBranchSerieDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
+import { MdlEntityListBySeriesAssigned } from '@features/entity/components/modals/mdl-entity-list-by-series-assigned/mdl-entity-list-by-series-assigned';
 import { EntityBySerieAssignedDto } from '@features/entity/models/entity';
+import { EntityApiService } from '@features/entity/services/entity-service';
 import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
 import { SectionGuiaRemisionConductor } from '@features/guia-remision/components/sections/section-guia-remision-conductor/section-guia-remision-conductor';
@@ -27,12 +34,12 @@ import { SectionGuiaRemisionDocumentoRelacionado } from '@features/guia-remision
 import { SectionGuiaRemisionOrigen } from '@features/guia-remision/components/sections/section-guia-remision-origen/section-guia-remision-origen';
 import { SectionGuiaRemisionProveedor } from '@features/guia-remision/components/sections/section-guia-remision-proveedor/section-guia-remision-proveedor';
 import { SectionGuiaRemisionTransportista } from '@features/guia-remision/components/sections/section-guia-remision-transportista/section-guia-remision-transportista';
+import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
 import { SelectTipoTransporte } from '@features/guia-remision/components/selects/select-tipo-transporte/select-tipo-transporte';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroQuestionMarkCircleSolid } from '@ng-icons/heroicons/solid';
 import { fadeDownAnimation } from 'app/core/animations/page-animation';
 import { AlertService } from 'app/core/services/alert.service';
-import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { LayoutService } from 'app/core/services/layout.service';
 import { MdlComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-comprobante-referencia/mdl-comprobante-referencia';
 import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remision/components/modals/mdl-editar-comprobante-referencia/mdl-editar-comprobante-referencia';
@@ -56,12 +63,6 @@ import { TableModule } from "primeng/table";
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
-import { SectionResponsableListadoComponent } from '@features/guia-remision/components/sections/section-responsable-listado/section-responsable-listado';
-import { EntityApiService } from '@features/entity/services/entity-service';
-import { MdlEntityListBySeriesAssigned } from '@features/entity/components/modals/mdl-entity-list-by-series-assigned/mdl-entity-list-by-series-assigned';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EntityBranchSerieDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 
 export interface Puerto{
     value: string;
@@ -95,6 +96,7 @@ export interface Puerto{
     AutoCompleteModule,
     DividerModule,
     SelectMotivoTrasladoComponent,
+    SelectReasonForTransferAssigned,
     TextareaModule,
     AccordionModule,
     SelectTipoTransporte,

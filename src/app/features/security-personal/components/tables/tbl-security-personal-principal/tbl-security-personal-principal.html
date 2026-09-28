@@ -284,7 +284,7 @@
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         <span 
-                                            class="uppercase text-center flex items-center justify-center bg-slate-200 p-1 px-2 rounded-lg! font-medium"
+                                            class="uppercase text-center block bg-slate-200 p-1 px-2 rounded-lg! font-medium"
                                             (click)="evtToggleOpSeries($event, rowData)"
                                         ><span class="fa-regular fa-hashtag me-1"></span>{{ rowData.series.length }}</span>
                                     }
@@ -302,9 +302,27 @@
                                         <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }@else{
                                         <span 
-                                            class="uppercase text-center flex items-center justify-center bg-slate-200 p-1 px-2 rounded-lg! font-medium"
+                                            class="uppercase text-center block bg-slate-200 p-1 px-2 rounded-lg! font-medium"
                                             (click)="evtToggleOpEntityBranchs($event, rowData)"
                                         ><span class="fa-light fa-house me-1"></span>{{ rowData.entity_branchs.length }}</span>
+                                    }
+                                </td>
+                            }
+
+                            @case('reason_for_transfers'){
+                                <td 
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    class="cursor-pointer py-2! px-2!"
+                                    [ngClass]="col.tdClassName"
+                                >
+                                    @if(rowData.loading_update){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        <span 
+                                            class="uppercase text-center block bg-slate-200 p-1 px-2 rounded-lg! font-medium"
+                                            (click)="evtToggleOpReasonForTransfers($event, rowData)"
+                                        ><span class="fa-light fa-truck-arrow-right me-1"></span>{{ rowData.reason_for_transfers.length }}</span>
                                     }
                                 </td>
                             }
@@ -388,7 +406,7 @@
                 @if(selected()?.series?.length){
                     @for(serie of selected()?.series; let i = $index; track $index){
                         <li class="gap-2 hover:bg-emphasis cursor-pointer rounded-border text-center! p-2">
-                                <div class="font-semibold! text-[14px]! text-center! roboto-condensed text-slate-600!">{{ serie.serie }}</div>
+                                <div class="font-semibold! text-sm! text-center! roboto-condensed text-slate-600!">{{ serie.serie }}</div>
                                 <div class="text-surface-500 dark:text-surface-400 text-xs! font-medium!">{{ serie.entity_document_number }}</div>
                                 <div class="text-surface-500 dark:text-surface-400 text-xs! font-medium!">{{ serie.entity_name }}</div>
                         </li>
@@ -409,14 +427,32 @@
                 @if(selected()?.entity_branchs?.length){
                     @for(branch of selected()?.entity_branchs; let i = $index; track $index){
                         <li class="gap-2 hover:bg-emphasis cursor-pointer rounded-border text-center! p-2">
-                                <div class="font-semibold! text-[14px]! text-center! roboto-condensed text-slate-600!">{{ branch.alias }}</div>
-                                <div class="text-surface-500 dark:text-surface-400 text-xs! font-medium!">{{ branch.entity_document_number }}</div>
+                                <div class="font-semibold! text-sm! text-center! roboto-condensed text-slate-600!">{{ branch.alias }}</div>
                                 <div class="text-surface-500 dark:text-surface-400 text-xs! font-medium!">{{ branch.entity_name }}</div>
                         </li>
                         @if($index < ((selected()?.entity_branchs ?? []).length - 1)){<li><hr class="border-slate-200! my-2"></li>}
                     } 
                 }@else{
                     <li class="text-xs font-medium">No tiene establecimientos asignados</li>
+                }
+            </ul>
+        </div>
+    </div>
+</p-popover>
+
+<p-popover #opReasonForTransfers>
+    <div class="flex flex-col gap-4 max-w-[250px]!">
+        <div>
+            <ul class="list-none p-0 m-0 flex flex-col text-sm!">
+                @if(selected()?.reason_for_transfers?.length){
+                    @for(reason of selected()?.reason_for_transfers; let i = $index; track $index){
+                        <li class="gap-2 hover:bg-emphasis cursor-pointer rounded-border text-center! p-2">
+                                <div class="font-semibold! text-sm! text-center! roboto-condensed text-slate-600! uppercase">{{ reason.name }}</div>
+                        </li>
+                        @if($index < ((selected()?.reason_for_transfers ?? []).length - 1)){<li><hr class="border-slate-200! my-2"></li>}
+                    } 
+                }@else{
+                    <li class="text-xs font-medium">No tiene motivos de traslado asignados</li>
                 }
             </ul>
         </div>

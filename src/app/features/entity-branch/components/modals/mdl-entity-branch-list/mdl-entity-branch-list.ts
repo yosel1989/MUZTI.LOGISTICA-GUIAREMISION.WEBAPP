@@ -149,11 +149,22 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
                 field: 'id',
                 header: '#',
                 className: 'w-[50px]',
-                tdClassName: 'font-semibold! ps-4!'
+                tdClassName: 'font-semibold! ps-4!',
+                render: (rowData: EntityBranchListToModalDTO, index: number | undefined) => {
+                    return`
+                        <div class="font-semibold">${index}</div>
+                    `;
+                }
             },
             {
                 field: 'description',
-                header: 'Local'
+                header: 'Local',
+                render: (rowData: EntityBranchListToModalDTO) => {
+                    return `
+                        <div class="font-semibold">${rowData.description}</div>
+                        <div>${rowData.address}</div>
+                    `;
+                }
             },
             {
                 field: 'code_sunat',

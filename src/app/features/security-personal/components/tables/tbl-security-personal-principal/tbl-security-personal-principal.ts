@@ -1,40 +1,40 @@
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, inject, DestroyRef, ViewChild, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
+import { ErrorHandlerService } from '@core/handlers/error-handler.service';
+import { MdlListaPersonalComponent } from '@features/personal/components/modals/mdl-lista-personal/mdl-lista-personal';
+import { PersonalDTO } from '@features/personal/models/personal.model';
+import { MdlSecurityPersonalEntityBranchSerieList } from '@features/security-personal-entity-branch-serie/components/modals/mdl-security-personal-entity-branch-serie-list/mdl-security-personal-entity-branch-serie-list';
+import { MdlSecurityPersonalEntityBranchList } from '@features/security-personal-entity-branch/components/modals/mdl-security-personal-entity-branch-list/mdl-security-personal-entity-branch-list';
+import { MdlSecurityPersonalReasonForTransferList } from '@features/security-personal-reason-for-transfer/components/modals/mdl-security-personal-reason-for-transfer-list/mdl-security-personal-reason-for-transfer-list';
+import { SecurityPersonalDto } from '@features/security-personal/models/security-personal';
+import { SecurityPersonalApiService } from '@features/security-personal/services/security-personal-api.service';
+import { fadeDownAnimation } from 'app/core/animations/page-animation';
+import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
+import { ColumnsFilterDto } from 'app/core/models/filter';
+import { TableData } from 'app/core/models/table';
+import { AlertService } from 'app/core/services/alert.service';
+import { UtilService } from 'app/core/services/util.service';
+import { Column } from 'app/shared/models/table';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
 import { DividerModule } from 'primeng/divider';
+import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, map, Subscription } from 'rxjs';
-import { DialogService } from 'primeng/dynamicdialog';
-import { TableData } from 'app/core/models/table';
-import { UtilService } from 'app/core/services/util.service';
-import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
-import { ConfirmationService, MenuItem } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AlertService } from 'app/core/services/alert.service';
-import { ErrorHandlerService } from '@core/handlers/error-handler.service';
-import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
-import { fadeDownAnimation } from 'app/core/animations/page-animation';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ColumnsFilterDto } from 'app/core/models/filter';
-import { Column } from 'app/shared/models/table';
-import { SecurityPersonalApiService } from '@features/security-personal/services/security-personal-api.service';
-import { SecurityPersonalDto } from '@features/security-personal/models/security-personal';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
-import { PersonalDTO } from '@features/personal/models/personal.model';
-import { MdlListaPersonalComponent } from '@features/personal/components/modals/mdl-lista-personal/mdl-lista-personal';
-import { HttpErrorResponse } from '@angular/common/http';
-import { MdlSecurityPersonalEntityBranchList } from '@features/security-personal-entity-branch/components/modals/mdl-security-personal-entity-branch-list/mdl-security-personal-entity-branch-list';
-import { MdlSecurityPersonalEntityBranchSerieList } from '@features/security-personal-entity-branch-serie/components/modals/mdl-security-personal-entity-branch-serie-list/mdl-security-personal-entity-branch-serie-list';
-import { Popover, PopoverModule } from 'primeng/popover';
-import { MdlSecurityPersonalReasonForTransferList } from '@features/security-personal-reason-for-transfer/components/modals/mdl-security-personal-reason-for-transfer-list/mdl-security-personal-reason-for-transfer-list';
 
 @Component({
   selector: 'app-tbl-security-personal-principal',
@@ -68,6 +68,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     @ViewChild('cm') cm: ContextMenu | undefined;
     @ViewChild('opSeries') op!: Popover;
     @ViewChild('opEntityBranchs') opEntityBranchs!: Popover;
+    @ViewChild('opReasonForTransfers') opReasonForTransfers!: Popover;
 
     public datePipe = inject(DatePipe);
     public dialogService = inject(DialogService);
@@ -124,6 +125,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
           { field: 'person_document_number', header: 'N° Documento', sort: false, sticky: false },
           { field: 'person_role', header: 'Cargo', sort: false, sticky: false },
           { field: 'entity_branchs', header: 'Estab. Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
+          { field: 'reason_for_transfers', header: 'Mot. T. Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'series', header: 'Series Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: SecurityPersonalDto)  => { 
             if (rowData.active) {
@@ -551,6 +553,11 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
         this.opEntityBranchs.toggle(event);
     }
 
+    evtToggleOpReasonForTransfers(event: PointerEvent, rowData: SecurityPersonalDto) {
+        this.selected.set(rowData);
+        this.opReasonForTransfers.toggle(event);
+    }
+
 
     //functions
 
@@ -574,7 +581,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       return [
         { label: 'Establecimientos', icon: 'fa-light fa-house', command: () => { this.evtShowEntityBranchList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Series', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Motivos de traslado', icon: 'fa-light fa-hashtag', command: () => { this.evtShowReasonForTransferList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Motivos de traslado', icon: 'fa-light fa-truck-arrow-right', command: () => { this.evtShowReasonForTransferList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];

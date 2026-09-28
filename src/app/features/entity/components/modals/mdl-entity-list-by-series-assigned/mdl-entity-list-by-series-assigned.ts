@@ -1,19 +1,19 @@
-import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from "@angular/core";
-import { ErrorHandlerService } from "@core/handlers/error-handler.service";
-import { InputIconModule } from "primeng/inputicon";
-import { InputTextModule } from "primeng/inputtext";
-import { TableModule } from "primeng/table";
-import { ButtonModule } from "primeng/button";
-import { IconFieldModule } from "primeng/iconfield";
-import { SkeletonModule } from "primeng/skeleton";
-import { finalize } from "rxjs";
-import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AvatarModule } from "primeng/avatar";
-import { Column } from "app/shared/models/table";
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from "@angular/core";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
 import { EntityBySerieAssignedDto } from "@features/entity/models/entity";
 import { EntityApiService } from "@features/entity/services/entity-service";
+import { Column } from "app/shared/models/table";
+import { AvatarModule } from "primeng/avatar";
+import { ButtonModule } from "primeng/button";
+import { IconFieldModule } from "primeng/iconfield";
+import { InputIconModule } from "primeng/inputicon";
+import { InputTextModule } from "primeng/inputtext";
+import { SelectModule } from "primeng/select";
+import { SkeletonModule } from "primeng/skeleton";
+import { TableModule } from "primeng/table";
+import { finalize } from "rxjs";
 
 @Component({
     selector: 'app-mdl-entity-list-by-series-assigned',
@@ -84,9 +84,11 @@ export class MdlEntityListBySeriesAssigned implements OnInit, AfterViewInit, OnD
                 field: 'entity_branch_serie',
                 header: 'Serie',
                 thClassName: 'text-center!',
-                tdClassName: 'text-center! font-semibold!',
                 render : (rowData: EntityBySerieAssignedDto) => {
-                    return rowData.entity_branch_serie.serie;
+                    return `
+                        <div class="font-medium">${rowData.entity_branch_serie.serie}</div>
+                        <div>${rowData.entity_branch_serie.area}</div>
+                    `;
                 }
             },
             {

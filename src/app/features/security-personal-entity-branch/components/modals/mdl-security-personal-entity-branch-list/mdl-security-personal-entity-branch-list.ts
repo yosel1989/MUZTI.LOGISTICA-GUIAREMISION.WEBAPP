@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, input, OnDestroy, OnInit, Output, output } from "@angular/core";
+import { SecurityPersonalDto } from "@features/security-personal/models/security-personal";
 import { ButtonModule } from "primeng/button";
 import { TblSecurityPersonalEntityBranchPrincipal } from "../../tables/tbl-security-personal-entity-branch-principal/tbl-security-personal-entity-branch-principal";
-import { SecurityPersonalDto } from "@features/security-personal/models/security-personal";
 @Component({
     selector: 'app-mdl-security-personal-entity-branch-list',
     templateUrl: './mdl-security-personal-entity-branch-list.html', 

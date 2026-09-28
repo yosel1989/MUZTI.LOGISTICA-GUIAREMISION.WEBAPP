@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { Observable } from "rxjs";
-import { SunatMotivoTrasladoDto } from "../models/sunat-catalogo.model";
 import { InvoiceTypeToSelectDto } from "../models/catalogo.model";
+import { SunatMotivoTrasladoDto } from "../models/sunat-catalogo.model";
 
 /**
  * Servicio para consumir los catálogos de SUNAT.
@@ -28,6 +28,17 @@ export class SunatCatalogoApiService {
    */
   loadMotivosTraslado(): Observable<SunatMotivoTrasladoDto[]> {
     return this.http.get<SunatMotivoTrasladoDto[]>(`${this.baseUrl}/motivos-traslado`);
+  }
+
+  /**
+   * Lista los motivos de traslado asignados de SUNAT.
+   *
+   * `GET /sunat-catalogo/reason-for-transfers-assigned`
+   *
+   * @returns Lista de motivos de traslado.
+   */
+  loadReasonForTransferAssigned(): Observable<SunatMotivoTrasladoDto[]> {
+    return this.http.get<SunatMotivoTrasladoDto[]>(`${this.baseUrl}/reason-for-transfers-assigned`);
   }
 
   /**

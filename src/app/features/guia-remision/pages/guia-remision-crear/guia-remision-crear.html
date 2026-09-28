@@ -80,12 +80,12 @@
                 @if(selectTipoGuiaComponent && selectTipoGuiaComponent.tipoGuiaSelected === tipoGuia.remitente){
                     <div>
                         <label  class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Motivo de traslado</label>
-                        <app-select-motivo-traslado
+                        <app-select-reason-for-transfer-assigned
                             #selectMotivoTraslado
                             [control]="f.motivo_traslado_id" 
                             [invalid]="f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())"
                             class="uppercase!"
-                        ></app-select-motivo-traslado>
+                        ></app-select-reason-for-transfer-assigned>
                         @if (f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())) {
                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
                                 @if(f.motivo_traslado_id.errors?.['required']){
@@ -164,7 +164,7 @@
                         <p-accordion-panel value="destinatario"> 
                             <p-accordion-header data-value="destinatario" #headerDestinatario class="group"> 
                                 <span class="inline-flex items-center ps-4 py-2">
-                                    <span class="roboto-condensed">Destinatario</span>
+                                    <span class="roboto-condensed">Destinatario / Cliente</span>
                                     @if(submitted() && sectionDestinatario?.invalid){ 
                                         <i 
                                             class="fa-regular fa-triangle-exclamation text-lg! ms-3! group-hover:text-primary-200! text-amber-600"
