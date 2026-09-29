@@ -29,11 +29,6 @@ export class PageConfiguracionPrincipalComponent implements OnInit, AfterViewIni
 
         this.items = [
             {
-                label: 'Area',
-                styleClass: 'text-[12px]! font-semibold text-primary!',
-                routerLink: 'areas'
-            },
-            {
                 label: 'Personal de seguridad',
                 styleClass: 'text-[12px]! font-semibold text-primary!',
                 routerLink: 'personal-seguridad'

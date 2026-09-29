@@ -29,6 +29,7 @@ import { finalize, Subscription } from 'rxjs';
 import { SelectInvoiceTypeComponent } from '@features/catalogo/components/selects/select-invoice-type/select-invoice-type';
 import { EntityBranchSerieDto, EntityBranchSerieUpdateDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 import { EntityBranchSerieApiService } from '@features/entity-branch-serie/services/entity-branch-serie-api-service';
+import { SelectArea } from '@features/area/components/selectes/select-area/select-area';
 
 
 @Component({
@@ -53,7 +54,8 @@ import { EntityBranchSerieApiService } from '@features/entity-branch-serie/servi
     AvatarModule,
 
 
-    SelectInvoiceTypeComponent
+    SelectInvoiceTypeComponent,
+    SelectArea
   ],
   providers: [ConfirmationService]
 })
@@ -103,7 +105,7 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
   ngOnInit(): void {
     this.frm = new FormGroup({
       invoice_type_id: new FormControl(null, Validators.required),
-      area: new FormControl(null, [Validators.required]),
+      area_id: new FormControl(null, [Validators.required]),
       serie: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
     });
     this.headerValue = this.config.header ?? '';
@@ -133,7 +135,7 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
       id: this.id(),
       entity_branch_id: this.entityBranchId(),
       invoice_type_id: form.invoice_type_id,
-      area: form.area,
+      area_id: form.area_id,
       serie: form.serie,
     };
   }
@@ -243,7 +245,7 @@ export class MdlEntityBranchSerieEdit implements OnInit, AfterViewInit, OnDestro
     this.frm.patchValue({
       entity_branch_id: data.id,
       invoice_type_id: data.invoice_type_id,
-      area: data.area,
+      area_id: data.area_id,
       serie: data.serie
     });
   }

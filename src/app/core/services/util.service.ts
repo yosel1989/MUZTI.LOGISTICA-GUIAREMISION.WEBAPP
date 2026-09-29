@@ -53,4 +53,17 @@ export class UtilService {
     const toHex = (x: number) => x.toString(16).padStart(2, "0");
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
+
+  mapAs<R extends object>() {
+    return <S, M extends { [K in keyof R]?: (src: S) => R[K] }>(
+      obj: S,
+      map: M
+    ): Pick<R, Extract<keyof M, keyof R>> => {
+      const result: Record<string, unknown> = {};
+      for (const destino in map) {
+        result[destino] = (map[destino] as (src: S) => unknown)(obj);
+      }
+      return result as unknown as Pick<R, Extract<keyof M, keyof R>>;
+    };
+  }
 }

@@ -1,5 +1,5 @@
-import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
@@ -24,13 +24,17 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { PopoverModule } from 'primeng/popover';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MdlAreaCreate } from '../../modals/mdl-area-create/mdl-area-create';
 import { MdlAreaEdit } from '../../modals/mdl-area-edit/mdl-area-edit';
+import { ToggleActiveResponseDto } from 'app/shared/models/request';
+import { ResponseDTO } from '@features/shared/models/shared';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AppendHtmlDirective } from '@core/directives/append-html.directive';
 
 @Component({
   selector: 'app-tbl-area-principal',
@@ -47,13 +51,13 @@ import { MdlAreaEdit } from '../../modals/mdl-area-edit/mdl-area-edit';
       InputIconModule,
       TooltipModule,
       InputTextModule,
-      AsyncPipe,
       ContextMenuModule,
       ConfirmDialogModule,
       LoaderComponent,
       ReactiveFormsModule,
+      PopoverModule,
       NgClass,
-      PopoverModule
+      AppendHtmlDirective
   ],
   providers: [DialogService, ConfirmationService, DatePipe],
   animations: [fadeDownAnimation]
@@ -74,32 +78,27 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
 
     cols: Column[] = [];
 
-    data: AreaDto[] = [];
-    ldData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    $ldData = this.ldData.asObservable();
+    data = signal<AreaDto[]>([]);
+    ldData = signal<boolean>(true);
     selected = signal<AreaDto | undefined>(undefined);
-    private selectedSubject = new BehaviorSubject<AreaDto | undefined>(undefined);
-    items$ = this.selectedSubject.pipe(
-      map(selected => this.buildMenuItems(selected))
-    );
-    loading: boolean = false;
+    items = computed(() : MenuItem[] | undefined => {
+      const selected = this.selected();
+      return this.buildMenuItems(selected)
+    });
+    loading = signal<boolean>(false);
 
-    recordsTotalTable: number = 0;
-    recordsTotal: number = 0;
-    recordsFiltered: number = 0;
-    first: number = 0;
+    recordsFiltered = signal<number>(0);
+    first = signal<number>(0);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: any | undefined;
     private subs = new Subscription();
 
-    pageNumber: number = 1;
-    pageSize: number = 10;
-    private pageSize$ = new BehaviorSubject<number>(10);
-    totalRecords: number = 0;
+    pageNumber = signal<number>(1);
+    pageSize = signal<number>(10);
+    totalRecords = signal<number>(0);
 
     firstChange: boolean = false;
-    items: MenuItem[] | undefined;
 
     filters: ColumnsFilterDto[] = [];
     search: string | null = null;
@@ -114,7 +113,7 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'code', header: 'Código', sort: false, sticky: false },
-          { field: 'name', header: 'Nombre', sort: false, sticky: false },
+          { field: 'name', header: 'Nombre', sort: false, sticky: false, tdClassName: 'font-semibold!' },
           { field: 'level', header: 'Nivel', sort: false, sticky: false, render: (rowData: AreaDto) => {
             return rowData.level === 1 ? 'Principal' : 'Subárea';
           }},
@@ -137,10 +136,6 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
     }
 
     ngOnInit(): void{
-      this.items = [
-          { label: 'Activar', icon: 'pi pi-check-circle text-green-500!', command: () => { this.evtOnToggleActive(true); }},
-          { label: 'Desactivar', icon: 'pi pi-ban text-gray-500!', command: () => { this.evtOnToggleActive(false); }},
-      ];
     }
 
     ngAfterViewInit(): void{
@@ -157,17 +152,17 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
     }
 
     // getters
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get paddedData(): any[] {
-      const actual = this.data ?? [];
-      const fillerCount = this.pageSize - actual.length;
+
+    paddedData = computed(() => {
+      const actual = this.data() ?? [];
+      const fillerCount = Math.max(0, this.pageSize() - actual.length);
       const fillerRows = Array.from({ length: fillerCount }, () => ({ __empty: true }));
       return [...actual, ...fillerRows];
-    }
+    });
 
     // setters
     setSelected(data: AreaDto | undefined) {
-      this.selectedSubject.next(data);
+      this.selected.set(data);
     }
 
     // data
@@ -175,38 +170,38 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
       this.subData?.unsubscribe();
       if(reload){ this.selected.set(undefined) };
       this.firstChange = false;
-      this.loading = true;
-      this.ldData.next(true);
+      this.loading.set(true);
+      this.ldData.set(true);
 
       if(reload){
-        this.pageNumber = 1;
-        this.first = 0;
+        this.pageNumber.set(1);
+        this.first.set(0);
       }
 
 
-      this.subData = this.api.getCollection(this.pageNumber, this.pageSize, this.search).subscribe({
+      this.subData = this.api.getCollection(this.pageNumber(), this.pageSize(), this.search).subscribe({
         next: (res: TableData<AreaDto[]>) => {
           
-          this.data = res.data.map(x => {
+          this.data.set(res.data.map(x => {
             x.created_at = new Date(x.created_at);
-            x.updated_at = x.updated_at ? new Date(x.updated_at) : x.updated_at;
-            x.loading_update = false;
+            x.updated_at = x.updated_at ? new Date(x.updated_at) : null;
             x.loading_active = false;
+            x.loading_update = false;
             return x;
-          });
+          }));
 
-          this.pageNumber = res.page_number;
-          this.pageSize = res.page_size;
-          this.first = (this.pageNumber - 1) * this.pageSize;
-          this.totalRecords = res.total_records;
-          this.ldData.next(false);
+          this.pageNumber.set(res.page_number);
+          this.pageSize.set(res.page_size);
+          this.first.set( (this.pageNumber() - 1) * this.pageSize() );
+          this.totalRecords.set( res.total_records );
+          this.ldData.set(false);
           this.cd.detectChanges();
-          this.loading = false;
+          this.loading.set( false );
         },
         error: () => {
-          this.ldData.next(false);
-          this.loading = false; 
-          this.data = [];
+          this.ldData.set(false);
+          this.loading.set(false); 
+          this.data.set([]);
 
           this.errorHandler.showError("Ocurrio un error al obtener los registros");
         }
@@ -225,17 +220,15 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
     }
 
     evtNext() {
-      /*this.queryParams = {
-        ...this.queryParams!,
-        start : this.first + this.queryParams!.length 
-      };*/
-
-      this.reload();
+      this.first.set( this.first() + this.pageSize() );
+      this.pageNumber.set( this.pageNumber() + 1 );
+      this.evtOnReload(false);
     }
 
     evtPrev() {
-      /*this.first = this.first - this.queryParams!.length;*/
-      this.reload();
+      this.first.set( this.first() - this.pageSize() );
+      this.pageNumber.update(current => current - 1);
+      this.evtOnReload(false);
     }
 
     private evtOnReload(reload: boolean = true): void{
@@ -313,42 +306,43 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
     }
 
     evtOnEdit(): void{
-      console.log(this.selected());
       this.ref = this.dialogService.open(MdlAreaEdit,  {
         width: '500px',
         closable: true,
+        draggable: false,
         modal: true,
         position: 'top',
-        header: 'Editar Perfil',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-pencil text-[14px]!"></span></span> Editar área',
         styleClass: 'max-h-none! slide-down-dialog',
         maskStyleClass: 'overflow-y-auto py-4',
         appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        },
         inputValues:{
           id: this.selected()!.id
         }
       });
 
-      this.ref.onChildComponentLoaded.subscribe((cmp: MdlAreaEdit) => {
-        cmp?.OnUpdated
+      this.ref.onChildComponentLoaded
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(( s: AreaDto) => {
-          this.selected()!.loading_update = true;
-          this.cd.detectChanges();
+        .subscribe((cmp: MdlAreaEdit) => {
 
-          setTimeout(() => {
-            const idx = this.data.findIndex(x => x.id === this.selected()!.id);
-            if (idx > -1) {
-              this.data[idx] = { ...this.selected!, ...s, loading_update: false };
-            }
-            this.cd.detectChanges();
-          }, 1000);
-          this.ref?.close();
-        });
-        cmp?.OnClose
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
-          this.ref?.close();
-        });
+          cmp?.OnUpdated
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((s: AreaDto) => {
+              this.ref?.close();
+
+              const updated = { ...this.selected()!, ...s, loading_update: true };
+              this.handlerReplaceRow(updated);
+              this.selected.set(updated);
+
+              setTimeout(() => {
+                this.handlerReplaceRow(s);
+                this.selected.set(s);
+              }, 100);
+            });
+          
       });
     }
 
@@ -379,159 +373,83 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
       });*/
     }
 
-    evtOnToggleActive(active: boolean): void{
-      /*this.confirmationService.confirm({
-          header: !status ? '¿Desactivar el establecimiento?' : '¿Activar el establecimiento?',
+    evtOnToggleActive(status: boolean): void{
+      if(!this.handlerValidateSelected()) return;
+
+      this.confirmationService.confirm({
+          header: !status ? '¿Desactivar el área?' : '¿Activar el área?',
           message: 'Confirmar la operación.',
           accept: () => {
+              this.selected.update(current => {
+                const updated = { ...current!, loading_active: true };
 
-              this.selected!.ld_estado = true;
+                this.data.update(arr =>
+                  arr.map(c => c.id === updated.id ? { ...c, loading_active: true } : c)
+                );
+
+                return updated;
+              });
+              
               this.cd.detectChanges();
-
-              const request = {
-                id_estado: status,
-                usuario_modifico: 'SA'
-              } as ActualizarEstadoPerfilRequestDTO;
-
-              const subs = this.api.actualizarEstado(this.selected!.id, request).subscribe({
-                next: (res: ActualizarEstadoPerfilResponseDTO) => {
+              this.api.toogleActive(this.selected()!.id, status)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: (res: ResponseDTO<ToggleActiveResponseDto>) => {
 
                   this.alertService.success(res.detalle);
 
-                  this.selected!.ld_estado = false;
-                  this.selected!.id_estado = res.id_estado;
-                  this.selected!.estado = res.estado;
-                  this.selected!.usuario_modifico = res.usuario_modifico;
-                  this.selected!.fecha_modifico = res.fecha_modifico;
-                  this.cd.detectChanges();
+                  this.selected.update(current => {
+                    const updated = {
+                      ...current!,
+                      loading_active: false,
+                      loading_update: false,
+                      active: res.data.active,
+                      updated_at: res.data.updated_at,
+                      updated_at_user: res.data.updated_at_user,
+                      updated_at_user_name: res.data.updated_at_user_name
+                    };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
                 },
                 error: (err: HttpErrorResponse) => {
 
-                  this.selected!.ld_estado = false;
-                  this.cd.detectChanges();
-
                   this.errorHandler.handle(err);
+
+                  this.selected.update(current => {
+                    const updated = { ...current!, loading_active: false };
+
+                    this.data.update(arr =>
+                      arr.map(c => c.id === updated.id ? updated : c)
+                    );
+
+                    return updated;
+                  });
                 }
               });
-              this.subs.add(subs);
-          },
-          reject: () => {
-              
-          },
-      });*/
+          }
+      });
     }
 
     evtFirstChange(first: number): void{
-      this.pageNumber = (first / this.pageSize) > 0 ? ((first / this.pageSize) + 1) : 1 ;
+      this.pageNumber.set( (first / this.pageSize()) > 0 ? ((first / this.pageSize()) + 1) : 1 );
     }
 
     evtRowsChange(rows: number): void{
-      this.pageNumber = this.pageSize === rows ? this.pageNumber : 1;
-      this.pageSize = this.pageSize === rows ? this.pageSize : rows;
-      this.pageSize$.next(this.pageSize === rows ? this.pageSize : rows);
-      this.first = (this.pageNumber - 1) * this.pageSize
-      this.loadData(false);
+      this.pageNumber.set( this.pageSize() === rows ? this.pageNumber() : 1 );
+      this.pageSize.set( this.pageSize() === rows ? this.pageSize() : rows );
+      this.first.set( (this.pageNumber() - 1) * this.pageSize() );
+      this.loadData();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    evtOnRowSelect(event: any) {
+    evtOnRowSelect(event: TableRowSelectEvent) {
       this.selected.set(event.data);
-      this.setSelected(event.data);
     }
 
-    evtShowEntityBranchList(): void{
-      /*this.ref = this.dialogService.open(MdlAreaEntityBranchList,  {
-        width: '700px',
-        closable: false,
-        draggable: false,
-        modal: true,
-        position: 'top',
-        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-house text-[14px]!"></span></span> Establecimientos asignados',
-        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
-        maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body',
-        templates: {
-          header: MdlHeader
-        },
-        inputValues: {
-          Area: this.selected()!
-        },
-        contentStyle: {
-          padding: '0rem'
-        }
-      });
-
-      this.ref.onChildComponentLoaded.subscribe((cmp: MdlAreaEntityBranchList) => {
-        cmp?.OnUpdateData
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.evtOnReload(false);
-          })
-      });*/
-    }
-
-
-    evtShowEntityBranchSerieList(): void{
-      /*this.ref = this.dialogService.open(MdlAreaEntityBranchSerieList,  {
-        width: '700px',
-        closable: false,
-        draggable: false,
-        modal: true,
-        position: 'top',
-        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-hashtag text-[14px]!"></span></span> Series asignadas',
-        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
-        maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body',
-        templates: {
-          header: MdlHeader
-        },
-        inputValues: {
-          Area: this.selected()!
-        },
-        contentStyle: {
-          padding: '0rem'
-        }
-      });
-
-      this.ref.onChildComponentLoaded.subscribe((cmp: MdlAreaEntityBranchSerieList) => {
-        cmp?.OnUpdateSeries
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.evtOnReload(false);
-          })
-      });*/
-    }
-
-    evtShowReasonForTransferList(): void{
-      /*this.ref = this.dialogService.open(MdlAreaReasonForTransferList,  {
-        width: '700px',
-        closable: false,
-        draggable: false,
-        modal: true,
-        position: 'top',
-        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-hashtag text-[14px]!"></span></span> Motivos de traslado asignados',
-        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
-        maskStyleClass: 'overflow-y-auto py-4',
-        appendTo: 'body',
-        templates: {
-          header: MdlHeader
-        },
-        inputValues: {
-          Area: this.selected()!
-        },
-        contentStyle: {
-          padding: '0rem'
-        }
-      });
-
-      this.ref.onChildComponentLoaded.subscribe((cmp: MdlAreaEntityBranchSerieList) => {
-        cmp?.OnUpdateSeries
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.evtOnReload(false);
-          })
-      });*/
-    }
 
     //functions
 
@@ -540,11 +458,12 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
     }
 
     isLastPage(): boolean {
-      return this.data ? this.first >= this.recordsTotalTable : true;
+      const lastPage = this.data() ? this.first() >= this.totalRecords() : true;
+      return lastPage;
     }
 
     isFirstPage(): boolean {
-      return this.data ? this.first === 0 : true;
+      return this.data() ? this.first() === 0 : true;
     }
 
     reload(): void{
@@ -554,9 +473,35 @@ export class TblAreaPrincipal implements OnInit, AfterViewInit, OnDestroy{
     private buildMenuItems(selected: AreaDto | undefined): MenuItem[] {
       return [
         { label: 'Editar', icon: 'pi pi-pencil', command: () => { this.evtOnEdit(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
-        { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
+        { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => { this.evtOnToggleActive(true)  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => { this.evtOnToggleActive(false) }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];
     }
+
+    // Handlers
+
+    handlerValidateSelected(): boolean{
+      if(!this.selected()){
+        this.alertService.error("Debe seleccionar un área");
+
+        return false;
+      }
+
+      return true;
+    }
+
+
+  private handlerReplaceRow(row: AreaDto) {
+    this.data.update(arr => {
+      const idx = this.data().findIndex(x => x.id === row.id);
+      if (idx === -1) {
+        console.warn('No se encontró la fila', row.id, arr.map(c => c.id));
+        return arr;
+      }
+      const copy = [...arr];
+      copy[idx] = row;
+      return copy;
+    });
+  }
 
 }

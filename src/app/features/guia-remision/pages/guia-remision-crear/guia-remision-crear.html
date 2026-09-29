@@ -82,13 +82,13 @@
                         <label  class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Motivo de traslado</label>
                         <app-select-reason-for-transfer-assigned
                             #selectMotivoTraslado
-                            [control]="f.motivo_traslado_id" 
-                            [invalid]="f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())"
+                            [control]="f.reason_for_transfer_id" 
+                            [invalid]="f.reason_for_transfer_id.invalid && (f.reason_for_transfer_id.touched || submitted())"
                             class="uppercase!"
                         ></app-select-reason-for-transfer-assigned>
-                        @if (f.motivo_traslado_id.invalid && (f.motivo_traslado_id.touched || submitted())) {
+                        @if (f.reason_for_transfer_id.invalid && (f.reason_for_transfer_id.touched || submitted())) {
                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">
-                                @if(f.motivo_traslado_id.errors?.['required']){
+                                @if(f.reason_for_transfer_id.errors?.['required']){
                                     Este campo es requerido.
                                 }
                             </span></p-message>
@@ -119,7 +119,7 @@
                         <p-datepicker 
                             fluid
                             readonlyInput="true" 
-                            formControlName="fecha_emision" 
+                            formControlName="issue_date" 
                             size="small"
                             [iconDisplay]="'input'" 
                             panelStyleClass="text-sm! uppercase!"

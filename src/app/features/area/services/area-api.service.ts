@@ -4,6 +4,8 @@ import { TableData } from "@core/models/table";
 import { environment } from "environments/environment";
 import { Observable } from "rxjs";
 import { AreaCreateDto, AreaDto, AreaToSelectDto, AreaUpdateDto } from "../models/area";
+import { ResponseDTO } from "@features/shared/models/shared";
+import { ToggleActiveResponseDto } from "app/shared/models/request";
 
 /**
  * Servicio para consumir los endpoints de area.
@@ -39,9 +41,9 @@ export class AreaApiService {
      * @param request Datos actualizados; `request.id` indica el area a editar.
      * @returns El area actualizado.
      */
-    update(request: AreaUpdateDto): Observable<AreaDto>{
+    update(request: AreaUpdateDto): Observable<ResponseDTO<AreaDto>>{
 
-        return this.httpClient.put<AreaDto>(`${this.baseUrl}/${request.id}`, request);
+        return this.httpClient.put<ResponseDTO<AreaDto>>(`${this.baseUrl}/${request.id}`, request);
     }
 
     /**
@@ -85,9 +87,9 @@ export class AreaApiService {
      * @param active boolean true = activo y false = inactivo.
      * @returns Datos del area.
      */
-    toogleActive(area_id: number, active: boolean): Observable<AreaDto>{
+    toogleActive(area_id: number, active: boolean): Observable<ResponseDTO<ToggleActiveResponseDto>>{
 
-        return this.httpClient.put<AreaDto>(`${this.baseUrl}/${area_id}/toggle-active`,{active});
+        return this.httpClient.put<ResponseDTO<ToggleActiveResponseDto>>(`${this.baseUrl}/${area_id}/toggle-active`,{active, id: area_id});
     }
 
     /**
@@ -98,7 +100,7 @@ export class AreaApiService {
      * @param level Número para filtrar; si es `null` no se filtra.
      * @returns Listado de area con el total de registros.
      */
-    getToSelect(level: number | null): Observable<AreaToSelectDto[]>{
+    getToSelect(level: number | null = null): Observable<AreaToSelectDto[]>{
         let httpParams = new HttpParams();
         httpParams = level 
         ? httpParams.set('level', level) 

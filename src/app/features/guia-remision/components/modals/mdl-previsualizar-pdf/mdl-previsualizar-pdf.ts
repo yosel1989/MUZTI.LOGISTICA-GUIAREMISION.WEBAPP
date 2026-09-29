@@ -68,8 +68,8 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                 { 
                   stack: [
                     {text: this.data.entity.document_number, bold: true, marginBottom: 2},
-                    {text: this.data.remitente.address.toUpperCase(), marginBottom:10, color: '#adadad'},
-                    {text: `${this.data.remitente.district} - ${this.data.remitente.province} - ${this.data.remitente.department}`, color: '#adadad'},
+                    {text: this.data.entity.address?.toUpperCase() ?? '', marginBottom:10, color: '#adadad'},
+                    {text: `${this.data.entity.district} - ${this.data.entity.province} - ${this.data.entity.department}`, color: '#adadad'},
                   ],
                   border: [false,false,false,false],
                 },
@@ -131,21 +131,21 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
             body: [
               [
                 {text: 'Cliente:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 1}, 
-                {text: this.data.destinatario.entity_name, border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 1, color: '#adadad'}, 
+                {text: this.data.entity_receiver.name ?? '', border: [false, true, false, false], marginLeft:10,  marginTop: 5, marginBottom: 1, color: '#adadad'}, 
                 {text: '', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 1}, 
                 {text: '', border: [false, true, true, false], marginLeft:10, marginTop: 5, marginBottom: 1}
               ],
               [
                 {text: `${'RUC'}:`, border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
-                {text: this.data.destinatario.entity_document_number ?? '-', border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
+                {text: this.data.entity_receiver.document_number ?? '-', border: [false, false, false, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}, 
                 {text: 'Dirección:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 1, marginBottom: 1}, 
-                {text: this.data.destinatario.address ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
+                {text: this.data.entity_branch_receiver.address ?? '-', border: [false, false, true, false], marginLeft:10, marginTop: 1, marginBottom: 1, color: '#adadad'}
               ],
               [
                 {text: 'Fecha de emisión:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
-                {text: this.utilService.dateFormat(this.data.fecha_emision, 'dd-MMM-yyyy').toUpperCase().replace(".",""), border: [false, false, false, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}, 
+                {text: this.utilService.dateFormat(this.data.issue_date, 'dd-MMM-yyyy').toUpperCase().replace(".",""), border: [false, false, false, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}, 
                 {text: 'Ciudad:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 1, marginBottom: 5}, 
-                {text: `${this.data.destinatario.district ?? '-'} - ${this.data.destinatario.province ?? '-'} - ${this.data.destinatario.department ?? '-'}`, border: [false, false, true, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}
+                {text: `${this.data.entity_branch_receiver.district ?? '-'} - ${this.data.entity_branch_receiver.province ?? '-'} - ${this.data.entity_branch_receiver.department ?? '-'}`, border: [false, false, true, true], marginLeft:10, marginTop: 1, marginBottom: 5, color: '#adadad'}
               ]
             ],
           },
@@ -167,19 +167,19 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                     body: [
                       [
                         {text: 'Tipo de Transportista:', border: [true, true, false, false], bold: true, marginLeft: 10, marginTop: 5, marginBottom: 2}, 
-                        {text: this.data.tipo_transporte.toUpperCase(), border: [false, true, false, false], marginLeft:0,  marginTop: 5, marginBottom: 2, color: '#adadad'}, 
+                        {text: this.data.transport_type.toUpperCase(), border: [false, true, false, false], marginLeft:0,  marginTop: 5, marginBottom: 2, color: '#adadad'}, 
                         {text: 'Fecha Inicio traslado:', border: [false, true, false, false], marginLeft:10, marginTop: 5, marginBottom: 2, bold: true}, 
-                        {text: this.data.datos_envio.fecha_envio ? this.utilService.dateFormat(this.data.datos_envio.fecha_envio, 'dd-MMM-yyyy').toUpperCase().replace(".","") : '-', border: [false, true, true, false], marginLeft:0, marginTop: 5, marginBottom: 2, color: '#adadad'}
+                        {text: this.data.shipment_details.shipment_start_date ? this.utilService.dateFormat(this.data.shipment_details.shipment_start_date, 'dd-MMM-yyyy').toUpperCase().replace(".","") : '-', border: [false, true, true, false], marginLeft:0, marginTop: 5, marginBottom: 2, color: '#adadad'}
                       ],
                       [
                         {text: 'Und. de Medida:', border: [true, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                        {text: this.data.datos_envio.codigo_um, border: [false, false, false, false], marginLeft:0, marginTop: 2, marginBottom: 2, color: '#adadad'}, 
+                        {text: this.data.shipment_details.unit_of_measure_code_sunat, border: [false, false, false, false], marginLeft:0, marginTop: 2, marginBottom: 2, color: '#adadad'}, 
                         {text: 'Peso Bruto:', border: [false, false, false, false], bold: true, marginLeft:10, marginTop: 2, marginBottom: 2}, 
-                        {text: this.data.datos_envio.peso_bruto ?? '-', border: [false, false, true, false], marginLeft:0, marginTop: 2, marginBottom: 2, color: '#adadad'}
+                        {text: this.data.shipment_details.total_gross_weight ?? '-', border: [false, false, true, false], marginLeft:0, marginTop: 2, marginBottom: 2, color: '#adadad'}
                       ],
                       [
                         {text: 'Motivo:', border: [true, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
-                        {text: this.data.motivo_traslado?.nombre ?? '', border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5, color: '#adadad'}, 
+                        {text: this.data.reason_for_transfer?.nombre ?? '', border: [false, false, false, true], marginLeft:0, marginTop: 2, marginBottom: 5, color: '#adadad'}, 
                         {text: 'Descripción:', border: [false, false, false, true], bold: true, marginLeft:10, marginTop: 2, marginBottom: 5}, 
                         {text: '', border: [false, false, true, true], marginLeft:0, marginTop: 2, marginBottom: 5}
                       ]
@@ -204,7 +204,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                         widths: ['*'],
                         body: [
                           [
-                            {text: `${this.data.origen.direccion ?? '-'}`,  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
+                            {text: `${this.data.entity_branch.address ?? '-'}`,  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },
@@ -224,7 +224,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                         widths: ['*'],
                         body: [
                           [
-                            {text: `${this.data.destino[0].direccion ?? '-'}`, marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
+                            {text: `${this.data.entity_branch_receiver.address ?? '-'}`, marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },

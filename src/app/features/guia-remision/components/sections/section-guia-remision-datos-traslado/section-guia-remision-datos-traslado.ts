@@ -182,6 +182,7 @@ export class SectionGuiaRemisionDatosTraslado implements OnInit{
 
             indic_envio_sunat: formData.indic_envio_sunat,
             
+            
         };
         }
 

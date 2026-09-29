@@ -15,14 +15,12 @@ import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { SelectReasonForTransferAssigned } from '@features/catalogo/components/selects/select-reason-for-transfer-assigned/select-reason-for-transfer-assigned';
-import { ConductorDto } from '@features/conductor/models/conductor.model';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
 import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
-import { EntityBranchSerieDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityListBySeriesAssigned } from '@features/entity/components/modals/mdl-entity-list-by-series-assigned/mdl-entity-list-by-series-assigned';
-import { EntityBySerieAssignedDto } from '@features/entity/models/entity';
+import { EntityBySerieAssigned_EntityDto, EntityBySerieAssignedDto } from '@features/entity/models/entity';
 import { EntityApiService } from '@features/entity/services/entity-service';
 import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
@@ -46,7 +44,7 @@ import { MdlEditarComprobanteReferenciaComponent } from 'app/features/guia-remis
 import { SectionProductoListadoComponent } from 'app/features/guia-remision/components/sections/section-producto-listado/section-producto-listado';
 import { SelectTipoGuiaComponent } from 'app/features/guia-remision/components/selects/select-tipo-guia/select-tipo-guia';
 import { SunatMotivoTrasladoEnum, TipoGuiaRemisionEnum } from 'app/features/guia-remision/enums/guia-remision.enum';
-import { GR_EnviarGuiaRemisionResponseDto, GR_ProductoRequestDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_DatosTrasladoRequestDto, GR_EnviarGuiaRemisionResponseDto, GR_ProductRequestDto, GuiaRemisionRemitenteRequestDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { GuiaRemitenteApiService } from 'app/features/guia-remitente/services/guia-remitente-api.service';
 import { AccordionHeader, AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, MenuItem } from 'primeng/api';
@@ -63,6 +61,7 @@ import { TableModule } from "primeng/table";
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { UtilService } from '@core/services/util.service';
 
 export interface Puerto{
     value: string;
@@ -121,13 +120,10 @@ export interface Puerto{
 export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDestroy{
 
     private entityServiceApi = inject(EntityApiService);
-
-
+    private utilService = inject(UtilService);
 
     @ViewChild('selectMotivoTraslado') selectMotivoTraslado: SelectMotivoTrasladoComponent | undefined;
-
     @ViewChild('selectEmpresaRemitente') selectEmpresaRemitente: SelectEmpresaRemitenteComponent | undefined;
-
     @ViewChild('selectTipoTransporte') selectTipoTransporte: SelectTipoTransporte | undefined;
     @ViewChild('sectionDocumentoRelacionado') sectionDocumentoRelacionado: SectionGuiaRemisionDocumentoRelacionado | undefined;
     @ViewChild('sectionDestinatario') sectionDestinatario: SectionGuiaRemisionDestinatario | undefined;
@@ -207,18 +203,18 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
             empresa_id: new FormControl(null, Validators.required),
 
-            motivo_traslado_id: new FormControl(null, Validators.required),
+            reason_for_transfer_id: new FormControl(null, Validators.required),
             tipo_transporte: new FormControl('PRIVADO', Validators.required),
 
-            fecha_emision: new FormControl(new Date(), Validators.required),
+            issue_date: new FormControl(new Date(), Validators.required),
             docs_ref: new FormArray([]),
             observacion: new FormControl(null, Validators.maxLength(2500))
         });
 
-        this.formGroup.get('fecha_emision')?.setValue(new Date());
+        this.formGroup.get('issue_date')?.setValue(new Date());
 
         // detectar el cambio en motivo traslado
-        this.formGroup.get('motivo_traslado_id')?.valueChanges.subscribe(() => {
+        this.formGroup.get('reason_for_transfer_id')?.valueChanges.subscribe(() => {
             this.tabRemitenteDestinatario.set(0);
             this.remitente.set(null);
             this.destinatario.set(null);
@@ -284,89 +280,95 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
     get request(): GuiaRemisionRemitenteRequestDto{
 
         return {
-            entity_id: this.entitySelected()?.entity.id ?? 0,
+            /** Entidad emisora */
+            entity_id: this.entitySelected()!.entity.id,
             entity: this.entitySelected()!.entity,
-
-            entity_branch_id: this.entitySelected()!.entity_branch.id,
-            entity_branch: this.entitySelected()!.entity_branch as EntityBranchDto,
-
-            entity_branch_serie_id: this.entitySelected()!.entity_branch_serie.id,
-            entity_branch_serie: this.entitySelected()!.entity_branch_serie as EntityBranchSerieDto,
-
-            motivo_traslado_id: parseInt(this.f.motivo_traslado_id.value, 10),
-            motivo_traslado: this.selectMotivoTraslado!.selected(),
-
-            tipo_transporte: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
-
-            fecha_emision: formatDate(this.f.fecha_emision.value, 'yyyy-MM-dd', 'en-US'),
-            hora_emision: formatDate(this.f.fecha_emision.value, 'HH:mm:ss', 'en-US'),
-
-            observacion: this.f.observacion.value ?? '',
-            registro_mtc: null,
-
-            doc_relacionado: this.sectionDocumentoRelacionado?.getFormData.length ? this.sectionDocumentoRelacionado?.getFormData : null,
-
-            remitente: this.entitySelected()!.entity_branch,
-            remitente_id: this.entitySelected()!.entity_branch.id,
-
-            destinatario: this.sectionDestinatario!.selected()!,
-            destinatario_id: this.sectionDestinatario!.selected()!.id,
-
-            proveedor: null,
-            proveedor_id: this.sectionProveedor === undefined ? null : this.sectionProveedor.getFormData!.id,
-
             
-            // id de la empresa transportista
+            /** Establecimiento donde se emitió */
+            entity_branch_id: this.entitySelected()!.entity_branch.id,
+            entity_branch: this.entitySelected()!.entity_branch,
+              
+            /** Serie con el cual se emitió */
+            entity_branch_serie_id: this.entitySelected()!.entity_branch_serie.id,
+            entity_branch_serie: this.entitySelected()!.entity_branch_serie,
+            
+            /** Motivo de traslado según SUNAT */
+            reason_for_transfer_id: this.f.reason_for_transfer_id.value,
+            reason_for_transfer: this.selectMotivoTraslado!.selected(),
+            
+            /** Tipo de transporte */
+            transport_type: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
+            
+            /** Fecha de emisión */
+            issue_date: formatDate(this.f.issue_date.value, 'yyyy-MM-dd', 'en-US'),
+            
+            /** Hora de emisión */
+            issue_hour: formatDate(this.f.issue_date.value, 'HH:mm:ss', 'en-US'),
+            
+            /** Entidad cliente o destinatario */
+            entity_receiver_id: this.sectionDestinatario!.selected()!.entity_id,
+            entity_receiver: {
+                id: this.sectionDestinatario!.selected()!.entity_id,
+                name: this.sectionDestinatario!.selected()!.entity_name,
+                document_number: this.sectionDestinatario!.selected()!.entity_document_number,
+                department: this.sectionDestinatario!.selected()!.entity_department,
+                province: this.sectionDestinatario!.selected()!.entity_province,
+                district: this.sectionDestinatario!.selected()!.entity_district,
+                address: this.sectionDestinatario!.selected()!.entity_address
+            } as EntityBySerieAssigned_EntityDto,
+                        
+            /** Establecimiento destino*/
+            entity_branch_receiver_id: this.sectionDestinatario!.selected()!.id,
+            entity_branch_receiver: this.sectionDestinatario!.selected()!,
+        
+            /** Datos del traslado */
+            shipment_details: {
+
+                /** Fecha inicio de traslado */
+                shipment_start_date: this.sectionDatosTraslado?.formData?.fecha_inicio_traslado ? formatDate(this.sectionDatosTraslado?.formData?.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
+                /** Fecha entrega al transportista */
+                delivery_date: this.sectionDatosTraslado?.formData?.fecha_entrega_transportista ? formatDate(this.sectionDatosTraslado?.formData?.fecha_entrega_transportista, 'yyyy-MM-dd', 'en-US') : null,
+                /** Peso bruto total */
+                total_gross_weight: this.sectionDatosTraslado?.formData?.peso_bruto_total,
+                /** Unidad de medida */
+                unit_of_measure_id: this.sectionDatosTraslado?.formData?.unidad_medida_id,
+                unit_of_measure_code_sunat: "",
+                /** Número de bultos */
+                package_count: this.sectionDatosTraslado?.formData?.numero_bultos,
+                /** Número de contenedor */
+                container_number: this.sectionDatosTraslado?.formData?.numero_contenedor,
+                /** Número de precinto */
+                seal_number: this.sectionDatosTraslado?.formData?.numero_precinto,
+                /** Indicador traslado */
+                shipment_indicator_id: this.sectionDatosTraslado?.formData?.indic_envio_sunat
+            } as GR_DatosTrasladoRequestDto,
+        
+            /** Entidad proveedor */
+            entity_provider_id: null, // falta mapear
+            entity_provider: null, // falta mapear
+        
+            /** Entidad transportista (courier)*/
             entity_carrier_id: this.sectionTransportista?.transportistaSelected()?.id ?? null,
             entity_carrier: this.sectionTransportista?.transportistaSelected() ?? null,
-
-            // unidades de transporte
+        
+            /** Unidades de transporte */
             transport_units: this.sectionTransportista?.vehiculos ? this.sectionTransportista?.vehiculos.map(x => ({
                 guia_remision_id: 0,
                 transport_unit_id: x.id,
                 type: x.job_title
             }) as GuiaRemisionTransportUnitCreateDto) : [],
-
-            datos_envio: {
-
-                motivo_envio: this.selectTipoTransporte?.selected() ?? 'PRIVADO',
-                fecha_envio: this.sectionDatosTraslado?.formData?.fecha_inicio_traslado ? formatDate(this.sectionDatosTraslado?.formData?.fecha_inicio_traslado, 'yyyy-MM-dd', 'en-US') : null,
-                fecha_entrega_transportista: this.sectionDatosTraslado?.formData?.fecha_entrega_transportista ? formatDate(this.sectionDatosTraslado?.formData?.fecha_entrega_transportista, 'yyyy-MM-dd', 'en-US') : null,
-                peso_bruto: this.sectionDatosTraslado?.formData?.peso_bruto_total,
-                unidad_medida_id: this.sectionDatosTraslado?.formData?.unidad_medida_id,
-                codigo_um: this.sectionDatosTraslado?.formData?.codigo_um,
-                
-                indicador_traslado_vehiculo_categoria: this.sectionDatosTraslado?.formData?.traslado_vehiculo_categoria,
-                traslado_vehiculo_categoria_placa_vehiculo: this.sectionDatosTraslado?.formData?.traslado_vehiculo_categoria_placa_vehiculo,
-                
-                
-                ruc_empresa_currier: this.sectionDatosTraslado?.formData?.ruc_subcontratador,
-                razon_social_currier: this.sectionDatosTraslado?.formData?.nombre_rsocial_subcontratador,
-                registro_mtc_currier: this.sectionDatosTraslado?.formData?.num_mtc_transportista,
-
-
-                indicador_registro_vehiculo_conductor: this.sectionDatosTraslado?.formData?.indic_registrar_vehiculos_conductores,
-                indicador_transbordo_programado: this.sectionDatosTraslado?.formData?.indic_transbordo_programado_adicional,
-                indicador_retorno_vehiculo_vacio: this.sectionDatosTraslado?.formData?.indic_retorno_vehiculo_vacio_adicional,
-                indicador_retorno_vehiculo_envases_vacios: this.sectionDatosTraslado?.formData?.indic_retorno_vehiculo_envase_vacio_adicional,
-
-                conductor: this.sectionConductor?.getFormData?.map((d: ConductorDto) => {
-                    return d.id
-                }) ?? null,
-
-            },
-
-            origen: {
-                ubigeo_id: this.sectionOrigen!.getFormData.ubigeo_id!,
-                direccion: this.sectionOrigen!.getFormData.direccion!
-            },
-
-            destino: [{
-                ubigeo_id: this.sectionDestino!.getFormData.ubigeo_id!,
-                direccion: this.sectionDestino!.getFormData.direccion!,
-            }],
-
-            productos: this.sectionProductoListadoComponent!.getFormData.map((x: GR_ProductoRequestDto) => {
+        
+            /** Conductores */
+            drivers: this.sectionConductor?.conductores ?? null,
+        
+            /** Observacion */
+            notes: this.f.observacion.value,
+        
+            /** Documentos relacionados */
+            doc_relacionado: null, // falta mapear
+        
+            /** Productos o materiales a trasladar */
+            products: this.sectionProductoListadoComponent!.getFormData.map((x: GR_ProductRequestDto) => {
                 return {
                     codigo: x.codigo,
                     descripcion: x.descripcion,
@@ -379,7 +381,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                     bien_normalizado: x.bien_normalizado
                 };
             })
-            
+
         }
     }
 
@@ -388,7 +390,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             SunatMotivoTrasladoEnum.compra,
             SunatMotivoTrasladoEnum.traslado_establecimientos_misma_empresa
         ];
-        return !motivos_traslado.includes(this.f.motivo_traslado_id.value);
+        return !motivos_traslado.includes(this.f.reason_for_transfer_id.value);
     }
 
     get mostrarProveedor(): boolean{
@@ -396,7 +398,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         SunatMotivoTrasladoEnum.compra,
         SunatMotivoTrasladoEnum.otros
       ];
-      return motivosTraslado.includes(this.f.motivo_traslado_id.value);
+      return motivosTraslado.includes(this.f.reason_for_transfer_id.value);
     }
 
 
@@ -444,6 +446,9 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         this.submitted.set(true);
 
         if( !this.handlerValidation() ) return;
+
+        console.log('form data', this.request);
+        return;
 
 
         this.loadingSubmit.next(true);
@@ -601,6 +606,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 'padding': "0 !important"
             },
 
+
             appendTo: 'body',
             inputValues: {
                 ruc: this.empresa()?.ruc,
@@ -724,7 +730,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
 
     handlerValidation(): boolean{
 
-        const submitMotivoTraslado = !this.f.motivo_traslado_id.value;
+        const submitMotivoTraslado = !this.f.reason_for_transfer_id.value;
         const submitSectionDocumentoRelacionado = this.sectionDocumentoRelacionado?.evtOnSubmit();
         const submitDestinatario = this.sectionDestinatario?.evtOnSubmit();
         const submitDatosTraslado = this.sectionDatosTraslado?.evtOnSubmit();

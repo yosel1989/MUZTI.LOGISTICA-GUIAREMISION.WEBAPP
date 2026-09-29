@@ -127,7 +127,7 @@ export class TblEntityBranchSeriePrincipal implements OnInit, AfterViewInit, OnD
             return `COD-${rowData.id.toString().padStart(4,'0')}`;
           }},
           { field: 'serie', header: 'Serie', sort: false, sticky: false, tdClassName: 'font-semibold!', visible: true },
-          { field: 'area', header: 'Area', sort: false, sticky: false, visible: true },
+          { field: 'area_name', header: 'Área', sort: false, sticky: false, visible: true },
           { field: 'invoice_type', header: 'T. Comprobante', sort: false, sticky: false, tdClassName: 'font-medium!', visible: true },
           { field: 'active', header: 'Estado', sort: false, sticky: false, visible: true, render: (rowData: EntityBranchSerieDto)  => { 
             if (rowData.active) {

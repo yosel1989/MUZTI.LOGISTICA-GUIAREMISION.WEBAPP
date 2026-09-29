@@ -3,7 +3,7 @@ import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EntityBranchSerieDto } from "@features/entity-branch-serie/models/entity-branch-serie";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
-import { EntityBySerieAssigned_EntityBranchDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityBranchDto, EntityBySerieAssigned_EntityBranchSerieDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { GuiaRemisionTransportUnitCreateDto } from "@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { TransportistaDto } from "@features/transportista/models/transportista";
@@ -12,48 +12,64 @@ import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-t
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
 
+  /** Entidad emisora */
   entity_id: number;
   entity: EntityDto | EntityBySerieAssigned_EntityDto;
 
+  /** Establecimiento donde se emitió */
   entity_branch_id: number;
-  entity_branch: EntityBranchDto;
-
-  entity_branch_serie_id: number;
-  entity_branch_serie: EntityBranchSerieDto;
-
-  motivo_traslado_id: number;
-  motivo_traslado: SunatMotivoTrasladoDto | undefined;
-
-  tipo_transporte: 'PUBLICO' | 'PRIVADO';
-
-  fecha_emision: string;
-  hora_emision: string;
-
-  observacion: string | null;
-  registro_mtc: string | null;
-
-  doc_relacionado: GR_DocRelacionadoDto[] | null;
+  entity_branch: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto;
   
-  remitente: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto;
-  remitente_id: number;
+  /** Serie con el cual se emitió */
+  entity_branch_serie_id: number;
+  entity_branch_serie: EntityBranchSerieDto | EntityBySerieAssigned_EntityBranchSerieDto;
 
-  destinatario: EntityBranchDto;
-  destinatario_id: number;
+  /** Motivo de traslado según SUNAT */
+  reason_for_transfer_id: number;
+  reason_for_transfer: SunatMotivoTrasladoDto | undefined;
 
-  proveedor: GR_ProveedorRequestDto | null;
-  proveedor_id: number | null;
+  /** Tipo de transporte */
+  transport_type: 'PUBLICO' | 'PRIVADO';
 
+  /** Fecha de emisión */
+  issue_date: string;
+
+  /** Hora de emisión */
+  issue_hour: string;
+
+  /** Entidad cliente o destinatario */
+  entity_receiver_id: number;
+  entity_receiver: EntityDto | EntityBySerieAssigned_EntityDto;
+
+  /** Establecimiento destino*/
+  entity_branch_receiver_id: number;
+  entity_branch_receiver: EntityBranchDto;
+
+  /** Datos del traslado */
+  shipment_details: GR_DatosTrasladoRequestDto;
+
+  /** Entidad proveedor */
+  entity_provider_id: number | null;
+  entity_provider: EntityDto | null;
+
+  /** Entidad transportista (courier)*/
   entity_carrier_id: number | null;
   entity_carrier: EntityDto | null;
+
+  /** Unidades de transporte */
   transport_units: GuiaRemisionTransportUnitCreateDto[] | null;
-  
-  datos_envio: GR_DatosEnvioRequestDto;
 
-  origen: GR_OrigenRequestDto;
+  /** Conductores */
+  drivers: ConductorDto[] | null;
 
-  destino: GR_DestinoRequestDto[];
+  /** Observacion */
+  notes: string | null;
 
-  productos: GR_ProductoRequestDto[];
+  /** Documentos relacionados */
+  doc_relacionado: GR_DocRelacionadoDto[] | null;
+
+  /** Productos o materiales a trasladar */
+  products: GR_ProductRequestDto[];
 }
 
 // --- Objetos anidados ---
@@ -61,9 +77,8 @@ export interface GuiaRemisionRemitenteRequestDto {
 
 export interface GR_DocRelacionadoDto{
   tipo_doc_ref_id: number;
-  tipo_doc_ref_codigo: string;
-  numero_doc_ref: string;
   ruc_doc_ref: string;
+  numero_doc_ref: string;
 }
 
 export interface GR_RemitenteRequestDto {
@@ -101,27 +116,26 @@ export interface GR_ProveedorRequestDto {
   email: string;
 }
 
-export interface GR_DatosEnvioRequestDto {
-  motivo_envio: string; 
-  fecha_envio: string | null; 
-  fecha_entrega_transportista: string | null; 
-  peso_bruto: string; 
-  unidad_medida_id: number; 
-  codigo_um: string; 
+export interface GR_DatosTrasladoRequestDto {
 
-  indicador_traslado_vehiculo_categoria: boolean;
-  traslado_vehiculo_categoria_placa_vehiculo: string | null;
+  /** Fecha inicio de traslado */
+  shipment_start_date: string | null;
+  /** Fecha entrega al transportista */
+  delivery_date: string | null;
+  /** Peso bruto total */
+  total_gross_weight: number;
+  /** Unidad de medida */
+  unit_of_measure_id: number;
+  unit_of_measure_code_sunat: string;
+  /** Número de bultos */
+  package_count: number;
+  /** Número de contenedor */
+  container_number: string;
+  /** Número de precinto */
+  seal_number: string;
+  /** Indicador traslado */
+  shipment_indicator_id: number;
 
-  ruc_empresa_currier: string | null;
-  razon_social_currier: string | null;
-  registro_mtc_currier: string | null;
-
-  indicador_registro_vehiculo_conductor: boolean;
-  indicador_transbordo_programado: boolean;
-  indicador_retorno_vehiculo_vacio: boolean;
-  indicador_retorno_vehiculo_envases_vacios: boolean;
-
-  conductor: number[] | null;
 }
 
 export interface GR_ConductorRequestDto {
@@ -156,7 +170,7 @@ export interface GR_DestinoRequestDto {
   direccion: string;
 }
 
-export interface GR_ProductoRequestDto {
+export interface GR_ProductRequestDto {
   codigo: string; 
   descripcion: string; 
   cantidad: string; 

@@ -15,6 +15,7 @@ export interface SecurityPersonalDto{
     series: SecurityPersonalSeriesDto[];
     entity_branchs: SecurityPersonalEntityBranchesDto[];
     reason_for_transfers: SecurityPersonalReasonForTransfersDto[];
+    areas: SecurityPersonalAreasDto[];
 
     loading_update: boolean;
     loading_active: boolean;
@@ -35,6 +36,10 @@ export interface SecurityPersonalEntityBranchesDto{
 export interface SecurityPersonalReasonForTransfersDto{
     name: string;
     code_sunat: string;
+}
+
+export interface SecurityPersonalAreasDto{
+    name: string;
 }
 
 export type SecurityPersonalCreateDto = Pick<SecurityPersonalDto, 'person_id'>;

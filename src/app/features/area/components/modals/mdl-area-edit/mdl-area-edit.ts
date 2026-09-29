@@ -28,6 +28,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 import { finalize, Subscription } from 'rxjs';
 import { SelectArea } from '../../selectes/select-area/select-area';
+import { ResponseDTO } from '@features/shared/models/shared';
 
 @Component({
   selector: 'app-mdl-area-edit',
@@ -90,8 +91,9 @@ export class MdlAreaEdit implements OnInit, AfterViewInit, OnDestroy {
   constructor( 
   ) {
     effect(()=> {
-      this.frm.get('parent_area_id')?.clearValidators();
       const level = this.level();
+      this.selectParent.set(undefined);
+      this.frm.get('parent_area_id')?.clearValidators();
       this.f.level.patchValue(level);
       if(level === 2){ this.frm.get('parent_area_id')?.addValidators(Validators.required)}
       this.frm.get('parent_area_id')?.updateValueAndValidity();
@@ -130,6 +132,8 @@ export class MdlAreaEdit implements OnInit, AfterViewInit, OnDestroy {
     return {
       id: this.data()!.id,
       code: formData.code,
+      parent_code: this.selectParent()?.code ?? null,
+      parent_name: this.selectParent()?.name ?? null,
       name: formData.name,
       parent_area_id: formData.parent_area_id,
       level: formData.level,
@@ -140,7 +144,7 @@ export class MdlAreaEdit implements OnInit, AfterViewInit, OnDestroy {
   // Events
   evtOnSubmit(): void{
 
-    this.isSubmitted.set(true);
+    this.submitted.set(true);
     if(this.frm.invalid){
       console.log(this.frm);
       return;
@@ -156,12 +160,13 @@ export class MdlAreaEdit implements OnInit, AfterViewInit, OnDestroy {
             const subs = this.api.update(requestData)
             .pipe(finalize(() => {
               this.ldSubmit.set(false);
+              this.submitted.set(false);
             }))
             .subscribe({
-              next: (res: AreaDto) => {
-                this.alertService.success(`Se registro el área con éxito`);
+              next: (res: ResponseDTO<AreaDto>) => {
+                this.alertService.success(res.detalle);
 
-                this.OnUpdated.emit(res);
+                this.OnUpdated.emit(res.data);
               },
               error: (err: HttpErrorResponse) => {
                 this.errorHandler.handle(err);
@@ -206,7 +211,7 @@ export class MdlAreaEdit implements OnInit, AfterViewInit, OnDestroy {
   handlerSetValues(data: AreaDto): void{
     this.frm.patchValue({
       parent_area_id: data.parent_area_id,
-      name: data.name,
+      name: data.parent_area_id ? data.name.split(" - ")[1] : data.name,
       code: data.parent_area_id ? data.code.substring(2,4) : data.code,
       level: data.level
     });

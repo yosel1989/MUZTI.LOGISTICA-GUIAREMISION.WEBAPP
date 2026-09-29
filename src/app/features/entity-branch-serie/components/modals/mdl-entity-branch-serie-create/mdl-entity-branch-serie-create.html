@@ -16,26 +16,14 @@
                 }
             </div>
 
-            <div class="col-span-2">
-                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Area</label>
-                <input 
-                fluid 
-                onlyUpper 
-                pInputText 
-                type="text" 
-                pSize="small" 
-                class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
-                formControlName="area" 
-                [invalid]="frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())"/>
-                @if (frm.get('area')?.invalid && (frm.get('area')?.touched || isSubmitted())) {
-                    <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
-                    @if (f.description.hasError('required')) {
-                        Este campo es requerido.
-                    }
-                    @if (f.description.hasError('maxlength')) {
-                        La descripción no debe exceder los 200 caracteres.
-                    }</span>
-                    </p-message>
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Área</label>
+                <app-select-area
+                    [control]="f.area_id"
+                    [filter]="true"
+                ></app-select-area>
+                @if (frm.get('area_id')?.invalid && (frm.get('area_id')?.touched || isSubmitted())) {
+                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
                 }
             </div>
 

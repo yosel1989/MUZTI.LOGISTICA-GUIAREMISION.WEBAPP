@@ -29,6 +29,7 @@ import { finalize, Subscription, takeUntil } from 'rxjs';
 import { SelectInvoiceTypeComponent } from '@features/catalogo/components/selects/select-invoice-type/select-invoice-type';
 import { EntityBranchSerieCreateDto } from '@features/entity-branch-serie/models/entity-branch-serie';
 import { EntityBranchSerieApiService } from '@features/entity-branch-serie/services/entity-branch-serie-api-service';
+import { SelectArea } from '@features/area/components/selectes/select-area/select-area';
 
 
 @Component({
@@ -53,7 +54,8 @@ import { EntityBranchSerieApiService } from '@features/entity-branch-serie/servi
     AvatarModule,
 
 
-    SelectInvoiceTypeComponent
+    SelectInvoiceTypeComponent,
+    SelectArea
   ],
   providers: [ConfirmationService]
 })
@@ -104,7 +106,7 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
   ngOnInit(): void {
     this.frm = new FormGroup({
       invoice_type_id: new FormControl(null, Validators.required),
-      area: new FormControl(null, [Validators.required]),
+      area_id: new FormControl(null, [Validators.required]),
       serie: new FormControl(null, [Validators.minLength(4), Validators.maxLength(4)]),
     });
     this.headerValue = this.config.header ?? '';
@@ -132,7 +134,7 @@ export class MdlEntityBranchSerieCreate implements OnInit, AfterViewInit, OnDest
     return {
       entity_branch_id: this.entityBranchId(),
       invoice_type_id: form.invoice_type_id,
-      area: form.area,
+      area_id: form.area_id,
       serie: form.serie,
     };
   }

@@ -6,7 +6,7 @@
                 type="button"
                 severity="primary"
                 variant="text"
-                icon="fa-regular fa-folder"
+                icon="fa-regular fa-chart-diagram text-[14px]!"
                 [styleClass]="level() === 1 ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
                 label="Principal"
                 (onClick)="level.set(1)"
@@ -16,7 +16,7 @@
                 type="button"
                 severity="primary"
                 variant="text"
-                icon="fa-regular fa-folder-tree"
+                icon="fa-regular fa-folder-tree text-[14px]!"
                 [styleClass]="level() === 2 ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
                 label="Subárea"
                 (onClick)="level.set(2)"
@@ -41,6 +41,7 @@
                         [level]="1"
                         [defaultValue]="data()?.parent_area_id ?? null"
                         (OnSelected)="evtSelectedParent($event)"
+                        [filter]="true"
                     ></app-select-area>
                 }
                 @if (frm.get('parent_area_id')?.invalid && (frm.get('parent_area_id')?.touched || submitted())) {
@@ -86,8 +87,8 @@
                 <p-skeleton width="100%" class="h-9!"></p-skeleton>
             }@else{
                 <p-inputgroup>
-                    @if (selectParent()) {
-                        <p-inputgroup-addon>{{ selectParent()?.code }}</p-inputgroup-addon>
+                    @if (level() === 2 && selectParent()) {
+                        <p-inputgroup-addon>{{ selectParent()?.code ?? '00' }}</p-inputgroup-addon>
                     }
                     <input 
                         fluid 

@@ -103,15 +103,26 @@
                 (onClick)="evtShowEntityBranchSerieList()"
             />
             <p-button 
-                icon="fa-light fa-hashtag" 
+                icon="fa-light fa-truck-arrow-right" 
                 size="small" 
                 severity="secondary" 
-                pTooltip="Series" 
+                pTooltip="Motivos de traslado" 
                 tooltipPosition="top"
                 tooltipStyleClass="text-xs! text-slate-300!"
                 placeholder="Top"
                 styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
                 (onClick)="evtShowReasonForTransferList()"
+            />
+            <p-button 
+                icon="fa-light fa-chart-diagram" 
+                size="small" 
+                severity="secondary" 
+                pTooltip="Áreas" 
+                tooltipPosition="top"
+                tooltipStyleClass="text-xs! text-slate-300!"
+                placeholder="Top"
+                styleClass="w-9! h-9! text-slate-600! hover:bg-slate-300!"
+                (onClick)="evtShowAreaList()"
             />
         }
 
@@ -327,6 +338,24 @@
                                 </td>
                             }
 
+                            @case('areas'){
+                                <td 
+                                    pFrozenColumn 
+                                    [frozen]="col.sticky ?? false"
+                                    class="cursor-pointer py-2! px-2!"
+                                    [ngClass]="col.tdClassName"
+                                >
+                                    @if(rowData.loading_update){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
+                                    }@else{
+                                        <span 
+                                            class="uppercase text-center block bg-slate-200 p-1 px-2 rounded-lg! font-medium"
+                                            (click)="evtToggleOpAreas($event, rowData)"
+                                        ><span class="fa-regular fa-chart-diagram me-1"></span>{{ rowData.areas.length }}</span>
+                                    }
+                                </td>
+                            }
+
                             @case('options') {
                                 <td
                                     pFrozenColumn 
@@ -453,6 +482,25 @@
                     } 
                 }@else{
                     <li class="text-xs font-medium">No tiene motivos de traslado asignados</li>
+                }
+            </ul>
+        </div>
+    </div>
+</p-popover>
+
+<p-popover #opAreas>
+    <div class="flex flex-col gap-4 max-w-[250px]!">
+        <div>
+            <ul class="list-none p-0 m-0 flex flex-col text-sm!">
+                @if(selected()?.areas?.length){
+                    @for(area of selected()?.areas; let i = $index; track $index){
+                        <li class="gap-2 hover:bg-emphasis cursor-pointer rounded-border text-center! p-2">
+                                <div class="font-semibold! text-sm! text-center! roboto-condensed text-slate-600! uppercase">{{ area.name }}</div>
+                        </li>
+                        @if($index < ((selected()?.areas ?? []).length - 1)){<li><hr class="border-slate-200! my-2"></li>}
+                    } 
+                }@else{
+                    <li class="text-xs font-medium">No tiene áreas asignadas</li>
                 }
             </ul>
         </div>

@@ -27,7 +27,7 @@ import {
 } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RatingModule } from 'primeng/rating';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
@@ -50,7 +50,7 @@ import { CODIGO_SUBNACIONAL_FAKE } from 'app/fake/items/data/subNationalCode';
 import { AlertService } from 'app/core/services/alert.service';
 import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { tablerAlertCircle } from '@ng-icons/tabler-icons';
-import { GR_ProductoRequestDto, GuiaRemisionDetalleDto } from 'app/features/guia-remision/models/guia-remision.model';
+import { GR_ProductRequestDto, GuiaRemisionDetalleDto } from 'app/features/guia-remision/models/guia-remision.model';
 import { CardModule } from 'primeng/card';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -203,7 +203,7 @@ export class SectionProductoListadoComponent implements OnInit, AfterViewInit, O
     return this.form.controls;
   }
 
-  get getFormData(): GR_ProductoRequestDto[] {
+  get getFormData(): GR_ProductRequestDto[] {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this.items as FormArray).controls.map((element: any) => {
       return {

@@ -4,6 +4,7 @@ export interface EntityBranchSerieDto {
   invoice_type_id: number;
   invoice_type: string;
   serie: string;
+  area_id: number;
   area: string;
   active: boolean;
   created_at: Date;
@@ -18,10 +19,10 @@ export interface EntityBranchSerieDto {
 }
 
 export type EntityBranchSerieCreateDto = Pick<EntityBranchSerieDto, 
-    'entity_branch_id' | 'invoice_type_id' | 'serie' | 'area' >;
+    'entity_branch_id' | 'invoice_type_id' | 'serie' | 'area_id' >;
 
 export type EntityBranchSerieUpdateDto = Pick<EntityBranchSerieDto, 
-    'id' | 'entity_branch_id' | 'invoice_type_id' | 'serie' | 'area'>;
+    'id' | 'entity_branch_id' | 'invoice_type_id' | 'serie' | 'area_id'>;
 
 export interface EntityBranchSerieToSelectDto extends Pick<EntityBranchSerieDto, 'id' | 'serie' | 'area'>{
   entity_name: string;

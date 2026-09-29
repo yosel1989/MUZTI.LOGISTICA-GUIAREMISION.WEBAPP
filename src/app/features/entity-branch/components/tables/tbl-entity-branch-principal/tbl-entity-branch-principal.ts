@@ -113,10 +113,10 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     items = computed(() => this.buildMenuItems(this.selected()));
     loading = signal(false);
 
-    recordsTotalTable: number = 0;
-    recordsTotal: number = 0;
-    recordsFiltered: number = 0;
-    first: number = 0;
+    recordsTotalTable = signal<number>(0);
+    recordsTotal = signal<number>(0);
+    recordsFiltered = signal<number>(0);
+    first = signal<number>(0);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: any | undefined;
@@ -201,7 +201,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
       if(reload){
         this.pageNumber.set(1);
-        this.first = 0;
+        this.first.set(0);
       }
 
       this.subData = this.api.getAll(this.pageNumber(), this.pageSize(), this.search)
@@ -222,7 +222,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
 
           this.pageNumber.set(res.page_number);
           this.pageSize.set(res.page_size);
-          this.first = (this.pageNumber() - 1) * this.pageSize();
+          this.first.set( (this.pageNumber() - 1) * this.pageSize() );
           this.totalRecords.set(res.total_records);
         },
         error: (e: HttpErrorResponse) => {
@@ -456,7 +456,7 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     evtRowsChange(rows: number): void{
       this.pageNumber.set( this.pageSize() === rows ? this.pageNumber() : 1 );
       this.pageSize.set( this.pageSize() === rows ? this.pageSize() : rows );
-      this.first = (this.pageNumber() - 1) * this.pageSize();
+      this.first.set( (this.pageNumber() - 1) * this.pageSize() );
       this.loadData();
     }
 
@@ -544,11 +544,11 @@ export class TblEntityBranchPrincipal implements OnInit, AfterViewInit, OnDestro
     }
 
     isLastPage(): boolean {
-      return this.data() ? this.first >= this.recordsTotalTable : true;
+      return this.data() ? this.first() >= this.recordsTotal() : true;
     }
 
     isFirstPage(): boolean {
-      return this.data() ? this.first === 0 : true;
+      return this.data() ? this.first() === 0 : true;
     }
 
     reload(): void{

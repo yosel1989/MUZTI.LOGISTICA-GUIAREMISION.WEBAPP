@@ -38,9 +38,13 @@ export type AreaLevel = 1 | 2;
 export interface AreaCreateDto {
   /** null = área principal; con valor = subárea de ese padre */
     parent_area_id: number | null;
-  /** Los 2 dígitos que ingresa el usuario: '10' para un padre, '01' para un hijo */
+  /** Los 2 dígitos que ingresa el usuario*/
     code: string;
-  /** Nombre corto: 'Envasado' (el backend antepone el nombre del padre) */
+  /** Los 2 dígitos del área padre */
+    parent_code: string | null;
+  /** Nombre del padre */
+    parent_name: string | null;
+  /** Nombre, el backend también renombra a sus hijos */
     name: string;
   /** Nivel jerárquico: 1 = principal, 2 = subárea */
     level: AreaLevel;
@@ -55,7 +59,11 @@ export interface AreaUpdateDto {
     parent_area_id: number | null;
   /** Los 2 dígitos que ingresa el usuario: '10' para un padre, '01' para un hijo */
     code: string;
-  /** Nombre corto; si es padre, el backend también renombra a sus hijos */
+  /** Los 2 dígitos del área padre */
+    parent_code: string | null;
+  /** Nombre del padre */
+    parent_name: string | null;
+  /** Nombre, el backend también renombra a sus hijos */
     name: string;
   /** Nivel jerárquico: 1 = principal, 2 = subárea */
     level: AreaLevel;

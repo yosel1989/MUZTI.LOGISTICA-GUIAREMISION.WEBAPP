@@ -122,19 +122,19 @@
 </p-toolbar>
 
 <div class="relative h-full w-full">
-    @if($ldData | async){
+    @if(ldData()){
         <app-loader class="z-40"></app-loader>
     }
 
 <p-table 
     #datatable
     [columns]="cols"
-    [value]="paddedData"
+    [value]="paddedData()"
     size="small" 
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
     [showCurrentPageReport]="true"
 
-    [(selection)]="selected"
+    [selection]="selected()"
     [tableStyle]="{ 'min-width': '100px' }"
     [scrollable]="true"
     [showLoader]="false"
@@ -148,12 +148,14 @@
     [rowHover]="true"
     [paginator]="true"
 
-    [totalRecords]="totalRecords"
-    [rows]="pageSize"
-    [first]="pageNumber"
+    [totalRecords]="totalRecords()"
+    [rows]="pageSize()"
+    [first]="pageNumber()"
     [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
     scrollHeight="400px"
 
+    
+    (firstChange)="evtFirstChange($event)"
     (rowsChange)="evtRowsChange($event)"
 
     class="border-none! text-mono! max-w-full!"
@@ -198,7 +200,7 @@
 
     <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
 
-        @if($ldData | async) {
+        @if(ldData()) {
             <tr>
                 @for (col of columns; let i = $index; track $index) {
                     <td [class]="(i===0 ? 'border-s-0!': '') + (i===columns.length ? ' border-e-0!': '')">
@@ -212,19 +214,21 @@
                 @for (col of columns; let i = $index; track $index) {
                     @if(rowData.__empty) {
                         <td 
-                        pFrozenColumn
-                        [frozen]="col.sticky ?? false" 
-                        [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
+                            pFrozenColumn
+                            [frozen]="col.sticky ?? false" 
+                            [class]="'py-2! px-2! text-gray-300 pointer-events-none! ' + (i===0 ? 'border-s-0!': '')"
                         >—</td>
                     }@else {
                         @switch(col.field){
                             @case('select'){
                                 <td
-                                class="cursor-pointer py-2! px-2! border-s-0!" >
-                                <p-tableRadioButton
-                                [value]="rowData" 
-                                (click)="evtToggleSelection(rowData)"
-                                class="flex text-center justify-center"/>
+                                    class="cursor-pointer py-2! px-2! border-s-0!" 
+                                >
+                                    <p-tableRadioButton
+                                        [value]="rowData" 
+                                        (click)="evtToggleSelection(rowData)"
+                                        class="flex text-center justify-center"
+                                    />
                                 </td>
                             }
                             @case('cod'){
@@ -259,7 +263,7 @@
                                     [class.border-e-0!]="(columns.length - 1) === i"
                                     class="text-center!"
                                 >
-                                    @if(rowData['loading_update']){
+                                    @if(rowData.loading_update){
                                         <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
                                     }@else {
                                         <p-button 
@@ -285,10 +289,10 @@
                                     class="text-nowrap py-1! font-light! truncate!"
                                     [ngClass]="col.tdClassName"
                                     [class.border-e-0!]="(columns.length - 1) === i"
-                                    [innerHTML]="!rowData['loading_update'] ? (col.render ? col.render(rowData, col) : rowData[col.field] ) : ''"
+                                    [appendHTML]="!rowData.loading_update ? (col.render ? col.render(rowData, col) : rowData[col.field] ) : ''" 
                                 >
-                                    @if(rowData['loading_update']){
-                                        <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
+                                    @if(rowData.loading_update){
+                                        <p-skeleton width="100%" height="20px"></p-skeleton>
                                     }
                                 </td>
                             }
@@ -300,7 +304,7 @@
     </ng-template>
 </p-table>
 
-<p-contextmenu styleClass="text-[12px]!" #cm [model]="(items$ | async) ?? []" appendTo="body"/>
+<p-contextmenu styleClass="text-[12px]!" #cm [model]="items() ?? []" appendTo="body"/>
 
 <div class="card flex justify-center">
     <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">

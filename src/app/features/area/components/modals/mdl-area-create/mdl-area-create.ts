@@ -144,6 +144,8 @@ export class MdlAreaCreate implements OnInit, AfterViewInit, OnDestroy {
 
     return {
       code: formData.code,
+      parent_code: this.selectParent()?.code ?? null,
+      parent_name: this.selectParent()?.name ?? null,
       name: formData.name,
       parent_area_id: formData.parent_area_id,
       level: formData.level,

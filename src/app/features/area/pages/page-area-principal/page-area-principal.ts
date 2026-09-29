@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { fadeDownAnimation } from "@core/animations/page-animation";
 import { LayoutService } from "@core/services/layout.service";
 import { TblAreaPrincipal } from "@features/area/components/tables/tbl-area-principal/tbl-area-principal";
+import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 
 @Component({
@@ -9,8 +11,10 @@ import { CardModule } from "primeng/card";
     styleUrls: ["./page-area-principal.scss"],
     imports: [
         TblAreaPrincipal,
-        CardModule
-    ]
+        CardModule,
+        ButtonModule
+    ],
+    animations: [fadeDownAnimation]
 })
 
 export class PageAreaPrincipal implements OnInit, AfterViewInit, OnDestroy {

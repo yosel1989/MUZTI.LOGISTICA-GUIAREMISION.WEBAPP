@@ -7,6 +7,7 @@ import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header
 import { ErrorHandlerService } from '@core/handlers/error-handler.service';
 import { MdlListaPersonalComponent } from '@features/personal/components/modals/mdl-lista-personal/mdl-lista-personal';
 import { PersonalDTO } from '@features/personal/models/personal.model';
+import { MdlSecurityPersonalAreaList } from '@features/security-personal-area/components/modals/mdl-security-personal-area-list/mdl-security-personal-area-list';
 import { MdlSecurityPersonalEntityBranchSerieList } from '@features/security-personal-entity-branch-serie/components/modals/mdl-security-personal-entity-branch-serie-list/mdl-security-personal-entity-branch-serie-list';
 import { MdlSecurityPersonalEntityBranchList } from '@features/security-personal-entity-branch/components/modals/mdl-security-personal-entity-branch-list/mdl-security-personal-entity-branch-list';
 import { MdlSecurityPersonalReasonForTransferList } from '@features/security-personal-reason-for-transfer/components/modals/mdl-security-personal-reason-for-transfer-list/mdl-security-personal-reason-for-transfer-list';
@@ -69,6 +70,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     @ViewChild('opSeries') op!: Popover;
     @ViewChild('opEntityBranchs') opEntityBranchs!: Popover;
     @ViewChild('opReasonForTransfers') opReasonForTransfers!: Popover;
+    @ViewChild('opAreas') opAreas!: Popover;
 
     public datePipe = inject(DatePipe);
     public dialogService = inject(DialogService);
@@ -121,12 +123,13 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
           { field: 'select', header: '', sort: false, sticky: false  },
           { field: 'cod', header: '#', sort: false, sticky: false  },
           { field: 'id', header: 'Código', sort: false, sticky: false },
-          { field: 'person_full_name', header: 'Personal', sort: false, sticky: false },
+          { field: 'person_full_name', header: 'Personal', sort: false, sticky: false, tdClassName: 'font-semibold!' },
           { field: 'person_document_number', header: 'N° Documento', sort: false, sticky: false },
           { field: 'person_role', header: 'Cargo', sort: false, sticky: false },
           { field: 'entity_branchs', header: 'Estab. Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'reason_for_transfers', header: 'Mot. T. Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'series', header: 'Series Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
+          { field: 'areas', header: 'Áreas Asig.', sort: false, sticky: false, tdClassName: 'text-center! font-semibold!' },
           { field: 'active', header: 'Estado', sort: false, sticky: false, render: (rowData: SecurityPersonalDto)  => { 
             if (rowData.active) {
               return '<span class="uppercase w-25 text-green-700 text-center flex items-center justify-center bg-green-100 p-1 px-2 rounded-lg! font-medium">Activo</span>';
@@ -294,6 +297,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       this.ref = this.dialogService.open(MdlListaPersonalComponent,  {
         width: '700px',
         closable: false,
+        draggable: false,
         modal: true,
         position: 'top',
         header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="pi pi-plus text-[14px]!"></span></span> Añadir personal',
@@ -542,6 +546,37 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
       });
     }
 
+    evtShowAreaList(): void{
+      this.ref = this.dialogService.open(MdlSecurityPersonalAreaList,  {
+        width: '700px',
+        closable: false,
+        draggable: false,
+        modal: true,
+        position: 'top',
+        header: '<span class="inline-flex items-center justify-center w-9! h-9! rounded-lg! bg-slate-200! me-2!"><span class="fa-regular fa-chart-diagram text-[14px]!"></span></span> Áreas asignadas',
+        styleClass: 'max-h-none! slide-down-dialog overflow-hidden!',
+        maskStyleClass: 'overflow-y-auto py-4',
+        appendTo: 'body',
+        templates: {
+          header: MdlHeader
+        },
+        inputValues: {
+          securityPersonal: this.selected()!
+        },
+        contentStyle: {
+          padding: '0rem'
+        }
+      });
+
+      this.ref.onChildComponentLoaded.subscribe((cmp: MdlSecurityPersonalAreaList) => {
+        cmp?.OnUpdateData
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.evtOnReload(false);
+          })
+      });
+    }
+
 
     evtToggleOpSeries(event: PointerEvent, rowData: SecurityPersonalDto) {
         this.selected.set(rowData);
@@ -556,6 +591,11 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
     evtToggleOpReasonForTransfers(event: PointerEvent, rowData: SecurityPersonalDto) {
         this.selected.set(rowData);
         this.opReasonForTransfers.toggle(event);
+    }
+
+    evtToggleOpAreas(event: PointerEvent, rowData: SecurityPersonalDto) {
+        this.selected.set(rowData);
+        this.opAreas.toggle(event);
     }
 
 
@@ -582,6 +622,7 @@ export class TblSecurityPersonalPrincipal implements OnInit, AfterViewInit, OnDe
         { label: 'Establecimientos', icon: 'fa-light fa-house', command: () => { this.evtShowEntityBranchList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Series', icon: 'fa-light fa-hashtag', command: () => { this.evtShowEntityBranchSerieList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Motivos de traslado', icon: 'fa-light fa-truck-arrow-right', command: () => { this.evtShowReasonForTransferList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
+        { label: 'Áreas', icon: 'fa-light fa-chart-diagram', command: () => { this.evtShowAreaList(); }, linkClass: 'h-8!', iconClass: 'text-[14px]!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Activar', icon: 'fa-light fa-circle-check ', command: () => {  }, visible: selected?.active === false, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm! font-medium! text-slate-500'},
         { label: 'Desactivar', icon: 'fa-light fa-ban ', command: () => {  }, visible: selected?.active === true, linkClass: 'h-8!', iconClass: 'text-sm!', labelClass: 'text-sm!' }
       ];

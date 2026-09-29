@@ -32,6 +32,7 @@ export class SelectArea implements OnInit, AfterViewInit, OnDestroy{
     @Input() defaultValue: number | null = null;
     OnSelected = output<AreaToSelectDto | undefined>();
     
+    filter = input<boolean>(false);
     invalid = input<boolean>(false);
     level = input<number | null>(null);
     optionValue = input<string>('id');
@@ -59,7 +60,7 @@ export class SelectArea implements OnInit, AfterViewInit, OnDestroy{
     }
 
     ngAfterViewInit(): void {
-        
+    
     }
 
     ngOnDestroy(): void {
@@ -77,6 +78,9 @@ export class SelectArea implements OnInit, AfterViewInit, OnDestroy{
         .subscribe({
             next: (value: AreaToSelectDto[]) => {
                 this.data.set(value);
+                if(this.defaultValue){
+                    this.control.patchValue(this.defaultValue);
+                }
             },
             error: (err: HttpErrorResponse) => {
                 this.errorHandler.handle(err);

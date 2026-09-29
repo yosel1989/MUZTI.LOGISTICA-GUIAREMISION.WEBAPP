@@ -11,6 +11,11 @@ export interface EntityDto{
     document_type: string;
     document_number: string;
     ubigeo_id: string | null;
+    department: string | null;
+    province: string | null;
+    district: string | null;
+
+
     address: string | null;
     country_id: number | null;
     country: string | null;
@@ -32,11 +37,11 @@ export interface EntityDto{
     loading_update: boolean;
 }
 
-export interface EntityCreateDto extends Omit<EntityDto, 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type' | 'country'>{
+export interface EntityCreateDto extends Omit<EntityDto, 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type' | 'country' | 'department' | 'province' | 'district'>{
     role: string
 }
 
-export interface EntityUpdateDto extends Omit<EntityDto, 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type' | 'country'>{
+export interface EntityUpdateDto extends Omit<EntityDto, 'created_at' | 'created_at_user' | 'created_at_user_name' | 'updated_at' | 'updated_at_user' | 'updated_at_user_name' | 'active' | 'loading_status' | 'loading_update' | 'document_type' | 'country' | 'department' | 'province' | 'district'>{
     role: string
 }
 
@@ -64,7 +69,8 @@ export interface EntityBySerieAssigned_EntityDto extends Pick<EntityDto,
     'ubigeo_id' |
     'mtc_code' | 
     'first_name' | 
-    'last_name'
+    'last_name' | 
+    'address'
 >{
     department: string;
     province: string;
