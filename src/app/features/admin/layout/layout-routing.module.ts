@@ -48,6 +48,10 @@ const routes: Routes = [
         loadComponent: () => import('@features/configuracion/pages/page-configuracion-principal/page-configuracion-principal').then(m => m.PageConfiguracionPrincipalComponent),
         children: [
           {
+            path: 'areas',
+            loadComponent: () => import('@features/area/pages/page-area-principal/page-area-principal').then(m => m.PageAreaPrincipal)
+          },
+          {
             path: 'personal-seguridad',
             loadComponent: () => import('@features/security-personal/pages/page-security-personal-principal/page-security-personal-principal').then(m => m.PageSecurityPersonalPrincipal)
           },

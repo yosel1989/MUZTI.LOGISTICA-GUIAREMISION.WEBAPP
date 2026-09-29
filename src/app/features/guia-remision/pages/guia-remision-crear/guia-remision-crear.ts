@@ -95,7 +95,6 @@ export interface Puerto{
     AsyncPipe,
     AutoCompleteModule,
     DividerModule,
-    SelectMotivoTrasladoComponent,
     SelectReasonForTransferAssigned,
     TextareaModule,
     AccordionModule,

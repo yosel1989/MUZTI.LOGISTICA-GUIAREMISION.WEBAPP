@@ -1,0 +1,146 @@
+<div class="grid grid-cols-1 gap-3 p-4">
+    <div class="mb-3">
+        <div class="grid grid-cols-2 rounded-lg bg-gray-100 gap-x-2 p-2">
+            <p-button
+                fluid
+                type="button"
+                severity="primary"
+                variant="text"
+                icon="fa-regular fa-folder"
+                [styleClass]="level() === 1 ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
+                label="Principal"
+                (onClick)="level.set(1)"
+            ></p-button>
+            <p-button
+                fluid
+                type="button"
+                severity="primary"
+                variant="text"
+                icon="fa-regular fa-folder-tree"
+                [styleClass]="level() === 2 ? 'h-9! text-sm! bg-primary-500! text-primary-200!' : 'h-9! bg-primary-100! hover:bg-primary-200! text-sm!'"
+                label="Subárea"
+                (onClick)="level.set(2)"
+            ></p-button>
+        </div>
+    </div>
+</div>
+
+<form [formGroup]="frm" (ngSubmit)="evtOnSubmit()" class="p-4">
+
+    <div class="flex flex-col gap-3">
+
+        @if(level() === 2){
+
+            <div>
+                <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Area padre</label>
+                @if(ldData()){
+                    <p-skeleton width="100%" class="h-9!"></p-skeleton>
+                }@else{
+                    <app-select-area
+                        [control]="f.parent_area_id"
+                        [level]="1"
+                        [defaultValue]="data()?.parent_area_id ?? null"
+                        (OnSelected)="evtSelectedParent($event)"
+                    ></app-select-area>
+                }
+                @if (frm.get('parent_area_id')?.invalid && (frm.get('parent_area_id')?.touched || submitted())) {
+                    <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">Este campo es requerido.</span></p-message>
+                }
+            </div>
+
+        }
+
+        <div>
+            <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Nombre</label>
+            @if(ldData()){
+                <p-skeleton width="100%" class="h-9!"></p-skeleton>
+            }@else{
+                <input 
+                    fluid 
+                    onlyUpper
+                    pInputText 
+                    type="text" 
+                    pSize="small" 
+                    class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                    formControlName="name" 
+                    autofocus="true"
+                    [invalid]="frm.get('name')?.invalid && (frm.get('name')?.touched || submitted())"
+                />
+            }
+          
+            @if (frm.get('name')?.invalid && (frm.get('name')?.touched || submitted())) {
+                <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                @if (f.name.hasError('required')) {
+                    Este campo es requerido.
+                }
+                @if (f.name.hasError('maxLength')) {
+                    El código debe tener máximo 150 dígitos.
+                }</span>
+                </p-message>
+            }
+        </div>
+
+        <div>
+            <label class="text-[13px]! text-slate-500 font-semibold roboto-condensed required">Código</label>
+            @if(ldData()){
+                <p-skeleton width="100%" class="h-9!"></p-skeleton>
+            }@else{
+                <p-inputgroup>
+                    @if (selectParent()) {
+                        <p-inputgroup-addon>{{ selectParent()?.code }}</p-inputgroup-addon>
+                    }
+                    <input 
+                        fluid 
+                        onlyNumber
+                        pInputText 
+                        type="text" 
+                        pSize="small" 
+                        class="shadow-none! min-h-9! focus:border-gray-500! hover:border-gray-400! hover:shadow-xs!"
+                        formControlName="code" 
+                        autofocus="true"
+                        maxlength="2"
+                        [invalid]="frm.get('code')?.invalid && (frm.get('code')?.touched || submitted())"
+                    />
+                </p-inputgroup>   
+            }
+            @if (frm.get('code')?.invalid && (frm.get('code')?.touched || submitted())) {
+                <p-message severity="error" size="small" variant="simple" ><span class="text-[10px]! ">
+                @if (f.code.hasError('required')) {
+                    Este campo es requerido.
+                }
+                @if (f.code.hasError('maxLength')) {
+                    El código debe tener 2 dígitos.
+                }</span>
+                </p-message>
+            }
+        </div>
+
+    </div>
+
+    <div class="flex justify-end gap-2 mt-6">
+        <p-button styleClass="w-[92px]!" type="reset" icon="pi pi-times" size="small" label="Cancelar" severity="secondary" (click)="evtOnClose()"/>
+        <p-button styleClass="w-[92px]!" type="submit" icon="pi pi-save" size="small" [label]="ldSubmit() ? '' : 'Guardar'" [loading]="ldSubmit()" severity="primary" />
+    </div>
+</form>
+
+
+<div class="card flex justify-center">
+
+    <p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 rounded-xl">
+                <div
+                    class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20"
+                >
+                    <i class="pi pi-question text-5xl!"></i>
+                </div>
+                <span class="font-semibold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>
