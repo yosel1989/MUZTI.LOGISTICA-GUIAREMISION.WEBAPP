@@ -1,14 +1,44 @@
-<p-select 
-    panelStyleClass="text-[.875rem]! uppercase!"
-    size="small" 
-    fluid 
-    [options]="data()" 
-    [formControl]="control"  
-    optionLabel="nombre"  
-    optionValue="id"
-    [loading]="loading()"
-    class="p-inputwrapper-filled" 
-    placeholder="Seleccionar el motivo de traslado"
-    [invalid]="invalid"
-    appendTo="body"
-></p-select>
+@if(group()){
+<div class="flex flex-row">
+    <p-select 
+        panelStyleClass="text-[.875rem]! uppercase!"
+        size="small" 
+        fluid 
+        [options]="data()" 
+        [formControl]="control"  
+        optionLabel="nombre"  
+        optionValue="id"
+        class="flex-1 min-w-0 p-inputwrapper-filled rounded-e-none!" 
+        placeholder="Seleccionar el motivo de traslado"
+        [invalid]="invalid"
+        appendTo="body"
+    ></p-select>
+    <p-button 
+        pTooltip="Actualizar"
+        tooltipPosition="top"
+        tooltipStyleClass="text-xs text-center"
+        severity="secondary" 
+        (click)="loadData(true)" 
+        class="shrink-0 rounded-l-none! border-slate-400!" 
+        styleClass="rounded-l-none! bg-slate-300! border-slate-300!" 
+        size="small" 
+        icon="pi pi-refresh" 
+        [loading]="loading()"
+    ></p-button>
+</div>
+}@else{
+    <p-select 
+        panelStyleClass="text-[.875rem]! uppercase!"
+        size="small" 
+        fluid 
+        [options]="data()" 
+        [formControl]="control"  
+        optionLabel="nombre"  
+        optionValue="id"
+        [loading]="loading()"
+        class="p-inputwrapper-filled" 
+        placeholder="Seleccionar el motivo de traslado"
+        [invalid]="invalid"
+        appendTo="body"
+    ></p-select>
+}

@@ -39,7 +39,7 @@ export interface GuiaRemisionRemitenteRequestDto {
 
   /** Entidad cliente o destinatario */
   entity_receiver_id: number;
-  entity_receiver: EntityDto | EntityBySerieAssigned_EntityDto;
+  entity_receiver: EntityDto;
 
   /** Establecimiento destino*/
   entity_branch_receiver_id: number;

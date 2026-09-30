@@ -84,7 +84,7 @@
                             #selectMotivoTraslado
                             [control]="f.reason_for_transfer_id" 
                             [invalid]="f.reason_for_transfer_id.invalid && (f.reason_for_transfer_id.touched || submitted())"
-                            class="uppercase!"
+                            [group]="true"
                         ></app-select-reason-for-transfer-assigned>
                         @if (f.reason_for_transfer_id.invalid && (f.reason_for_transfer_id.touched || submitted())) {
                             <p-message severity="error" size="small" variant="simple"><span class="text-[10px]! ">

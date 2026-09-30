@@ -1,11 +1,11 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { environment } from "environments/environment";
-import { EntityBySerieAssignedDto, EntityCreateDto, EntityDto, EntityListDto, EntityUpdateDto } from "../models/entity";
-import { map, Observable } from "rxjs";
 import { TableData } from "@core/models/table";
-import { ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
 import { ResponseDTO } from "@features/shared/models/shared";
+import { ToggleActiveRequestDto, ToggleActiveResponseDto } from "app/shared/models/request";
+import { environment } from "environments/environment";
+import { map, Observable } from "rxjs";
+import { EntityBySerieAssignedDto, EntityCreateDto, EntityDto, EntityListDto, EntityUpdateDto } from "../models/entity";
 
 /**
  * Servicio para consumir los endpoints de entidades (empresas y personas).
@@ -125,7 +125,7 @@ export class EntityApiService {
      * @param hasBranch Solo entidades con establecimientos cuando es `true`.
      * @returns Página de entidades con el total de registros.
      */
-    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null, roles: string | null, isInternal: boolean | null, excludeId: number | null, hasBranch: boolean | null): Observable<TableData<EntityListDto[]>>{
+    getList(pageNumber: number, pageSize: number, search: string | null, type: 'empresa' | 'persona' | null, roles: string | null, isInternal: boolean | null, excludeId: number | null, hasBranch: boolean | null, onlyId: number | null): Observable<TableData<EntityListDto[]>>{
         let httpParams = new HttpParams();
         httpParams = search ? httpParams.set('search', search) : httpParams;
         httpParams = type ? httpParams.set('type', type) : httpParams;
@@ -133,6 +133,7 @@ export class EntityApiService {
         httpParams = isInternal ? httpParams.set('isInternal', isInternal) : httpParams;
         httpParams = excludeId ? httpParams.set('excludeId', excludeId) : httpParams;
         httpParams = hasBranch ? httpParams.set('hasBranch', hasBranch) : httpParams;
+        httpParams = onlyId ? httpParams.set('onlyId', onlyId) : httpParams;
 
         return this.http.get<TableData<EntityListDto[]>>(`${this.baseUrl}/list/${pageNumber}/${pageSize}`, { params: httpParams })
     }

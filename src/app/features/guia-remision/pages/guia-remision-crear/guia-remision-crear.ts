@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { MdlHeader } from '@core/components/modals/headers/mdl-header/mdl-header';
 import { OnlyUpperDirective } from '@core/directives/only-uppers.directive';
 import { ErrorHandlerService } from '@core/handlers/error-handler.service';
+import { UtilService } from '@core/services/util.service';
 import { SelectMotivoTrasladoComponent } from '@features/catalogo/components/selects/select-motivo-traslado/select-motivo-traslado';
 import { SelectReasonForTransferAssigned } from '@features/catalogo/components/selects/select-reason-for-transfer-assigned/select-reason-for-transfer-assigned';
 import { SelectEmpresaRemitenteComponent } from '@features/empresa/components/selects/select-empresa-remitente/select-empresa-remitente';
@@ -61,7 +62,6 @@ import { TableModule } from "primeng/table";
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { UtilService } from '@core/services/util.service';
 
 export interface Puerto{
     value: string;
@@ -314,7 +314,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 department: this.sectionDestinatario!.selected()!.entity_department,
                 province: this.sectionDestinatario!.selected()!.entity_province,
                 district: this.sectionDestinatario!.selected()!.entity_district,
-                address: this.sectionDestinatario!.selected()!.entity_address
+                address: this.sectionDestinatario!.selected()!.entity_address 
             } as EntityBySerieAssigned_EntityDto,
                         
             /** Establecimiento destino*/

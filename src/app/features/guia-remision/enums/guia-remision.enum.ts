@@ -12,7 +12,7 @@ export enum SunatMotivoTrasladoEnum {
     venta_sujeta_confirmacion_comprador  = '14',
     traslado_bienes_para_transformacion  = '17',
     traslado_emisor_itinerante_comprobantes_pago = '18',
-    traslado_zona_primaria = '19'
+    traslado_mercaderia_extranjera = '19'
 }
 
 export enum TipoGuiaRemisionEnum {

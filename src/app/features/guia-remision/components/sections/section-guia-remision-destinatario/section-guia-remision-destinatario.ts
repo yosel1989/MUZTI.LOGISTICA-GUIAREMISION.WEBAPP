@@ -1,29 +1,28 @@
-import { Component, DestroyRef, effect, inject, input, Input, signal} from "@angular/core";
+import { Component, computed, DestroyRef, effect, inject, input, signal } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { InputTextModule } from "primeng/inputtext";
 
-import { TabsModule } from 'primeng/tabs';
-import { CardModule } from 'primeng/card';
 import { provideIcons } from "@ng-icons/core";
+import { CardModule } from 'primeng/card';
+import { TabsModule } from 'primeng/tabs';
 
-import { tablerAlertCircle } from "@ng-icons/tabler-icons";
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { MessageModule } from "primeng/message";
-import { AlertService } from "app/core/services/alert.service";
-import { AccordionModule } from 'primeng/accordion';
-import { TypingComponent } from "@features/shared/components/typing/typing";
-import { FieldsetModule } from "primeng/fieldset";
-import { ButtonModule } from "primeng/button";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { TooltipModule } from "primeng/tooltip";
-import { GR_DestinoRequestDto } from "@features/guia-remision/models/guia-remision.model";
-import { DialogService } from "primeng/dynamicdialog";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
-import { MdlEntityBranchList } from "@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list";
-import { EntityBySerieAssigned_EntityBranchDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
+import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
+import { EntityDto } from "@features/entity/models/entity";
+import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
+import { TypingComponent } from "@features/shared/components/typing/typing";
+import { tablerAlertCircle } from "@ng-icons/tabler-icons";
+import { AlertService } from "app/core/services/alert.service";
+import { AccordionModule } from 'primeng/accordion';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from "primeng/button";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { DialogService } from "primeng/dynamicdialog";
+import { FieldsetModule } from "primeng/fieldset";
+import { MessageModule } from "primeng/message";
+import { TooltipModule } from "primeng/tooltip";
 
 @Component({
   selector: 'app-section-guia-remision-destinatario',
@@ -53,29 +52,27 @@ export class SectionGuiaRemisionDestinatario{
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
-    private _remitente = signal<EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | undefined>(undefined);
-    @Input() set remitente(value: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | undefined) {
-        if (this._remitente() !== value) {
-            this._remitente.set(value);
-        }
-    }
-    
-    private _destinatario = signal<EntityBranchDto | undefined>(undefined);
-    @Input() set destinatario(value: EntityBranchDto | undefined) {
-        if (this._destinatario() !== value) {
-            this._destinatario.set(value);
-        }
-    }
-    
-    selected = signal<EntityBranchDto | undefined>(undefined);
+    entitySender = input<EntityDto | undefined>(undefined);
+    selected = signal<EntityDto | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>(); 
-    entity = input.required<EntityDto | EntityBySerieAssigned_EntityDto | undefined>(); 
+    entity = input.required<EntityDto | undefined>(); 
 
     submitted = signal(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modalRef: any | undefined;
+    enumReasonOfTransfer = SunatMotivoTrasladoEnum;
 
+    private readonly MOTIVOS_DESTINATARIO_ES_REMITENTE = [this.enumReasonOfTransfer.compra, this.enumReasonOfTransfer.traslado_establecimientos_misma_empresa, this.enumReasonOfTransfer.recojo_bienes_transformados];
+
+    onlyId = computed(() => {
+        const codigo = this.motivoTraslado()?.codigo_sunat;
+        if (codigo && this.MOTIVOS_DESTINATARIO_ES_REMITENTE.includes(codigo)) {
+            return this.entitySender()?.id;
+        }
+        return null; // el usuario elige destinatario libremente (o ninguno si es '18')
+    });
+    
     constructor(){
         effect(() =>{
             this.motivoTraslado();
@@ -84,113 +81,88 @@ export class SectionGuiaRemisionDestinatario{
     }
   
     get invalid(): boolean{
-        return !this.destinatario;
+        return !this.selected();
     }
 
     get valid(): boolean {
-        return !!this.destinatario;
+        return !!this.selected();
     }
     
-    
-    get getFormData(): GR_DestinoRequestDto {
-        return {
-            ubigeo_id: this.destinatario!.ubigeo_id,
-            direccion: this.destinatario!.address,
-        }
-    }
-    
-    get destinatario(): EntityBranchDto | null {
-        return this._destinatario() ?? null;
-    }
-
-    get remitente(): EntityBranchDto | EntityBySerieAssigned_EntityBranchDto | null {
-        return this._remitente() ?? null;
-    }
-
     // Events
 
     evtOnSubmit(): boolean {
         this.submitted.set(true);
 
-        if(!this.remitente){
-            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de origen.");
+        if(!this.entitySender()){
+            this.alertService.warning("Se tiene que seleccionar el remitente.");
             return false;
         }
 
-        if(!this.destinatario){
-            this.alertService.warning("Se tiene que completar los datos obligatorios en la sección de punto de destino.");
+        if(!this.selected()){
+            this.alertService.warning("Se tiene que seleccionar el destinatario / cliente.");
             return false;
         }
 
         return true;
     }
 
-    evtOnShowEstablecimiento( to: string ): void{
+    evtOnShowList(): void{
         
         if(!this.motivoTraslado()){
             this.alertService.warning(`Debe seleccionar el motivo de traslado`);
             return;
         }
 
-        if(!this.remitente){
+        if(!this.entitySender()){
             this.alertService.warning(`Debe seleccionar un remitente`);
             return;
         }
 
-        this.modalRef = this.dialogService.open(MdlEntityBranchList, {
+        this.modalRef = this.dialogService.open(MdlEntityList, {
             width: '700px',
-            keepInViewport: false,
             closable: false,
-            modal: true,
             draggable: false,
+            modal: true,
             position: 'top',
-            header: `Seleccionar punto de destino`,
+            header: 'Seleccionar destinatario / cliente ',
             styleClass: 'max-h-none! slide-down-dialog',
-            maskStyleClass: 'overflow-y-auto py-4',
-            contentStyle: {
-                'padding': "0 !important"
-            },
+            maskStyleClass: 'py-4',
             appendTo: 'body',
-            inputValues: {
-                entity: this.entity(),
-                tipo: to,
-                motivoTraslado: this.motivoTraslado(),
-                remitente: this.remitente
-            },
             templates: {
                 header: MdlHeader
+            },
+            inputValues: {
+                _hasBranch: true,
+                _onlyId: this.onlyId()
             }
         });
 
-
-        this.modalRef.onChildComponentLoaded
+        this.modalRef?.onChildComponentLoaded
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((cmp: MdlEntityBranchList) => {
-            cmp?.OnSelected
+        .subscribe((childComponent: MdlEntityList) => {
+            childComponent.OnSelected
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(( s: EntityBranchDto) => {
-                this.selected.set(s);
-                this._destinatario.set(s);
-                this.modalRef?.close();
+            .subscribe((entity: EntityDto) => {
+                this.selected.set(entity);
                 this.alertService.success('Destinatario seleccionado con éxito.');
+                this.modalRef?.close();
             });
-
-            cmp?.OnClose
+            childComponent.OnClose
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.modalRef?.close();
             });
         });
-
     }
 
     evtRemove(): void{
-        this._destinatario.set(undefined);
+        this.selected.set(undefined);
     }
 
     // Functions
 
     fncReset(): void{
-        this._destinatario.set(undefined);
+        this.selected.set(undefined);
     }
+
 }

@@ -1,21 +1,21 @@
-import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from "@angular/core";
-import { ErrorHandlerService } from "@core/handlers/error-handler.service";
-import { InputIconModule } from "primeng/inputicon";
-import { InputTextModule } from "primeng/inputtext";
-import { TableModule } from "primeng/table";
-import { ButtonModule } from "primeng/button";
-import { IconFieldModule } from "primeng/iconfield";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { SkeletonModule } from "primeng/skeleton";
-import { finalize, Subscription } from "rxjs";
-import { SelectModule } from "primeng/select";
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AvatarModule } from "primeng/avatar";
-import { Column } from "app/shared/models/table";
+import { AfterViewInit, Component, DestroyRef, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from "@angular/core";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ErrorHandlerService } from "@core/handlers/error-handler.service";
+import { TableData } from "@core/models/table";
 import { EntityDto, EntityListDto } from "@features/entity/models/entity";
 import { EntityApiService } from "@features/entity/services/entity-service";
-import { TableData } from "@core/models/table";
+import { Column } from "app/shared/models/table";
+import { AvatarModule } from "primeng/avatar";
+import { ButtonModule } from "primeng/button";
+import { IconFieldModule } from "primeng/iconfield";
+import { InputIconModule } from "primeng/inputicon";
+import { InputTextModule } from "primeng/inputtext";
+import { SelectModule } from "primeng/select";
+import { SkeletonModule } from "primeng/skeleton";
+import { TableModule } from "primeng/table";
+import { finalize, Subscription } from "rxjs";
 
 @Component({
     selector: 'app-mdl-entity-list',
@@ -40,6 +40,7 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
     _roles = input<string | undefined>(undefined);
     _isInternal = input<boolean | undefined>(undefined);
     _excludeId = input<number | undefined>(undefined);
+    _onlyId = input<number | undefined>(undefined);
     _hasBranch = input<boolean | undefined>(undefined);
 
     api = inject(EntityApiService);
@@ -128,7 +129,17 @@ export class MdlEntityList implements OnInit, AfterViewInit, OnDestroy{
         const search = this.ctrlSearch.value;
 
 
-        this.sbData = this.api.getList(1, 100, search, this._type() ?? null, this._roles() ?? null, this._isInternal() ?? null, this._excludeId() ?? null, this._hasBranch() ?? null)
+        this.sbData = this.api.getList(
+            1, 
+            100, 
+            search, 
+            this._type() ?? null, 
+            this._roles() ?? null, 
+            this._isInternal() ?? null, 
+            this._excludeId() ?? null, 
+            this._hasBranch() ?? null,
+            this._onlyId() ?? null
+        )
         .pipe(finalize(() => this.ldData.set(false)))
         .subscribe({
             next: (value: TableData<EntityListDto[]>) => {
