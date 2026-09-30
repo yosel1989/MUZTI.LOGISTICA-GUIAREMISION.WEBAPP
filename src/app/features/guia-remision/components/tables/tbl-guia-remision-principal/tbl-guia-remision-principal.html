@@ -449,11 +449,10 @@
                                         [class.border-e-0!]="(columns.length - 1) === i"
                                         class="text-nowrap py-1! font-light! truncate!"
                                         [ngClass]="col.tdClassName"
+                                        [appendHTML]="!rowData['ld_update'] ? (col.render ? col.render(rowData, col) : rowData[col.field] ) : ''"
                                     >
                                         @if(rowData['ld_update']){
                                             <p-skeleton [width]="i == 0 ? '20px' : '100%'" height="20px"></p-skeleton>
-                                        }@else {
-                                            {{rowData[col.field]}}
                                         }
                                     </td>
                                 }

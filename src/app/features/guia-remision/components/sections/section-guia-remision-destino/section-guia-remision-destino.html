@@ -1,50 +1,111 @@
 <div class="flex flex-col gap-x-4 gap-y-2 p-4">
 
-    <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
+    @if(submitted() && invalid){
+        <p class="inline-flex items-center text-sm! font-medium! text-amber-600! py-1 px-3 rounded-lg! bg-amber-100! border-s-3! border-amber-500!"><i class="fa-regular fa-triangle-exclamation text-lg! me-3"></i> Debe seleccionar un destino </p>
+    }
 
-        <ng-template #header>
-            <div class="roboto-condensed font-medium text-lg text-slate-600!">
-                Datos del Punto de Destino
-            </div>
-        </ng-template>
+    <div class="flex flex-col gap-y-3 relative">
 
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-3 p-4">
+        @if(selected()){
+            <p-fieldset styleClass="text-md! rounded-2xl!" [toggleable]="false" [collapsed]="false">
 
-            <div class="lg:col-span-2">
-                    <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
-                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                    <app-typing [text]="destinatario?.address ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
-                </div>
-            </div>
-            <div>
-                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Código establecimiento SUNAT</label>
-                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                    <app-typing [text]="destinatario?.code_sunat" class="font-semibold! text-slate-600!"></app-typing>
-                </div>
-            </div>
+                <ng-template #header>
+                    <div class="roboto-condensed font-medium text-lg text-slate-600!">
+                        Datos del Punto de Destino
+                    </div>
+                </ng-template>
 
-            <div>
-                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
-                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                    <app-typing [text]="destinatario?.department ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
-                </div>
-            </div>
+                <div class="flex flex-row items-center gap-x-4 p-4!" >
 
-            <div>
-                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
-                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                    <app-typing [text]="destinatario?.province ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                    <div class="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-3 p-4">
+
+                        <div class="lg:col-span-2">
+                                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Dirección</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="selected()?.address ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Código establecimiento SUNAT</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="selected()?.code_sunat" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Departamento</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="selected()?.department ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Provincia</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="selected()?.province ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
+                            <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
+                                <app-typing [text]="selected()?.district ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <p-button 
+                            severity="danger"
+                            variant="text"
+                            pTooltip="Quitar destino" 
+                            tooltipPosition="top" 
+                            tooltipStyleClass="text-[10px]!" 
+                            class="text-xs! ml-auto" 
+                            size="small" 
+                            icon="pi pi-times text-xs! font-semibold!" 
+                            styleClass="w-9! h-9! text-xs! bg-red-100!  hover:bg-red-200!"  
+                            (onClick)="evtRemove()"
+                        />
+                    </div>
                 </div>
+
+            </p-fieldset>
+        }
+        @else {
+            <div class="flex flex-col items-center">
+                <p-button 
+                    class="w-full max-w-[400px]! rounded-3xl!" 
+                    styleClass="rounded-2xl! bg-primary-50! border-2! hover:shadow"
+                    fluid 
+                    [outlined]="true"
+                    severity="primary"
+                    (onClick)="evtShowList()"
+                >
+                    <div class="flex flex-col items-center gap-x-4 text-center py-2">
+                        <img src="assets/media/brand/destino.png" alt="" class="h-[50px] w-auto block mx-auto">
+                        <p class="font-semibold text-primary-500 text-sm!">Seleccionar el destino</p>
+                    </div>
+                </p-button>
             </div>
-            <div>
-                <label class="text-[13px]! font-medium text-slate-500 roboto-condensed">Distrito</label>
-                <div class="bg-slate-200 rounded-lg! text-[.875rem] py-2 ps-3">
-                    <app-typing [text]="destinatario?.district ?? '--'" class="font-semibold! text-slate-600!"></app-typing>
-                </div>
+        }
+
+    </div>
+
+</div>
+
+<p-confirmdialog styleClass="max-w-[400px]! rounded-3xl!" #cd appendTo="body">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-8  rounded-xl">
+            <div class="rounded-full bg-blue-200 text-blue-700 inline-flex justify-center items-center h-24 w-24 -mt-20"
+            >
+                <i class="font-bold pi pi-question text-5xl!"></i>
+            </div>
+            <span class="font-semibold text-xl block mb-2 mt-6 text-center">{{ message.header }}</span>
+            <p class="mb-0 text-xs">{{ message.message }}</p>
+            <div class="flex items-center gap-2 mt-6">
+                <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                <p-button label="Cancelar" severity="secondary" (onClick)="onReject()" styleClass="w-32"></p-button>
             </div>
         </div>
-
-    </p-fieldset>
-
-    <p class="inline-flex items-center text-sm! font-medium! text-blue-600! py-1 px-3 rounded-lg! bg-blue-100! border-s-3! border-blue-500! mt-3"><i class="fa-solid fa-circle-info text-lg! me-3"></i> Los datos son obtenidos previamente del destinatario seleccionado.</p>
-</div>
+    </ng-template>
+</p-confirmdialog>

@@ -58,6 +58,7 @@ import { FltGuiaRemisionPrincipalComponent } from '../../filters/flt-guia-remisi
 import { MdlHeaderPrevisualizarGuiaRemisionComponent } from '../../modals/headers/mdl-header-previsualizar-guia-remision/mdl-header-previsualizar-guia-remision';
 import { MdlPrevisualizarGuiaRemisionComponent } from '../../modals/mdl-previsualizar-guia-remision/mdl-previsualizar-guia-remision';
 import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
+import { AppendHtmlDirective } from '@core/directives/append-html.directive';
 
 @Component({
   selector: 'app-tbl-guia-remision-principal',
@@ -85,9 +86,10 @@ import { MdlVerPdfComponent } from '../../modals/mdl-ver-pdf/mdl-ver-pdf';
     DragScrollDirective,
     AvatarModule,
     TextareaModule,
-    MenuModule
+    MenuModule,
+    AppendHtmlDirective 
   ],
-  providers: [DialogService, ConfirmationService],
+  providers: [DialogService, ConfirmationService, DatePipe],
 })
 export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -96,6 +98,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   private guiaRemisionHistorialApiService = inject(GuiaRemisionHistorialApiService);
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
+  private datePipe = inject(DatePipe);
   util = inject(UtilService);
   
   @ViewChild('datatable', { read: ElementRef }) datatableEl!: ElementRef;
@@ -166,17 +169,49 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'estado', header: 'Estado', sort: false, sticky: false, className: 'text-center!' },
         { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false, className: 'text-center!' },
         { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
-        { field: 'establecimiento_remitente', header: 'Origen', sort: false, sticky: false },
+        { field: 'entity_branch_sender_address', header: 'Origen', sort: false, sticky: false, render: (rowData: GuiaRemisionDto) => {
+          return `
+            <div class="font-semibold!">${rowData.entity_branch_sender_alias}</div>
+            <div>${rowData.entity_branch_sender_address}</div>
+          `;
+        }},
         { field: 'entidad_destinatario', header: 'Destinatario', sort: false, sticky: false, },
-        { field: 'establecimiento_destinatario', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' },
-        { field: 'motivo_traslado', header: 'Motivo Traslado', sort: false, sticky: false },
-        { field: 'tipo_transporte', header: 'T. Transporte', sort: false, sticky: false },
-        { field: 'fecha_emision', header: 'F. Emisión', sort: false, sticky: false },
-        { field: 'hora_emision', header: 'H. Emisión', sort: false, sticky: false },
+        { field: 'entity_branch_sender_address', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
+          return `
+            <div class="font-semibold!">${rowData.entity_branch_receiver_alias}</div>
+            <div>${rowData.entity_branch_receiver_address}</div>
+          `;
+        }},
+        { field: 'entity_sender_name', header: 'Emisor', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
+          return rowData.entity_sender_name ? `
+            <div class="font-semibold!">${rowData.entity_sender_name}</div>
+            <div>${rowData.entity_sender_document_number}</div>
+          ` : '<span class="block w-full text-center!">-</span>';
+        }},
+        { field: 'entity_provider_name', header: 'Proveedor', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
+          return rowData.entity_provider_name ? `
+            <div class="font-semibold!">${rowData.entity_provider_name}</div>
+            <div>${rowData.entity_provider_document_number}</div>
+          ` : '<span class="block w-full text-center!">-</span>';
+        }},
+        { field: 'entity_carrier_name', header: 'Transportista', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
+          return rowData.entity_provider_name ? `
+            <div class="font-semibold!">${rowData.entity_carrier_name}</div>
+            <div>${rowData.entity_carrier_document_number}</div>
+          ` : '<span class="block w-full text-center!">-</span>';
+        }},
+        { field: 'reason_for_transfer', header: 'Motivo Traslado', sort: false, sticky: false },
+        { field: 'transport_type', header: 'T. Transporte', sort: false, sticky: false },
+        { field: 'issue_date', header: 'F. Emisión', sort: false, sticky: false },
+        { field: 'issue_hour', header: 'H. Emisión', sort: false, sticky: false },
         { field: 'area', header: 'Area', sort: false, sticky: false },
-        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false },
+        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: GuiaRemisionDto) => {
+          return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
+        }},
         { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false },
+        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: GuiaRemisionDto) => {
+          return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
+        }},
         { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
         { field: 'options', header: '<i class="fa-light fa-columns-3"></i>', sort: false, sticky: true, alignFrozen: 'right' },
       ];
@@ -686,7 +721,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
           this.alertService.showSwalAlert({
             icon: "success",
             title: "¡Guía de Remisión Emitida!",
-            text: `Se emitió la GUÍA DE REMISIÓN ${this.selected()?.tipo_guia} ELECTRÓNICA\n N° ${this.selected()?.numero_guia}`
+            text: `Se emitió la GUÍA DE REMISIÓN ${this.selected()?.type} ELECTRÓNICA\n N° ${this.selected()?.numero_guia}`
           });
           this.selected()!.loading_update = false;
           this.reload();

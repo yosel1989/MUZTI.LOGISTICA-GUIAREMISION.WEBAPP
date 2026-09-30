@@ -133,7 +133,7 @@ export class MdlEntityBranchList implements OnInit, AfterViewInit, OnDestroy{
                 case SunatMotivoTrasladoEnum.otros: break;
                 case SunatMotivoTrasladoEnum.venta_sujeta_confirmacion_comprador: break;
                 case SunatMotivoTrasladoEnum.traslado_emisor_itinerante_comprobantes_pago: break;
-                case SunatMotivoTrasladoEnum.traslado_zona_primaria: break;
+                case SunatMotivoTrasladoEnum.traslado_mercaderia_extranjera: break;
                 default: 
                     this.disabled.set(true);
                     break;

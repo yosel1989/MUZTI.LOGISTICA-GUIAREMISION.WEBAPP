@@ -21,7 +21,7 @@ import { EmpresaToSelectDto } from '@features/empresa/models/empresa.model';
 import { MdlEntityBranchList } from '@features/entity-branch/components/modals/mdl-entity-branch-list/mdl-entity-branch-list';
 import { EntityBranchDto } from '@features/entity-branch/models/entity-branch';
 import { MdlEntityListBySeriesAssigned } from '@features/entity/components/modals/mdl-entity-list-by-series-assigned/mdl-entity-list-by-series-assigned';
-import { EntityBySerieAssigned_EntityDto, EntityBySerieAssignedDto } from '@features/entity/models/entity';
+import { EntityBySerieAssignedDto } from '@features/entity/models/entity';
 import { EntityApiService } from '@features/entity/services/entity-service';
 import { GuiaRemisionTransportUnitCreateDto } from '@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte';
 import { MdlPrevisualizarPdfComponent } from '@features/guia-remision/components/modals/mdl-previsualizar-pdf/mdl-previsualizar-pdf';
@@ -283,11 +283,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             /** Entidad emisora */
             entity_id: this.entitySelected()!.entity.id,
             entity: this.entitySelected()!.entity,
-            
-            /** Establecimiento donde se emitió */
-            entity_branch_id: this.entitySelected()!.entity_branch.id,
-            entity_branch: this.entitySelected()!.entity_branch,
-              
+
             /** Serie con el cual se emitió */
             entity_branch_serie_id: this.entitySelected()!.entity_branch_serie.id,
             entity_branch_serie: this.entitySelected()!.entity_branch_serie,
@@ -306,20 +302,16 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             issue_hour: formatDate(this.f.issue_date.value, 'HH:mm:ss', 'en-US'),
             
             /** Entidad cliente o destinatario */
-            entity_receiver_id: this.sectionDestinatario!.selected()!.entity_id,
-            entity_receiver: {
-                id: this.sectionDestinatario!.selected()!.entity_id,
-                name: this.sectionDestinatario!.selected()!.entity_name,
-                document_number: this.sectionDestinatario!.selected()!.entity_document_number,
-                department: this.sectionDestinatario!.selected()!.entity_department,
-                province: this.sectionDestinatario!.selected()!.entity_province,
-                district: this.sectionDestinatario!.selected()!.entity_district,
-                address: this.sectionDestinatario!.selected()!.entity_address 
-            } as EntityBySerieAssigned_EntityDto,
+            entity_receiver_id: this.sectionDestinatario!.selected()!.id,
+            entity_receiver: this.sectionDestinatario!.selected()!,
+
+            /** Establecimiento origen*/
+            entity_branch_sender_id: this.sectionOrigen!.selected()!.id,
+            entity_branch_sender: this.sectionOrigen!.selected()!,
                         
             /** Establecimiento destino*/
-            entity_branch_receiver_id: this.sectionDestinatario!.selected()!.id,
-            entity_branch_receiver: this.sectionDestinatario!.selected()!,
+            entity_branch_receiver_id: this.sectionDestino!.selected()!.id,
+            entity_branch_receiver: this.sectionDestino!.selected()!,
         
             /** Datos del traslado */
             shipment_details: {
@@ -332,7 +324,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
                 total_gross_weight: this.sectionDatosTraslado?.formData?.peso_bruto_total,
                 /** Unidad de medida */
                 unit_of_measure_id: this.sectionDatosTraslado?.formData?.unidad_medida_id,
-                unit_of_measure_code_sunat: "",
+                unit_of_measure_code_sunat: "KGM",
                 /** Número de bultos */
                 package_count: this.sectionDatosTraslado?.formData?.numero_bultos,
                 /** Número de contenedor */
@@ -412,7 +404,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
             draggable: false,
             modal: true,
             position: 'top',
-            header: 'Seleccionar Remitente',
+            header: 'Seleccionar emisor',
             styleClass: 'max-h-none! slide-down-dialog',
             maskStyleClass: 'py-4',
             appendTo: 'body',
@@ -448,7 +440,7 @@ export class GuiaRemisionCrearComponent implements OnInit, AfterViewInit, OnDest
         if( !this.handlerValidation() ) return;
 
         console.log('form data', this.request);
-        return;
+        //return;
 
 
         this.loadingSubmit.next(true);

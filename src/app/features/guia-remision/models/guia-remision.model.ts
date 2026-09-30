@@ -3,7 +3,7 @@ import { ConductorDto } from "@features/conductor/models/conductor.model";
 import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EntityBranchSerieDto } from "@features/entity-branch-serie/models/entity-branch-serie";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
-import { EntityBySerieAssigned_EntityBranchDto, EntityBySerieAssigned_EntityBranchSerieDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityBranchSerieDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { GuiaRemisionTransportUnitCreateDto } from "@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
 import { TransportistaDto } from "@features/transportista/models/transportista";
@@ -15,10 +15,6 @@ export interface GuiaRemisionRemitenteRequestDto {
   /** Entidad emisora */
   entity_id: number;
   entity: EntityDto | EntityBySerieAssigned_EntityDto;
-
-  /** Establecimiento donde se emitió */
-  entity_branch_id: number;
-  entity_branch: EntityBranchDto | EntityBySerieAssigned_EntityBranchDto;
   
   /** Serie con el cual se emitió */
   entity_branch_serie_id: number;
@@ -40,6 +36,10 @@ export interface GuiaRemisionRemitenteRequestDto {
   /** Entidad cliente o destinatario */
   entity_receiver_id: number;
   entity_receiver: EntityDto;
+
+  /** Establecimiento de origen */
+  entity_branch_sender_id: number;
+  entity_branch_sender: EntityBranchDto;
 
   /** Establecimiento destino*/
   entity_branch_receiver_id: number;
@@ -208,13 +208,18 @@ export interface GuiaRemisionDto {
   serie: string;
   numero: string;
   establecimiento_remitente: string;
-  tipo_guia: 'REMITENTE' | 'TRANSPORTISTA';
-  tipo_traslado: 'VENTA' | 'TRASLADO' | 'COMPRA';
-  motivo_traslado_id: number;
-  motivo_traslado: string;
-  tipo_transporte: 'PUBLICO' | 'PRIVADO';
-  fecha_emision: Date;
-  hora_emision: string;
+  /** Tipo de Guía de Remisión */
+  type: 'REMITENTE' | 'TRANSPORTISTA';
+  /** Id Motivo de traslado */
+  reason_for_transfer_id: number;
+  /** Motivo de traslado */
+  reason_for_transfer: string;
+  /** Tipo de transporte */
+  trasnport_type: 'PUBLICO' | 'PRIVADO';
+  /** Fecha de emisión */
+  issue_date: Date;
+  /** Hora de emisión */
+  issue_hour: string;
   respuesta_ticket: string | null;
   entidad_destinatario: string;
   establecimiento_destinatario: string;
@@ -245,6 +250,23 @@ export interface GuiaRemisionDto {
   proveedor: ProveedorDto | null;
   productos: GuiaRemisionDetalleDto[];
   doc_relacionado: GuiaRemisionDocumentoRelacionadoDto[];
+
+
+
+  entity_branch_sender_address: string;
+  entity_branch_sender_alias: string;
+
+  entity_branch_receiver_address: string;
+  entity_branch_receiver_alias: string;
+
+  entity_provider_name: string;
+  entity_provider_document_number: string;
+
+  entity_carrier_name: string;
+  entity_carrier_document_number: string;
+
+  entity_sender_name: string;
+  entity_sender_document_number: string;
 }
 
 

@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { MdlEntityList } from "@features/entity/components/modals/mdl-entity-list/mdl-entity-list";
-import { EntityDto } from "@features/entity/models/entity";
+import { EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { SunatMotivoTrasladoEnum } from "@features/guia-remision/enums/guia-remision.enum";
 import { TypingComponent } from "@features/shared/components/typing/typing";
 import { tablerAlertCircle } from "@ng-icons/tabler-icons";
@@ -52,10 +52,10 @@ export class SectionGuiaRemisionDestinatario{
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
-    entitySender = input<EntityDto | undefined>(undefined);
+    entitySender = input<EntityDto | EntityBySerieAssigned_EntityDto | undefined>(undefined);
     selected = signal<EntityDto | undefined>(undefined);
     motivoTraslado = input.required<SunatMotivoTrasladoDto | undefined>(); 
-    entity = input.required<EntityDto | undefined>(); 
+    entity = input<EntityDto | EntityBySerieAssigned_EntityDto | undefined>(); 
 
     submitted = signal(false);
 
@@ -70,7 +70,7 @@ export class SectionGuiaRemisionDestinatario{
         if (codigo && this.MOTIVOS_DESTINATARIO_ES_REMITENTE.includes(codigo)) {
             return this.entitySender()?.id;
         }
-        return null; // el usuario elige destinatario libremente (o ninguno si es '18')
+        return null;
     });
     
     constructor(){
@@ -94,12 +94,12 @@ export class SectionGuiaRemisionDestinatario{
         this.submitted.set(true);
 
         if(!this.entitySender()){
-            this.alertService.warning("Se tiene que seleccionar el remitente.");
+            this.alertService.warning("Debe seleccionar el emisor.");
             return false;
         }
 
         if(!this.selected()){
-            this.alertService.warning("Se tiene que seleccionar el destinatario / cliente.");
+            this.alertService.warning("Debe seleccionar el destinatario / cliente.");
             return false;
         }
 
@@ -114,7 +114,7 @@ export class SectionGuiaRemisionDestinatario{
         }
 
         if(!this.entitySender()){
-            this.alertService.warning(`Debe seleccionar un remitente`);
+            this.alertService.warning(`Debe seleccionar el emisor`);
             return;
         }
 

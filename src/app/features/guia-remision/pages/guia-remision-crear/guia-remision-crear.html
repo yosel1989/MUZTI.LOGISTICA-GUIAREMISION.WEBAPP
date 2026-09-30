@@ -36,7 +36,7 @@
                             <p-avatar icon="fa-duotone fa-briefcase" class="bg-primary-100! text-primary!" size="large"></p-avatar>
                             <div class="flex flex-col justify-center text-sm text-start! text-lg! text-slate-800!">
                                 @if(entitySelected() == null){
-                                    <p class="font-semibold! uppercase roboto-condensed">Seleccionar remitente</p>
+                                    <p class="font-semibold! uppercase roboto-condensed">Seleccionar emisor</p>
                                 }@else{
                                     <p class="font-semibold roboto-condensed">{{ entitySelected()?.entity?.name}}</p>
                                     <p class="uppercase roboto-condensed">{{ entitySelected()?.entity?.document_number }}</p>
@@ -182,9 +182,8 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-destinatario 
                                     #sectionDestinatario
-                                    [remitente]="entitySelected()?.entity_branch"
                                     [motivoTraslado]="selectMotivoTraslado?.selected()"
-                                    [entity]="entitySelected()?.entity"
+                                    [entitySender]="entitySelected()?.entity"
                                 ></app-section-guia-remision-destinatario>
                             </p-accordion-content>
                         </p-accordion-panel>
@@ -324,7 +323,9 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-origen
                                     #sectionOrigen
-                                    [remitente]="entitySelected()?.entity_branch ?? null"
+                                    [entitySender]="entitySelected()?.entity"
+                                    [entityReceiver]="sectionDestinatario.selected()"
+                                    [motivoTraslado]="selectMotivoTraslado?.selected()"
                                 ></app-section-guia-remision-origen>
                             </p-accordion-content>
                         </p-accordion-panel>
@@ -350,7 +351,9 @@
                             <p-accordion-content>
                                 <app-section-guia-remision-destino
                                     #sectionDestino
-                                    [destinatario]="sectionDestinatario.selected() ?? null"
+                                    [entitySender]="entitySelected()?.entity"
+                                    [entityReceiver]="sectionDestinatario.selected()"
+                                    [motivoTraslado]="selectMotivoTraslado?.selected()"
                                 ></app-section-guia-remision-destino>
                             </p-accordion-content>
                         </p-accordion-panel>

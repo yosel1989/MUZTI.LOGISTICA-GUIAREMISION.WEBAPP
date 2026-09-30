@@ -204,7 +204,7 @@ export class MdlPrevisualizarPdfComponent implements OnInit, AfterViewInit, OnDe
                         widths: ['*'],
                         body: [
                           [
-                            {text: `${this.data.entity_branch.address ?? '-'}`,  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
+                            {text: `${this.data.entity_branch_sender.address ?? '-'}`,  marginLeft: 10, marginTop: 10, marginBottom: 10, marginRight: 10, alignment: 'center'}
                           ]
                         ],
                       },

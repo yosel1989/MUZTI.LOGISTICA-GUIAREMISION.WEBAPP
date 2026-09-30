@@ -1,6 +1,6 @@
 import { NgClass } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, OnDestroy, OnInit, Output, signal } from "@angular/core";
+import { AfterViewInit, Component, DestroyRef, effect, EventEmitter, inject, input, OnDestroy, OnInit, Output, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MdlHeader } from "@core/components/modals/headers/mdl-header/mdl-header";
@@ -48,6 +48,7 @@ export class MdlEntityBranchListSelect implements OnInit, AfterViewInit, OnDestr
     dialogService = inject(DialogService);
     destroyRef = inject(DestroyRef);
 
+    _onlyIdsEntity = input<string | undefined>(undefined);
     @Output() OnClose: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() OnSelected: EventEmitter<EntityBranchListToModalDTO> = new EventEmitter<EntityBranchListToModalDTO>();
 
@@ -143,7 +144,8 @@ export class MdlEntityBranchListSelect implements OnInit, AfterViewInit, OnDestr
                 _roles : 'emisor',
                 _isInternal : true,
                 _excludeId: undefined,
-                _hasBranch: true
+                _hasBranch: true,
+                _onlyId: this._onlyIdsEntity()
             }
         });
 
