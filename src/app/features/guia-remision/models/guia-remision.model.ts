@@ -6,8 +6,6 @@ import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 import { EntityBySerieAssigned_EntityBranchSerieDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { GuiaRemisionTransportUnitCreateDto } from "@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte";
 import { ProveedorDto } from "@features/proveedor/models/proveedor";
-import { TransportistaDto } from "@features/transportista/models/transportista";
-import { UnidadTransporteDto } from "@features/unidad-transporte/models/unidad-transporte.model";
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
@@ -289,30 +287,29 @@ export interface GuiaRemisionDetalleDto{
 }
 
 export interface GuiaRemisionDatosEnvioDto{
-  datos_envio_id: number;
-  motivo_envio: string | 'PRIVADO' | 'PUBLICO';
-  fecha_envio: string | null;
-  fecha_entrega_transportista: string | null;
-  peso_bruto: number;
-  unidad_medida_id: number;
-  unidad_medida: string;
-  codigo_um: string;
-  ruc_empresa_currier: string | null;
-  razon_social_currier: string | null;
-  registro_mtc_currier: string | null;
+  /** Feha de inicio de traslado */
+  shipment_start_date: Date | null;
 
-  indicador_registro_vehiculo_conductor: boolean;
-  indicador_traslado_vehiculo_categoria: boolean;
-  indicador_transbordo_programado: boolean;
-  indicador_retorno_vehiculo_envases_vacios: boolean;
-  indicador_retorno_vehiculo_vacio: boolean;
-  indicador_traslado_total_dam: boolean;
+  /** Fecha de entrega al transportista */
+  delivery_date: Date | null;
 
-  conductor: ConductorDto[];
-  unidad_transporte: UnidadTransporteDto[];
+  /** Peso bruto total */
+  total_gross_weight: number;
 
-  transportista_id: number | null;
-  transportista: TransportistaDto | null;
+  /** Id Unidad de medida */
+  unit_of_measure_id: number;
+
+  /** Número de bultos */
+  package_count: number;
+
+  /** Número de contenedor */
+  container_number: string | null;
+
+  /** Número de precinto */
+  seal_number: string | null;
+
+  /** Id Indicador de envio SUNAT */
+  shipment_indicator_id: number;
 }
 
 export interface GuiaRemisionDocumentoRelacionadoDto{
