@@ -3,7 +3,7 @@ import { AfterViewInit, Component, computed, DestroyRef, inject, input, OnDestro
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ErrorHandlerService } from '@core/handlers/error-handler.service';
-import { GuiaRemisionDto } from '@features/guia-remision/models/guia-remision.model';
+import { DespatchAdviceDto } from '@features/guia-remision/models/guia-remision.model';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { LoaderComponent } from 'app/core/components/loaders/loader/loder.component';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -29,7 +29,7 @@ export class MdlVerPdfComponent implements OnInit, AfterViewInit, OnDestroy{
   private apiGuiaRemision = inject(GuiaRemisionApiService);
 
   ticket = input.required<string>();
-  data = input.required<GuiaRemisionDto>();
+  data = input.required<DespatchAdviceDto>();
   textFile = computed(() => {
     const guia = this.data();
     return guia ? `${guia.numero_guia}` : ''

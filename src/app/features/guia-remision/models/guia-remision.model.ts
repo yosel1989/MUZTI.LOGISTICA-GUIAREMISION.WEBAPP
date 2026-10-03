@@ -1,11 +1,156 @@
 import { SunatMotivoTrasladoDto } from "@features/catalogo/models/sunat-catalogo.model";
 import { ConductorDto } from "@features/conductor/models/conductor.model";
-import { EmpresaDTO } from "@features/empresa/models/empresa.model";
 import { EntityBranchSerieDto } from "@features/entity-branch-serie/models/entity-branch-serie";
 import { EntityBranchDto } from "@features/entity-branch/models/entity-branch";
 import { EntityBySerieAssigned_EntityBranchSerieDto, EntityBySerieAssigned_EntityDto, EntityDto } from "@features/entity/models/entity";
 import { GuiaRemisionTransportUnitCreateDto } from "@features/guia-remision-unidad-transporte/models/guia-remision-unidad-transporte";
-import { ProveedorDto } from "@features/proveedor/models/proveedor";
+import { GuiaRemisionEstadoDTO } from './../../guia-remision-estado/models/guia-remision-estado.model';
+import { AreaDto } from "@features/area/models/area";
+
+
+
+/**
+ * Representa los datos de una guía de remisión.
+ */
+export interface DespatchAdviceDto {
+  /** Identificador númerico */
+  id: number;
+
+  /** Identificador UUIDv4 */
+  uuid: string;
+
+  /** Número de guía concatenado {serie}-{numero} */
+  serie_number: string;
+
+  /** Serie de la guía creada */
+  serie: string;
+
+  /** Número autoasignado a la guía creada */
+  number: string;
+
+  /** Número de documento de la entidad emisora, RUC */
+  ruc: string;
+
+  /** Identificador de la entidad emisora */
+  entity_id: number;
+
+  /** Entidad emisora */
+  entity: EntityDto;
+
+  /** Identificador de la serie del establecimiento al que pertenece la guía */
+  entity_branch_serie_id: number;
+
+  /** Serie del establecimiento al que pertenece la guía */
+  entity_branch_serie: EntityBranchDto;
+
+  /** Tipo de Guía de Remisión */
+  type: 'REMITENTE' | 'TRANSPORTISTA';
+
+  /** Identificador del Motivo de traslado */
+  reason_for_transfer_id: number;
+
+  /** Motivo de traslado */
+  reason_for_transfer: SunatMotivoTrasladoDto;
+
+  /** Tipo de transporte */
+  trasnport_type: 'PUBLICO' | 'PRIVADO';
+
+  /** Fecha de emisión */
+  issue_date: Date;
+
+  /** Hora de emisión */
+  issue_hour: string;
+
+  /** Respuesta del ticket, solo para EFACT al emitir */
+  respuesta_ticket: string | null;
+
+  /** Identificacor de entidad destinataria o cliente  */
+  entity_receiver_id: string;
+
+  /** Entidad destinataria o cliente */
+  entity_receiver: EntityDto;
+
+  /** Identificacor de entidad transportista  */
+  entity_carrier_id: string | null;
+
+  /** Entidad transportista */
+  entity_carrier: EntityDto | null;
+
+  /** Identificacor de entidad proveedora  */
+  entity_provider_id: string | null;
+
+  /** Entidad proveedora */
+  entity_provider: EntityDto | null;
+
+  /** Identificador del establecimiento de salida o punto de partida */
+  entity_branch_sender_id: number;
+
+  /** Establecimiento de salida o punto de partida */
+  entity_branch_sender: EntityBranchDto;
+
+  /** Identificador del establecimiento de llegada o punto de destino */
+  entity_branch_receiver_id: number;
+
+  /** Establecimiento de llegada o punto de destino */
+  entity_branch_receiver: EntityBranchDto;
+
+  /** Identificacor del área al que pertenece la guía  */
+  area_id: number;
+
+  /** Área al que pertenece la guía */
+  area: AreaDto | null;
+
+  /** Fecha creación de la guía */
+  created_at: Date;
+
+  /** Usuario que creo la guía */
+  created_at_user: string;
+
+  /** Nombre del empleado que creo la guía */
+  created_at_user_name: string;
+
+  /** Identificador del empleado que creo la guía */
+  created_at_employee_id: string;
+
+  /** Fecha de actualización de la guía */
+  updated_at: Date | null;
+
+  /** Usuario que actualizó la guía */
+  updated_at_user: string | null;
+
+  /** Nombre del empleado que actualizó la guía */
+  updated_at_user_name: string | null;
+
+  /** Nombre del empleado que actualizó la guía */
+  updated_at_employee_id: string | null;
+
+  /** Identificador del estado interno de la guía */
+  status_id: number;
+
+  /** Estado interno de la guía */
+  status: GuiaRemisionEstadoDTO;
+
+  /** Identificador del estado relacionado a SUNAT */
+  status_sunat_id: number;
+
+  /** Estado relacionado a Sunat */
+  status_sunat: 'PENDIENTE' | 'ENVIADO' | 'ERROR';
+
+  /** Observaciones */
+  notes: string | null;
+
+  /** Conductores */
+  drivers: ConductorDto[];
+
+  /** Vehiculos */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transport_units: any[]
+
+}
+
+
+
+
 
 // Guía de Remisión - Request Body
 export interface GuiaRemisionRemitenteRequestDto {
@@ -194,78 +339,6 @@ export interface GR_EmitirGuiaRemisionResponseDto {
   }
 }
 
-export interface GuiaRemisionDto {
-  id: number;
-  uuid: string;
-  entity_id: number;
-  ruc: string;
-  entidad_remitente: string;
-  numero_documento_remitente: string;
-  numero_guia: string;
-  serie_correlativo: string;
-  serie: string;
-  numero: string;
-  establecimiento_remitente: string;
-  /** Tipo de Guía de Remisión */
-  type: 'REMITENTE' | 'TRANSPORTISTA';
-  /** Id Motivo de traslado */
-  reason_for_transfer_id: number;
-  /** Motivo de traslado */
-  reason_for_transfer: string;
-  /** Tipo de transporte */
-  trasnport_type: 'PUBLICO' | 'PRIVADO';
-  /** Fecha de emisión */
-  issue_date: Date;
-  /** Hora de emisión */
-  issue_hour: string;
-  respuesta_ticket: string | null;
-  entidad_destinatario: string;
-  establecimiento_destinatario: string;
-  numero_documento_destinatario: string;
-  distrito_origen: string;
-  distrito_destino: string;
-  created_at: Date;
-  created_at_user: string;
-  created_at_user_name: string;
-  updated_at: Date | null;
-  updated_at_user: string | null;
-  updated_at_user_name: string | null;
-  estado: string;
-  estado_color: string | null;
-  id_estado: number;
-  estado_sunat: string;
-  id_estado_sunat: number;
-  loading_update: boolean;
-  area: string | null;
-  area_id: string | null;
-  acciones: string;
-  observacion: string | null;
-
-  empresa: EmpresaDTO;
-  remitente: EntityBranchDto;
-  destinatario: EntityBranchDto;
-  datos_envio: GuiaRemisionDatosEnvioDto;
-  proveedor: ProveedorDto | null;
-  productos: GuiaRemisionDetalleDto[];
-  doc_relacionado: GuiaRemisionDocumentoRelacionadoDto[];
-
-
-
-  entity_branch_sender_address: string;
-  entity_branch_sender_alias: string;
-
-  entity_branch_receiver_address: string;
-  entity_branch_receiver_alias: string;
-
-  entity_provider_name: string;
-  entity_provider_document_number: string;
-
-  entity_carrier_name: string;
-  entity_carrier_document_number: string;
-
-  entity_sender_name: string;
-  entity_sender_document_number: string;
-}
 
 
 

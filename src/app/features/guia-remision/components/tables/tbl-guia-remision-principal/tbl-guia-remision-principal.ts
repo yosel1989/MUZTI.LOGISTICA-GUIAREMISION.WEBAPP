@@ -21,7 +21,7 @@ import { LayoutRoutingModule } from '@features/admin/layout/layout-routing.modul
 import { GuiaRemisionHistorialListDTO } from '@features/guia-remision/models/guia-remision-historial.model';
 import {
   GR_EmitirGuiaRemisionResponseDto,
-  GuiaRemisionDto,
+  DespatchAdviceDto,
 } from '@features/guia-remision/models/guia-remision.model';
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { GuiaRemisionHistorialApiService } from '@features/guia-remision/services/guia-remision-historial-api.service';
@@ -107,9 +107,9 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   cols: Column[] = [];
 
-  data: GuiaRemisionDto[] = [];
+  data: DespatchAdviceDto[] = [];
   ldData = signal<boolean>(true);
-  selected = signal<GuiaRemisionDto | undefined>(undefined);
+  selected = signal<DespatchAdviceDto | undefined>(undefined);
   items = computed(() => {
     const current = this.selected();
     return this.buildMenuItems(current);
@@ -169,35 +169,35 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'estado', header: 'Estado', sort: false, sticky: false, className: 'text-center!' },
         { field: 'estado_sunat', header: 'Estado Sunat', sort: false, sticky: false, className: 'text-center!' },
         { field: 'entidad_remitente', header: 'Remitente', sort: false, sticky: false },
-        { field: 'entity_branch_sender_address', header: 'Origen', sort: false, sticky: false, render: (rowData: GuiaRemisionDto) => {
+        { field: 'entity_branch_sender_address', header: 'Origen', sort: false, sticky: false, render: (rowData: DespatchAdviceDto) => {
           return `
             <div class="font-semibold!">${rowData.entity_branch_sender_alias}</div>
             <div>${rowData.entity_branch_sender_address}</div>
           `;
         }},
         { field: 'entidad_destinatario', header: 'Destinatario', sort: false, sticky: false, },
-        { field: 'entity_branch_sender_address', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
+        { field: 'entity_branch_sender_address', header: 'Destino', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: DespatchAdviceDto) => {
           return `
             <div class="font-semibold!">${rowData.entity_branch_receiver_alias}</div>
             <div>${rowData.entity_branch_receiver_address}</div>
           `;
         }},
-        { field: 'entity_sender_name', header: 'Emisor', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
+        { field: 'entity_sender_name', header: 'Emisor', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: DespatchAdviceDto) => {
           return rowData.entity_sender_name ? `
             <div class="font-semibold!">${rowData.entity_sender_name}</div>
             <div>${rowData.entity_sender_document_number}</div>
           ` : '<span class="block w-full text-center!">-</span>';
         }},
-        { field: 'entity_provider_name', header: 'Proveedor', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
-          return rowData.entity_provider_name ? `
-            <div class="font-semibold!">${rowData.entity_provider_name}</div>
-            <div>${rowData.entity_provider_document_number}</div>
+        { field: 'entity_provider_name', header: 'Proveedor', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: DespatchAdviceDto) => {
+          return rowData.entity_provider?.name ? `
+            <div class="font-semibold!">${rowData.entity_provider?.name}</div>
+            <div>${rowData.entity_provider?.document_number}</div>
           ` : '<span class="block w-full text-center!">-</span>';
         }},
-        { field: 'entity_carrier_name', header: 'Transportista', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: GuiaRemisionDto) => {
-          return rowData.entity_provider_name ? `
-            <div class="font-semibold!">${rowData.entity_carrier_name}</div>
-            <div>${rowData.entity_carrier_document_number}</div>
+        { field: 'entity_carrier_name', header: 'Transportista', sort: false, sticky: false, className: 'w-[100px]' , render: (rowData: DespatchAdviceDto) => {
+          return rowData.entity_carrier ? `
+            <div class="font-semibold!">${rowData.entity_carrier?.name}</div>
+            <div>${rowData.entity_carrier?.document_number}</div>
           ` : '<span class="block w-full text-center!">-</span>';
         }},
         { field: 'reason_for_transfer', header: 'Motivo Traslado', sort: false, sticky: false },
@@ -205,11 +205,11 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
         { field: 'issue_date', header: 'F. Emisión', sort: false, sticky: false },
         { field: 'issue_hour', header: 'H. Emisión', sort: false, sticky: false },
         { field: 'area', header: 'Area', sort: false, sticky: false },
-        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: GuiaRemisionDto) => {
+        { field: 'created_at', header: 'F. Registro', sort: false, sticky: false, render: (rowData: DespatchAdviceDto) => {
           return this.datePipe.transform(rowData.created_at, 'dd/MM/yyyy HH:mm:ss a');
         }},
         { field: 'created_at_user', header: 'U. Registro', sort: false, sticky: false },
-        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: GuiaRemisionDto) => {
+        { field: 'updated_at', header: 'F. Modifico', sort: false, sticky: false, render: (rowData: DespatchAdviceDto) => {
           return rowData.updated_at ? this.datePipe.transform(rowData.updated_at, 'dd/MM/yyyy HH:mm:ss a') : '';
         }},
         { field: 'updated_at_user', header: 'U. Modifico', sort: false, sticky: false },
@@ -253,7 +253,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
   }
 
   // setters
-  setSelected(data: GuiaRemisionDto | undefined) {
+  setSelected(data: DespatchAdviceDto | undefined) {
     this.selected.set(data);
   }
 
@@ -272,7 +272,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     }
 
     this.subData = this.api.obtenerTodo(this.pageNumber, this.pageSize, this.requestFilters).subscribe({
-      next: (res: TableData<GuiaRemisionDto[]>) => {
+      next: (res: TableData<DespatchAdviceDto[]>) => {
         this.data = res.data.map((x) => {
           x.created_at = new Date(x.created_at);
           x.updated_at = x.updated_at ? new Date(x.updated_at) : null;
@@ -316,7 +316,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   //events
 
-  evtToggleSelection(row: GuiaRemisionDto): void {
+  evtToggleSelection(row: DespatchAdviceDto): void {
     if (this.selected() === row) {
       this.setSelected(undefined);
       this.selected.set(undefined);
@@ -490,7 +490,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.showHistory.set(false);
   }
 
-  evtShowContextMenu(event: MouseEvent, rowData: GuiaRemisionDto) {
+  evtShowContextMenu(event: MouseEvent, rowData: DespatchAdviceDto) {
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
     const currentSelected = this.selected();
@@ -525,7 +525,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
 
   // Functions
 
-  isOpenCm(rowData: GuiaRemisionDto): boolean{
+  isOpenCm(rowData: DespatchAdviceDto): boolean{
     return (this.cm?.visible() && rowData === this.selected()) ?? false;
   }
 
@@ -545,7 +545,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
     this.evtOnReload(true);
   }
 
-  private buildMenuItems(selected: GuiaRemisionDto | undefined): MenuItem[] {
+  private buildMenuItems(selected: DespatchAdviceDto | undefined): MenuItem[] {
     return [
       {
         label: 'Ver PDF',
@@ -662,7 +662,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       this.showInputAlert.set(false);
     }))
     .subscribe({
-      next: (res: GuiaRemisionDto) => {
+      next: (res: DespatchAdviceDto) => {
 
         this.alertService.success("Se anuló la guía con éxito");
         
@@ -691,7 +691,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       this.showInputAlert.set(false);
     }))
     .subscribe({
-      next: (res: GuiaRemisionDto) => {
+      next: (res: DespatchAdviceDto) => {
         
         this.alertService.success("Se rechazó la guía con éxito");
         
@@ -743,7 +743,7 @@ export class TableGuiaRemisionPrincipalComponent implements OnInit, AfterViewIni
       this.showInputAlert.set(false);
     }))
     .subscribe({
-      next: (res: GuiaRemisionDto) => {
+      next: (res: DespatchAdviceDto) => {
 
         this.alertService.success("Se confirmó la guía con éxito");
         

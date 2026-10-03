@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, signal, inject, input } from '@angular/core';
-import { GuiaRemisionDto, } from '@features/guia-remision/models/guia-remision.model';
+import { DespatchAdviceDto, } from '@features/guia-remision/models/guia-remision.model';
 import "pdfmake/build/vfs_fonts";
 import { GuiaRemisionApiService } from '@features/guia-remision/services/guia-remision-api.service';
 import { CardModule } from 'primeng/card';
@@ -28,12 +28,12 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
 
   private api = inject(GuiaRemisionApiService);
   private errorHandler = inject(ErrorHandlerService);
-  guiaRemision = input.required<GuiaRemisionDto>();
+  guiaRemision = input.required<DespatchAdviceDto>();
 
   loading = signal(false);
   subs = new Subscription();
 
-  localData = signal<GuiaRemisionDto | undefined | null>(undefined);
+  localData = signal<DespatchAdviceDto | undefined | null>(undefined);
 
   ngOnInit(): void {
     this.loadData();
@@ -54,7 +54,7 @@ export class MdlPrevisualizarGuiaRemisionComponent implements OnInit, AfterViewI
       this.loading.set(false);
     }))
     .subscribe({
-      next: (value: GuiaRemisionDto) => {
+      next: (value: DespatchAdviceDto) => {
         this.localData.set(value);
       },
       error: (err: HttpErrorResponse) => {

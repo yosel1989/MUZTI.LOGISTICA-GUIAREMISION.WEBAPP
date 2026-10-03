@@ -65,16 +65,16 @@
                 <div><p><span class="font-semibold">Fecha Emisión:</span><span class="ps-3">{{ localData()?.issue_date | date:'dd-MMM-yyyy' | uppercase }}</span></p></div>
 
                 <div><p><span class="font-semibold">Fecha Inicio Traslado:</span><span class="ps-3">
-                    @if(localData()?.datos_envio?.fecha_envio){
-                        {{ localData()?.datos_envio?.fecha_envio  | date:'dd-MMM-yyyy' | uppercase}}
+                    @if(localData()?.datos_envio?.shipment_start_date){
+                        {{ localData()?.datos_envio?.shipment_start_date  | date:'dd-MMM-yyyy' | uppercase}}
                     }@else{
-                        {{ localData()?.datos_envio?.fecha_entrega_transportista | date:'dd-MMM-yyyy' | uppercase}}
+                        {{ localData()?.datos_envio?.delivery_date | date:'dd-MMM-yyyy' | uppercase}}
                     } 
                 </span></p></div>
 
-                <div><p><span class="font-semibold">Tipo de Transportista:</span><span class="ps-3">{{ localData()?.datos_envio?.motivo_envio }}</span></p></div>
-                <div><p><span class="font-semibold">Und. de Medida:</span><span class="ps-3">{{ localData()?.datos_envio?.unidad_medida }}</span></p></div>
-                <div><p><span class="font-semibold">Peso Bruto:</span><span class="ps-3">{{ localData()?.datos_envio?.peso_bruto | number:'1.2-2' }}</span></p></div>
+                <div><p><span class="font-semibold">Tipo de Transportista:</span><span class="ps-3">{{ localData()?.trasnport_type }}</span></p></div>
+                <div><p><span class="font-semibold">Und. de Medida:</span><span class="ps-3">{{ localData()?.datos_envio?.unit_of_measure_id }}</span></p></div>
+                <div><p><span class="font-semibold">Peso Bruto:</span><span class="ps-3">{{ localData()?.datos_envio?.total_gross_weight | number:'1.2-2' }}</span></p></div>
             </div>
         </div>
 
@@ -176,17 +176,13 @@
         }
         
         @if(
-            localData()?.datos_envio?.indicador_registro_vehiculo_conductor ||
-            localData()?.datos_envio?.indicador_traslado_vehiculo_categoria ||
-            localData()?.datos_envio?.indicador_transbordo_programado ||
-            localData()?.datos_envio?.indicador_retorno_vehiculo_envases_vacios ||
-            localData()?.datos_envio?.indicador_retorno_vehiculo_vacio ||
-            localData()?.datos_envio?.indicador_traslado_total_dam 
+           0 > 1
         ){
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">INDICADORES</p>   
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
                     
+                    <!--
                     @if(localData()?.datos_envio?.indicador_traslado_vehiculo_categoria){
                         <div><p>Traslado en vehículos de categoría M1 o L: <span class="font-semibold">SI</span></p></div>
                     }
@@ -201,35 +197,35 @@
                     }
                     @if(localData()?.datos_envio?.indicador_registro_vehiculo_conductor){
                         <div><p>Registrar vehículos y conductores del transportista: <span class="font-semibold">SI</span></p></div>
-                    }
+                    }*/-->
                 </div>
             </div>
         }
 
-        @if(localData()?.datos_envio?.transportista){
+        @if(localData()?.entity_carrier){
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL TRANSPORTISTA</p>   
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg ">
                     <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
-                        <div><p><span class="font-semibold">RUC:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.numero_documento }}</span></p></div>
-                        <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.datos_envio?.transportista?.razon_social }}</span></p></div>
+                        <div><p><span class="font-semibold">RUC:</span><span class="ps-3">{{ localData()?.entity_carrier?.document_number }}</span></p></div>
+                        <div><p><span class="font-semibold">Razón Social:</span><span class="ps-3">{{ localData()?.entity_carrier?.name }}</span></p></div>
                     </div>   
                 </div>
             </div>
         }
 
-        @if( localData()?.datos_envio?.conductor?.length ){
+        @if( localData()?.drivers?.length ){
 
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL CONDUCTOR</p>   
                 <div class="flex flex-col p-4 border border-gray-300 rounded-lg gap-y-2">
-                    @for(conductor of localData()?.datos_envio!.conductor; track conductor.id){
+                    @for(driver of localData()?.drivers!; track driver.id){
                         <div>
-                            <p class="block font-semibold text-start">{{ conductor.job_title }}:</p>
+                            <p class="block font-semibold text-start">{{ driver.type }}:</p>
                             <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ps-3">
-                                <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">{{ conductor.numero_documento }}</span></p></div>
-                                <div><p><span class="font-semibold">N° de licencia:</span><span class="ps-3">{{ conductor.licencia }}</span></p></div>
-                                <div><p><span class="font-semibold">Nombres y apellidos:</span><span class="ps-3">{{ conductor.nombres }} - {{ conductor.apellidos }}</span></p></div>
+                                <div><p><span class="font-semibold">N° de documento:</span><span class="ps-3">{{ driver.numero_documento }}</span></p></div>
+                                <div><p><span class="font-semibold">N° de licencia:</span><span class="ps-3">{{ driver.licencia }}</span></p></div>
+                                <div><p><span class="font-semibold">Nombres y apellidos:</span><span class="ps-3">{{ driver.nombres }} - {{ driver.apellidos }}</span></p></div>
                             </div>
                         </div>
                     }
@@ -238,16 +234,16 @@
 
         }
 
-        @if(localData()?.datos_envio?.unidad_transporte?.length ){
+        @if(localData()?.transport_units?.length ){
             <div>
                 <p class="block font-bold text-start ps-3 text-primary">DATOS DEL VEHÍCULO</p>   
                 <div class="grid grid-cols-1 lg:grid-cols-3 p-4 border border-gray-300 rounded-lg gap-y-2">
-                    @for(unidad_transporte of localData()?.datos_envio!.unidad_transporte; track unidad_transporte.id){
+                    @for(transport_unit of localData()?.transport_units; track transport_unit.id){
                         <div>
-                            <p class="block font-semibold text-start">{{ unidad_transporte.job_title }}:</p>
-                            <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">{{ unidad_transporte.placa }}</span></p> 
-                            @if(unidad_transporte.nro_autorizacion){
-                                <p class="ps-3"><span class="font-semibold">N° de Autorización vehicular:</span><span class="ps-3">{{ unidad_transporte.nro_autorizacion }} - {{ unidad_transporte.emisor_vehicular }}</span></p>
+                            <p class="block font-semibold text-start">{{ transport_unit.type }}:</p>
+                            <p class="ps-3"><span class="font-semibold">Placa:</span><span class="ps-3">{{ transport_unit.placa }}</span></p> 
+                            @if(transport_unit.nro_autorizacion){
+                                <p class="ps-3"><span class="font-semibold">N° de Autorización vehicular:</span><span class="ps-3">{{ transport_unit.nro_autorizacion }} - {{ transport_unit.emisor_vehicular }}</span></p>
                             }
                         </div>
                     }

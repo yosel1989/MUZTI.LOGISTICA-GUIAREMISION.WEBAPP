@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { map, Observable } from "rxjs";
-import { GuiaRemisionDto } from "app/features/guia-remision/models/guia-remision.model";
+import { DespatchAdviceDto } from "app/features/guia-remision/models/guia-remision.model";
 import { TableData } from "app/core/models/table";
 import { ColumnsFilterDto } from "app/core/models/filter";
 import { getFilenameFromHeaders } from "@core/utils/download.util";
@@ -55,10 +55,10 @@ export class GuiaRemisionApiService {
    * @param filters Filtros por columna; cada uno se envía como `columns[i][...]`.
    * @returns Página de guías de remisión con el total de registros.
    */
-  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<GuiaRemisionDto[]>> {
+  obtenerTodo(pageNumber: number, pageSize: number, filters: ColumnsFilterDto[]): Observable<TableData<DespatchAdviceDto[]>> {
     const httpParams = this.buildFilterParams(filters);
 
-    return this.http.get<TableData<GuiaRemisionDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams });
+    return this.http.get<TableData<DespatchAdviceDto[]>>(`${this.baseUrl}/listar/${pageNumber}/${pageSize}`, { params: httpParams });
   }
 
   /**
@@ -69,8 +69,8 @@ export class GuiaRemisionApiService {
    * @param uuid UUID de la guía de remisión.
    * @returns Datos de la guía de remisión.
    */
-  buscarPorUuid(uuid: string): Observable<GuiaRemisionDto> {
-    return this.http.get<GuiaRemisionDto>(`${this.baseUrl}/buscar-por-uuid/${uuid}`);
+  buscarPorUuid(uuid: string): Observable<DespatchAdviceDto> {
+    return this.http.get<DespatchAdviceDto>(`${this.baseUrl}/buscar-por-uuid/${uuid}`);
   }
 
   /**
@@ -99,8 +99,8 @@ export class GuiaRemisionApiService {
    * @param id Id de la guía de remisión.
    * @returns La guía de remisión con su estado actualizado.
    */
-  confirmar(id: number): Observable<GuiaRemisionDto> {
-    return this.http.put<GuiaRemisionDto>(`${this.baseUrl}/${id}/confirmar`,{});
+  confirmar(id: number): Observable<DespatchAdviceDto> {
+    return this.http.put<DespatchAdviceDto>(`${this.baseUrl}/${id}/confirmar`,{});
   }
 
   /**
@@ -112,8 +112,8 @@ export class GuiaRemisionApiService {
    * @param descripcion Motivo del rechazo (opcional).
    * @returns La guía de remisión con su estado actualizado.
    */
-  rechazar(id: number, descripcion: string | null): Observable<GuiaRemisionDto> {
-    return this.http.put<GuiaRemisionDto>(`${this.baseUrl}/${id}/rechazar`,{id, descripcion});
+  rechazar(id: number, descripcion: string | null): Observable<DespatchAdviceDto> {
+    return this.http.put<DespatchAdviceDto>(`${this.baseUrl}/${id}/rechazar`,{id, descripcion});
   }
 
   /**
@@ -125,8 +125,8 @@ export class GuiaRemisionApiService {
    * @param descripcion Motivo de la anulación (opcional).
    * @returns La guía de remisión con su estado actualizado.
    */
-  anular(id: number, descripcion: string | null): Observable<GuiaRemisionDto> {
-    return this.http.put<GuiaRemisionDto>(`${this.baseUrl}/${id}/anular`,{id, descripcion});
+  anular(id: number, descripcion: string | null): Observable<DespatchAdviceDto> {
+    return this.http.put<DespatchAdviceDto>(`${this.baseUrl}/${id}/anular`,{id, descripcion});
   }
 
   /**
@@ -140,7 +140,7 @@ export class GuiaRemisionApiService {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getDocument(guiaRemisionId: string, entityId: string): Observable<any> {
-    return this.http.get<GuiaRemisionDto>(`${this.baseUrl}/pdf/${guiaRemisionId}/${entityId}`);
+    return this.http.get<DespatchAdviceDto>(`${this.baseUrl}/pdf/${guiaRemisionId}/${entityId}`);
   }
 
 
